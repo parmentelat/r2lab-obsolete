@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 class Node(object):
     def __init__(self, phy_num, log_num, mac, alt_mac):
         self.phy_num = phy_num
@@ -7,7 +8,7 @@ class Node(object):
         self.mac = mac
         self.alt_mac = alt_mac
 
-    def model(self):
+    def json_model(self):
         phy2 = "{:02d}".format(self.phy_num)
         log2 = "{:02d}".format(self.log_num)
         phyname = "phy"+phy2
@@ -57,25 +58,8 @@ class Node(object):
         }
 
 ########################################
-import re
-import csv
-import json
-
-from argparse import ArgumentParser
-
-mac_regexp = re.compile ('(?P<prefix>([0-9A-Fa-f]{2}:){5})(?P<last>[0-9A-Fa-f]{2})')
-
-
-def main():
-    parser = ArgumentParser()
-    parser.add_argument("-v", "--verbose")
-    parser.add_argument("-o", "--output", default=None)
-    parser.add_argument("input", type=str, default="fit.csv")
-    args = parser.parse_args()
-
-    output = args.output or args.input.replace(".csv","")+".json"
-    
-    with open(args.input, 'rb') as csvfile:
+def write_json (input, output, verbose):
+    with open(input, 'rb') as csvfile:
         reader = csv.reader(csvfile)
         nodes = []
         for lineno, line in enumerate(reader):
@@ -94,15 +78,39 @@ def main():
                     print lineno,'non-mac',mac
             except Exception as e:
                 print 'skipping line',lineno,line
-                if args.verbose:
+                if verbose:
                     import traceback
                     traceback.print_exc()
     
         with open (output, 'w') as jsonfile:
-            models = [ node.model() for node in nodes ]
-            json.dump (models, jsonfile)
+            json_models = [ node.json_model() for node in nodes ]
+            json.dump (json_models, jsonfile)
 
-    print ("(Over)wrote {args.output} from {args.input}".format(**locals()))
+    print ("(Over)wrote {output} from {input}".format(**locals()))
+
+########################################
+import re
+import csv
+import json
+
+from argparse import ArgumentParser
+
+mac_regexp = re.compile ('(?P<prefix>([0-9A-Fa-f]{2}:){5})(?P<last>[0-9A-Fa-f]{2})')
+
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("-v", "--verbose")
+    parser.add_argument("-o", "--output", default=None)
+    parser.add_argument("input", type=str, default="fit.csv")
+    args = parser.parse_args()
+
+    out_basename = args.output or args.input.replace(".csv","")
+
+    out_json = out_basename +".json"
+    
+    write_json (args.input, out_json, args.verbose)
+
     return 0
 
 if __name__ == '__main__':

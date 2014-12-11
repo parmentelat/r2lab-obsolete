@@ -1,9 +1,10 @@
-all: json
+TOOL = configure.py
 
-json: fit.json 
+all: config
 
-.PHONY: all json
+config: fit.json 
 
-fit.json: fit_to_json.py fit.csv 
-	fit_to_json.py fit.csv
+.PHONY: all config
 
+fit.json: $(TOOL) fit.csv 
+	$(TOOL) fit.csv
