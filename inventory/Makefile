@@ -2,7 +2,9 @@ TOOL = configure.py
 
 all: run
 
-.PHONY: all run
+push: json-push nagios-push
+
+.PHONY: all run push
 
 ####################
 run: fit.json
@@ -15,6 +17,8 @@ json-push: fit.json
 	rsync -a fit.json root@faraday.inria.fr:/root/inventory
 
 json: json-push
+
+.PHONY: json-push json
 
 ####################
 nagios-push: fit-nagios-nodes.cfg fit-nagios-static.cfg
