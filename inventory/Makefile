@@ -14,7 +14,7 @@ fit.json fit-nagios-nodes.cfg: $(TOOL) fit.csv
 
 ####################
 json-push: fit.json
-	rsync -a fit.json root@faraday.inria.fr:/root/inventory
+	./inject-json.sh
 
 json: json-push
 
