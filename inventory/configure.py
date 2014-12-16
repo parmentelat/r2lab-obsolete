@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Assumptions here:
@@ -112,6 +112,12 @@ check_command my_ping
     def nagios_host_cfg(self):
         return "".join([self.nagios_host_cfg_subnet(i,n) for (i,n) in self.subnets])
 
+    def nagios_groups(self):
+        "returns a 3-list with the hostnames for the 3 subnets"
+        log_name=self.log_name()
+        return [ "{log_name}-{sn_name}".format(log_name=log_name,sn_name=sn_name)
+                 for i, sn_name in self.subnets ]
+    
 ########################################
 class Nodes(OrderedDict):
     """
@@ -124,7 +130,7 @@ class Nodes(OrderedDict):
         self.verbose = verbose
 
     def load(self):
-        with open(self.csv_filename, 'rb') as csvfile:
+        with open(self.csv_filename, 'r') as csvfile:
             reader = csv.reader(csvfile)
             for lineno, line in enumerate(reader):
                 try:
@@ -132,7 +138,7 @@ class Nodes(OrderedDict):
                     log_num = int (line[3])
                     # discard nodes that are not on-site
                     if not log_num:
-                        print "Ignoring physical node {phy_num} - not deployed".format(phy_num)
+                        print ("Ignoring physical node {phy_num} - not deployed".format(phy_num))
                         continue
                     mac = line[5]
                     match = mac_regexp.match(mac)
@@ -143,17 +149,22 @@ class Nodes(OrderedDict):
                         alt_mac = prefix+alt_last
                         self[phy_num] = Node(phy_num, log_num, mac, alt_mac)
                     else:
-                        print lineno,'non-mac',mac
+                        print (lineno,'non-mac',mac)
                 except Exception as e:
-                    print 'skipping line',lineno,line
+                    print ('skipping line',lineno,line)
                     if self.verbose:
                         import traceback
                         traceback.print_exc()
     
+    def keep_just_one(self):
+        for k in self.keys()[1:]:
+            del self[k]
+        self.out_basename += ".small"
+
     def write_json (self):
         out_filename = self.out_basename+".json"
         with open (out_filename, 'w') as jsonfile:
-            json_models = [ node.json_model() for node in self.itervalues() ]
+            json_models = [ node.json_model() for node in self.values() ]
             json.dump (json_models, jsonfile)
     
         print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
@@ -165,20 +176,42 @@ class Nodes(OrderedDict):
             for node in self.values():
                 nagiosfile.write(node.nagios_host_cfg())
         print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
+
+    def write_nagios_hostgroups(self):
+        out_filename = self.out_basename+"-nagios-groups.cfg"
+        nodes_groups = zip(*[ node.nagios_groups() for node in self.values() ])
+        with open(out_filename, 'w') as nagiosfile:
+            for (i, sn_name), list_names in zip(Node.subnets, nodes_groups):
+                sn_members = ",".join(list_names)
+                hostgroup = """
+define hostgroup {{
+hostgroup_name {sn_name}
+members {sn_members}
+}}
+""".format(**locals())
+                nagiosfile.write(hostgroup)
         
 ########################################        
 def main():
     parser = ArgumentParser()
-    parser.add_argument("-v", "--verbose")
+    parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-o", "--output", default=None)
+    parser.add_argument("-s", "--small", action='store_true', default=False,
+                        help="force output of only one node")
     parser.add_argument("input", nargs='?', default='fit.csv')
     args = parser.parse_args()
 
     nodes = Nodes(args.input, args.output or args.input.replace(".csv",""), args.verbose)
     nodes.load()
 
+    # this is a debugging trick so that we generate only one node,
+    # given how loading the JSON file is slow
+    if args.small:
+        nodes.keep_just_one()
+
     nodes.write_json()
     nodes.write_nagios()
+    nodes.write_nagios_hostgroups()
 
     return 0
 
