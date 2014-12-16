@@ -53,8 +53,8 @@ class Node(object):
     def json_model(self):
         domain = 'faraday'
         return {
-            "name": self.phy_name(),
-            "hostname": self.log_name(),
+            "name": self.log_name(),
+            "hostname": self.phy_name(),
             "hardware_type": "PC-Icarus",
             "urn": "urn:publicid:IDN+omf:faraday+node+"+self.log_name(),
             "interfaces": [
