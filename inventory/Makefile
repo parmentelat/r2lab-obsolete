@@ -40,7 +40,7 @@ nagios: nagios-push nagios-restart
 .PHONY: nagios-push nagios-restart nagios
 
 ####################
-UTILS = display_db.py
+UTILS = display-db.py
 
 utils:
 	rsync -av $(UTILS) $(OMF_SSH):/usr/bin
