@@ -1,5 +1,7 @@
 TOOL = configure.py
 
+OMF_SSH=root@faraday.inria.fr
+
 all: run
 
 push: json-push nagios-push
@@ -30,3 +32,9 @@ nagios-restart:
 nagios: nagios-push nagios-restart
 
 .PHONY: nagios-push nagios-restart nagios
+
+####################
+UTILS = display_db.py
+
+utils:
+	rsync -av $(UTILS) $(OMF_SSH):/usr/bin
