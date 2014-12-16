@@ -23,8 +23,8 @@ json: json-push
 .PHONY: json-push json
 
 ####################
-nagios-push: fit-nagios-nodes.cfg fit-nagios-static.cfg
-	rsync -a fit-nagios*.cfg root@faraday.inria.fr:/etc/nagios3/conf.d
+nagios-push: fit-nagios-static.cfg fit-nagios-nodes.cfg fit-nagios-groups.cfg
+	rsync -a fit-nagios*.cfg $(OMF_SSH):/etc/nagios3/conf.d
 
 nagios-restart:
 	ssh root@faraday.inria.fr service nagios3 restart
