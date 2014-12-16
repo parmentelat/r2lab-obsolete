@@ -1,18 +1,24 @@
-TOOL = configure.py
-
 OMF_SSH=root@faraday.inria.fr
 
-all: run
+all: configure 
 
 push: json-push nagios-push
 
-.PHONY: all run push
+.PHONY: all push
 
 ####################
-run: fit.json
+configure: configure.py fit.json
 
-fit.json fit-nagios-nodes.cfg: $(TOOL) fit.csv 
-	$(TOOL) fit.csv
+fit.json fit-nagios-nodes.cfg: configure.py fit.csv 
+	configure.py fit.csv
+
+.PHONY: configure
+
+####################
+clean:
+	rm -f fit.json fit-nagios-nodes.cfg fit-nagios-groups.cfg
+
+.PHONY: clean
 
 ####################
 json-push: fit.json

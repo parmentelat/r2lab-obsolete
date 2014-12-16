@@ -37,10 +37,11 @@ def display():
     raw = parse()
     resource_response = raw['resource_response']
     resources = resource_response['resources']
-    for resource in resources:
-        print ('hostname:', resource['hostname'],
-               'name:', resource['name'],
-               'status:', resource['status'],
+    for resource in sorted(resources, key=lambda r:r['name']):
+        print ('hn:', resource['hostname'],
+               'nm:', resource['name'],
+               'cm:', resource['cmc']['ip']['address'],
+               'st:', resource['status'],
                )
         
 def main():

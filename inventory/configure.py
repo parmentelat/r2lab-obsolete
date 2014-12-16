@@ -34,19 +34,16 @@ class Node(object):
         self.mac = mac
         self.alt_mac = alt_mac
 
-    def phy_str(self):
+    def phy_str0(self):
         "physical number on 2 chars as a str"
         return "{:02d}".format(self.phy_num)
-    def log_str(self):
-        "logical number on 2 chars as a str"
-        return "{:02d}".format(self.log_num)
-    
     def phy_name(self):
         "external name based on physical number, like phy33"
-        return "phy"+self.phy_str()
+        return "phy"+self.phy_str0()
+
     def log_name(self):
         "external name based on logical number, like fit33"
-        return "fit"+self.log_str()
+        return "fit{:02d}".format(self.log_num)
 
     subnets = ( (1, 'cm'), (2, 'data'), (3, 'control') )
 
@@ -76,7 +73,7 @@ class Node(object):
             ],
             "cmc": {
                 "name": self.log_name()+":cm",
-                "mac": "02:00:00:00:00:"+self.phy_str(),
+                "mac": "02:00:00:00:00:"+self.phy_str0(),
                 "ip": {
                     "address": "192.168.1.{}".format(self.log_num),
                     "netmask": "255.255.255.0",
@@ -97,14 +94,14 @@ class Node(object):
 
     def nagios_host_cfg_subnet(self, sn_ip, sn_name):
         log_name=self.log_name()
-        phy_str=self.phy_str()
+        log_num=self.log_num
         sn_ip=sn_ip
         sn_name=sn_name
 ### NOTE: format uses { } already so for inserting a { or } we need to double them
         return """define host {{
 use fit-node
 host_name {log_name}-{sn_name}
-address 192.168.{sn_ip}.{phy_str}
+address 192.168.{sn_ip}.{log_num}
 check_command my_ping
 }}
 """.format(**locals())
@@ -185,7 +182,8 @@ class Nodes(OrderedDict):
                 sn_members = ",".join(list_names)
                 hostgroup = """
 define hostgroup {{
-hostgroup_name {sn_name}
+hostgroup_name .{i}
+alias {sn_name}
 members {sn_members}
 }}
 """.format(**locals())
