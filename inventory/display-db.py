@@ -16,11 +16,12 @@ import json
 
 from argparse import ArgumentParser
 
-rest_url = "https://localhost:8001/resources/nodes"
+rest_url_format = "https://{hostname}:8001/resources/nodes"
 
 tmp_json = "/tmp/db.json"
 
-def fetch():
+def fetch(hostname):
+    rest_url = rest_url_format.format(hostname=hostname)
     curl_command = "curl -k {} -o {}".format(rest_url, tmp_json)
     print ("Running {}".format(curl_command))
     retcod = system (curl_command)
@@ -43,15 +44,19 @@ def display():
                'cm:', resource['cmc']['ip']['address'],
                'st:', resource['status'],
                )
+
+default_hostname = 'faraday.inria.fr'
         
 def main():
     parser = ArgumentParser()
     parser.add_argument("-s","--speed",action='store_true', default=False,
                         help="use json file {} instead of fetching it again".format(tmp_json))
+    parser.add_argument("-o","--omf-host",dest='omf_hostname',default=default_hostname,
+                        help="specify hostname (default is {default})")
     args=parser.parse_args()
 
     if not args.speed:
-        fetch()
+        fetch(hostname=args.omf_hostname)
     
     display()
 
