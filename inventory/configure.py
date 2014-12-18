@@ -60,7 +60,8 @@ class Node(object):
                     "role": "control",
                     "mac": self.mac,
                     "ip": {
-                        "address": "192.168.3.{}".format(self.log_num),
+                        # we cannot change the IP address of the CMC ...
+                        "address": "192.168.3.{}".format(self.phy_num),
                         "netmask": "255.255.255.0",
                         "ip_type": "ipv4"
                     }
@@ -94,17 +95,31 @@ class Node(object):
 
     def nagios_host_cfg_subnet(self, sn_ip, sn_name):
         log_name=self.log_name()
-        log_num=self.log_num
         sn_ip=sn_ip
         sn_name=sn_name
-### NOTE: format uses { } already so for inserting a { or } we need to double them
-        return """define host {{
+        # we cannot change the IP address of the CMC card, so this one is physical
+        is_cmc = (sn_ip == self.subnets[0][0])
+        num = self.phy_num if is_cmc else self.log_num
+
+        ### NOTE: format uses { } already so for inserting a { or } we need to double them
+        result = """define host {{
 use fit-node
 host_name {log_name}-{sn_name}
-address 192.168.{sn_ip}.{log_num}
+address 192.168.{sn_ip}.{num}
 check_command my_ping
 }}
 """.format(**locals())
+
+        if is_cmc:
+            result += """ define service{{
+use my-service
+host_name {log_name}-{sn_name}
+service_description  ON/OFF
+check_command on_off
+}}
+""".format(**locals())
+
+        return result
 
     def nagios_host_cfg(self):
         return "".join([self.nagios_host_cfg_subnet(i,n) for (i,n) in self.subnets])
