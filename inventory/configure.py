@@ -157,7 +157,7 @@ class Nodes(OrderedDict):
                     if match:
                         prefix, last = match.group('prefix', 'last')
                         byte = int (last, base=16)
-                        alt_last = str(byte-1)
+                        alt_last = hex(byte-1)[2:]
                         alt_mac = prefix+alt_last
                         self[phy_num] = Node(phy_num, log_num, mac, alt_mac)
                     else:
