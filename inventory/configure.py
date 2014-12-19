@@ -93,6 +93,12 @@ class Node(object):
             "hd_capacity": "240 GB"
         }
 
+    def dnsmasq_conf(self):
+        control="dhcp-host=net:control,{},{},192.168.3.{}\n".format(self.mac, self.log_name(), self.log_num)
+        data="dhcp-host=net:data,{},{},192.168.2.{}\n".format(self.alt_mac, self.log_name(), self.log_num)
+        return control+data
+
+
     def nagios_host_cfg_subnet(self, sn_ip, sn_name):
         log_name=self.log_name()
         sn_ip=sn_ip
@@ -173,14 +179,20 @@ class Nodes(OrderedDict):
             del self[k]
         self.out_basename += ".small"
 
-    def write_json (self):
+    def write_json(self):
         out_filename = self.out_basename+".json"
         with open (out_filename, 'w') as jsonfile:
             json_models = [ node.json_model() for node in self.values() ]
             json.dump (json_models, jsonfile)
-    
         print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
 
+
+    def write_dnsmasq(self):
+        out_filename = self.out_basename+".dnsmasq"
+        with open (out_filename, 'w') as dnsmasqfile:
+            for node in self.values():
+                dnsmasqfile.write(node.dnsmasq_conf())
+        print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
 
     def write_nagios(self):
         out_filename = self.out_basename+"-nagios-nodes.cfg"
@@ -223,6 +235,7 @@ def main():
         nodes.keep_just_one()
 
     nodes.write_json()
+    nodes.write_dnsmasq()
     nodes.write_nagios()
     nodes.write_nagios_hostgroups()
 
