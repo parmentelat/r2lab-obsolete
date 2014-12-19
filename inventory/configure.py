@@ -31,8 +31,8 @@ class Node(object):
     def __init__(self, phy_num, log_num, mac, alt_mac):
         self.phy_num = phy_num
         self.log_num = log_num
-        self.mac = mac
-        self.alt_mac = alt_mac
+        self.mac = mac.lower()
+        self.alt_mac = alt_mac.lower()
 
     def phy_str0(self):
         "physical number on 2 chars as a str"
@@ -95,7 +95,7 @@ class Node(object):
 
     def dnsmasq_conf(self):
         control="dhcp-host=net:control,{},{},192.168.3.{}\n".format(self.mac, self.log_name(), self.log_num)
-        data="dhcp-host=net:data,{},{},192.168.2.{}\n".format(self.alt_mac, self.log_name(), self.log_num)
+        data="dhcp-host=net:data,{},{}-exp,192.168.2.{}\n".format(self.alt_mac, self.log_name(), self.log_num)
         return control+data
 
 
