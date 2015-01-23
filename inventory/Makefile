@@ -29,11 +29,23 @@ json: json-push
 .PHONY: json-push json
 
 ####################
+infra-push: fit.dnsmasq fit.json
+	rsync -a fit.dnsmasq $(OMF_SSH):/etc/dnsmasq.d/testbed.conf
+	rsync -a fit.hosts $(OMF_SSH):/etc/hosts
+
+infra-restart:
+	ssh $(OMF_SSH) service dnsmasq restart
+
+infra: infra-push infra-restart
+
+.PHONY: infra-push infra-restart infra
+
+####################
 nagios-push: fit-nagios-static.cfg fit-nagios-nodes.cfg fit-nagios-groups.cfg
 	rsync -a fit-nagios*.cfg $(OMF_SSH):/etc/nagios3/conf.d
 
 nagios-restart:
-	ssh root@faraday.inria.fr service nagios3 restart
+	ssh $(OMF_SSH) service nagios3 restart
 
 nagios: nagios-push nagios-restart
 
