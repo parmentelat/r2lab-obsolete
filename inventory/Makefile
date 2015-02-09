@@ -16,6 +16,13 @@ fullmonty: configure
 	git push
 	$(MAKE) json infra nagios
 
+
+# if you've imported the csv file from google spreadsheet
+# and this ends up in your ~/Downloads directory
+import:
+	mv ${HOME}/Downloads/"00-FIT nodes - Feuille 1.csv" fit.csv
+
+.PHONY: fullmonty import
 ####################
 configure: $(BYPRODUCTS)
 

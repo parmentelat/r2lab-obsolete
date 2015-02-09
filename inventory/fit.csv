@@ -1,53 +1,57 @@
-NO,1,PASS,1,Thierry's office,00:03:1D:0E:03:19,,,v2,BIOS1.2,00:03:1D:0E:75:B9
-NO,2,PASS,2,Thierry's office,00:03:1D:0E:75:AB,,,,BIOS1.2,
-YES,3,PASS-but,3,Thierry's office,00:03:1D:0E:75:A3,,OK,v2,BIOS1.2,
-NO,4,PASS,4,Thierry's office,00:03:1D:0E:75:A9,,,,BIOS1.2,
-YES,5,PASS,5,Thierry's office,00:03:1D:0E:75:9B,,,v2,BIOS1.2,
-YES,6,PASS,6,deployed - requires antennas better screwed,00:03:1D:0E:03:49,,,,,
-YES,7,PASS,7,deployed,00:03:1D:0E:03:57,,,,,
-YES,8,PASS,8,deployed,00:03:1D:0E:03:4F,,,,,
-YES,9,PASS,9,deployed,00:03:1D:0E:75:AD,,,,,
-YES,10,PASS,10,deployed,00:03:1D:0E:03:55,,,,,
-YES,11,PASS,11,,00:03:1D:0E:75:B3,,,,,
-YES,12,PASS,12,deployed / Fixed by Harris (CM Card),00:03:1D:0E:75:A5,,Checked,,,
-YES,13,PASS,13,deployed,00:03:1D:0E:75:A7,,,,,
-YES,14,PASS,14,deployed,00:03:1D:0E:75:9D,,Checked,,,
-NO,15,PASS-but,0,one wire got stupidly unwelded by the fan ... / Sent back to Greece,"
-",,,,,
-YES,16,PASS,16,deployed,00:03:1D:0E:03:23,,,,,
-YES,17,PASS,17,deployed,00:03:1D:0E:86:83,00:03:1D:0E:86:82,Checked,,,
-YES,18,PASS,18,deployed,00:03:1D:0E:03:51,,,,,
-YES,19,PASS,19,deployed,00:03:1D:0E:75:AF,,,,,
-YES,20,PASS,20,deployed,00:03:1D:0E:03:3B,,,,,
-YES,21,PASS,21,deployed,00:03:1D:0E:03:3F,,,,,
-YES,22,PASS,22,deployed,00:03:1D:0E:03:37,,,,,
-YES,23,PASS,23,deployed,00:03:1D:0E:75:B1,B4?,,,,
-YES,24,PASS,24,deployed / Fixed by Harris (CM Card),00:03:1D:0E:03:43,,Checked,,,
-YES,25,PASS,25,deployed,00:03:1D:0E:03:1F,,,,,
-YES,26,PASS,26,deployed,00:03:1D:0E:03:59,,,,,
-YES,27,PASS,27,deployed,00:03:1D:0E:E1:9B,,,,,
-YES,28,PASS,28,deployed,00:03:1D:0E:03:41,,,,,
-NO,29,PASS,0,Fixed by Harris (BIOS) / in prep lab,00:03:1D:0E:03:5D,,,,BIOS1.1,
-YES,30,PASS,30,deployed,00:03:1D:0E:E1:A3,,,,,
-NO,31,PASS,31,"Fixed by Harris (BIOS) / in preplab (bemol), connected, keyboard, mouse and display",00:03:1D:0E:75:9F,,Checked,v2,BIOS1.2,
-YES,32,PASS,32,deployed,00:03:1D:0E:03:25,,,,,
-NO,33,KO,0,brought back from Greece (hard drive problem (Mother board?)),00:03:1D:0D:E1:97,,,,,
-YES,34,PASS,34,deployed,00:03:1D:0E:E1:87,,,,,
-YES,35,PASS,35,deployed,00:03:1D:0E:75:B5,,,,,
-YES,36,PASS,36,deployed,00:03:1D:0E:03:47,,,,,
-YES,37,PASS,37,deployed,00:03:1D:0E:03:4D,,,,,
-NO,38,PASS,15,Thierry's office,00:03:1D:0E:24:79,,OK,v2,BIOS1.2,
-YES,39,PASS,29,deployed,00:03:1D:0E:E1:95,,Checked,,,
-YES,40,PASS,0,deployed,00:03:1D:0E:75:A1,,,,,
-YES,41,PASS,33,deployed,00:03:1D:0E:03:53,,,,,
-NO,42,PASS,0,Fixed by Harris (BIOS) / in prep lab,00:03:1D:0E:03:5B,,,,BIOS1.1,
-,,,,,,,,,,
-,50,OK,,Prototype  / Sent back to Greece,00:03:1D:0A:9F:35,00:03:1D:0A:9F:34,,,,
-ON-SITE,#,STATUS,,comment,MAC,,BIOS Settings,version,vBIOS,
-physical # (sticker),,,"logical: indicates slot in deployment, or 0 if not in r2lab",,,,,,,
-,,,,,,,,,,
-,,,,,,,,,,
-,,,,ETH adapter for mac - to be kept in the lab,68:5b:35:a2:38:2d,,DHCP,,,
-,,,,data switch,f8:b1:56:33:50:ad,OUI -> Dell ,192.168.3.103,,,
-,,,,reboot switch ?,f8:b1:56:42:51:32,OUI -> Dell ,192.168.3.101,,,
-,,,,control switch ?,d0:67:e5:d6:ae:fe,OUI -> Dell ,192.168.3.102,,,
+,1,PASS,1,had an old and erroneous mention to 00:03:1D:0E:75:B9 ,00:03:1D:0E:03:19,,,v2,BIOS1.2
+,2,PASS,2,,00:03:1D:0E:75:AB,,,v2,BIOS1.2
+,3,PASS,3,,00:03:1D:0E:75:A3,,OK,v2,BIOS1.2
+,4,PASS,4,"has no antenna, only extension cables",00:03:1D:0E:75:A9,,,v2,BIOS1.2
+,5,PASS,5,,00:03:1D:0E:75:9B,,,v2,BIOS1.2
+,6,PASS,6,,00:03:1D:0E:03:49,,,v2,BIOS1.2
+,7,PASS,7,,00:03:1D:0E:03:57,,,v2,BIOS1.2
+,8,PASS,8,,00:03:1D:0E:03:4F,,,v2,BIOS1.2
+,9,PASS,9,,00:03:1D:0E:75:AD,,,v2,BIOS1.2
+,10,PASS,10,,00:03:1D:0E:03:55,,,v2,BIOS1.2
+,11,PASS,11,,00:03:1D:0E:75:B3,,,v2,BIOS1.2
+,12,PASS,12,,00:03:1D:0E:75:A5,,Checked,v2,BIOS1.2
+,13,PASS,13,,00:03:1D:0E:75:A7,,,v2,BIOS1.2
+,14,PASS,14,,00:03:1D:0E:75:9D,,Checked,v2,BIOS1.2
+,15,PASS,-1,In Greece - awaits new motherboard,"
+",,,??,??
+,16,PASS,16,,00:03:1D:0E:03:23,,,v2,BIOS1.2
+,17,PASS,17,,00:03:1D:0E:86:83,,Checked,v2,BIOS1.2
+,18,PASS,18,,00:03:1D:0E:03:51,,,v2,BIOS1.2
+,19,PASS,19,,00:03:1D:0E:75:AF,,,v2,BIOS1.2
+,20,PASS,20,,00:03:1D:0E:03:3B,,,v2,BIOS1.2
+,21,PASS,21,,00:03:1D:0E:03:3F,,,v2,BIOS1.2
+,22,PASS,22,,00:03:1D:0E:03:37,,,v2,BIOS1.2
+,23,PASS,23,,00:03:1D:0E:75:B1,B4?,,v2,BIOS1.2
+,24,PASS,24,,00:03:1D:0E:03:43,,Checked,v2,BIOS1.2
+,25,PASS,25,,00:03:1D:0E:03:1F,,,v2,BIOS1.2
+,26,PASS,26,,00:03:1D:0E:03:59,,,v2,BIOS1.2
+,27,PASS,27,,00:03:1D:0E:E1:9B,,,v2,BIOS1.2
+,28,PASS,28,,00:03:1D:0E:03:41,,,v2,BIOS1.2
+,29,PASS,29,,00:03:1D:0E:03:5D,,,v2,BIOS1.2
+,30,PASS,30,,00:03:1D:0E:E1:A3,,,v2,BIOS1.2
+,31,PASS,31,,00:03:1D:0E:75:9F,,Checked,v2,BIOS1.2
+,32,PASS,32,,00:03:1D:0E:03:25,,,v2,BIOS1.2
+,33,PASS,33,,00:03:1D:0D:E1:97,,,v2,BIOS1.2
+,34,PASS,34,,00:03:1D:0E:E1:87,,,v2,BIOS1.2
+,35,PASS,35,,00:03:1D:0E:75:B5,,,v2,BIOS1.2
+,36,PASS,36,,00:03:1D:0E:03:47,,,v2,BIOS1.2
+,37,PASS,37,,00:03:1D:0E:03:4D,,,v2,BIOS1.2
+,38,PASS,15,sits in slot 15 - but slot 15 HAS NO POWER,00:03:1D:0E:24:79,,OK,v2,BIOS1.2
+,39,PASS,0,Preplab,00:03:1D:0E:E1:95,,Checked,v2,BIOS1.2
+,40,PASS,-1,In greece (Harris took this node back to Greece on Feb. 6),00:03:1D:0E:75:A1,,,v2,BIOS1.2
+,41,PASS,0,Preplab,00:03:1D:0E:03:53,,,v2,BIOS1.2
+,42,PASS,0,Preplab,00:03:1D:0E:03:5B,,,v2,BIOS1.2
+,,,,,,,,,
+,50,OK,,Prototype  / Sent back to Greece,00:03:1D:0A:9F:35,00:03:1D:0A:9F:34,,,
+,#,STATUS,,comment,MAC,,BIOS Settings,version,vBIOS
+physical # (sticker),,,"logical: indicates slot in deployment, or 0 if not in r2lab",,,,,,
+,,,,,,,,,
+,,,,other MAC addresses,,,,,
+,,,,ETH adapter for mac - to be kept in the lab,68:5b:35:a2:38:2d,,DHCP,,
+,,,,data switch (confirmed) - PowerConnect 6248,f8:b1:56:33:50:ad,OUI -> Dell ,192.168.3.102,,
+,,,,control switch (confirmed) - PowerConnect 5548,f8:b1:56:42:51:32,OUI -> Dell ,192.168.3.103,,
+,,,,reboot switch (confirmed) - PowerConnect 5548,d0:67:e5:d6:ae:fe,OUI -> Dell ,192.168.3.101,,
+,,,,,,,,,
+,,,,,,,,,
+,,,,other comments ,,,,,
+,,,,power supply in slot 15 is stuck and inactive - gener is aware,,,,,
