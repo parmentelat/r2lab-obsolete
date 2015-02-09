@@ -44,10 +44,8 @@ verbose = 1;
 verbose = 0;
 
 /******************************/
-canvas_x=800;
-canvas_y=800;
-offset_x=10;
-offset_y=10;
+offset_x=40;
+offset_y=40;
 
 space_x = 70;
 space_y = 80;
@@ -124,15 +122,21 @@ function node(paper,id, i,j) {
 
 /******************************/
 function r2lab() {
+    var canvas_x = total_x +2*offset_x;
+    var canvas_y = total_y +2*offset_y;
     var paper = new Raphael(document.getElementById('canvas_container'),
 			    canvas_x, canvas_y, offset_x, offset_y);
+
+    if (verbose) console.log("canvas_x = " + canvas_x);
+
     var walls = paper.path(walls_path());
+    walls.attr(walls_attr);
+
     pillar_right = pillar(paper, 5, 1);
     pillar_left = pillar(paper, 3, 1);
 
-    walls.attr(walls_attr);
 
-    /*
+    /* draw a whole grid 
     for (var i=0; i<=steps_x; i++)
 	for (var j=0; j<=steps_y; j++)
 	    node(paper,i,j);
