@@ -19,7 +19,7 @@ id_to_coord = { node : (x(column), y(row))
                 for row, node in enumerate(vec)
                 if node }
 
-print("id_to_coord=[")
+print("node_specs=[")
 for n,(x,y) in id_to_coord.items():
     print("{{ id: {}, x:{}, y:{} }},".format(n,x,y))
 print("];")
