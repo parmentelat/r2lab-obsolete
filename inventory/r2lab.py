@@ -20,12 +20,9 @@ id_to_coord = { node : (x(column), y(row))
                 if node }
 
 print("node_specs=[")
-for n,(x,y) in id_to_coord.items():
-    print("{{ id: {}, x:{}, y:{} }},".format(n,x,y))
+for n,(i,j) in id_to_coord.items():
+    print("{{ id: {}, i:{}, j:{} }},".format(n,i,j))
 print("];")
-
-#coord_to_id = { c:n for n,c in id_to_coord.items() }
-#print("coord_to_id=", coord_to_id,";")
 
 
     

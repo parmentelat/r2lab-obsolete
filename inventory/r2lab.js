@@ -1,42 +1,46 @@
 /* output from r2lab.py */
 node_specs=[
-{ id: 1, x:8, y:0 },
-{ id: 2, x:8, y:1 },
-{ id: 3, x:8, y:2 },
-{ id: 4, x:8, y:3 },
-{ id: 5, x:8, y:4 },
-{ id: 6, x:7, y:0 },
-{ id: 7, x:7, y:1 },
-{ id: 8, x:7, y:2 },
-{ id: 9, x:7, y:3 },
-{ id: 10, x:7, y:4 },
-{ id: 11, x:6, y:0 },
-{ id: 12, x:6, y:1 },
-{ id: 13, x:6, y:2 },
-{ id: 14, x:6, y:3 },
-{ id: 15, x:6, y:4 },
-{ id: 16, x:5, y:0 },
-{ id: 17, x:5, y:2 },
-{ id: 18, x:5, y:3 },
-{ id: 19, x:4, y:0 },
-{ id: 20, x:4, y:1 },
-{ id: 21, x:4, y:2 },
-{ id: 22, x:4, y:3 },
-{ id: 23, x:3, y:0 },
-{ id: 24, x:3, y:2 },
-{ id: 25, x:3, y:3 },
-{ id: 26, x:2, y:0 },
-{ id: 27, x:2, y:1 },
-{ id: 28, x:2, y:2 },
-{ id: 29, x:2, y:3 },
-{ id: 30, x:2, y:4 },
-{ id: 31, x:1, y:0 },
-{ id: 32, x:1, y:1 },
-{ id: 33, x:1, y:2 },
-{ id: 34, x:1, y:3 },
-{ id: 35, x:1, y:4 },
-{ id: 36, x:0, y:3 },
-{ id: 37, x:0, y:4 },
+{ id: 1, i:8, j:0 },
+{ id: 2, i:8, j:1 },
+{ id: 3, i:8, j:2 },
+{ id: 4, i:8, j:3 },
+{ id: 5, i:8, j:4 },
+{ id: 6, i:7, j:0 },
+{ id: 7, i:7, j:1 },
+{ id: 8, i:7, j:2 },
+{ id: 9, i:7, j:3 },
+{ id: 10, i:7, j:4 },
+{ id: 11, i:6, j:0 },
+{ id: 12, i:6, j:1 },
+{ id: 13, i:6, j:2 },
+{ id: 14, i:6, j:3 },
+{ id: 15, i:6, j:4 },
+{ id: 16, i:5, j:0 },
+{ id: 17, i:5, j:2 },
+{ id: 18, i:5, j:3 },
+{ id: 19, i:4, j:0 },
+{ id: 20, i:4, j:1 },
+{ id: 21, i:4, j:2 },
+{ id: 22, i:4, j:3 },
+{ id: 23, i:3, j:0 },
+{ id: 24, i:3, j:2 },
+{ id: 25, i:3, j:3 },
+{ id: 26, i:2, j:0 },
+{ id: 27, i:2, j:1 },
+{ id: 28, i:2, j:2 },
+{ id: 29, i:2, j:3 },
+{ id: 30, i:2, j:4 },
+{ id: 31, i:1, j:0 },
+{ id: 32, i:1, j:1 },
+{ id: 33, i:1, j:2 },
+{ id: 34, i:1, j:3 },
+{ id: 35, i:1, j:4 },
+{ id: 36, i:0, j:3 },
+{ id: 37, i:0, j:4 },
+];
+pillar_specs=[
+{ id: 'left', i:3, j:1 },
+{ id: 'right', i:5, j:1 },
 ];
 
 /* set to 0 to keep only node ids (remove coords) */
@@ -80,6 +84,66 @@ pillar_attr = walls_attr;
 room_x = steps_x*space_x + 2*margin_x;
 room_y = steps_y*space_y + 2*margin_y;
 
+function grid_to_canvas (i, j) {
+    return [i*space_x+offset_x+margin_x,
+	    (steps_y-j)*space_y+offset_y+margin_y];
+}
+
+/******************************/
+function Node (node_spec) {
+    this.id = node_spec['id'];
+    /* i and j refer to a logical grid */
+    this.i = node_spec['i'];
+    this.j = node_spec['j'];
+
+    /* compute actual coordinates */
+    var coords = grid_to_canvas (this.i, this.j);
+    this.x = coords[0];
+    this.y = coords[1];
+    
+    this.graphic = function(paper) {
+	var node = paper.circle(this.x, this.y,
+				       node_radius, node_radius);
+	node.attr (node_attr);
+	var id = this.id;
+	node.click(function(){
+	    console.log("Clicked on node "+id);
+	});
+	var label = ""; label += this.id;
+	if (verbose) label += "["+ this.i + "x" + this.j+"]";
+	var label_obj = paper.text(this.x+10, this.y+10, label);
+	return node;
+    }
+
+    return this;
+
+}
+    
+function Pillar(pillar_spec) {
+    this.id = pillar_spec['id'];
+    /* i and j refer to a logical grid */
+    this.i = pillar_spec['i'];
+    this.j = pillar_spec['j'];
+    var coords = grid_to_canvas(this.i, this.j);
+    this.x = coords[0];
+    this.y = coords[1];
+
+    this.graphic = function(paper) {
+	var pillar = paper.rect (this.x-pillar_radius, this.y-pillar_radius,
+			     2*pillar_radius, 2*pillar_radius);
+	pillar.attr(pillar_attr);
+	var id = this.id;
+	pillar.click(function(){
+	    console.log("Clicked on pillar "+id);
+	});
+	return pillar;
+    }
+
+    return this;
+}
+
+
+/******************************/
 /* our mental model is y increase to the top, not to the bottom */
 function line_x(x) {return "l " + x + " 0 ";}
 function line_y(y) {return "l 0 " + -y + " ";}
@@ -100,35 +164,6 @@ function walls_path() {
     return path;
 }
 
-function pillar(paper,i,j) {
-    var coord = node_coord(i, j);
-    var x=coord[0]; var y=coord[1];
-    var pillar = paper.rect (x-pillar_radius, y-pillar_radius,
-			     2*pillar_radius, 2*pillar_radius);
-    pillar.attr(pillar_attr);
-    return pillar;
-}
-
-
-function node_coord (i, j) {
-    return [i*space_x+offset_x+margin_x, (steps_y-j)*space_y+offset_y+margin_x];
-}
-
-function node(paper,id, i,j) {
-    var coord = node_coord(i, j);
-    var x=coord[0]; var y=coord[1];
-    var node_circle = paper.circle(x, y, node_radius, node_radius);
-    node_circle.attr (node_attr);
-    node_circle.click(function(){
-	console.log("Clicked on node "+id);
-    });
-    var label = ""; label += id;
-    if (verbose) label += "["+ i + "x" + j+"]";
-    var label_obj = paper.text(x+10, y+10, label);
-    return node_circle;
-}
-    
-
 /******************************/
 function r2lab() {
     var canvas_x = room_x +2*offset_x;
@@ -141,19 +176,17 @@ function r2lab() {
     var walls = paper.path(walls_path());
     walls.attr(walls_attr);
 
-    pillar_right = pillar(paper, 5, 1);
-    pillar_left = pillar(paper, 3, 1);
+    var pillar_len = pillar_specs.length;
+    for (var i=0; i < pillar_len; i++) {
+	pillar = Pillar(pillar_specs[i]);
+	pillar.graphic(paper);
+    }
 
 
-    /* draw a whole grid 
-    for (var i=0; i<=steps_x; i++)
-	for (var j=0; j<=steps_y; j++)
-	    node(paper,i,j);
-    */
     var node_len = node_specs.length;
     for (var i=0; i < node_len; i++) {
-	node_spec=node_specs[i];
-	node(paper, node_spec['id'], node_spec['x'], node_spec['y']);
+	node = Node(node_specs[i]);
+	node.graphic(paper);
     }
 	
 }
