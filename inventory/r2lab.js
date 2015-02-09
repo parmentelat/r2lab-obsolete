@@ -1,5 +1,5 @@
 /* output from r2lab.py */
-id_to_coord=[
+node_specs=[
 { id: 1, x:8, y:0 },
 { id: 2, x:8, y:1 },
 { id: 3, x:8, y:2 },
@@ -44,19 +44,22 @@ verbose = 1;
 verbose = 0;
 
 /******************************/
+/* the space around the walls in the canvas */
 offset_x=40;
 offset_y=40;
 
+/* distance between nodes */
 space_x = 70;
 space_y = 80;
+/* distance between nodes and walls */
 margin_x = 20;
 margin_y = 20;
+/* total number of rows and columns */
 steps_x = 8;
 steps_y = 4;
 
-total_x = steps_x*space_x + 2*margin_x;
-total_y = steps_y*space_y + 2*margin_y;
-
+/* the attributes for drawing the walls 
+   as well as the inside of the room */
 walls_attr=
     {
         gradient: '90-#526c7a-#64a0c1',
@@ -65,11 +68,17 @@ walls_attr=
         'stroke-linejoin': 'round',
         rotation: -90
     };
+/* the attributes of nodes */
 node_radius = 8;
 node_attr={fill:'white'};
 
+/* the attributes of the pillars */
 pillar_radius = 12;
 pillar_attr = walls_attr;
+
+/* intermediate - the overall room size */
+room_x = steps_x*space_x + 2*margin_x;
+room_y = steps_y*space_y + 2*margin_y;
 
 /* our mental model is y increase to the top, not to the bottom */
 function line_x(x) {return "l " + x + " 0 ";}
@@ -77,7 +86,7 @@ function line_y(y) {return "l 0 " + -y + " ";}
 
 function walls_path() {
     var path="";
-    path += "M " + (total_x+offset_x) + " " + (total_y+offset_y) + " ";
+    path += "M " + (room_x+offset_x) + " " + (room_y+offset_y) + " ";
     path += line_x(-(7*space_x+2*margin_x));
     path += line_y(3*space_y);
     path += line_x(-1*space_x);
@@ -122,8 +131,8 @@ function node(paper,id, i,j) {
 
 /******************************/
 function r2lab() {
-    var canvas_x = total_x +2*offset_x;
-    var canvas_y = total_y +2*offset_y;
+    var canvas_x = room_x +2*offset_x;
+    var canvas_y = room_y +2*offset_y;
     var paper = new Raphael(document.getElementById('canvas_container'),
 			    canvas_x, canvas_y, offset_x, offset_y);
 
@@ -141,10 +150,10 @@ function r2lab() {
 	for (var j=0; j<=steps_y; j++)
 	    node(paper,i,j);
     */
-    var node_len = id_to_coord.length;
+    var node_len = node_specs.length;
     for (var i=0; i < node_len; i++) {
-	node_dict=id_to_coord[i];
-	node(paper, node_dict['id'], node_dict['x'], node_dict['y']);
+	node_spec=node_specs[i];
+	node(paper, node_spec['id'], node_spec['x'], node_spec['y']);
     }
 	
 }
