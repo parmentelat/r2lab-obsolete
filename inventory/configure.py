@@ -284,6 +284,7 @@ members {sn_members}
 }}
 """.format(**locals())
                 nagiosfile.write(hostgroup)
+        print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
 
 
     def write_diana_db(self):

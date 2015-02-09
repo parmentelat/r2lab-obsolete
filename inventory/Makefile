@@ -6,17 +6,27 @@ push: json-push nagios-push
 
 .PHONY: all push
 
-####################
-configure: configure.py fit.json
+SCRIPT = configure.py
+SOURCE = fit.csv
+BYPRODUCTS = fit.json fit.dnsmasq fit.hosts fit-nagios-nodes.cfg fit-nagios-groups.cfg
 
-fit.json fit-nagios-nodes.cfg: configure.py fit.csv 
-	configure.py fit.csv
+# once everything has been redone, this target pushes everything, and commits to git
+fullmonty: configure
+	@echo "Enter git comment for these changes (one line) "; read comment; echo "$comment" | git commit
+	git push
+	$(MAKE) json infra nagios
+
+####################
+configure: $(BYPRODUCTS)
+
+$(BYPRODUCTS): $(SCRIPT) $(SOURCE)
+	$(SCRIPT) $(SOURCE)
 
 .PHONY: configure
 
 ####################
 clean:
-	rm -f fit.json fit-nagios-nodes.cfg fit-nagios-groups.cfg
+	rm -f $(BYPRODUCTS)
 
 .PHONY: clean
 
