@@ -12,7 +12,7 @@ BYPRODUCTS = fit.json fit.dnsmasq fit.hosts fit-nagios-nodes.cfg fit-nagios-grou
 
 # once everything has been redone, this target pushes everything, and commits to git
 fullmonty: configure
-	@echo "Enter git comment for these changes (one line) "; read comment; echo "$comment" | git commit
+	@echo "Enter git comment for these changes (one line) "; read comment; git commit -m "$comment"
 	git push
 	$(MAKE) json infra nagios
 
