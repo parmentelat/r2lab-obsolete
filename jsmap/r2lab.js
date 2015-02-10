@@ -77,9 +77,13 @@ walls_style=
 walls_radius = 30;
 /* the attributes of nodes */
 node_radius = 16;
-node_style={
-    gradient: '0-#eee-fff-eee',
-    'fill-opacity': 0.1
+free_node_style={
+    gradient: '0-#cfc-beb-cfc',
+    'fill-opacity': 0.5
+};
+busy_node_style={
+    gradient: '0-#fcc-ebb-fcc',
+    'fill-opacity': 0.5
 };
 node_label_style = {
     'font-family': 'monaco',
@@ -106,6 +110,7 @@ function Node (node_spec) {
     /* i and j refer to a logical grid */
     this.i = node_spec['i'];
     this.j = node_spec['j'];
+    this.status = 0;
 
     /* compute actual coordinates */
     var coords = grid_to_canvas (this.i, this.j);
@@ -114,13 +119,13 @@ function Node (node_spec) {
     
     this.clicked = function () {
 	console.log("in Node.clicked "+this.id);
-	this.set_color('green');
+	this.toggle_status();
     }
 
     this.display = function(paper) {
 	this.circle = paper.circle(this.x, this.y,
 				   node_radius, node_radius);
-	this.circle.attr (node_style);
+	this.set_status();
 
 	var label = ""; label += this.id;
 	if (verbose) label += "["+ this.i + "x" + this.j+"]";
@@ -134,9 +139,14 @@ function Node (node_spec) {
 
     }
 
-    this.set_color = function(color) {
-	this.circle.attr({'fill':color});
+    this.set_status = function () {
+	this.circle.attr (this.status ? busy_node_style : free_node_style);
     }
+
+    this.toggle_status = function () {
+	this.status = 1-this.status;
+	this.set_status();
+    }	    
     
 }
     
