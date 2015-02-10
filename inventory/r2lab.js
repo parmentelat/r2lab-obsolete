@@ -49,51 +49,54 @@ verbose = 0;
 
 /******************************/
 /* the space around the walls in the canvas */
-offset_x=50;
-offset_y=50;
+margin_x=50;
+margin_y=50;
 
 /* distance between nodes */
 space_x = 80;
 space_y = 80;
 /* distance between nodes and walls */
-margin_x = 40;
-margin_y = 40;
+padding_x = 40;
+padding_y = 40;
 /* total number of rows and columns */
 steps_x = 8;
 steps_y = 4;
 
 /* the attributes for drawing the walls 
    as well as the inside of the room */
-walls_attr=
+walls_style=
     {
-        fill: '90-#526c7a-#64a0c1',
+        fill: '90-#425790-#64a0c1'
+	/*'90-#526c7a-#64a0c1'*/ /*'90-bbc1d0-f0d0e4'*/,
         stroke: '#3b4449',
-        'stroke-width': 5,
+        'stroke-width': 6,
         'stroke-linejoin': 'round',
-        rotation: -90
+	'stroke-miterlimit': 8
     };
+walls_radius = 30;
 /* the attributes of nodes */
 node_radius = 16;
-node_attr={
+node_style={
     gradient: '0-#eee-fff-eee',
     'fill-opacity': 0.1
 };
-node_label_attr = {
+node_label_style = {
     'font-family': 'monaco',
     'font-size': 16
 }
 
 /* the attributes of the pillars */
-pillar_radius = 12;
-pillar_attr = walls_attr;
+pillar_radius = 16;
+pillar_style = walls_style;
+/*pillar_style['rotation'] = */
 
 /* intermediate - the overall room size */
-room_x = steps_x*space_x + 2*margin_x;
-room_y = steps_y*space_y + 2*margin_y;
+room_x = steps_x*space_x + 2*padding_x;
+room_y = steps_y*space_y + 2*padding_y;
 
 function grid_to_canvas (i, j) {
-    return [i*space_x+offset_x+margin_x,
-	    (steps_y-j)*space_y+offset_y+margin_y];
+    return [i*space_x+margin_x+padding_x,
+	    (steps_y-j)*space_y+margin_y+padding_y];
 }
 
 /******************************/
@@ -108,16 +111,16 @@ function Node (node_spec) {
     this.x = coords[0];
     this.y = coords[1];
     
-    this.graphic = function(paper) {
+    this.display = function(paper) {
 	var node =
 	    paper.circle(this.x, this.y,
 			 node_radius, node_radius);
-	node.attr (node_attr);
+	node.attr (node_style);
 
 	var label = ""; label += this.id;
 	if (verbose) label += "["+ this.i + "x" + this.j+"]";
 	var node_label = paper.text(this.x, this.y, label);
-	node_label.attr(node_label_attr);
+	node_label.attr(node_label_style);
 
 	var id = this.id;
 	var clicked = function(){console.log("Clicked on node "+id);};
@@ -140,10 +143,10 @@ function Pillar(pillar_spec) {
     this.x = coords[0];
     this.y = coords[1];
 
-    this.graphic = function(paper) {
+    this.display = function(paper) {
 	var pillar = paper.rect (this.x-pillar_radius, this.y-pillar_radius,
 			     2*pillar_radius, 2*pillar_radius);
-	pillar.attr(pillar_attr);
+	pillar.attr(pillar_style);
 	var id = this.id;
 	pillar.click(function(){
 	    console.log("Clicked on pillar "+id);
@@ -156,49 +159,57 @@ function Pillar(pillar_spec) {
 
 
 /******************************/
-/* our mental model is y increase to the top, not to the bottom */
+/* our mental model is y increase to the top, not to the bottom 
+ * also, using l (relative) instead of L (absolute) is simpler
+ * but it keeps roundPathCorners from rounding.js from working fine
+ * keep it this way from now, a class would help keep track here
+*/
 function line_x(x) {return "l " + x + " 0 ";}
 function line_y(y) {return "l 0 " + -y + " ";}
 
 function walls_path() {
     var path="";
-    path += "M " + (room_x+offset_x) + " " + (room_y+offset_y) + " ";
-    path += line_x(-(7*space_x+2*margin_x));
+    path += "M " + (room_x+margin_x) + " " + (room_y+margin_y) + " ";
+    path += line_x(-(7*space_x+2*padding_x));
     path += line_y(3*space_y);
     path += line_x(-1*space_x);
-    path += line_y(space_y+2*margin_y);
-    path += line_x(2*space_x+2*margin_x);
+    path += line_y(space_y+2*padding_y);
+    path += line_x(2*space_x+2*padding_x);
     path += line_y(-space_y);
-    path += line_x(4*space_x-2*margin_x);
+    path += line_x(4*space_x-2*padding_x);
     path += line_y(space_y);
-    path += line_x(2*space_x+2*margin_x);
-    path += "z";
+    path += line_x(2*space_x+2*padding_x);
+    path += "Z";
+/*    console.log("path   ="+path);
+    console.log("radius ="+walls_radius);
+    path = roundPathCorners(path, walls_radius, false);
+    console.log("rounded="+path);*/
     return path;
 }
 
 /******************************/
 function r2lab() {
-    var canvas_x = room_x +2*offset_x;
-    var canvas_y = room_y +2*offset_y;
+    var canvas_x = room_x +2*margin_x;
+    var canvas_y = room_y +2*margin_y;
     var paper = new Raphael(document.getElementById('canvas_container'),
-			    canvas_x, canvas_y, offset_x, offset_y);
+			    canvas_x, canvas_y, margin_x, margin_y);
 
     if (verbose) console.log("canvas_x = " + canvas_x);
 
     var walls = paper.path(walls_path());
-    walls.attr(walls_attr);
+    walls.attr(walls_style);
 
     var pillar_len = pillar_specs.length;
     for (var i=0; i < pillar_len; i++) {
 	pillar = Pillar(pillar_specs[i]);
-	pillar.graphic(paper);
+	pillar.display(paper);
     }
 
 
     var node_len = node_specs.length;
     for (var i=0; i < node_len; i++) {
 	node = Node(node_specs[i]);
-	node.graphic(paper);
+	node.display(paper);
     }
 	
 }
