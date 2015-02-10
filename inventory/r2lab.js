@@ -87,8 +87,8 @@ node_label_style = {
 
 /* the attributes of the pillars */
 pillar_radius = 16;
-pillar_style = walls_style;
-/*pillar_style['rotation'] = */
+pillar_style = JSON.parse(JSON.stringify(walls_style));
+pillar_style['fill'] = '#101030';
 
 /* intermediate - the overall room size */
 room_x = steps_x*space_x + 2*padding_x;
