@@ -49,15 +49,15 @@ verbose = 0;
 
 /******************************/
 /* the space around the walls in the canvas */
-offset_x=40;
-offset_y=40;
+offset_x=50;
+offset_y=50;
 
 /* distance between nodes */
-space_x = 70;
+space_x = 80;
 space_y = 80;
 /* distance between nodes and walls */
-margin_x = 20;
-margin_y = 20;
+margin_x = 40;
+margin_y = 40;
 /* total number of rows and columns */
 steps_x = 8;
 steps_y = 4;
@@ -66,15 +66,22 @@ steps_y = 4;
    as well as the inside of the room */
 walls_attr=
     {
-        gradient: '90-#526c7a-#64a0c1',
+        fill: '90-#526c7a-#64a0c1',
         stroke: '#3b4449',
         'stroke-width': 5,
         'stroke-linejoin': 'round',
         rotation: -90
     };
 /* the attributes of nodes */
-node_radius = 8;
-node_attr={fill:'white'};
+node_radius = 16;
+node_attr={
+    gradient: '0-#eee-fff-eee',
+    'fill-opacity': 0.1
+};
+node_label_attr = {
+    'font-family': 'monaco',
+    'font-size': 16
+}
 
 /* the attributes of the pillars */
 pillar_radius = 12;
@@ -102,17 +109,22 @@ function Node (node_spec) {
     this.y = coords[1];
     
     this.graphic = function(paper) {
-	var node = paper.circle(this.x, this.y,
-				       node_radius, node_radius);
+	var node =
+	    paper.circle(this.x, this.y,
+			 node_radius, node_radius);
 	node.attr (node_attr);
-	var id = this.id;
-	node.click(function(){
-	    console.log("Clicked on node "+id);
-	});
+
 	var label = ""; label += this.id;
 	if (verbose) label += "["+ this.i + "x" + this.j+"]";
-	var label_obj = paper.text(this.x+10, this.y+10, label);
-	return node;
+	var node_label = paper.text(this.x, this.y, label);
+	node_label.attr(node_label_attr);
+
+	var id = this.id;
+	var clicked = function(){console.log("Clicked on node "+id);};
+	node.click(clicked);
+	node_label.click(clicked);
+	
+
     }
 
     return this;
