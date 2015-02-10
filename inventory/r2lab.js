@@ -111,6 +111,10 @@ function Node (node_spec) {
     this.x = coords[0];
     this.y = coords[1];
     
+    this.clicked = function () {
+	console.log("in Node.clicked "+this.id);
+    }
+
     this.display = function(paper) {
 	var node =
 	    paper.circle(this.x, this.y,
@@ -123,15 +127,12 @@ function Node (node_spec) {
 	node_label.attr(node_label_style);
 
 	var id = this.id;
-	var clicked = function(){console.log("Clicked on node "+id);};
+	var self=this;
+	var clicked = function(){self.clicked();};
 	node.click(clicked);
 	node_label.click(clicked);
-	
 
     }
-
-    return this;
-
 }
     
 function Pillar(pillar_spec) {
@@ -153,8 +154,6 @@ function Pillar(pillar_spec) {
 	});
 	return pillar;
     }
-
-    return this;
 }
 
 
@@ -201,16 +200,18 @@ function r2lab() {
 
     var pillar_len = pillar_specs.length;
     for (var i=0; i < pillar_len; i++) {
-	pillar = Pillar(pillar_specs[i]);
+	pillar = new Pillar(pillar_specs[i]);
 	pillar.display(paper);
     }
 
 
     var node_len = node_specs.length;
-    for (var i=0; i < node_len; i++) {
-	node = Node(node_specs[i]);
-	node.display(paper);
-    }
+    var nodes = [];
+    var i;
+    for (i=0; i < node_len; i++) 
+	nodes[i] = new Node(node_specs[i]);
+    for (i=0; i < node_len; i++) 
+	nodes[i].display(paper);
 	
 }
 
