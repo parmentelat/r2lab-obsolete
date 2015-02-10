@@ -38,6 +38,7 @@ node_specs=[
 { id: 36, i:0, j:3 },
 { id: 37, i:0, j:4 },
 ];
+/* the  two pillars - this is manual */
 pillar_specs=[
 { id: 'left', i:3, j:1 },
 { id: 'right', i:5, j:1 },
@@ -113,26 +114,30 @@ function Node (node_spec) {
     
     this.clicked = function () {
 	console.log("in Node.clicked "+this.id);
+	this.set_color('green');
     }
 
     this.display = function(paper) {
-	var node =
-	    paper.circle(this.x, this.y,
-			 node_radius, node_radius);
-	node.attr (node_style);
+	this.circle = paper.circle(this.x, this.y,
+				   node_radius, node_radius);
+	this.circle.attr (node_style);
 
 	var label = ""; label += this.id;
 	if (verbose) label += "["+ this.i + "x" + this.j+"]";
-	var node_label = paper.text(this.x, this.y, label);
-	node_label.attr(node_label_style);
+	this.label = paper.text(this.x, this.y, label);
+	this.label.attr(node_label_style);
 
-	var id = this.id;
 	var self=this;
 	var clicked = function(){self.clicked();};
-	node.click(clicked);
-	node_label.click(clicked);
+	this.circle.click(clicked);
+	this.label.click(clicked);
 
     }
+
+    this.set_color = function(color) {
+	this.circle.attr({'fill':color});
+    }
+    
 }
     
 function Pillar(pillar_spec) {
@@ -187,7 +192,7 @@ function walls_path() {
 }
 
 /******************************/
-function r2lab() {
+function R2Lab() {
     var canvas_x = room_x +2*margin_x;
     var canvas_y = room_y +2*margin_y;
     var paper = new Raphael(document.getElementById('canvas_container'),
@@ -195,26 +200,31 @@ function r2lab() {
 
     if (verbose) console.log("canvas_x = " + canvas_x);
 
-    var walls = paper.path(walls_path());
-    walls.attr(walls_style);
+    this.walls = paper.path(walls_path());
+    this.walls.attr(walls_style);
 
-    var pillar_len = pillar_specs.length;
-    for (var i=0; i < pillar_len; i++) {
-	pillar = new Pillar(pillar_specs[i]);
-	pillar.display(paper);
+    this.pillars=[];
+    this.nb_pillars = pillar_specs.length;
+    for (var i=0; i < this.nb_pillars; i++) {
+	this.pillars[i] = new Pillar(pillar_specs[i]);
+	this.pillars[i].display(paper);
     }
 
+    this.node_specs = node_specs;
+    this.nb_nodes = node_specs.length;
+    this.nodes = [];
 
-    var node_len = node_specs.length;
-    var nodes = [];
-    var i;
-    for (i=0; i < node_len; i++) 
-	nodes[i] = new Node(node_specs[i]);
-    for (i=0; i < node_len; i++) 
-	nodes[i].display(paper);
+    this.init_nodes = function () {
+	var i;
+	for (i=0; i < this.nb_nodes; i++) { 
+	    this.nodes[i] = new Node(node_specs[i]);
+	    this.nodes[i].display(paper);
+	}
+    }
 	
 }
 
 window.onload = function() {
-    r2lab();
+    lab = new R2Lab();
+    lab.init_nodes();
 }
