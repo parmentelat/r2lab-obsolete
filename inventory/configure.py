@@ -175,6 +175,7 @@ ff02::2 ip6-allrouters
 192.168.3.101   switch-reboot
 192.168.3.102   switch-data
 192.168.3.103   switch-control
+192.168.3.104   switch-c007
 
 ##########
 """
@@ -189,8 +190,11 @@ dhcp-host=f8:b1:56:33:50:ad,switch-data,192.168.3.102
 # CONFIRMED control
 dhcp-host=f8:b1:56:42:51:32,switch-control,192.168.3.103
 
-# has to be reboot then
-dhcp-host=d0:67:e5:d6:ae:fe,switch-reboot,192.168.3.101
+# CONFIRMED reboot
+dhcp-host=f8:b1:56:42:52:a5,switch-reboot,192.168.3.101
+
+# switch in C007 type 5524
+dhcp-host=d0:67:e5:d6:ae:fe,switch-c007,192.168.3.104
 
 
 ##########
