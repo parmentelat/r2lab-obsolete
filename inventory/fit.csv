@@ -1,7 +1,7 @@
 ,1,PASS,1,had an old and erroneous mention to 00:03:1D:0E:75:B9 ,00:03:1D:0E:03:19,,,v2,BIOS1.2
 ,2,PASS,2,,00:03:1D:0E:75:AB,,,v2,BIOS1.2
 ,3,PASS,3,,00:03:1D:0E:75:A3,,OK,v2,BIOS1.2
-,4,PASS,4,"has no antenna, only extension cables",00:03:1D:0E:75:A9,,,v2,BIOS1.2
+,4,PASS,4,has extension cables and hanging antennas,00:03:1D:0E:75:A9,,,v2,BIOS1.2
 ,5,PASS,5,,00:03:1D:0E:75:9B,,,v2,BIOS1.2
 ,6,PASS,6,,00:03:1D:0E:03:49,,,v2,BIOS1.2
 ,7,PASS,7,,00:03:1D:0E:03:57,,,v2,BIOS1.2
@@ -26,7 +26,7 @@
 ,25,PASS,25,,00:03:1D:0E:03:1F,,,v2,BIOS1.2
 ,26,PASS,26,,00:03:1D:0E:03:59,,,v2,BIOS1.2
 ,27,PASS,27,,00:03:1D:0E:E1:9B,,,v2,BIOS1.2
-,28,PASS,28,,00:03:1D:0E:03:41,,,v2,BIOS1.2
+,28,PASS,28,"misses the v2 label, I suspect we forgot to stick it, to double check",00:03:1D:0E:03:41,,,v2,BIOS1.2
 ,29,PASS,29,,00:03:1D:0E:03:5D,,,v2,BIOS1.2
 ,30,PASS,30,,00:03:1D:0E:E1:A3,,,v2,BIOS1.2
 ,31,PASS,31,,00:03:1D:0E:75:9F,,Checked,v2,BIOS1.2
@@ -42,7 +42,7 @@
 ,41,PASS,0,Preplab,00:03:1D:0E:03:53,,,v2,BIOS1.2
 ,42,PASS,0,Preplab,00:03:1D:0E:03:5B,,,v2,BIOS1.2
 ,,,,,,,,,
-,50,OK,,Prototype  / Sent back to Greece,00:03:1D:0A:9F:35,00:03:1D:0A:9F:34,,,
+,,???,,Prototype  / Sent back to Greece,00:03:1D:0A:9F:35,00:03:1D:0A:9F:34,,,
 ,#,STATUS,,comment,MAC,,BIOS Settings,version,vBIOS
 physical # (sticker),,,"logical: indicates slot in deployment, or 0 if not in r2lab",,,,,,
 ,,,,,,,,,
@@ -50,8 +50,8 @@ physical # (sticker),,,"logical: indicates slot in deployment, or 0 if not in r2
 ,,,,ETH adapter for mac - to be kept in the lab,68:5b:35:a2:38:2d,,DHCP,,
 ,,,,data switch (confirmed) - PowerConnect 6248,f8:b1:56:33:50:ad,OUI -> Dell ,192.168.3.102,,
 ,,,,control switch (confirmed) - PowerConnect 5548,f8:b1:56:42:51:32,OUI -> Dell ,192.168.3.103,,
-,,,,reboot switch (confirmed) - PowerConnect 5548,d0:67:e5:d6:ae:fe,OUI -> Dell ,192.168.3.101,,
-,,,,,,,,,
+,,,,reboot switch (confirmed) - PowerConnect 5548,f8:b1:56:42:52:a5,OUI -> Dell ,192.168.3.101,,
+,,,,C007 switch (confirmed) - PowerConnect 5524,d0:67:e5:d6:ae:fe,OUI -> Dell ,192.168.3.104,,
 ,,,,,,,,,
 ,,,,other comments ,,,,,
-,,,,power supply in slot 15 is stuck and inactive - gener is aware,,,,,
+,,,,power supply 15 is now fixed; a cable *WITH* ground cable would be nice,,,,,
