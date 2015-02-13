@@ -1,0 +1,22 @@
+!switch-data#show run
+!Current Configuration:
+!System Description "PowerConnect 6248, 3.3.7.3, VxWorks 6.5"
+!System Software Version 3.3.7.3
+!Cut-through mode is configured as disabled
+!
+configure
+hostname "switch-data"
+stack
+member 1 2
+exit
+ip address dhcp
+username "root" password 4a0ef5e2b2270acda7ae4ea3c26439ff level 15 encrypted
+monitor session 1 destination interface 1/g45
+monitor session 1 source interface 1/g44
+ip ssh server
+no spanning-tree
+!
+interface ethernet 1/g44
+negotiation 10h 10f 100h 100f 1000f
+exit
+exit
