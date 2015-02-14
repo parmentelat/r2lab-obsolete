@@ -221,7 +221,7 @@ class Nodes(OrderedDict):
                 try:
                     log_num = int (line[3])
                     # discard nodes that are not on-site
-                    if not log_num:
+                    if log_num <= 0:
                         print ("-------- line {} - physical node {} ignored - not deployed"\
                                .format(lineno,phy_num))
                         if self.verbose: print(">>",line)

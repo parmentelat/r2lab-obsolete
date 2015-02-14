@@ -51,4 +51,3 @@ dhcp-host=net:control,00:03:1d:0e:75:b5,fit35,192.168.3.35
 dhcp-host=net:control,00:03:1d:0e:03:47,fit36,192.168.3.36
 dhcp-host=net:control,00:03:1d:0e:03:4d,fit37,192.168.3.37
 dhcp-host=net:control,00:03:1d:0e:24:79,fit15,192.168.3.15
-dhcp-host=net:control,00:03:1d:0e:75:a1,fit-1,192.168.3.-1
