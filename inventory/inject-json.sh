@@ -77,7 +77,7 @@ function run_from_git() {
 
     # push json file on OMF server
     set -x 
-    rsync -a "$name.json" $COMMAND_PATH root@$FQDN:$OMF_DIR
+    rsync -a --no-o --no-g "$name.json" $COMMAND_PATH root@$FQDN:$OMF_DIR
 
     ssh root@$FQDN $OMF_DIR/$COMMAND $name 
 }
