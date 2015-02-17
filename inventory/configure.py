@@ -255,7 +255,7 @@ class Nodes(OrderedDict):
         out_filename = self.out_basename+".json"
         with open (out_filename, 'w') as jsonfile:
             json_models = [ node.json_model() for node in self.values() ]
-            json.dump (json_models, jsonfile)
+            json.dump (json_models, jsonfile, indent=2, separators=(',', ': '))
         print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
 
 
