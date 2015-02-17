@@ -202,12 +202,16 @@ class Nodes(OrderedDict):
     """
     a repository of known nodes, indexed by physical number
     """
-    def __init__(self, csv_filename, out_basename, verbose):
+    def __init__(self, csv_filename, out_basename, prep_lab, verbose):
         OrderedDict.__init__(self)
         self.csv_filename = csv_filename
         self.out_basename = out_basename
+        self.prep_lab = prep_lab
         self.verbose = verbose
 
+    # column 1 is physical node number (sticker)
+    # column 3 is logical node number (where it is deployed)
+    # in prep_lab mode we ignore column 3 and use column 1 instead
     def load(self):
         with open(self.csv_filename, 'r') as csvfile:
             reader = csv.reader(csvfile)
@@ -219,7 +223,10 @@ class Nodes(OrderedDict):
                     continue
                 # for the other ones let's send out warnings
                 try:
-                    log_num = int (line[3])
+                    if not self.prep_lab:
+                        log_num = int (line[3])
+                    else:
+                        log_num = phy_num
                     # discard nodes that are not on-site
                     if log_num <= 0:
                         print ("-------- line {} - physical node {} ignored - not deployed"\
@@ -312,12 +319,21 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-o", "--output", default=None)
+    parser.add_argument("-p", "--prep-lab", action='store_true', default=False,
+                        help="In prep-lab mode, all nodes are exposed, regardless of the 'slot' column")
     parser.add_argument("-s", "--small", action='store_true', default=False,
                         help="force output of only one node")
     parser.add_argument("input", nargs='?', default='fit.csv')
     args = parser.parse_args()
 
-    nodes = Nodes(args.input, args.output or args.input.replace(".csv",""), args.verbose)
+    if args.output:
+        output = args.output
+    elif not args.prep_lab:
+        output =  args.input.replace(".csv","")
+    else:
+        output =  args.input.replace(".csv","-prep")
+
+    nodes = Nodes(args.input, output, args.prep_lab, args.verbose)
     nodes.load()
 
     # this is a debugging trick so that we generate only one node,
