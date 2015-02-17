@@ -49,12 +49,12 @@ class Node(object):
 
     def json_model(self):
         domain = 'faraday'
-        return {
-            "name": self.log_name(),
-            "hostname": self.phy_name(),
-            "hardware_type": "PC-Icarus",
-            "urn": "urn:publicid:IDN+omf:faraday+node+"+self.log_name(),
-            "interfaces": [
+        return OrderedDict (
+            name = self.log_name(),
+            hostname = self.phy_name(),
+            hardware_type = "PC-Icarus",
+            urn = "urn:publicid:IDN+omf:faraday+node+"+self.log_name(),
+            interfaces = [
                 {
                     "name": self.log_name()+":if0",
                     "role": "control",
@@ -72,7 +72,7 @@ class Node(object):
                     "mac": self.alt_mac
                 }
             ],
-            "cmc": {
+            cmc = {
                 "name": self.log_name()+":cm",
                 "mac": "02:00:00:00:00:"+self.phy_str0(),
                 "ip": {
@@ -81,17 +81,17 @@ class Node(object):
                     "ip_type": "ipv4"
                 }
             },
-            "cpu": {
+            cpu = {
                 "cpu_type": "Intel 4770kI7",
                 "cores": 4,
                 "threads": 8,
                 "cache_l1": "n/a",
                 "cache_l2": "8 Mb"
             },
-            "ram": "8 GB",
-            "ram_type": "DIMM Synchronous",
-            "hd_capacity": "240 GB"
-        }
+            ram = "8 GB",
+            ram_type = "DIMM Synchronous",
+            hd_capacity = "240 GB",
+        )
 
     def dnsmasq_conf(self):
         control="dhcp-host=net:control,{},{},192.168.3.{}\n".\
