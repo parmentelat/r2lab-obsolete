@@ -1,11 +1,26 @@
 #
+# This file is intended for keeping track of what was done
+# not for being executed routinely
 
-get: get-tftpboot get-images
+INFRA		= faraday.inria.fr
+SSH_INFRA	= root@$(INFRA)
 
-get-tftpboot:
-	rsync -av root@faraday.inria.fr:/tftpboot .
+pull: pull-tftpboot pull-images
 
-get-images:
-	rsync -av root@faraday.inria.fr:/var/lib/omf-images-6 .
+pull-tftpboot:
+	rsync -av $(SSH_INFRA):/tftpboot .
 
-.PHONY: get get-tftpboot get-images
+pull-images:
+	rsync -av $(SSH_INFRA):/var/lib/omf-images-6 .
+
+.PHONY: pull pull-tftpboot pull-images
+
+###
+
+push-initramfs:
+	rsync -av tftpboot/initramfs-omf6.igz.newfrisbee $(SSH_INFRA):/tftpboot
+
+push-images:
+	rsync -av omf-images-6/ $(SSH_INFRA):/var/lib/omf-images-6/
+
+.PHONY:  push-initramfs push-images

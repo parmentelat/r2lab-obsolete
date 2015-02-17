@@ -41,6 +41,9 @@ class Node(object):
         "external name based on physical number, like phy33"
         return "phy"+self.phy_str0()
 
+    def log_str0(self):
+        "logical number on 2 chars as a str"
+        return "{:02d}".format(self.log_num)
     def log_name(self, prefix='fit'):
         "external name based on logical number, like fit33"
         return "{prefix}{:02d}".format(self.log_num, prefix=prefix)
@@ -60,8 +63,7 @@ class Node(object):
                     "role": "control",
                     "mac": self.mac,
                     "ip": {
-                        # we cannot change the IP address of the CMC ...
-                        "address": "192.168.3.{}".format(self.phy_num),
+                        "address": "192.168.3.{}".format(self.log_num),
                         "netmask": "255.255.255.0",
                         "ip_type": "ipv4"
                     }
@@ -76,7 +78,8 @@ class Node(object):
                 "name": self.log_name()+":cm",
                 "mac": "02:00:00:00:00:"+self.phy_str0(),
                 "ip": {
-                    "address": "192.168.1.{}".format(self.log_num),
+                    # we cannot change the IP address of the CMC ...
+                    "address": "192.168.1.{}".format(self.phy_num),
                     "netmask": "255.255.255.0",
                     "ip_type": "ipv4"
                 }
@@ -344,9 +347,10 @@ def main():
     nodes.write_json()
     nodes.write_dnsmasq()
     nodes.write_hosts()
-    nodes.write_nagios()
-    nodes.write_nagios_hostgroups()
-    nodes.write_diana_db()
+    if not args.prep_lab:
+        nodes.write_nagios()
+        nodes.write_nagios_hostgroups()
+        nodes.write_diana_db()
 
     return 0
 

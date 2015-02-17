@@ -73,3 +73,15 @@ UTILS = display-db.py plugin-onoff.py
 
 utils:
 	rsync -av $(UTILS) $(OMF_SSH):/usr/bin
+
+####################
+
+prep-files:
+	configure.py -p
+
+prep-push:
+	rsync -av *-prep* root@bemol.pl.sophia.inria.fr:preplab/
+
+prep: prep-files prep-push
+
+.PHONY: prep-files prep-push prep
