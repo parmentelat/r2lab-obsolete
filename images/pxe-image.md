@@ -50,8 +50,7 @@ As a short reminder, here's the gist of how I came up with my modified PXE image
 * results
  
 ###
-    parmentelat ~/git/fitsophia/images/tftpboot $ ls -l initramfs-omf6.igz*
-    lrwxr-xr-x  1 parmentelat  staff        29 Feb 17 10:36 initramfs-omf6.igz -> initramfs-omf6.igz.newfrisbee
+    parmentelat ~/git/fitsophia/images/tftpboot $ ls -l initramfs-omf6.igz.*
     -rwxr-xr-x  1 parmentelat  staff  70491187 Feb 17 10:35 initramfs-omf6.igz.newfrisbee
     -rwxr-xr-x  1 parmentelat  staff  71103697 Feb 17 10:04 initramfs-omf6.igz.oldfrisbee
     
@@ -72,7 +71,7 @@ and then install the 2 binaries from frisbee-binaries-inria/ instead
 
 and then install `initramfs-omf6.igz.newfrisbee` 
 
-**NOTE** that using a symlink for `initramfs-omf6.igz` does not seem to work so my convenience functions du rsync's
+**NOTE** that using a symlink for `initramfs-omf6.igz` does not seem to work so my convenience functions do `rsync` and not 	 `ln -s`
 
 ## convenience tools
 
