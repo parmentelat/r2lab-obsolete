@@ -14,9 +14,9 @@ All nodes deployed in the prep-lab / bemol setup
 
 At first glance, and unless we establish that there is a real scientific value in the diversity, our preferences are
 
-1. fit42/same Atheros
-2. fit39/Intel board
-3. fit41/other Atheros
+1. fit42/same Atheros plainPCI
+2. fit39/Intel miniPCI
+3. fit41/other Atheros miniPCI
 
 Because the other Atheros was reported by UTH as exhibiting some glitches similar to the ones we've had during the painful initial deployment stage, even if much more occasionnally
 
@@ -46,7 +46,7 @@ Running a simple 2-phases tests that
 * writes 150 Gb of zeroes (note that as of these tests all 3 nodes are set to run their hdd in IDE mode)
 * reads them again and computes its MD5
 
-### fit39/Intel board
+### fit39/Intel miniPCI
 
     root@fit39:/var/tmp# time dd if=/dev/zero of=./zeroes bs=256M count=600
     600+0 records in
@@ -79,7 +79,7 @@ at that point dmesg reports tons of errors related to `ata1`, like e.g.
     [ 3717.669832]          res 40/00:01:00:00:00/00:00:00:00:00/e0 Emask 0x54 (ATA bus error)    
     
     
-### fit41/other Atheros
+### fit41/other Atheros miniPCI
 
     root@fit41:/var/tmp# time dd if=/dev/zero of=./zeroes bs=256M count=600
     600+0 records in
@@ -111,7 +111,7 @@ at that point dmesg reports tons of errors related to `ata1`, like e.g.
     [ 3711.670893] ata1.00: cmd 25/00:00:80:87:50/00:02:12:00:00/e0 tag 0 dma 262144 in
     [ 3711.670893]          res 40/00:01:00:00:00/00:00:00:00:00/e0 Emask 0x54 (ATA bus error)
 
-### fit42/same Atheros
+### fit42/same Atheros plainPCI
 
     root@fit42:/var/tmp# time dd if=/dev/zero of=./zeroes bs=256M count=600
     600+0 records in
