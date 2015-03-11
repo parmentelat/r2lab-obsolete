@@ -1,14 +1,28 @@
-OMF_SSH=root@faraday.inria.fr
+# default is for the production deployment
+OMF_SSH  = root@faraday.inria.fr
+OMF_DIR  = /root/omf_sfa
+OMF_NAME = fit
+
+# see the prep-* targets
+PREP_OMF_SSH  = root@bemol.pl.sophia.inria.fr
+PREP_OMF_DIR  = /root/omf_sfa
+PREP_OMF_NAME = fit-prep
+
+# a convenience
+PREP_MAKE = $(MAKE) OMF_SSH=$(PREP_OMF_SSH) OMF_DIR=$(PREP_OMF_DIR) OMF_NAME=$(PREP_OMF_NAME)
+
+# see AA-README.md
 
 all: configure 
 
-push: json-push nagios-push
+faraday: json infra nagios
+faraday-json: json
 
-.PHONY: all push
+.PHONY: all faraday faraday-json
 
 SCRIPT = configure.py
 SOURCE = fit.csv
-BYPRODUCTS = fit.json fit.dnsmasq fit.hosts fit-nagios-nodes.cfg fit-nagios-groups.cfg
+BYPRODUCTS = $(OMF_NAME).json $(OMF_NAME).dnsmasq $(OMF_NAME).hosts fit-nagios-nodes.cfg fit-nagios-groups.cfg
 
 # once everything has been redone, this target pushes everything, and commits to git
 fullmonty: configure
@@ -38,17 +52,18 @@ clean:
 .PHONY: clean
 
 ####################
-json-push: fit.json
-	./inject-json.sh
+json-push: $(OMF_NAME).json
+	rsync -a inject-json.sh $(OMF_NAME).json $(OMF_SSH):$(OMF_DIR)
+	ssh $(OMF_SSH) $(OMF_DIR)/inject-json.sh $(OMF_NAME)
 
 json: json-push
 
 .PHONY: json-push json
 
 ####################
-infra-push: fit.dnsmasq fit.json
-	rsync -a fit.dnsmasq $(OMF_SSH):/etc/dnsmasq.d/testbed.conf
-	rsync -a fit.hosts $(OMF_SSH):/etc/hosts
+infra-push: $(OMF_NAME).dnsmasq $(OMF_NAME).json
+	rsync -a $(OMF_NAME).dnsmasq $(OMF_SSH):/etc/dnsmasq.d/testbed.conf
+	rsync -a $(OMF_NAME).hosts $(OMF_SSH):/etc/hosts
 
 infra-restart:
 	ssh $(OMF_SSH) service dnsmasq restart
@@ -58,6 +73,7 @@ infra: infra-push infra-restart
 .PHONY: infra-push infra-restart infra
 
 ####################
+# this one makes sense only for faraday
 nagios-push: fit-nagios-static.cfg fit-nagios-nodes.cfg fit-nagios-groups.cfg
 	rsync -a fit-nagios*.cfg $(OMF_SSH):/etc/nagios3/conf.d
 
@@ -69,19 +85,26 @@ nagios: nagios-push nagios-restart
 .PHONY: nagios-push nagios-restart nagios
 
 ####################
-UTILS = display-db.py plugin-onoff.py
+TOOLS = display-db.py plugin-onoff.py
 
-utils:
-	rsync -av $(UTILS) $(OMF_SSH):/usr/bin
+tools:
+	rsync -av $(TOOLS) $(OMF_SSH):/usr/bin
 
 ####################
+# refreshing the bemol deployment
+# the --prep-lab option creates files named fit-prep*
 
 prep-files:
-	configure.py -p
+	configure.py --prep-lab
 
 prep-push:
-	rsync -av *-prep* root@bemol.pl.sophia.inria.fr:preplab/
+	$(PREP_MAKE) json infra
 
-prep: prep-files prep-push
+bemol: prep-files prep-push
 
-.PHONY: prep-files prep-push prep
+bemol-tools:
+	$(PREP_MAKE) tools
+
+.PHONY: prep-files prep-push bemol bemol-tools
+
+####################

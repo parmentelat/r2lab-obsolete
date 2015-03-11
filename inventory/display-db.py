@@ -10,21 +10,31 @@
 #curl.perform()
 #info = curl.getinfo()
 
-from os import system
+import os, os.path
 
 import json
 
 from argparse import ArgumentParser
 
+# to locate the server when no -s option is provided:
+# if this path exists we use localhost
+
+omf_path = "/root/omf_sfa"
+
+# otherwise this is the default hostname
+
+default_hostname = 'faraday.inria.fr'
+
 rest_url_format = "https://{hostname}:8001/resources/nodes"
 
+# the cache file
 tmp_json = "/tmp/db.json"
 
 def fetch(hostname):
     rest_url = rest_url_format.format(hostname=hostname)
     curl_command = "curl -k {} -o {}".format(rest_url, tmp_json)
     print ("Running {}".format(curl_command))
-    retcod = system (curl_command)
+    retcod = os.system (curl_command)
     if retcod != 0:
         print ("Failed to fetch {} - exiting".format(tmp_json))
         exit(1)
@@ -45,18 +55,20 @@ def display():
                'st:', resource['status'],
                )
 
-default_hostname = 'faraday.inria.fr'
-        
 def main():
+
+    if os.path.exists (omf_path):
+        default_hostname = 'localhost'
+
     parser = ArgumentParser()
-    parser.add_argument("-s","--speed",action='store_true', default=False,
+    parser.add_argument("-f","--fast",action='store_true', default=False,
                         help="use json file {} instead of fetching it again".format(tmp_json))
-    parser.add_argument("-o","--omf-host",dest='omf_hostname',default=default_hostname,
+    parser.add_argument("-s","--omf-server",dest='omf_server',default=default_hostname,
                         help="specify hostname (default is {default})")
     args=parser.parse_args()
 
-    if not args.speed:
-        fetch(hostname=args.omf_hostname)
+    if not args.fast:
+        fetch(hostname=args.omf_server)
     
     display()
 

@@ -36,3 +36,9 @@ that will do the same for `bemol`, except for the `nagios` since there is no suc
   This is because from then on, OMF needs to reach IP 192.168.1.39 for restarting logical node 15, but at the same time for DHCP we assign the MAC addresses of physical-node-39 to the 192.168.{2,3}.15 IP addresses
 
 * OTOH for bemol there is no such trick, so the config for bemol is expected to be more stable and to need less frequently to be updated.
+
+## Miscell
+
+* `make tools` lets you update utilities like `display-db.py` and others
+
+* `make bemol-tools` does what you expect

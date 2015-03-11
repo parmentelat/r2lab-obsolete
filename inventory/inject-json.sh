@@ -19,10 +19,16 @@ COMMAND_PATH=$0
 COMMAND=$(basename $0)
 LOG=$(basename $0 .sh).log
 
-HOSTNAME=faraday
-FQDN=$HOSTNAME.inria.fr
+# when run outside of an OMF server, the default is to
+# push files onto faraday and then invoke ourselves again
+# through ssh
+
+DEFAULT_OMF_SERVER=faraday.inria.fr
 
 OMF_DIR=/root/omf_sfa
+
+# for debugging
+#DEBUG=echo
 
 
 function die() {
@@ -30,12 +36,12 @@ function die() {
     exit 1
 }
 
-function run_in_faraday() {
+function run_in_omf_server() {
 
     name="$1"; shift
     json="$name".json
     
-    [ $(hostname) == "faraday" ] || die "$Command.$0 must be run on $FDQN"
+    [ -d $OMF_DIR ] || die "$COMMAND.$0 must not be run in an OMF server"
 
     [ $(id -u) == 0 ] || die "$COMMAND must be run as root"
 
@@ -46,41 +52,22 @@ function run_in_faraday() {
 
     ########## erase DB
     set -x
-    rake autoMigrate
+    $DEBUG rake autoMigrate
 
     ########## restart DB
-    stop omf-sfa
-    start omf-sfa
+    $DEBUG stop omf-sfa
+    $DEBUG start omf-sfa
 
     echo "Leaving 5s for the server to warm up"
     sleep 5
     
     ########## do it
-    bin/create_resource -t node -c bin/conf.yaml -i $json
+    $DEBUG bin/create_resource -t node -c bin/conf.yaml -i $json
 
     ########## xxx should check everything is fine
     # e.g. using curl on the REST API or something..
 }
     
-
-function run_from_git() {
-
-    name="$1"; shift
-
-    [ $(hostname) != "faraday" ] || die "$COMMAND.$0 must not be run on $FDQN"
-
-    [ -f "$name.json" ] || die "$COMMAND expects $JSON"
-
-    if [ -f "$name.csv" ] ; then
-	[ "$name.json" -nt "$name.csv" ] || die "JSON file is out of date wrt csv source"
-    fi
-
-    # push json file on OMF server
-    set -x 
-    rsync -a --no-o --no-g "$name.json" $COMMAND_PATH root@$FQDN:$OMF_DIR
-
-    ssh root@$FQDN $OMF_DIR/$COMMAND $name 
-}
 
 function main(){
 
@@ -88,10 +75,12 @@ function main(){
     name="fit"
     [[ -n "$@" ]] && { name="$1"; shift; }
 
-    if [ $(hostname) == $HOSTNAME ] ; then
-	run_in_faraday $name >& $OMF_DIR/$LOG
+    # figure if we are running on an OMF server 
+    # or from a remote location
+    if [ -d $OMF_DIR ] ; then
+	run_in_omf_server $name >& $OMF_DIR/$LOG
     else
-	run_from_git $name
+	die "Could not find $OMF_DIR - not an OMF server"
     fi
 }
 
