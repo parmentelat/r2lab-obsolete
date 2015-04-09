@@ -112,3 +112,18 @@ Example of how to run this experiment (replace with your information):
     $ cd <path-to-nepi>/examples/linux [where the script has been copied]
     $ python r2lab_testbed_wlping.py -x <fitXX> -y <fitYY> -c <channel> -e <essid> -u <r2lab-slicename> -i <ssh-key> -g <r2lab-gateway> -U <r2lab-node-username>
     $ python r2lab_testbed_wlping.py -x fit12 -y fit18 -c 03 -e fitessai -u root -i ~/.ssh -g faraday.inria.fr -U root
+
+# X11 Access (to be confirmed)   
+ 1 - Install `xterm`  on the target node (e.g., fit25)
+ 
+    $ apt-get update
+    $ apt-get install xterm   
+ 2 - Connect to faraday from your user host with the "-X" option
+
+    $ ssh -X my-account@faraday.inria.fr
+ 3 - Hop to the Nitos node with the "-X" option
+
+    $ ssh -X fit25
+ 4 - Launch `xterm` to obtain the graphic display of the node
+ 
+    $ xterm
