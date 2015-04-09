@@ -9,30 +9,30 @@ Example IP addresses of the target node
 * Experiment interface : 192.168.2.25
 * Control interface (OMF) : 192.168.3.25
 
-0 - Connect to your account in faraday
+1 - Connect to your account in faraday
 
     $ ssh my-account@faraday.inria.fr
 
-1 - Check access and IP address through the CM card
+2 - Check access and IP address through the CM card
 
     $ curl 192.168.1.25/status
     $ curl 192.168.1.25/info
-2 - Try to start and stop the node
+3 - Try to start and stop the node
 
 	$ curl 192.168.1.25/on[|off|reset]
-3 - Get the status of the node through OMF
+4 - Get the status of the node through OMF
 
 	$ omf6 stat -t fit25 
 
-4 - Start the node through OMF
+5 - Start the node through OMF
 
 	$ omf6 tell -t fit25 -a on|off|reset
 
-5 - Ping the control interface to check that the node received its IP address
+6 - Ping the control interface to check that the node received its IP address
 
 	$ ping 192.168.3.25
 
-6 - Load the baseline image
+7 - Load the baseline image
 
 	$ omf6 load -t fit25 [-i baseline.ndz]
 The node starts with the PXE image, gets an IP address, downloads the baseline image and restarts, as instructed in `.omf/etc/omf_script_conf.yaml`.   
@@ -40,11 +40,11 @@ This can be monitored through `/var/log/upstart/ntrc_frisbee.log`.
 The PXE image is located in `/tftpboot`.  
 The baseline image `baseline.ndz` is located in `/var/lib/omf-images-6`.   
 
-7 - Access the node through ssh (as root)
+8 - Access the node through ssh (as root)
 
 	$ ssh fit25
 
-8 - Save the modified image
+9 - Save the modified image
 
 	$ omf6 save -n fit25
 
