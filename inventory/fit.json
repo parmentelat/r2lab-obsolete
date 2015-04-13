@@ -1076,12 +1076,12 @@
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "mac": "00:03:1d:0e:e1:9b",
+        "mac": "00:03:1d:0d:e1:9b",
         "name": "fit27:if0",
         "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:e1:9a",
+        "mac": "00:03:1d:0d:e1:9a",
         "name": "fit27:if1",
         "role": "experimental"
       }
@@ -1202,12 +1202,12 @@
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "mac": "00:03:1d:0e:e1:a3",
+        "mac": "00:03:1d:0d:e1:a3",
         "name": "fit30:if0",
         "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:e1:a2",
+        "mac": "00:03:1d:0d:e1:a2",
         "name": "fit30:if1",
         "role": "experimental"
       }
@@ -1370,12 +1370,12 @@
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "mac": "00:03:1d:0e:e1:87",
+        "mac": "00:03:1d:0d:e1:87",
         "name": "fit34:if0",
         "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:e1:86",
+        "mac": "00:03:1d:0d:e1:86",
         "name": "fit34:if1",
         "role": "experimental"
       }
