@@ -1,1556 +1,1556 @@
 [
   {
-    "hostname": "phy01",
-    "interfaces": [
-      {
-        "mac": "00:03:1d:0e:03:19",
-        "ip": {
-          "address": "192.168.3.1",
-          "ip_type": "ipv4",
-          "netmask": "255.255.255.0"
-        },
-        "role": "control",
-        "name": "fit01:if0"
-      },
-      {
-        "mac": "00:03:1d:0e:03:18",
-        "role": "experimental",
-        "name": "fit01:if1"
-      }
-    ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit01",
-    "hd_capacity": "240 GB",
-    "ram": "8 GB",
     "cmc": {
-      "mac": "02:00:00:00:00:01",
       "ip": {
         "address": "192.168.1.1",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:01",
       "name": "fit01:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit01",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy02",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy01",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:ab",
         "ip": {
-          "address": "192.168.3.2",
+          "address": "192.168.3.1",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit02:if0"
+        "mac": "00:03:1d:0e:03:19",
+        "name": "fit01:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:aa",
-        "role": "experimental",
-        "name": "fit02:if1"
+        "mac": "00:03:1d:0e:03:18",
+        "name": "fit01:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit02",
-    "hd_capacity": "240 GB",
+    "name": "fit01",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit01"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:02",
       "ip": {
         "address": "192.168.1.2",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:02",
       "name": "fit02:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit02",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy03",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy02",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:a3",
         "ip": {
-          "address": "192.168.3.3",
+          "address": "192.168.3.2",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit03:if0"
+        "mac": "00:03:1d:0e:75:ab",
+        "name": "fit02:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:a2",
-        "role": "experimental",
-        "name": "fit03:if1"
+        "mac": "00:03:1d:0e:75:aa",
+        "name": "fit02:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit03",
-    "hd_capacity": "240 GB",
+    "name": "fit02",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit02"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:03",
       "ip": {
         "address": "192.168.1.3",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:03",
       "name": "fit03:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit03",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy04",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy03",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:a9",
         "ip": {
-          "address": "192.168.3.4",
+          "address": "192.168.3.3",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit04:if0"
+        "mac": "00:03:1d:0e:75:a3",
+        "name": "fit03:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:a8",
-        "role": "experimental",
-        "name": "fit04:if1"
+        "mac": "00:03:1d:0e:75:a2",
+        "name": "fit03:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit04",
-    "hd_capacity": "240 GB",
+    "name": "fit03",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit03"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:04",
       "ip": {
         "address": "192.168.1.4",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:04",
       "name": "fit04:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit04",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy05",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy04",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:9b",
         "ip": {
-          "address": "192.168.3.5",
+          "address": "192.168.3.4",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit05:if0"
+        "mac": "00:03:1d:0e:75:a9",
+        "name": "fit04:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:9a",
-        "role": "experimental",
-        "name": "fit05:if1"
+        "mac": "00:03:1d:0e:75:a8",
+        "name": "fit04:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit05",
-    "hd_capacity": "240 GB",
+    "name": "fit04",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit04"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:05",
       "ip": {
         "address": "192.168.1.5",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:05",
       "name": "fit05:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit05",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy06",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy05",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:49",
         "ip": {
-          "address": "192.168.3.6",
+          "address": "192.168.3.5",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit06:if0"
+        "mac": "00:03:1d:0e:75:9b",
+        "name": "fit05:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:48",
-        "role": "experimental",
-        "name": "fit06:if1"
+        "mac": "00:03:1d:0e:75:9a",
+        "name": "fit05:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit06",
-    "hd_capacity": "240 GB",
+    "name": "fit05",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit05"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:06",
       "ip": {
         "address": "192.168.1.6",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:06",
       "name": "fit06:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit06",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy07",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy06",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:57",
         "ip": {
-          "address": "192.168.3.7",
+          "address": "192.168.3.6",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit07:if0"
+        "mac": "00:03:1d:0e:03:49",
+        "name": "fit06:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:56",
-        "role": "experimental",
-        "name": "fit07:if1"
+        "mac": "00:03:1d:0e:03:48",
+        "name": "fit06:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit07",
-    "hd_capacity": "240 GB",
+    "name": "fit06",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit06"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:07",
       "ip": {
         "address": "192.168.1.7",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:07",
       "name": "fit07:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit07",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy08",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy07",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:4f",
         "ip": {
-          "address": "192.168.3.8",
+          "address": "192.168.3.7",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit08:if0"
+        "mac": "00:03:1d:0e:03:57",
+        "name": "fit07:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:4e",
-        "role": "experimental",
-        "name": "fit08:if1"
+        "mac": "00:03:1d:0e:03:56",
+        "name": "fit07:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit08",
-    "hd_capacity": "240 GB",
+    "name": "fit07",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit07"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:08",
       "ip": {
         "address": "192.168.1.8",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:08",
       "name": "fit08:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit08",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy09",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy08",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:ad",
         "ip": {
-          "address": "192.168.3.9",
+          "address": "192.168.3.8",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit09:if0"
+        "mac": "00:03:1d:0e:03:4f",
+        "name": "fit08:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:ac",
-        "role": "experimental",
-        "name": "fit09:if1"
+        "mac": "00:03:1d:0e:03:4e",
+        "name": "fit08:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit09",
-    "hd_capacity": "240 GB",
+    "name": "fit08",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit08"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:09",
       "ip": {
         "address": "192.168.1.9",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:09",
       "name": "fit09:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit09",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy10",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy09",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:55",
         "ip": {
-          "address": "192.168.3.10",
+          "address": "192.168.3.9",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit10:if0"
+        "mac": "00:03:1d:0e:75:ad",
+        "name": "fit09:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:54",
-        "role": "experimental",
-        "name": "fit10:if1"
+        "mac": "00:03:1d:0e:75:ac",
+        "name": "fit09:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit10",
-    "hd_capacity": "240 GB",
+    "name": "fit09",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit09"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:10",
       "ip": {
         "address": "192.168.1.10",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:10",
       "name": "fit10:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit10",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy11",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy10",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:b3",
         "ip": {
-          "address": "192.168.3.11",
+          "address": "192.168.3.10",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit11:if0"
+        "mac": "00:03:1d:0e:03:55",
+        "name": "fit10:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:b2",
-        "role": "experimental",
-        "name": "fit11:if1"
+        "mac": "00:03:1d:0e:03:54",
+        "name": "fit10:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit11",
-    "hd_capacity": "240 GB",
+    "name": "fit10",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit10"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:11",
       "ip": {
         "address": "192.168.1.11",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:11",
       "name": "fit11:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit11",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy12",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy11",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:a5",
         "ip": {
-          "address": "192.168.3.12",
+          "address": "192.168.3.11",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit12:if0"
+        "mac": "00:03:1d:0e:75:b3",
+        "name": "fit11:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:a4",
-        "role": "experimental",
-        "name": "fit12:if1"
+        "mac": "00:03:1d:0e:75:b2",
+        "name": "fit11:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit12",
-    "hd_capacity": "240 GB",
+    "name": "fit11",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit11"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:12",
       "ip": {
         "address": "192.168.1.12",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:12",
       "name": "fit12:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit12",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy13",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy12",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:a7",
         "ip": {
-          "address": "192.168.3.13",
+          "address": "192.168.3.12",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit13:if0"
+        "mac": "00:03:1d:0e:75:a5",
+        "name": "fit12:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:a6",
-        "role": "experimental",
-        "name": "fit13:if1"
+        "mac": "00:03:1d:0e:75:a4",
+        "name": "fit12:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit13",
-    "hd_capacity": "240 GB",
+    "name": "fit12",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit12"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:13",
       "ip": {
         "address": "192.168.1.13",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:13",
       "name": "fit13:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit13",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy14",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy13",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:9d",
         "ip": {
-          "address": "192.168.3.14",
+          "address": "192.168.3.13",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit14:if0"
+        "mac": "00:03:1d:0e:75:a7",
+        "name": "fit13:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:9c",
-        "role": "experimental",
-        "name": "fit14:if1"
+        "mac": "00:03:1d:0e:75:a6",
+        "name": "fit13:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit14",
-    "hd_capacity": "240 GB",
+    "name": "fit13",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit13"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:14",
       "ip": {
         "address": "192.168.1.14",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:14",
       "name": "fit14:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit14",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy16",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy14",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:23",
         "ip": {
-          "address": "192.168.3.16",
+          "address": "192.168.3.14",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit16:if0"
+        "mac": "00:03:1d:0e:75:9d",
+        "name": "fit14:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:22",
-        "role": "experimental",
-        "name": "fit16:if1"
+        "mac": "00:03:1d:0e:75:9c",
+        "name": "fit14:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit16",
-    "hd_capacity": "240 GB",
+    "name": "fit14",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit14"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:16",
       "ip": {
         "address": "192.168.1.16",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:16",
       "name": "fit16:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit16",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy17",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy16",
     "interfaces": [
       {
-        "mac": "00:03:1d:0d:86:83",
         "ip": {
-          "address": "192.168.3.17",
+          "address": "192.168.3.16",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit17:if0"
+        "mac": "00:03:1d:0e:03:23",
+        "name": "fit16:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0d:86:82",
-        "role": "experimental",
-        "name": "fit17:if1"
+        "mac": "00:03:1d:0e:03:22",
+        "name": "fit16:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit17",
-    "hd_capacity": "240 GB",
+    "name": "fit16",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit16"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:17",
       "ip": {
         "address": "192.168.1.17",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:17",
       "name": "fit17:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit17",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy18",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy17",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:51",
         "ip": {
-          "address": "192.168.3.18",
+          "address": "192.168.3.17",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit18:if0"
+        "mac": "00:03:1d:0d:86:83",
+        "name": "fit17:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:50",
-        "role": "experimental",
-        "name": "fit18:if1"
+        "mac": "00:03:1d:0d:86:82",
+        "name": "fit17:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit18",
-    "hd_capacity": "240 GB",
+    "name": "fit17",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit17"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:18",
       "ip": {
         "address": "192.168.1.18",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:18",
       "name": "fit18:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit18",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy19",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy18",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:af",
         "ip": {
-          "address": "192.168.3.19",
+          "address": "192.168.3.18",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit19:if0"
+        "mac": "00:03:1d:0e:03:51",
+        "name": "fit18:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:ae",
-        "role": "experimental",
-        "name": "fit19:if1"
+        "mac": "00:03:1d:0e:03:50",
+        "name": "fit18:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit19",
-    "hd_capacity": "240 GB",
+    "name": "fit18",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit18"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:19",
       "ip": {
         "address": "192.168.1.19",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:19",
       "name": "fit19:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit19",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy20",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy19",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:3b",
         "ip": {
-          "address": "192.168.3.20",
+          "address": "192.168.3.19",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit20:if0"
+        "mac": "00:03:1d:0e:75:af",
+        "name": "fit19:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:3a",
-        "role": "experimental",
-        "name": "fit20:if1"
+        "mac": "00:03:1d:0e:75:ae",
+        "name": "fit19:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit20",
-    "hd_capacity": "240 GB",
+    "name": "fit19",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit19"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:20",
       "ip": {
         "address": "192.168.1.20",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:20",
       "name": "fit20:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit20",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy21",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy20",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:3f",
         "ip": {
-          "address": "192.168.3.21",
+          "address": "192.168.3.20",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit21:if0"
+        "mac": "00:03:1d:0e:03:3b",
+        "name": "fit20:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:3e",
-        "role": "experimental",
-        "name": "fit21:if1"
+        "mac": "00:03:1d:0e:03:3a",
+        "name": "fit20:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit21",
-    "hd_capacity": "240 GB",
+    "name": "fit20",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit20"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:21",
       "ip": {
         "address": "192.168.1.21",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:21",
       "name": "fit21:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit21",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy22",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy21",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:37",
         "ip": {
-          "address": "192.168.3.22",
+          "address": "192.168.3.21",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit22:if0"
+        "mac": "00:03:1d:0e:03:3f",
+        "name": "fit21:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:36",
-        "role": "experimental",
-        "name": "fit22:if1"
+        "mac": "00:03:1d:0e:03:3e",
+        "name": "fit21:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit22",
-    "hd_capacity": "240 GB",
+    "name": "fit21",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit21"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:22",
       "ip": {
         "address": "192.168.1.22",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:22",
       "name": "fit22:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit22",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy23",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy22",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:b1",
         "ip": {
-          "address": "192.168.3.23",
+          "address": "192.168.3.22",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit23:if0"
+        "mac": "00:03:1d:0e:03:37",
+        "name": "fit22:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:b0",
-        "role": "experimental",
-        "name": "fit23:if1"
+        "mac": "00:03:1d:0e:03:36",
+        "name": "fit22:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit23",
-    "hd_capacity": "240 GB",
+    "name": "fit22",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit22"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:23",
       "ip": {
         "address": "192.168.1.23",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:23",
       "name": "fit23:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit23",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy24",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy23",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:43",
         "ip": {
-          "address": "192.168.3.24",
+          "address": "192.168.3.23",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit24:if0"
+        "mac": "00:03:1d:0e:75:b1",
+        "name": "fit23:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:42",
-        "role": "experimental",
-        "name": "fit24:if1"
+        "mac": "00:03:1d:0e:75:b0",
+        "name": "fit23:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit24",
-    "hd_capacity": "240 GB",
+    "name": "fit23",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit23"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:24",
       "ip": {
         "address": "192.168.1.24",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:24",
       "name": "fit24:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit24",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy25",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy24",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:1f",
         "ip": {
-          "address": "192.168.3.25",
+          "address": "192.168.3.24",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit25:if0"
+        "mac": "00:03:1d:0e:03:43",
+        "name": "fit24:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:1e",
-        "role": "experimental",
-        "name": "fit25:if1"
+        "mac": "00:03:1d:0e:03:42",
+        "name": "fit24:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit25",
-    "hd_capacity": "240 GB",
+    "name": "fit24",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit24"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:25",
       "ip": {
         "address": "192.168.1.25",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:25",
       "name": "fit25:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit25",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy26",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy25",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:59",
         "ip": {
-          "address": "192.168.3.26",
+          "address": "192.168.3.25",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit26:if0"
+        "mac": "00:03:1d:0e:03:1f",
+        "name": "fit25:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:58",
-        "role": "experimental",
-        "name": "fit26:if1"
+        "mac": "00:03:1d:0e:03:1e",
+        "name": "fit25:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit26",
-    "hd_capacity": "240 GB",
+    "name": "fit25",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit25"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:26",
       "ip": {
         "address": "192.168.1.26",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:26",
       "name": "fit26:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit26",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy27",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy26",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:e1:9b",
         "ip": {
-          "address": "192.168.3.27",
+          "address": "192.168.3.26",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit27:if0"
+        "mac": "00:03:1d:0e:03:59",
+        "name": "fit26:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:e1:9a",
-        "role": "experimental",
-        "name": "fit27:if1"
+        "mac": "00:03:1d:0e:03:58",
+        "name": "fit26:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit27",
-    "hd_capacity": "240 GB",
+    "name": "fit26",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit26"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:27",
       "ip": {
         "address": "192.168.1.27",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:27",
       "name": "fit27:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit27",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy28",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy27",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:41",
         "ip": {
-          "address": "192.168.3.28",
+          "address": "192.168.3.27",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit28:if0"
+        "mac": "00:03:1d:0e:e1:9b",
+        "name": "fit27:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:40",
-        "role": "experimental",
-        "name": "fit28:if1"
+        "mac": "00:03:1d:0e:e1:9a",
+        "name": "fit27:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit28",
-    "hd_capacity": "240 GB",
+    "name": "fit27",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit27"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:28",
       "ip": {
         "address": "192.168.1.28",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:28",
       "name": "fit28:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit28",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy29",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy28",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:5d",
         "ip": {
-          "address": "192.168.3.29",
+          "address": "192.168.3.28",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit29:if0"
+        "mac": "00:03:1d:0e:03:41",
+        "name": "fit28:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:5c",
-        "role": "experimental",
-        "name": "fit29:if1"
+        "mac": "00:03:1d:0e:03:40",
+        "name": "fit28:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit29",
-    "hd_capacity": "240 GB",
+    "name": "fit28",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit28"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:29",
       "ip": {
         "address": "192.168.1.29",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:29",
       "name": "fit29:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit29",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy30",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy29",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:e1:a3",
         "ip": {
-          "address": "192.168.3.30",
+          "address": "192.168.3.29",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit30:if0"
+        "mac": "00:03:1d:0e:03:5d",
+        "name": "fit29:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:e1:a2",
-        "role": "experimental",
-        "name": "fit30:if1"
+        "mac": "00:03:1d:0e:03:5c",
+        "name": "fit29:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit30",
-    "hd_capacity": "240 GB",
+    "name": "fit29",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit29"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:30",
       "ip": {
         "address": "192.168.1.30",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:30",
       "name": "fit30:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit30",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy31",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy30",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:9f",
         "ip": {
-          "address": "192.168.3.31",
+          "address": "192.168.3.30",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit31:if0"
+        "mac": "00:03:1d:0e:e1:a3",
+        "name": "fit30:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:9e",
-        "role": "experimental",
-        "name": "fit31:if1"
+        "mac": "00:03:1d:0e:e1:a2",
+        "name": "fit30:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit31",
-    "hd_capacity": "240 GB",
+    "name": "fit30",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit30"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:31",
       "ip": {
         "address": "192.168.1.31",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:31",
       "name": "fit31:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit31",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy32",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy31",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:25",
         "ip": {
-          "address": "192.168.3.32",
+          "address": "192.168.3.31",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit32:if0"
+        "mac": "00:03:1d:0e:75:9f",
+        "name": "fit31:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:24",
-        "role": "experimental",
-        "name": "fit32:if1"
+        "mac": "00:03:1d:0e:75:9e",
+        "name": "fit31:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit32",
-    "hd_capacity": "240 GB",
+    "name": "fit31",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit31"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:32",
       "ip": {
         "address": "192.168.1.32",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:32",
       "name": "fit32:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit32",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy33",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy32",
     "interfaces": [
       {
-        "mac": "00:03:1d:0d:e1:97",
         "ip": {
-          "address": "192.168.3.33",
+          "address": "192.168.3.32",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit33:if0"
+        "mac": "00:03:1d:0e:03:25",
+        "name": "fit32:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0d:e1:96",
-        "role": "experimental",
-        "name": "fit33:if1"
+        "mac": "00:03:1d:0e:03:24",
+        "name": "fit32:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit33",
-    "hd_capacity": "240 GB",
+    "name": "fit32",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit32"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:33",
       "ip": {
         "address": "192.168.1.33",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:33",
       "name": "fit33:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit33",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy34",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy33",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:e1:87",
         "ip": {
-          "address": "192.168.3.34",
+          "address": "192.168.3.33",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit34:if0"
+        "mac": "00:03:1d:0d:e1:97",
+        "name": "fit33:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:e1:86",
-        "role": "experimental",
-        "name": "fit34:if1"
+        "mac": "00:03:1d:0d:e1:96",
+        "name": "fit33:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit34",
-    "hd_capacity": "240 GB",
+    "name": "fit33",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit33"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:34",
       "ip": {
         "address": "192.168.1.34",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:34",
       "name": "fit34:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit34",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy35",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy34",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:75:b5",
         "ip": {
-          "address": "192.168.3.35",
+          "address": "192.168.3.34",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit35:if0"
+        "mac": "00:03:1d:0e:e1:87",
+        "name": "fit34:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:75:b4",
-        "role": "experimental",
-        "name": "fit35:if1"
+        "mac": "00:03:1d:0e:e1:86",
+        "name": "fit34:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit35",
-    "hd_capacity": "240 GB",
+    "name": "fit34",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit34"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:35",
       "ip": {
         "address": "192.168.1.35",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:35",
       "name": "fit35:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit35",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy36",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy35",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:47",
         "ip": {
-          "address": "192.168.3.36",
+          "address": "192.168.3.35",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit36:if0"
+        "mac": "00:03:1d:0e:75:b5",
+        "name": "fit35:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:46",
-        "role": "experimental",
-        "name": "fit36:if1"
+        "mac": "00:03:1d:0e:75:b4",
+        "name": "fit35:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit36",
-    "hd_capacity": "240 GB",
+    "name": "fit35",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit35"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:36",
       "ip": {
         "address": "192.168.1.36",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:36",
       "name": "fit36:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit36",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy37",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy36",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:03:4d",
         "ip": {
-          "address": "192.168.3.37",
+          "address": "192.168.3.36",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit37:if0"
+        "mac": "00:03:1d:0e:03:47",
+        "name": "fit36:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:03:4c",
-        "role": "experimental",
-        "name": "fit37:if1"
+        "mac": "00:03:1d:0e:03:46",
+        "name": "fit36:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit37",
-    "hd_capacity": "240 GB",
+    "name": "fit36",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit36"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:37",
       "ip": {
         "address": "192.168.1.37",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:37",
       "name": "fit37:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit37",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
-  },
-  {
-    "hostname": "phy38",
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy37",
     "interfaces": [
       {
-        "mac": "00:03:1d:0e:24:79",
         "ip": {
-          "address": "192.168.3.15",
+          "address": "192.168.3.37",
           "ip_type": "ipv4",
           "netmask": "255.255.255.0"
         },
-        "role": "control",
-        "name": "fit15:if0"
+        "mac": "00:03:1d:0e:03:4d",
+        "name": "fit37:if0",
+        "role": "control"
       },
       {
-        "mac": "00:03:1d:0e:24:78",
-        "role": "experimental",
-        "name": "fit15:if1"
+        "mac": "00:03:1d:0e:03:4c",
+        "name": "fit37:if1",
+        "role": "experimental"
       }
     ],
-    "ram_type": "DIMM Synchronous",
-    "name": "fit15",
-    "hd_capacity": "240 GB",
+    "name": "fit37",
     "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit37"
+  },
+  {
     "cmc": {
-      "mac": "02:00:00:00:00:38",
       "ip": {
         "address": "192.168.1.38",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
       },
+      "mac": "02:00:00:00:00:38",
       "name": "fit15:cm"
     },
-    "hardware_type": "PC-Icarus",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit15",
     "cpu": {
       "cache_l1": "n/a",
       "cache_l2": "8 Mb",
       "cores": 4,
       "cpu_type": "Intel 4770kI7",
       "threads": 8
-    }
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy38",
+    "interfaces": [
+      {
+        "ip": {
+          "address": "192.168.3.15",
+          "ip_type": "ipv4",
+          "netmask": "255.255.255.0"
+        },
+        "mac": "00:03:1d:0e:24:79",
+        "name": "fit15:if0",
+        "role": "control"
+      },
+      {
+        "mac": "00:03:1d:0e:24:78",
+        "name": "fit15:if1",
+        "role": "experimental"
+      }
+    ],
+    "name": "fit15",
+    "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit15"
   }
 ]
