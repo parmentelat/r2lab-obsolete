@@ -82,7 +82,7 @@ ec.set(gw_node, "cleanProcesses", False)
 ec.set(gw_node, "cleanProcessesAfter", False)
 
 # OMF load command : image name can be customized here
-load_cmd = "omf6 load -i wifi-baseline.ndz -t %s" % hosts 
+load_cmd = "omf6 load -i baseline.ndz -t %s" % hosts 
 print "load_cmd = " , load_cmd
 load_app = ec.register_resource("linux::Application")
 ec.set(load_app, "command", load_cmd)
