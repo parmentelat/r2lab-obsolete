@@ -24,14 +24,15 @@ omf_path = "/root/omf_sfa"
 # otherwise this is the default hostname
 
 default_hostname = 'faraday.inria.fr'
+default_port_number=12346
 
-rest_url_format = "https://{hostname}:8001/resources/nodes"
+rest_url_format = "https://{hostname}:{port_number}/resources/nodes"
 
 # the cache file
 tmp_json = "/tmp/db.json"
 
-def fetch(hostname):
-    rest_url = rest_url_format.format(hostname=hostname)
+def fetch(hostname, port_number):
+    rest_url = rest_url_format.format(hostname=hostname, port_number=port_number)
     curl_command = "curl -k {} -o {}".format(rest_url, tmp_json)
     print ("Running {}".format(curl_command))
     retcod = os.system (curl_command)
@@ -65,10 +66,12 @@ def main():
                         help="use json file {} instead of fetching it again".format(tmp_json))
     parser.add_argument("-s","--omf-server",dest='omf_server',default=default_hostname,
                         help="specify hostname (default is {default})")
+    parser.add_argument("-p","--port-number",dest='port_number',default=default_port_number,
+                        help="specify port number (default is {default})")
     args=parser.parse_args()
 
     if not args.fast:
-        fetch(hostname=args.omf_server)
+        fetch(hostname=args.omf_server, port_number=args.port_number)
     
     display()
 
