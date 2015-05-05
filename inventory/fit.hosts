@@ -59,6 +59,9 @@ ff02::2 ip6-allrouters
 192.168.1.14	reboot-14
 192.168.2.14	data-14
 192.168.3.14	control-14 fit14
+192.168.1.15	reboot-15
+192.168.2.15	data-15
+192.168.3.15	control-15 fit15
 192.168.1.16	reboot-16
 192.168.2.16	data-16
 192.168.3.16	control-16 fit16
@@ -125,6 +128,3 @@ ff02::2 ip6-allrouters
 192.168.1.37	reboot-37
 192.168.2.37	data-37
 192.168.3.37	control-37 fit37
-192.168.1.38	reboot-15
-192.168.2.15	data-15
-192.168.3.15	control-15 fit15

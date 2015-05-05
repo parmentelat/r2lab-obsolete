@@ -590,6 +590,48 @@
   {
     "cmc": {
       "ip": {
+        "address": "192.168.1.15",
+        "ip_type": "ipv4",
+        "netmask": "255.255.255.0"
+      },
+      "mac": "02:00:00:00:00:15",
+      "name": "fit15:cm"
+    },
+    "cpu": {
+      "cache_l1": "n/a",
+      "cache_l2": "8 Mb",
+      "cores": 4,
+      "cpu_type": "Intel 4770kI7",
+      "threads": 8
+    },
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy15",
+    "interfaces": [
+      {
+        "ip": {
+          "address": "192.168.3.15",
+          "ip_type": "ipv4",
+          "netmask": "255.255.255.0"
+        },
+        "mac": "00:03:1d:0e:75:b9",
+        "name": "fit15:if0",
+        "role": "control"
+      },
+      {
+        "mac": "00:03:1d:0e:75:b8",
+        "name": "fit15:if1",
+        "role": "experimental"
+      }
+    ],
+    "name": "fit15",
+    "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit15"
+  },
+  {
+    "cmc": {
+      "ip": {
         "address": "192.168.1.16",
         "ip_type": "ipv4",
         "netmask": "255.255.255.0"
@@ -1510,47 +1552,5 @@
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
     "urn": "urn:publicid:IDN+omf:faraday+node+fit37"
-  },
-  {
-    "cmc": {
-      "ip": {
-        "address": "192.168.1.38",
-        "ip_type": "ipv4",
-        "netmask": "255.255.255.0"
-      },
-      "mac": "02:00:00:00:00:38",
-      "name": "fit15:cm"
-    },
-    "cpu": {
-      "cache_l1": "n/a",
-      "cache_l2": "8 Mb",
-      "cores": 4,
-      "cpu_type": "Intel 4770kI7",
-      "threads": 8
-    },
-    "hardware_type": "PC-Icarus",
-    "hd_capacity": "240 GB",
-    "hostname": "phy38",
-    "interfaces": [
-      {
-        "ip": {
-          "address": "192.168.3.15",
-          "ip_type": "ipv4",
-          "netmask": "255.255.255.0"
-        },
-        "mac": "00:03:1d:0e:24:79",
-        "name": "fit15:if0",
-        "role": "control"
-      },
-      {
-        "mac": "00:03:1d:0e:24:78",
-        "name": "fit15:if1",
-        "role": "experimental"
-      }
-    ],
-    "name": "fit15",
-    "ram": "8 GB",
-    "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit15"
   }
 ]
