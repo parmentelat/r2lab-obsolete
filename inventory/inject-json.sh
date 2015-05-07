@@ -62,8 +62,15 @@ function run_in_omf_server() {
     sleep 5
     
     ########## do it
-    $DEBUG bin/create_resource -t node -c bin/conf.yaml -i $json
+    # former version was using FRCP but was very slow and is not maintained anymore
+    # $DEBUG bin/create_resource -t node -c bin/conf.yaml -i $json
 
+    # use the REST interface instead that is much faster
+
+    curl -k --cert /root/.omf/user_cert.pem --key /root/.omf/user_cert.pkey \
+	 -H "Accept: application/json" -H "Content-Type:application/json" -X POST \
+	 -d @$json -i https://localhost:12346/resources/nodes
+    
     ########## xxx should check everything is fine
     # e.g. using curl on the REST API or something..
 }

@@ -50,50 +50,69 @@ class Node(object):
 
     subnets = ( (1, 'reboot'), (2, 'data'), (3, 'control') )
 
+    @staticmethod
+    def degree_to_float(tuple):
+        deg, min, sec = tuple
+        return deg + min/60 + sec/3600
+        
+    # all nodes get the same position for now
+    def latitude(self):
+        return self.degree_to_float( (7, 4, 9.30) )
+    def longitude(self):
+        return self.degree_to_float( (43, 36, 52.30) )
+    
     def json_model(self):
         domain = 'faraday'
         return OrderedDict (
-            name = self.log_name(),
-            hostname = self.phy_name(),
-            hardware_type = "PC-Icarus",
-            urn = "urn:publicid:IDN+omf:faraday+node+"+self.log_name(),
-            interfaces = [
-                {
-                    "name": self.log_name()+":if0",
-                    "role": "control",
-                    "mac": self.mac,
-                    "ip": {
-                        "address": "192.168.3.{}".format(self.log_num),
-                        "netmask": "255.255.255.0",
-                        "ip_type": "ipv4"
-                    }
-                },
-                {
-                    "name": self.log_name()+":if1",
-                    "role": "experimental",
-                    "mac": self.alt_mac
-                }
-            ],
-            cmc = {
-                "name": self.log_name()+":cm",
-                "mac": "02:00:00:00:00:"+self.phy_str0(),
-                "ip": {
+            cmc_attributes = {
+                "name": "{}:cm".format(self.log_name()),
+                "mac": "02:00:00:00:00:{}".format(self.phy_str0()),
+                "ip_attributes": {
                     # we cannot change the IP address of the CMC ...
                     "address": "192.168.1.{}".format(self.phy_num),
                     "netmask": "255.255.255.0",
                     "ip_type": "ipv4"
                 }
             },
-            cpu = {
+            cpus_attributes = [ {
                 "cpu_type": "Intel 4770kI7",
                 "cores": 4,
                 "threads": 8,
                 "cache_l1": "n/a",
                 "cache_l2": "8 Mb"
-            },
+            }],
+            domain = 'omf:r2lab.faraday',
+            gateway = 'faraday.inria.fr',
+            hardware_type = "PC-Icarus",
+            hd_capacity = "240 GB",
+            hostname = self.phy_name(),
+            interfaces_attributes = [
+                {
+                    "role": "control",
+                    "name": "{}:if0".format(self.log_name()),
+                    "mac": self.mac,
+                    "ips_attributes": [{
+                        "address": "192.168.3.{}".format(self.log_num),
+                        "netmask": "255.255.255.0",
+                        "ip_type": "ipv4"
+                    }],
+                },
+                {
+                    "role": "experimental",
+                    "name": "{}:if1".format(self.log_name()),
+                    "mac": self.alt_mac
+                },
+            ],
+            # xxx needs to be made much more accurate
+            location_attributes = {
+                'altitude' : 145,
+                'latitude' : self.latitude(),
+                'longitude' : self.longitude(),
+                },
+            name = self.log_name(),
             ram = "8 GB",
             ram_type = "DIMM Synchronous",
-            hd_capacity = "240 GB",
+            urn = "urn:publicid:IDN+omf:faraday+node+{}".format(self.log_name()),
         )
 
     def dnsmasq_conf(self):

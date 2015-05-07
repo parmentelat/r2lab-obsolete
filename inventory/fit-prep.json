@@ -1959,5 +1959,270 @@
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
     "urn": "urn:publicid:IDN+omf:faraday+node+fit37"
+  },
+  {
+    "cmc_attributes": {
+      "ip_attributes": {
+        "address": "192.168.1.38",
+        "ip_type": "ipv4",
+        "netmask": "255.255.255.0"
+      },
+      "mac": "02:00:00:00:00:38",
+      "name": "fit38:cm"
+    },
+    "cpus_attributes": [
+      {
+        "cache_l1": "n/a",
+        "cache_l2": "8 Mb",
+        "cores": 4,
+        "cpu_type": "Intel 4770kI7",
+        "threads": 8
+      }
+    ],
+    "domain": "omf:r2lab.faraday",
+    "gateway": "faraday.inria.fr",
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy38",
+    "interfaces_attributes": [
+      {
+        "ips_attributes": [
+          {
+            "address": "192.168.3.38",
+            "ip_type": "ipv4",
+            "netmask": "255.255.255.0"
+          }
+        ],
+        "mac": "00:03:1d:0e:24:79",
+        "name": "fit38:if0",
+        "role": "control"
+      },
+      {
+        "mac": "00:03:1d:0e:24:78",
+        "name": "fit38:if1",
+        "role": "experimental"
+      }
+    ],
+    "location_attributes": {
+      "altitude": 145,
+      "latitude": 7.069249999999999,
+      "longitude": 43.61452777777778
+    },
+    "name": "fit38",
+    "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit38"
+  },
+  {
+    "cmc_attributes": {
+      "ip_attributes": {
+        "address": "192.168.1.39",
+        "ip_type": "ipv4",
+        "netmask": "255.255.255.0"
+      },
+      "mac": "02:00:00:00:00:39",
+      "name": "fit39:cm"
+    },
+    "cpus_attributes": [
+      {
+        "cache_l1": "n/a",
+        "cache_l2": "8 Mb",
+        "cores": 4,
+        "cpu_type": "Intel 4770kI7",
+        "threads": 8
+      }
+    ],
+    "domain": "omf:r2lab.faraday",
+    "gateway": "faraday.inria.fr",
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy39",
+    "interfaces_attributes": [
+      {
+        "ips_attributes": [
+          {
+            "address": "192.168.3.39",
+            "ip_type": "ipv4",
+            "netmask": "255.255.255.0"
+          }
+        ],
+        "mac": "00:03:1d:0d:e1:95",
+        "name": "fit39:if0",
+        "role": "control"
+      },
+      {
+        "mac": "00:03:1d:0d:e1:94",
+        "name": "fit39:if1",
+        "role": "experimental"
+      }
+    ],
+    "location_attributes": {
+      "altitude": 145,
+      "latitude": 7.069249999999999,
+      "longitude": 43.61452777777778
+    },
+    "name": "fit39",
+    "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit39"
+  },
+  {
+    "cmc_attributes": {
+      "ip_attributes": {
+        "address": "192.168.1.40",
+        "ip_type": "ipv4",
+        "netmask": "255.255.255.0"
+      },
+      "mac": "02:00:00:00:00:40",
+      "name": "fit40:cm"
+    },
+    "cpus_attributes": [
+      {
+        "cache_l1": "n/a",
+        "cache_l2": "8 Mb",
+        "cores": 4,
+        "cpu_type": "Intel 4770kI7",
+        "threads": 8
+      }
+    ],
+    "domain": "omf:r2lab.faraday",
+    "gateway": "faraday.inria.fr",
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy40",
+    "interfaces_attributes": [
+      {
+        "ips_attributes": [
+          {
+            "address": "192.168.3.40",
+            "ip_type": "ipv4",
+            "netmask": "255.255.255.0"
+          }
+        ],
+        "mac": "00:03:1d:0e:75:a1",
+        "name": "fit40:if0",
+        "role": "control"
+      },
+      {
+        "mac": "00:03:1d:0e:75:a0",
+        "name": "fit40:if1",
+        "role": "experimental"
+      }
+    ],
+    "location_attributes": {
+      "altitude": 145,
+      "latitude": 7.069249999999999,
+      "longitude": 43.61452777777778
+    },
+    "name": "fit40",
+    "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit40"
+  },
+  {
+    "cmc_attributes": {
+      "ip_attributes": {
+        "address": "192.168.1.41",
+        "ip_type": "ipv4",
+        "netmask": "255.255.255.0"
+      },
+      "mac": "02:00:00:00:00:41",
+      "name": "fit41:cm"
+    },
+    "cpus_attributes": [
+      {
+        "cache_l1": "n/a",
+        "cache_l2": "8 Mb",
+        "cores": 4,
+        "cpu_type": "Intel 4770kI7",
+        "threads": 8
+      }
+    ],
+    "domain": "omf:r2lab.faraday",
+    "gateway": "faraday.inria.fr",
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy41",
+    "interfaces_attributes": [
+      {
+        "ips_attributes": [
+          {
+            "address": "192.168.3.41",
+            "ip_type": "ipv4",
+            "netmask": "255.255.255.0"
+          }
+        ],
+        "mac": "00:03:1d:0e:03:53",
+        "name": "fit41:if0",
+        "role": "control"
+      },
+      {
+        "mac": "00:03:1d:0e:03:52",
+        "name": "fit41:if1",
+        "role": "experimental"
+      }
+    ],
+    "location_attributes": {
+      "altitude": 145,
+      "latitude": 7.069249999999999,
+      "longitude": 43.61452777777778
+    },
+    "name": "fit41",
+    "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit41"
+  },
+  {
+    "cmc_attributes": {
+      "ip_attributes": {
+        "address": "192.168.1.42",
+        "ip_type": "ipv4",
+        "netmask": "255.255.255.0"
+      },
+      "mac": "02:00:00:00:00:42",
+      "name": "fit42:cm"
+    },
+    "cpus_attributes": [
+      {
+        "cache_l1": "n/a",
+        "cache_l2": "8 Mb",
+        "cores": 4,
+        "cpu_type": "Intel 4770kI7",
+        "threads": 8
+      }
+    ],
+    "domain": "omf:r2lab.faraday",
+    "gateway": "faraday.inria.fr",
+    "hardware_type": "PC-Icarus",
+    "hd_capacity": "240 GB",
+    "hostname": "phy42",
+    "interfaces_attributes": [
+      {
+        "ips_attributes": [
+          {
+            "address": "192.168.3.42",
+            "ip_type": "ipv4",
+            "netmask": "255.255.255.0"
+          }
+        ],
+        "mac": "00:03:1d:0e:03:5b",
+        "name": "fit42:if0",
+        "role": "control"
+      },
+      {
+        "mac": "00:03:1d:0e:03:5a",
+        "name": "fit42:if1",
+        "role": "experimental"
+      }
+    ],
+    "location_attributes": {
+      "altitude": 145,
+      "latitude": 7.069249999999999,
+      "longitude": 43.61452777777778
+    },
+    "name": "fit42",
+    "ram": "8 GB",
+    "ram_type": "DIMM Synchronous",
+    "urn": "urn:publicid:IDN+omf:faraday+node+fit42"
   }
 ]
