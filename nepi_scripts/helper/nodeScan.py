@@ -39,12 +39,6 @@
 #
 # Author: Mario ZANCANARO <mario.zancanaro@inria.fr>
 # 
-# ----------------------------
-# Main call to operate with the helper using one or a couple of nodes
-# File talkNodeC uses class, File talkNodeF uses functions
-# Both to operate using NEPI in Linux nodes.
-# Mario ZANCANARO <mario.zancanaro@inria.fr>
-# ----------------------------
 
 from optparse import OptionParser
 from talkNodeC import TalkNodeHelper
