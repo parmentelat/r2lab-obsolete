@@ -1,10 +1,34 @@
 # #!/usr/bin/env python
 # # -*- coding: utf-8 -*-
-
-#----------------------------
-# HELPER to talk nodes by a class
-# Mario ZANCANARO <mario.zancanaro@inria.fr>
-#----------------------------
+#
+#     ***** talkNodeC.py
+#
+#    NEPI, a framework to manage network experiments
+#    Copyright (C) 2015 INRIA
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License version 2 as
+#    published by the Free Software Foundation;
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Author: Alina Quereilhac <alina.quereilhac@inria.fr>
+#         Maksym Gabielkov <maksym.gabielkovc@inria.fr>
+#
+#     This file contains a class that inherits ExperimentController from Nepi framework
+#     used at INRIA testbed (R2Lab) with Nitos nodes. The class add an identification attribute
+#     and group the main commands of Nepi reusing codes that create and deploy nodes     
+#     To have access of the class just include the file in your script file like:
+#     from talkNodeC import TalkNodeHelper
+# 
+# Author: Mario ZANCANARO <mario.zancanaro@inria.fr>
+# 
 
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceState, ResourceAction
