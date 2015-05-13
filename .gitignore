@@ -1,1 +1,8 @@
 .du
+.#*
+*-old-*
+*.ndz*
+*.igz*
+chain.c32
+pxelinux.0
+linux-notis

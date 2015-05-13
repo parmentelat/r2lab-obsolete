@@ -15,9 +15,12 @@ in short:
 
 # load
 ## server
-    frisbeed -i 192.168.3.200 -m 224.0.0.1 -p 7000 -W 50000000 /var/lib/omf-images-6/baseline.ndz
+    cd ~/images
+    ./frisbee-binaries-inria/frisbeed -i 192.168.3.200 -m 224.0.0.1 -p 10000 -W 90000000 /var/lib/omf-images-6/fedora21-ext2.ndz
 ## client
-    frisbee -i 192.168.3.31 -m 224.0.0.1 -p 7000 /dev/sda
+    ip=$(ifconfig | grep 192.168.3 | sed -e 's,:, ,' | awk '{print $3;}')
+    cd /images
+    ./frisbee-binaries-inria/frisbee -i $ip -m 224.0.0.1 -p 10000 /dev/sda
 
 # save
 

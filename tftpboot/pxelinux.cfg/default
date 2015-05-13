@@ -1,0 +1,4 @@
+DEFAULT harddrive 
+LABEL harddrive 
+COM32 chain.c32
+APPEND hd0
