@@ -1,0 +1,34 @@
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto em1
+  iface em1 inet static
+  address 138.96.16.97
+  netmask 255.255.255.240
+  gateway 138.96.16.110
+  dns-search inria.fr
+  dns-nameservers 138.96.0.10 138.96.0.11
+
+# the optical interface
+# it is important that .3.100 is *mentioned first*
+# this address is the one found as the source address
+# in DHCPOFFER’s sent by the dhcp server
+# and apparently the BIOS network boot agent expects
+# this to be identical to the IP address offered
+auto p2p1
+  iface p2p1 inet static
+  address 192.168.3.100
+  netmask 255.255.255.0
+# we also have 2 other IP addressed attached to that if
+  post-up ip addr add dev p2p1 192.168.1.100/24
+  pre-down ip addr del dev p2p1 192.168.1.100/24
+  post-up ip addr add dev p2p1 192.168.2.100/24
+  pre-down ip addr del dev p2p1 192.168.2.100/24
+
+# limit multicast traffic to the inside network
+up ip route add 224.0.0.0/20 dev p2p1
