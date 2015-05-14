@@ -11,3 +11,13 @@ IMAGEZIP_BINS=imagedump,imageunzip,imagezip
 fetch:
 	rsync -av $(BUILD_SSH):$(FRISBEE_DIR)/'{$(FRISBEE_BINS)}' ./
 	rsync -av $(BUILD_SSH):$(IMAGEZIP_DIR)/'{$(IMAGEZIP_BINS)}' ./
+
+INFRA=bemol.pl.sophia.inria.fr
+INFRA_SSH=root@$(INFRA)
+
+# install this new stuff right into the server side
+push-server:
+	rsync frisbeed $(INFRA_SSH):/usr/sbin
+
+# to install on a node is an entirely different matter
+# need to create an entire initramfs...
