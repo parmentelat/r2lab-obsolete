@@ -24,11 +24,14 @@ auto p2p1
   iface p2p1 inet static
   address 192.168.3.100
   netmask 255.255.255.0
-# we also have 2 other IP addressed attached to that if
+# we also have 2 other IP addressed attached to that iface
   post-up ip addr add dev p2p1 192.168.1.100/24
   pre-down ip addr del dev p2p1 192.168.1.100/24
   post-up ip addr add dev p2p1 192.168.2.100/24
   pre-down ip addr del dev p2p1 192.168.2.100/24
+# plus a fourth one for the switches
+  post-up ip addr add dev p2p1 192.168.4.100/24
+  pre-down ip addr del dev p2p1 192.168.4.100/24
 
 # limit multicast traffic to the inside network
 up ip route add 224.0.0.0/20 dev p2p1

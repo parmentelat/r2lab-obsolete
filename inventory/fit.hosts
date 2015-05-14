@@ -8,13 +8,14 @@
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
-192.168.1.100   faraday faraday1
-192.168.2.100   faraday2
-192.168.3.100   faraday3
-192.168.3.101   switch-reboot
-192.168.3.102   switch-data
-192.168.3.103   switch-control
-192.168.3.104   switch-c007
+192.168.1.100   faraday1 faraday-reboot
+192.168.2.100   faraday2 faraday-data
+192.168.3.100   faraday3 faraday-control
+192.168.4.100   faraday4
+192.168.4.101   switch-reboot
+192.168.4.102   switch-data
+192.168.4.103   switch-control
+192.168.4.104   switch-c007
 
 ##########
 192.168.1.1	reboot-01
