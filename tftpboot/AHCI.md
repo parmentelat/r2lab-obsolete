@@ -24,3 +24,17 @@ currently runs this kernel :
 
     fit41 (pxe) # uname -a
     Linux fit41 3.13.0-37-generic #64-Ubuntu SMP Mon Sep 22 21:28:38 UTC 2014 x86_64 GNU/Linux
+    
+# ubuntu mini remix
+
+* downloaded `ubuntu-mini-remix-15.04-amd64.iso` from ubuntu (in os-images)
+* pushed onto bemol in `/root` for future work
+
+* mounted -> subdirectory `casper` that has an `inird.lz` and a `vmlinuz`
+* created `/tftpboot/initramfs-mini1504.igz` as a gzip from that initrd
+* created `/tftpboot/linux-mini1504` from that vmlinuz
+* created /tftpboot/ahci
+
+* robustified the `nextboot-` toolset
+
+remains to test this simple collection of files (ahci + kernel + initrd) on an AHCI node

@@ -75,7 +75,9 @@ and then install `initramfs-omf6.igz.newfrisbee`
 
 ## convenience tools
 
-    root@bemol:~# pxe_new
+this now comes as part as `comp-faraday.ish`
+
+    root@bemol:~# pxe-new
     new pxe-frisbee config
     -rwxr-xr-x 1 root root 70556800 Feb 17 15:51 /tftpboot/initramfs-omf6.igz
     -rwxr-xr-x 1 root root 70556800 Feb 17 15:51 /tftpboot/initramfs-omf6.igz.newfrisbee
@@ -87,7 +89,7 @@ and then install `initramfs-omf6.igz.newfrisbee`
     -rwxr-xr-x 1 root root   981304 Feb 17 14:22 /usr/sbin/frisbeed-new-64
     -rwxr-xr-x 1 root root   917624 Aug  9  2012 /usr/sbin/frisbeed-old-64
 
-    root@bemol:~# pxe_old
+    root@bemol:~# pxe-old
     old pxe-frisbee config
     -rwxr-xr-x 1 root root 71103697 Feb 17 10:04 /tftpboot/initramfs-omf6.igz
     -rwxr-xr-x 1 root root 70556800 Feb 17 15:51 /tftpboot/initramfs-omf6.igz.newfrisbee
@@ -99,7 +101,7 @@ and then install `initramfs-omf6.igz.newfrisbee`
     -rwxr-xr-x 1 root root   981304 Feb 17 14:22 /usr/sbin/frisbeed-new-64
     -rwxr-xr-x 1 root root   917624 Aug  9  2012 /usr/sbin/frisbeed-old-64
     
-See also a `pxe_hybrid` version
+See also a `pxe-hybrid` version
 
 # Additions : hybrid image
 
