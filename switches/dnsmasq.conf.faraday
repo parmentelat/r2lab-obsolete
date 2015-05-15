@@ -630,7 +630,8 @@ dhcp-authoritative
 #conf-dir=/etc/dnsmasq.d
 
 conf-dir=/etc/dnsmasq.d/,*.conf
-interface=p2p1
+# used to be plain p2p1 but now with VLANs we can use a specific one
+interface=p2p1@control
 # offer the .3.201 .. .3.249 range for open access
 dhcp-range=192.168.3.201,192.168.3.249,255.255.255.0,12h
 #dhcp-option=3
