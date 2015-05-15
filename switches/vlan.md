@@ -1,6 +1,16 @@
-Starting with the data subnet - 192.168.2.0/24 - vlan=20 - name=data
+# scaffolding
 
-(that we do not really need yet)
+not quite sure how to migrate from raw mode to vlan mode, especially from a remote location, as chances to lose touch with all switches is rather high; so local work is mandatory
+
+possible roadmap
+
+* it is essential to preserve IP connectivity between faraday and the switch interfaces (.4.10x) if we want to be able to grab config files with tftp
+
+* probably start with the data subnet - 192.168.2.0/24 - vlan=20 - name=data as it is not crucial
+
+* go from faraday to the end network
+  * faraday : (check again if our /etc/network/interfaces works or not now that we have the auto directives added)
+  * 
 
 # test node (ubuntu)
 
