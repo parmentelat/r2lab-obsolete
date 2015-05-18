@@ -14,24 +14,63 @@ auto em1
   dns-search inria.fr
   dns-nameservers 138.96.0.10 138.96.0.11
 
-# the optical interface
-# it is important that .3.100 is *mentioned first*
-# this address is the one found as the source address
-# in DHCPOFFER’s sent by the dhcp server
-# and apparently the BIOS network boot agent expects
-# this to be identical to the IP address offered
-auto p2p1
-  iface p2p1 inet static
-  address 192.168.3.100
-  netmask 255.255.255.0
-# we also have 2 other IP addressed attached to that iface
-  post-up ip addr add dev p2p1 192.168.1.100/24
-  pre-down ip addr del dev p2p1 192.168.1.100/24
-  post-up ip addr add dev p2p1 192.168.2.100/24
-  pre-down ip addr del dev p2p1 192.168.2.100/24
-# plus a fourth one for the switches
-  post-up ip addr add dev p2p1 192.168.4.100/24
-  pre-down ip addr del dev p2p1 192.168.4.100/24
+# see http://netnegotiations.com/gwblog/?tag=vlan
+# although the recipes work from a command line
+# this does not seem to work for now at boot-time
+# (might be fixed now with the auto commands added)
 
-# limit multicast traffic to the inside network
-up ip route add 224.0.0.0/4 dev p2p1
+### the optical interface
+# its main IP is on the 192.168.4.0/24 subnet
+# which is together with the 4 Dell switches
+# we now define following VLANs on this interface
+# 10 : reboot
+# 20 : data
+# 30 : control
+# 40 : switches
+# NOTE:
+# in a former setup it was important to have
+# .3.100 *mentioned first* because the first address
+# is the one used as the source address
+# in DHCPOFFER packets sent by the DHCP server
+# and apparently the BIOS network boot agent on our nodes
+# expects this to be identical to the IP address offered
+# NOTE:
+# as an extra goody p2p1 is set in promisc mode
+auto p2p1
+  iface p2p1 inet manual
+    up ifconfig $IFACE 192.168.0.100 up
+    up ip link set $IFACE promisc on
+    down ip link set $IFACE promisc off
+    down ifconfig $IFACE down
+
+# the vlan 10 network interface will be named p2p1@reboot
+  iface reboot inet static
+    pre-up ip link add link p2p1 name reboot type vlan id 10
+    post-down ip link del dev reboot
+    address 192.168.1.100
+    netmask 255.255.255.0
+  auto reboot
+
+  iface data inet static
+    pre-up ip link add link p2p1 name data type vlan id 20
+    post-down ip link del dev data
+    address 192.168.2.100
+    netmask 255.255.255.0
+  auto data
+
+  iface control inet static
+    pre-up ip link add link p2p1 name control type vlan id 30
+    post-down ip link del dev control
+    address 192.168.3.100
+    netmask 255.255.255.0
+  auto control
+
+  iface switches inet static
+    pre-up ip link add link p2p1 name control type vlan id 40
+    post-down ip link del dev control
+    address 192.168.4.100
+    netmask 255.255.255.0
+  auto switches
+
+# limit multicast traffic to the control network for now
+up ip route add 224.0.0.0/4 dev control
