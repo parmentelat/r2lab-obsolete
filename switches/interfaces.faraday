@@ -73,4 +73,4 @@ auto p2p1
   auto switches
 
 # limit multicast traffic to the control network for now
-up ip route add 224.0.0.0/20 dev control
+up ip route add 224.0.0.0/4 dev control
