@@ -34,4 +34,4 @@ auto p2p1
   pre-down ip addr del dev p2p1 192.168.4.100/24
 
 # limit multicast traffic to the inside network
-up ip route add 224.0.0.0/20 dev p2p1
+up ip route add 224.0.0.0/4 dev p2p1
