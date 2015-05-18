@@ -1,21 +1,28 @@
+# workflow is a bit awkward, but
+# . we rebuild the new initramfs on bemol where we can try it out
+# then we push it back onto faraday
 #
-# This file is intended for keeping track of what was done
-# not for being executed routinely
+# so in short, don't use these targets directly 
 
-NAME		= faraday
-INFRA		= $(NAME).inria.fr
-SSH_INFRA	= root@$(INFRA)
+SSH_INFRA	= root@faraday.inria.fr
+
+SSH_PREPLAB	= root@bemol.pl.sophia.inria.fr
 
 ###
-pull:
-	rsync -av $(SSH_INFRA):/tftpboot/ ./
+fetch:
+	@echo sample fetch command
+	@echo rsync -av $(SSH_INFRA):/tftpboot/ ./
 
-pull-conf:
-	rsync -av $(SSH_INFRA):/tftpboot/\*.conf ./
+fetch-conf:
+	@echo sample fetch command
+	@echo 'rsync -av $(SSH_INFRA):/tftpboot/\*.conf ./'
 
 ###
 push:
 	@echo "Sample push command"
 	@echo rsync -av initramfs-omf6.igz.newfrisbee $(SSH_INFRA):/tftpboot/
 
-.PHONY:  pull push
+# deploy all initramfs's from bemol to faraday
+deploy:
+	ssh $(SSH_INFRA) \
+	 "(cd /tftpboot; rsync -av $(SSH_PREPLAB):/tftpboot/initramfs\* .)"
