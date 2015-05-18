@@ -112,6 +112,8 @@ Turn off
 
     ip igmp snooping
     
+    show bridge multicast address-table
+    
 # Reboot and Control switches - 5548
 
 ## config management
@@ -133,6 +135,11 @@ Turn off
 
 ###
     interface gigabitethernet 1/0/4	
+    
+* c007 : `te1/0/1` (to faraday) and `te1/0/2` (to switch-data)
+* data : `1/xg3` (to swtich-data) 
+* reboot : 
+* control
     
 * example, inspecting
 
