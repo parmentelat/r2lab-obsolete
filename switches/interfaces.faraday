@@ -14,11 +14,6 @@ auto em1
   dns-search inria.fr
   dns-nameservers 138.96.0.10 138.96.0.11
 
-# see http://netnegotiations.com/gwblog/?tag=vlan
-# although the recipes work from a command line
-# this does not seem to work for now at boot-time
-# (might be fixed now with the auto commands added)
-
 ### the optical interface
 # its main IP is on the 192.168.4.0/24 subnet
 # which is together with the 4 Dell switches
@@ -37,40 +32,36 @@ auto em1
 # NOTE:
 # as an extra goody p2p1 is set in promisc mode
 auto p2p1
-  iface p2p1 inet manual
-    up ifconfig $IFACE 192.168.0.100 up
+  iface p2p1 inet static
+    # this IP address is not used, traffic would be untagged
+    address 192.168.0.100
+    netmask 255.255.255.0
+    ########## up
+    # promisc
     up ip link set $IFACE promisc on
+    # virtual interface 'reboot' on vlan 10 and subnet 192.168.1.x
+    up ip link add link p2p1 name reboot type vlan id 10
+    up ip link set dev reboot up
+    up ip addr add dev reboot 192.168.1.100/24 brd 192.168.1.255    
+    # virtual interface 'data' on vlan 20 and subnet 192.168.2.x
+    up ip link add link p2p1 name data type vlan id 20
+    up ip link set dev data up
+    up ip addr add dev data 192.168.2.100/24 brd 192.168.2.255    
+    # virtual interface 'control' on vlan 30 and subnet 192.168.3.x
+    up ip link add link p2p1 name control type vlan id 30
+    up ip link set dev control up
+    up ip addr add dev control 192.168.3.100/24 brd 192.168.1.255    
+    # virtual interface 'switches' on vlan 40 and subnet 192.168.4.x
+    up ip link add link p2p1 name switches type vlan id 40
+    up ip link set dev switches up
+    up ip addr add dev switches 192.168.4.100/24 brd 192.168.4.255    
+    ########## down
+    down ip link delete dev reboot
+    down ip link delete dev data
+    down ip link delete dev control
+    down ip link delete dev switches
+    # promisc
     down ip link set $IFACE promisc off
-    down ifconfig $IFACE down
-
-# the vlan 10 network interface will be named p2p1@reboot
-  iface reboot inet static
-    pre-up ip link add link p2p1 name reboot type vlan id 10
-    post-down ip link del dev reboot
-    address 192.168.1.100
-    netmask 255.255.255.0
-  auto reboot
-
-  iface data inet static
-    pre-up ip link add link p2p1 name data type vlan id 20
-    post-down ip link del dev data
-    address 192.168.2.100
-    netmask 255.255.255.0
-  auto data
-
-  iface control inet static
-    pre-up ip link add link p2p1 name control type vlan id 30
-    post-down ip link del dev control
-    address 192.168.3.100
-    netmask 255.255.255.0
-  auto control
-
-  iface switches inet static
-    pre-up ip link add link p2p1 name control type vlan id 40
-    post-down ip link del dev control
-    address 192.168.4.100
-    netmask 255.255.255.0
-  auto switches
 
 # limit multicast traffic to the control network for now
 up ip route add 224.0.0.0/4 dev control

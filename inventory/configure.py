@@ -120,8 +120,7 @@ class Node(object):
             format(self.mac, self.log_name('fit'), self.log_num)
         data="dhcp-host=net:data,{},{}-exp,192.168.2.{}\n".\
             format(self.alt_mac, self.log_name('data-'), self.log_num)
-#        return control+data
-        return control
+        return control+data
 
 
     def hosts_conf_sn(self, sn_ip, sn_name):

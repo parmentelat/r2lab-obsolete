@@ -96,7 +96,7 @@
 #except-interface=
 # Or which to listen on by address (remember to include 127.0.0.1 if
 # you use this.)
-listen-address=192.168.3.100
+#listen-address=192.168.3.100
 # If you want dnsmasq to provide only DNS service on an interface,
 # configure it as shown above, and then use the following line to
 # disable DHCP and TFTP on it.
@@ -515,7 +515,7 @@ listen-address=192.168.3.100
 # server for your campus/company accidentally. The ISC server uses
 # the same option, and this URL provides more information:
 # http://www.isc.org/files/auth.html
-dhcp-authoritative
+#dhcp-authoritative
 
 # Run an executable when a DHCP lease is created or destroyed.
 # The arguments sent to the script are "add" or "del",
@@ -629,20 +629,40 @@ dhcp-authoritative
 #conf-file=/etc/dnsmasq.more.conf
 #conf-dir=/etc/dnsmasq.d
 
+########## global 
 conf-dir=/etc/dnsmasq.d/,*.conf
-# used to be plain p2p1 but now with VLANs we want to use a specific one
-interface=control
-# offer the .3.201 .. .3.249 range for open access
-dhcp-range=192.168.3.201,192.168.3.249,255.255.255.0,12h
-#dhcp-option=3
-# these ntp servers are most likely not reachable from nodes
-#dhcp-option=option:ntp-server,138.96.0.33
-#dhcp-option=option:ntp-server,138.96.0.34
-#dhcp-option=option:ntp-server,138.96.0.35
-#dhcp-option=option:ntp-server,138.96.0.36
-dhcp-boot=net:control,pxelinux.0
-enable-tftp
-tftp-root=/tftpboot
-#log-queries
 log-facility=/var/log/dnsmasqfit.log
+#log-queries
 log-dhcp
+tftp-root=/tftpboot
+
+dhcp-option=option:ntp-server,138.96.0.33
+dhcp-option=option:ntp-server,138.96.0.34
+dhcp-option=option:ntp-server,138.96.0.35
+dhcp-option=option:ntp-server,138.96.0.36
+
+dhcp-boot=pxelinux.0
+
+########## our main focus : the control network for mof6 load and the like
+# this virtual interface is for the control VLAN
+interface=control
+listen-address=192.168.3.100
+# tiny dhcp range, everything is known and should be controlled
+# however it looks like one dhcp-range directive is required
+dhcp-range=control,192.168.3.250,192.168.3.251,255.255.255.0,1h
+dhcp-authoritative
+# these ntp servers are most likely not reachable from nodes
+enable-tftp
+
+########## on the switches network
+# we just need tftpboot so that switches can fetch their config
+interface=switches
+listen-address=192.168.4.100
+
+########## as a service for experimenters : the data network could use a dhcp server too
+interface=data
+listen-address=192.168.2.100
+dhcp-authoritative
+# tiny dhcp range, everything is known and should be controlled
+# however it looks like one dhcp-range directive is required
+dhcp-range=data,192.168.2.250,192.168.2.251,255.255.255.0,1h
