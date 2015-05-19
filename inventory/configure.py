@@ -198,6 +198,7 @@ ff02::2 ip6-allrouters
 192.168.4.102   switch-data
 192.168.4.103   switch-control
 192.168.4.104   switch-c007
+192.168.4.36    wlab36
 
 ##########
 """
