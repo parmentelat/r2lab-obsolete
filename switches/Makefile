@@ -4,8 +4,16 @@ all:
 
 # once you have made a make push you can run from the switch something like e.g.
 # 
-# switch-data#copy tftp://192.168.4.100/switch-data.conf startup-config
-# switch-data#reload
+# copy tftp://192.168.4.100/switch-c007.conf startup-config
+# copy tftp://192.168.4.100/switch-c007.conf running-config
+# copy tftp://192.168.4.100/switch-data.conf startup-config
+# copy tftp://192.168.4.100/switch-data.conf running-config
+# copy tftp://192.168.4.100/switch-control.conf startup-config
+# copy tftp://192.168.4.100/switch-control.conf running-config
+# copy tftp://192.168.4.100/switch-reboot.conf startup-config
+# copy tftp://192.168.4.100/switch-reboot.conf running-config
+# reload
+
 push-dell:
 	rsync -av switch-*.conf root@faraday.inria.fr:/tftpboot/
 

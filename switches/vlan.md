@@ -2,20 +2,22 @@
 
 ## faraday
 
-* could not get /etc/network/interfaces right for now; 
-  * see below for how to do it manually
-* dnsmasq
-  * need to understand how current setup works at all (should send packets tagged with VLAN-40..)
-  * check for multi-net configs if available
-* do more tests
-  * check we always use the intended network interface...
+not even sure the vlan package was required as we do not use `vconfig` at all
 
-# test node (ubuntu)
+    apt-get install vlan
+    echo 8021q >> /etc/modules
 
+* network OK at reboot - see /etc/network/interfaces
+* dnsmasq OK on control (dhcp+tftp) data (dhcp+tftp) switches (tftp only hopefully)
 
-enable interface `eth2`
+## test node (ubuntu)
 
-this was done on fit37 (ubuntu)
+here is a convenience script to check for connectivity on the data plane
+
+it does not test for DHCP
+
+should work with both our ubuntu and fedora images - although this is probably greatly improvable (figure ethernet device name from `ip show addr` or something)
+
 
     function init_subnet2 () {
        set -x
@@ -43,34 +45,4 @@ this was done on fit37 (ubuntu)
        ping -c 2 -I $data_dev 192.168.2.100
        set +x
     }
- 
-# faraday (ubuntu)
-
-    apt-get install vlan
-    echo 8021q >> /etc/modules
-    
-    # cleanup if starting from previous config
-    ip addr del dev p2p1 192.168.2.100/24
-    ip addr del dev p2p1 192.168.1.100/24
-    ip addr del dev p2p1 192.168.3.100/24
-    ip addr del dev p2p1 192.168.4.100/24
-    
-    # virtual interface 'data' on vlan 20 and subnet 192.168.2.x
-    ip link add link p2p1 name data type vlan id 20
-    ip link set dev data up
-    ip addr add dev data 192.168.2.100/24 brd 192.168.2.255    
-    # virtual interface 'reboot' on vlan 10 and subnet 192.168.1.x
-    ip link add link p2p1 name reboot type vlan id 10
-    ip link set dev reboot up
-    ip addr add dev reboot 192.168.1.100/24 brd 192.168.1.255    
-    # virtual interface 'control' on vlan 30 and subnet 192.168.3.x
-    ip link add link p2p1 name control type vlan id 30
-    ip link set dev control up
-    ip addr add dev control 192.168.3.100/24 brd 192.168.1.255    
-    # virtual interface 'switches' on vlan 40 and subnet 192.168.4.x
-    ip link add link p2p1 name switches type vlan id 40
-    ip link set dev switches up
-    ip addr add dev switches 192.168.4.100/24 brd 192.168.4.255    
-
-I have a first draft of /etc/network/interfaces in git, that needs to be tested again
 
