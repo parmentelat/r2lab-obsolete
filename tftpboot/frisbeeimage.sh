@@ -1,5 +1,8 @@
 #!/bin/bash
 #
+# inspired from
+# http://www.evanjones.ca/software/pxeimager-scratch.html
+#
 # this shell is meant to run inside a dedicated build box
 # requirements
 # running ubuntu (or at least have debootstrap)
@@ -88,6 +91,9 @@ INTERFACES
 
 CHROOT
 
+    # remove root password
+    chroot $ROOT passwd --delete root
+
     # kernel
     dpkg-deb -x $KERNEL_DEB_ABS $ROOT/tmp
     # turns out the debootstrap image has no /lib/modules/ directory at all...
@@ -109,6 +115,9 @@ function create_entry () {
     # then apt-get install telnetd
     # xxx not yet implemented
     # chroot $ROOT apt-get install telnetd
+    echo deb http://archive.ubuntu.com/ubuntu $DISTRO universe > $ROOT/etc/apt/sources.list.d/universe.list
+    chroot $ROOT apt-get update
+    chroot $ROOT apt-get install -y telnetd
     #
     echo "XXX FIXME : no entry point (telnet or ssh) yet"
 }
