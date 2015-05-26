@@ -187,6 +187,9 @@ function main () {
 	esac
     done
 
+    shift $(($OPTIND - 1))
+    [[ -z "$@" ]] || usage
+
     [ -z "$DISTRO" ] && DISTRO=$DEFAULT_DISTRO
 
     REF=/build/$DISTRO-root-ref
