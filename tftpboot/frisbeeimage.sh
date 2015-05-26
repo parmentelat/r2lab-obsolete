@@ -12,9 +12,9 @@
 #
 # a /build/ directory
 # 
-# it is recommended to have /build/fitsophia
-# set up as a git clone of
+# /build/fitsophia is expected to have been set up as a git clone of
 #    https://github.com/parmentelat/fitsophia.git
+# this is the place where the frisbee binaries are being fetched
 #
 # NOTE about locating proper kernel image
 # I could not at first sight figure out the naming scheme in
@@ -31,8 +31,16 @@
 COMMAND=$(basename $0 .sh)
 LOG=/build/$COMMAND.log
 
+########## subject to getopt
+
 # hard-wired for now
 DISTRO=vivid
+WITH_SSH=true
+WITH_TELNET=
+# if this is set to non-empty, no igz is produced
+SKIP_WRAP=true
+
+########## end options
 
 function init_debootstrap () {
     cd /build
@@ -103,27 +111,29 @@ CHROOT
     rm -rf $ROOT/tmp/*
 }
 
+########## telnet /ssh
+# might wish to start with ssh rather than telnet that seems to 
+# pull a lot of dependencies
 function create_entry () {
-    ########## telnet /ssh
-    # might wish to start with ssh rather than telnet that seems to 
-    # pull a lot of dependencies
-    ## openssh
-#    chroot $ROOT apt-get install -y openssh-server
-    # 
-    ## telnetld: 
-    # create 2 feeds in sources.list.d for 'universe'
-    # then apt-get install telnetd
-    # xxx not yet implemented
-    # chroot $ROOT apt-get install telnetd
+    [ -n "$WITH_SSH" ] && setup_ssh
+    [ -n "$WITH_TELNET" ] && setup_telnet
+}
+    
+function setup_ssh () {
+    chroot $ROOT apt-get install -y openssh-server
+    echo "XXX FIXME : ssh server setup incomplete"
+}
+
+function setup_telnet () {
     echo deb http://archive.ubuntu.com/ubuntu $DISTRO universe > $ROOT/etc/apt/sources.list.d/universe.list
     chroot $ROOT apt-get update
     chroot $ROOT apt-get install -y telnetd
-    #
-    echo "XXX FIXME : no entry point (telnet or ssh) yet"
+    echo "XXX FIXME : telnet server setup incomplete"
 }
 
+####################
 function install_newfrisbee () {
-    cd frisbee-binaries-inria
+    cd /build/fitsophia/frisbee-binaries-inria
     rsync -av frisbee* /$ROOT/usr/sbin
     rsync -av image* /$ROOT/usr/bin
 }
@@ -145,8 +155,9 @@ CHROOT
 }
 
 function wrap_up () {
+    [ -n "$SKIP_WRAP" ] && { echo "SKIP_WRAP : no image produced"; return 0; }
     cd $ROOT
-    find . | cpio -H newc -o | gzip -9 > /build/irfs-pxe$DISTRO.igz    
+    find . | cpio -H newc -o | gzip -9 > /build/irfs-pxe$DISTRO.igz
 }
 
 function main () {
