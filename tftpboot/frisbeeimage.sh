@@ -32,11 +32,11 @@ COMMAND=$(basename $0 .sh)
 LOG=/build/$COMMAND.log
 
 DEFAULT_DISTRO=vivid
-# xxx might be worth trying out debootstrap --variant minbase some day
 
 function init_debootstrap () {
     cd /build
     [ -d $REF ] && { echo reference already present ; return 0; }
+    # wthout --variant, this is equivalent to --variant=minbase
     debootstrap -no-gpg-check $DISTRO $REF
     apt-get install -y rsync
 }
@@ -140,15 +140,15 @@ function prune_useless_stuff () {
     # xxx this list probably needs more care
     # not sure that we care that much about image size any more in 2015,
     # since uploading 125Mb takes around 2s at 500Mbps
-    packages="rsyslog adduser initramfs-tools cpio python3 python3-minimal
+    to_trash="rsyslog adduser initramfs-tools cpio python3 python3-minimal
 libnewt0.52 libpcap2 logrotate libpopt0 cron makedev apt apt-utils base-config 
 "
 
     # normalize - remove newlines
-    packages=$(echo $packages)
+    to_trash=$(echo $to_trash)
     
     chroot $ROOT << CHROOT
-dpkg --purge $packages
+dpkg --purge $to_trash
 CHROOT
 }
 
