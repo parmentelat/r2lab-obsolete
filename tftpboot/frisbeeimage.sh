@@ -32,6 +32,7 @@ COMMAND=$(basename $0 .sh)
 LOG=/build/$COMMAND.log
 
 DEFAULT_DISTRO=vivid
+# xxx might be worth trying out debootstrap --variant minbase some day
 
 function init_debootstrap () {
     cd /build
@@ -113,11 +114,11 @@ function create_entry () {
 function setup_ssh () {
     chroot $ROOT apt-get install -y openssh-server
     # looks like apt-get install enables the service with systemctl
-    sed --in-place=ubuntu \
-	-e 's,^PermitRootLogin.*,PermitRootLogin yes,' \
-	-e 's,^PermitEmptyPasswords.*,PermitEmptyPasswords yes,' \
-	-e 's,^PasswordAuthentication.*,PasswordAuthentication yes,' \
-	-e 's,^UsePAM.*,UsePAM no,' \
+    sed --in-place=.ubuntu \
+	-e 's,^#\?PermitRootLogin.*,PermitRootLogin yes,' \
+	-e 's,^#\?PermitEmptyPasswords.*,PermitEmptyPasswords yes,' \
+	-e 's,^#\?PasswordAuthentication.*,PasswordAuthentication yes,' \
+	-e 's,^#\?UsePAM.*,UsePAM no,' \
 	$ROOT/etc/ssh/sshd_config
 }
 
