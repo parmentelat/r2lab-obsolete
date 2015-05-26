@@ -35,7 +35,7 @@ function init_debootstrap () {
     cd /build
     [ -d $REF ] && { echo reference already present ; return 0; }
     debootstrap -no-gpg-check $DISTRO $REF
-    apt-get install rsync
+    apt-get install -y rsync
 }
 
 # find the most recent deb file installed in /build
@@ -102,13 +102,13 @@ function create_entry () {
     # might wish to start with ssh rather than telnet that seems to 
     # pull a lot of dependencies
     ## openssh
-    chroot $ROOT apt-get install openssh-server
+    chroot $ROOT apt-get install -y openssh-server
     # 
     ## telnetld: 
     # create 2 feeds in sources.list.d for 'universe'
     # then apt-get install telnetd
     # xxx not yet implemented
-    chroot $ROOT apt-get install telnetd
+    # chroot $ROOT apt-get install telnetd
     #
     echo "XXX FIXME : no entry point (telnet or ssh) yet"
 }
