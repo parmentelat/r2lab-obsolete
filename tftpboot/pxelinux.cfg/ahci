@@ -1,0 +1,10 @@
+# tentative to build a kernel + image that can talk AHCI
+# starting with a minix thing
+DEFAULT linux
+LABEL linux
+KERNEL vmlinuz
+# 65536 is 64 Mb
+# 98304 is 96 Mb
+# 131072 is 128 Mb
+APPEND root=/dev/ram0 rw ramdisk_size=131072 initrd=irfs-mini1504.igz biosdevname=0 control=eth0 xmpp=faraday.inria.fr slice=pxe_slice hrn=omf.nitos.%hostname%
+PROMPT 0

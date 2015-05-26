@@ -37,4 +37,11 @@ currently runs this kernel :
 
 * robustified the `nextboot-` toolset
 
-remains to test this simple collection of files (ahci + kernel + initrd) on an AHCI node
+remains to test this simple collection of files (ahci + kernel +
+initrd) on an AHCI node
+
+# vivid - debootstrap
+
+using http://www.evanjones.ca/software/pxeimager-scratch.html
+
+see frisbeeimage.sh

@@ -105,20 +105,4 @@ See also a `pxe-hybrid` version
 
 # Additions : hybrid image
 
-In order to more simply compare both sets of binaries I rebuilt a hybrid PXE image that has both sets of binaries
-
-## contents
-
-* oddly enough I could not find a `/root/` directory in the original initramfs
-* so I created a `/images/` placeholder instead
-* that has both sets of binairies
-* and a hopfully useful `bashrc`  convenience script
-
-* also paid some attention to the ownership of all this material (made root:root)
-
-#
-    root@bemol ~/images # diff -r unwrap-initramfs-omf6*
-    Only in unwrap-initramfs-omf6-hybrid: images
-    diff: unwrap-initramfs-omf6/usr/bin/ckbcomp: No such file or directory
-    diff: unwrap-initramfs-omf6-hybrid/usr/bin/ckbcomp: No such file or directory
-    diff: unwrap-initramfs-omf6/var/lib/dpkg/info/amd64: recursive directory loop
+trashed - this contained 'new' frisbee in some unknown state (feb 2015)

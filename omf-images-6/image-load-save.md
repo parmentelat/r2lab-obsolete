@@ -32,78 +32,155 @@ in short:
 
 # Comparing the outputs from both versions
 
-Data obtained with the `fedora21-ext2` image; server runs with 120 Mbps bandwidth
+## old imagezip (from old pxe image)
 
+### ubuntu - old std pxe image
 
-## old set of binaries
+interestingly one cannot use `/usr/bin/imagezip -o -z1 /dev/sda /dev/null`
 
-Typical client output reads
+    ~ # /usr/bin/imagezip -o -z1 /dev/sda - | cat > /dev/null
+      Slice 6 is unused, NOT SAVING.
+      Slice 7 is unused, NOT SAVING.
+      Slice 8 is unused, NOT SAVING.
+      Slice 3 is unused, NOT SAVING.
+      Slice 4 is unused, NOT SAVING.
+    .............................................................    965164544    3
+    .............................................................   2303785472    6
+    .............................................................   4308552704    9
+    .............................................................   5660389888   11
+    .............................................................  65952636416   17
+    ............................................................. 147379175936   24
+    .............................................
+    231582236672 input (4871983104 compressed) bytes in 31.269 seconds
+    Image size: 432013312 bytes
+    148.591MB/second compressed
 
-    /images # time ./frisbee-binaries-uth/frisbee-old-32 -i 192.168.3.39 -m 224.0.0.1 -p 10000 /dev/sda
-    Progress: 10% 000011 000528
-    Progress: 20% 000021 000469
-    Progress: 30% 000031 000410
-    Progress: 40% 000041 000352
-    Progress: 50% 000051 000293
-    Progress: 60% 000061 000234
-    Progress: 70% 000071 000176
-    Progress: 80% 000081 000117
-    Progress: 90% 000091 000058
+### fedora - old std pxe image
 
-    Wrote 240056795136 bytes (4835807232 actual)
-    533 6699 22982
-    Left the team after 100 seconds on the field!real       1m 42.02s
-    user    0m 9.92s
-    sys     0m 4.54s
+    ~ # /usr/bin/imagezip -o -z1 /dev/sda - | cat > /dev/null
+      Slice 3 is unused, NOT SAVING.
+      Slice 4 is unused, NOT SAVING.
+    .............................................................    395488768    2
+    .............................................................    781942784    5
+    .............................................................   1900670976    8
+    .............................................................   2709018624   10
+    .............................................................   3103745536   12
+    .............................................................   3522172928   15
+    .............................................................  49675804672   20
+    .............................................................  50339937792   23
+    .............................................................  50910098944   25
+    .....................................
+    214287024128 input (4844244992 compressed) bytes in 35.377 seconds
+    Image size: 615514112 bytes
+    130.589MB/second compressed
+
+## new imagezip (from new std pxe image)
+
+### ubuntu - new std pxe image
+
+    ~ # fdisk -l /dev/sda
     
-## new binaries (64 bits)
-
-    /images/frisbee-binaries-inria # ./frisbee -i 192.168.3.39 -m 224.0.0.1 -p 10000 /dev/sda
-    Actual socket buffer size is 425984 (instead of 1048576)
-    Maximum socket buffer size of 425984 bytes
-    Bound to port 10000
-    Using Multicast 224.0.0.1
-    Joined the team after 0 sec. ID is 991177963. File is 587 chunks (615514112 bytes)
-    ..........ssssssssssssss....ssssssssss.ssss........................   6    549
-    ......................ssssssssss.sss...............................  13    496
-    ssssssssssssss....s............................ssssssssssss......ss  18    458
-    ssssssssss.........................................s...............  26    402
-    ....ssssssssssssss...............................................s.  33    350
-    ...............................................ssssssssssssss......  40    297
-    .....sssssssssssssss.............................................s.  48    246
-    ................................................................sss  57    182
-    sssssssssssssssssssssssss...................................ss....s  62    143
-    sssssssssssss.....ssssssssssssss......sssss..ssssssssssssss........  65    122
-    ..................ssssssssssssss............s....sssss.............  71     75
-    ....................................................ssssssssssssss.  79     23
-    .......................
-    Client 991177963 Performance:
-      runtime:                82.967 sec
-      start delay:            0.000 sec
-      real data written:      4835807232 (58973258 Bps)
-      effective data written: 240056795136 (2927521891 Bps)
-    Client 991177963 Params:
-      chunk/block size:     1024/1024
-      chunk buffers:        64
-      disk buffering (MB):  64
-      sockbuf size (KB):    416
-      readahead/inprogress: 2/8
-      recv timo/count:      30000/3
-      re-request delay:     1000000
-      writer idle delay:    1000
-      randomize requests:   1
-    Client 991177963 Stats:
-      net thread idle/blocked:        294/0
-      decompress thread idle/blocked: 317/945
-      disk thread idle:        7290
-      join/request msgs:       1/1713
-      dupblocks(chunk done):   0
-      dupblocks(in progress):  0
-      partial requests/blocks: 1126/84039
-      re-requests:             1126
-      full chunk re-requests:  0
-      partially-filled drops:  0
+    Disk /dev/sda: 240.0 GB, 240057409536 bytes
+    255 heads, 63 sectors/track, 29185 cylinders
+    Units = cylinders of 16065 * 512 = 8225280 bytes
     
-    Left the team after 82 on the field!
-    Wrote 240056795136 byte seconds s (4835807232 actual)
-    945 7290 22982
+       Device Boot      Start         End      Blocks  Id System
+    /dev/sda1   *           1       28155   226152448  83 Linux
+    /dev/sda2           28155       29186     8275969   5 Extended
+    /dev/sda5           28155       29186     8275968  82 Linux swap
+
+
+    ~ # /usr/bin/imagezip -o -z1 /dev/sda /dev/null
+    imagezip: P2 and P5 overlap!
+    * * * Aborting * * *
+     
+### fedora - new std pxe image
+
+
+    ~ # fdisk -l /dev/sda
+    
+    Disk /dev/sda: 240.0 GB, 240057409536 bytes
+    255 heads, 63 sectors/track, 29185 cylinders
+    Units = cylinders of 16065 * 512 = 8225280 bytes
+    
+       Device Boot      Start         End      Blocks  Id System
+    /dev/sda1   *           1       26053   209263616  83 Linux
+    /dev/sda2           26053       29186    25165824  82 Linux swap
+    ~ # /usr/bin/imagezip -o -z1 /dev/sda /dev/null
+    P3: unused, NOT SAVING.
+    P4: unused, NOT SAVING.
+    partitioner value (468862128) different than computed value (468860928); using the former
+    WARNING: '/dev/null' does not support fsync, write errors may not be detected or corrected.
+    .............................................................    395488768    2
+    .............................................................    782006784    5
+    .............................................................   1900688384    7
+    .............................................................   2709018624   10
+    .............................................................   3103745536   12
+    .............................................................   3522173440   14
+    .............................................................  49675804672   20
+    .............................................................  50339937792   22
+    .............................................................  50910098944   24
+    .....................................
+    214287024128 input (4844244992 compressed) bytes in 35.408 seconds
+    Image size: 615514112 bytes
+    130.474MB/second compressed
+    Finished in 36.352 seconds
+
+## new imagezip (from hybrid image)
+
+### ubuntu - hybrid image
+
+    /images/frisbee-binaries-inria # ./imagezip -o -z1 /dev/sda /dev/null
+      Slice 6 is unused, NOT SAVING.
+      Slice 7 is unused, NOT SAVING.
+      Slice 8 is unused, NOT SAVING.
+      Slice 3 is unused, NOT SAVING.
+      Slice 4 is unused, NOT SAVING.
+    WARNING: '/dev/null' does not support fsync, write errors may not be detected or corrected.
+    .............................................................    965288960    2
+    .............................................................   2303833600    5
+    .............................................................   4308653568    8
+    .............................................................   5660447232   10
+    .............................................................  65952675840   16
+    ............................................................. 147379304960   23
+    .................................
+    ............
+    231582236672 input (4871983104 compressed) bytes in 30.815 seconds
+    Image size: 432013312 bytes
+    150.780MB/second compressed
+    Finished in 31.799 seconds
+    
+For the record with `-z9`
+    
+    231582236672 input (4871983104 compressed) bytes in 190.347 seconds
+    Image size: 382730240 bytes
+    24.410MB/second compressed
+    Finished in 191.324 seconds
+    
+### fedora - hybrid image
+
+    /images/frisbee-binaries-inria # ./imagezip -o -z1 /dev/sda /dev/null
+      Slice 3 is unused, NOT SAVING.
+      Slice 4 is unused, NOT SAVING.
+    WARNING: '/dev/null' does not support fsync, write errors may not be detected or corrected.
+    .............................................................    395488768    2
+    .............................................................    782006784    5
+    .............................................................   1900688384    7
+    .............................................................   2709018624   10
+    .............................................................   3103745536   12
+    .............................................................   3522173440   14
+    .............................................................  49675804672   20
+    .............................................................  50339937792   22
+    .............................................................  50910098944   24
+    .....................................
+    214287024128 input (4844244992 compressed) bytes in 35.217 seconds
+    Image size: 615514112 bytes
+    131.182MB/second compressed
+    Finished in 36.163 seconds
+    
+ For the record with `-z9`
+ 
+    214287024128 input (4844244992 compressed) bytes in 200.951 seconds
+    Image size: 564133888 bytes
+    22.990MB/second compressed
+    Finished in 201.888 seconds

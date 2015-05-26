@@ -1,0 +1,8 @@
+# load the standard pxefrisbee initramfs
+DEFAULT linux
+LABEL linux
+KERNEL linux-notis
+# 98304 is 96 Mb
+# 131072 is 128 Mb
+APPEND root=/dev/ram0 rw ramdisk_size=131072 initrd=irfs-pxefrisbee.igz.old biosdevname=0 control=eth0 xmpp=faraday.inria.fr slice=pxe_slice hrn=omf.nitos.%hostname%
+PROMPT 0
