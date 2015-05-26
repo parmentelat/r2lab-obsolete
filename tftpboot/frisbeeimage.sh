@@ -31,16 +31,7 @@
 COMMAND=$(basename $0 .sh)
 LOG=/build/$COMMAND.log
 
-########## subject to getopt
-
-# hard-wired for now
-DISTRO=vivid
-WITH_SSH=true
-WITH_TELNET=
-# if this is set to non-empty, no igz is produced
-SKIP_WRAP=true
-
-########## end options
+DEFAULT_DISTRO=vivid
 
 function init_debootstrap () {
     cd /build
@@ -166,8 +157,37 @@ function wrap_up () {
     find . | cpio -H newc -o | gzip -9 > /build/irfs-pxe$DISTRO.igz
 }
 
+function usage () {
+    echo "$COMMAND [-d distro ] [ -w ] [ -s | -t | -2 ]"
+    echo -e " -d distro\tspecify ubuntu distro (default $DEFAULT_DISTRO)"
+    echo -e " -s | -t | -2\tselect sshd (-s) or telnetd (-t) or both (-2)"
+    echo -e " -w\t\tskip creation of gzipped image, just root tree"
+    exit 1
+}
+
 function main () {
     set -x
+
+    WITH_SSH=true
+    WITH_TELNET=
+    # if this is set to non-empty, no igz is produced
+    SKIP_WRAP=
+
+########## end options
+
+    while getopts "d:wst2" opt ; do
+	case $opt in
+	    d) DISTRO=$OPTARG;;
+	    w) SKIP_WRAP=true;;
+	    s) WITH_SSH="true"; WITH_TELNET="" ;;
+	    t) WITH_SSH=""; WITH_TELNET="true" ;;
+	    2) WITH_SSH="true"; WITH_TELNET="true" ;;
+	    *) usage ;;
+	esac
+    done
+
+    [ -z "$DISTRO" ] && DISTRO=$DEFAULT_DISTRO
+
     REF=/build/$DISTRO-root-ref
     ROOT=/build/$DISTRO-root
     init_debootstrap
