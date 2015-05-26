@@ -8,7 +8,9 @@
 # we run this inside frisbeeimage.pl.sophia.inria.fr - a vivid VM
 #
 # a /build/ directory
-# with /build/fitsophia a git clone of
+# 
+# it is recommended to have /build/fitsophia
+# set up as a git clone of
 #    https://github.com/parmentelat/fitsophia.git
 #
 # NOTE about locating proper kernel image
@@ -100,17 +102,18 @@ function create_entry () {
     # might wish to start with ssh rather than telnet that seems to 
     # pull a lot of dependencies
     ## openssh
+    chroot $ROOT apt-get install openssh-server
     # 
     ## telnetld: 
     # create 2 feeds in sources.list.d for 'universe'
     # then apt-get install telnetd
     # xxx not yet implemented
+    chroot $ROOT apt-get install telnetd
+    #
     echo "XXX FIXME : no entry point (telnet or ssh) yet"
 }
 
 function install_newfrisbee () {
-    cd /build/fitsophia
-    git pull
     cd frisbee-binaries-inria
     rsync -av frisbee* /$ROOT/usr/sbin
     rsync -av image* /$ROOT/usr/bin
