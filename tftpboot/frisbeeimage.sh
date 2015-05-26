@@ -182,7 +182,7 @@ function main () {
 	    t) WITH_SSH=""; WITH_TELNET="true" ;;
 	    2) WITH_SSH="true"; WITH_TELNET="true" ;;
 	    0) WITH_SSH=""; WITH_TELNET="" ;;
-	    w) SKIP_WRAP=true;;
+	    w) SKIP_WRAP=true ;;
 	    *) usage ;;
 	esac
     done
@@ -203,4 +203,4 @@ function main () {
     wrap_up
 }
 
-main > $LOG 2>&1 
+main "$@" > $LOG 2>&1 
