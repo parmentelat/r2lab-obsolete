@@ -108,7 +108,7 @@ function create_entry () {
     # might wish to start with ssh rather than telnet that seems to 
     # pull a lot of dependencies
     ## openssh
-    chroot $ROOT apt-get install -y openssh-server
+#    chroot $ROOT apt-get install -y openssh-server
     # 
     ## telnetld: 
     # create 2 feeds in sources.list.d for 'universe'
