@@ -121,7 +121,13 @@ function create_entry () {
     
 function setup_ssh () {
     chroot $ROOT apt-get install -y openssh-server
-    echo "XXX FIXME : ssh server setup incomplete"
+    # looks like apt-get install enables the service with systemctl
+    sed --in-place=ubuntu \
+	-e s's,^PermitRootLogin.*,PermitRootLogin yes,' \
+	-e s's,^PermitEmptyPasswords.*,PermitEmptyPasswords yes,' \
+	-e s's,^PasswordAuthentication.*,PasswordAuthentication yes,' \
+	-e s's,^UsePAM.*,UsePAM no,' \
+	$ROOT/etc/ssh/sshd_config
 }
 
 function setup_telnet () {
