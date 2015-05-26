@@ -114,10 +114,10 @@ function setup_ssh () {
     chroot $ROOT apt-get install -y openssh-server
     # looks like apt-get install enables the service with systemctl
     sed --in-place=ubuntu \
-	-e s's,^PermitRootLogin.*,PermitRootLogin yes,' \
-	-e s's,^PermitEmptyPasswords.*,PermitEmptyPasswords yes,' \
-	-e s's,^PasswordAuthentication.*,PasswordAuthentication yes,' \
-	-e s's,^UsePAM.*,UsePAM no,' \
+	-e 's,^PermitRootLogin.*,PermitRootLogin yes,' \
+	-e 's,^PermitEmptyPasswords.*,PermitEmptyPasswords yes,' \
+	-e 's,^PasswordAuthentication.*,PasswordAuthentication yes,' \
+	-e 's,^UsePAM.*,UsePAM no,' \
 	$ROOT/etc/ssh/sshd_config
 }
 
@@ -138,7 +138,7 @@ function install_newfrisbee () {
 function prune_useless_stuff () {
     # xxx this list probably needs more care
     # not sure that we care that much about image size any more in 2015,
-    # since uploading 100Mb takes little more than 1s at 500Mbps
+    # since uploading 125Mb takes around 2s at 500Mbps
     packages="rsyslog adduser initramfs-tools cpio python3 python3-minimal
 libnewt0.52 libpcap2 logrotate libpopt0 cron makedev apt apt-utils base-config 
 "
@@ -158,9 +158,9 @@ function wrap_up () {
 }
 
 function usage () {
-    echo "$COMMAND [-d distro ] [ -w ] [ -s | -t | -2 ]"
+    echo "$COMMAND [-d distro ] [ -w ] [ -0 | -s | -t | -2 ]"
     echo -e " -d distro\tspecify ubuntu distro (default $DEFAULT_DISTRO)"
-    echo -e " -s | -t | -2\tselect sshd (-s) or telnetd (-t) or both (-2)"
+    echo -e " -s | -t | -2 | -0\tselect sshd (-s, default) or telnetd (-t) or both (-2) or none (-0)"
     echo -e " -w\t\tskip creation of gzipped image, just root tree"
     exit 1
 }
@@ -175,13 +175,14 @@ function main () {
 
 ########## end options
 
-    while getopts "d:wst2" opt ; do
+    while getopts "d:st20w" opt ; do
 	case $opt in
 	    d) DISTRO=$OPTARG;;
-	    w) SKIP_WRAP=true;;
 	    s) WITH_SSH="true"; WITH_TELNET="" ;;
 	    t) WITH_SSH=""; WITH_TELNET="true" ;;
 	    2) WITH_SSH="true"; WITH_TELNET="true" ;;
+	    0) WITH_SSH=""; WITH_TELNET="" ;;
+	    w) SKIP_WRAP=true;;
 	    *) usage ;;
 	esac
     done
