@@ -25,23 +25,27 @@
 # Author: Mario ZANCANARO <mario.zancanaro@inria.fr>
 # 
 from tools import Simulation, Node
+import time
 
 # MAIN CALL
 def main():
     
-    s1 = Simulation.new()
+    random = (time.strftime("%m%d%Y%H%M%S"))
+
+    s1 = Simulation.new('my-experiment'+random)
 
     fit10 = Node.new('Fit10')
-    fit10.on()
+    #fit10.on()
     fit10.ping('www.inria.fr')
-    fit10.free_command('hostname')
+    #fit10.free_command('hostname')
     for cmd in fit10.commands.queue():
         print cmd
     s1.execute(fit10)
 
     fit13 = Node.new('Fit13')
-    fit13.on()
-    fit13.free_command('date')
+    #fit13.on()
+    #fit13.free_command('date')
+    fit13.free_command('hostname')
     for cmd in fit13.commands.queue():
         print cmd
     s1.execute(fit13)
@@ -49,4 +53,4 @@ def main():
 if __name__ == '__main__':
     exit(main())
 
-    
+
