@@ -35,33 +35,29 @@
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 import os
 
 usage = ("usage: %prog -H <list-of-nodes> -U <node-username> -i <ssh-key> -g <r2lab-gateway> -u <slicename>")
 
-parser = OptionParser(usage = usage)
-parser.add_option("-H", "--hosts", dest="hosts", 
-        help="Space separated list of hosts", type="str")
-parser.add_option("-U", "--username", dest="username", 
-        help="Username for the nodes (usually root)", 
-        type="str", default="root" )
-parser.add_option("-g", "--gateway", dest="gateway", 
-        help="Nitos gateway hostname", 
-        type="str", default="faraday.inria.fr")
-parser.add_option("-u", "--gateway-user", dest="gateway_username", 
-        help="R2lab gateway username (slicename)", 
-        type="str", default="root")
-parser.add_option("-i", "--ssh-key", dest="ssh_key", 
-        help="Path to private SSH key to be used for connection", 
-        type="str")
-(options, args) = parser.parse_args()
+parser = ArgumentParser(usage = usage)
+parser.add_argument("-H", "--hosts", dest="hosts", 
+        help="Space separated list of hosts")
+parser.add_argument("-U", "--username", dest="username", 
+        help="Username for the nodes (usually root)", default="root" )
+parser.add_argument("-g", "--gateway", dest="gateway", 
+        help="Nitos gateway hostname", default="faraday.inria.fr")
+parser.add_argument("-u", "--gateway-user", dest="gateway_username", 
+        help="R2lab gateway username (slicename)", default="root")
+parser.add_argument("-i", "--ssh-key", dest="ssh_key", 
+        help="Path to private SSH key to be used for connection")
+args = parser.parse_args()
 
-hosts = options.hosts
-username = options.username
-gateway = options.gateway
-gateway_username = options.gateway_username
-identity = options.ssh_key
+hosts = args.hosts
+username = args.username
+gateway = args.gateway
+gateway_username = args.gateway_username
+identity = args.ssh_key
 
 print "hosts " , hosts
 print "node-username " , username
