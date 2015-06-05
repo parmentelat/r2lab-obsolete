@@ -24,7 +24,7 @@
 #               
 # Author: Mario ZANCANARO <mario.zancanaro@inria.fr>
 # 
-from tools import Simulation, Node
+from tools import Simulation, Node, VirtualTable
 import time
 
 # MAIN CALL
@@ -37,18 +37,23 @@ def main():
     fit10 = Node.new('Fit10')
     #fit10.on()
     fit10.ping('www.inria.fr')
-    #fit10.free_command('hostname')
-    for cmd in fit10.commands.queue():
-        print cmd
-    s1.execute(fit10)
-
+    fit10.free_command('hostname')
+    
     fit13 = Node.new('Fit13')
     #fit13.on()
-    #fit13.free_command('date')
+    fit13.free_command('date')
     fit13.free_command('hostname')
-    for cmd in fit13.commands.queue():
-        print cmd
-    s1.execute(fit13)
+    fit13.free_command('date')
+    
+    s1.ping('www.something.com', 3, fit10,fit13)
+    
+    fit10.commands.state()
+    fit13.commands.state()
+
+    #fit02 = Node.clone('Fit02', fit10)
+    
+    #s1.execute(fit10, fit13)
+    #s1.execute(fit10)
 
 if __name__ == '__main__':
     exit(main())
