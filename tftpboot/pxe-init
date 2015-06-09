@@ -1,0 +1,11 @@
+#!/bin/sh -e
+echo "Hello world (in shell)"
+
+echo fdisk - BOOM
+
+echo ========== ip addr show
+ip addr show
+echo ========== ifup eth0 BOOM
+#ifup eth0
+
+sleep 1000000
