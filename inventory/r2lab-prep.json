@@ -18,7 +18,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -50,7 +50,7 @@
     "name": "fit01",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit01"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit01"
   },
   {
     "cmc_attributes": {
@@ -71,7 +71,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -103,7 +103,7 @@
     "name": "fit02",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit02"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit02"
   },
   {
     "cmc_attributes": {
@@ -124,7 +124,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -156,7 +156,7 @@
     "name": "fit03",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit03"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit03"
   },
   {
     "cmc_attributes": {
@@ -177,7 +177,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -209,7 +209,7 @@
     "name": "fit04",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit04"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit04"
   },
   {
     "cmc_attributes": {
@@ -230,7 +230,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -262,7 +262,7 @@
     "name": "fit05",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit05"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit05"
   },
   {
     "cmc_attributes": {
@@ -283,7 +283,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -315,7 +315,7 @@
     "name": "fit06",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit06"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit06"
   },
   {
     "cmc_attributes": {
@@ -336,7 +336,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -368,7 +368,7 @@
     "name": "fit07",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit07"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit07"
   },
   {
     "cmc_attributes": {
@@ -389,7 +389,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -421,7 +421,7 @@
     "name": "fit08",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit08"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit08"
   },
   {
     "cmc_attributes": {
@@ -442,7 +442,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -474,7 +474,7 @@
     "name": "fit09",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit09"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit09"
   },
   {
     "cmc_attributes": {
@@ -495,7 +495,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -527,7 +527,7 @@
     "name": "fit10",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit10"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit10"
   },
   {
     "cmc_attributes": {
@@ -548,7 +548,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -580,7 +580,7 @@
     "name": "fit11",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit11"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit11"
   },
   {
     "cmc_attributes": {
@@ -601,7 +601,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -633,7 +633,7 @@
     "name": "fit12",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit12"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit12"
   },
   {
     "cmc_attributes": {
@@ -654,7 +654,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -686,7 +686,7 @@
     "name": "fit13",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit13"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit13"
   },
   {
     "cmc_attributes": {
@@ -707,7 +707,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -739,7 +739,7 @@
     "name": "fit14",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit14"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit14"
   },
   {
     "cmc_attributes": {
@@ -760,7 +760,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -792,7 +792,7 @@
     "name": "fit15",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit15"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit15"
   },
   {
     "cmc_attributes": {
@@ -813,7 +813,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -845,7 +845,7 @@
     "name": "fit16",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit16"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit16"
   },
   {
     "cmc_attributes": {
@@ -866,7 +866,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -898,7 +898,7 @@
     "name": "fit17",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit17"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit17"
   },
   {
     "cmc_attributes": {
@@ -919,7 +919,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -951,7 +951,7 @@
     "name": "fit18",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit18"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit18"
   },
   {
     "cmc_attributes": {
@@ -972,7 +972,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1004,7 +1004,7 @@
     "name": "fit19",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit19"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit19"
   },
   {
     "cmc_attributes": {
@@ -1025,7 +1025,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1057,7 +1057,7 @@
     "name": "fit20",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit20"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit20"
   },
   {
     "cmc_attributes": {
@@ -1078,7 +1078,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1110,7 +1110,7 @@
     "name": "fit21",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit21"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit21"
   },
   {
     "cmc_attributes": {
@@ -1131,7 +1131,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1163,7 +1163,7 @@
     "name": "fit22",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit22"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit22"
   },
   {
     "cmc_attributes": {
@@ -1184,7 +1184,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1216,7 +1216,7 @@
     "name": "fit23",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit23"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit23"
   },
   {
     "cmc_attributes": {
@@ -1237,7 +1237,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1269,7 +1269,7 @@
     "name": "fit24",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit24"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit24"
   },
   {
     "cmc_attributes": {
@@ -1290,7 +1290,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1322,7 +1322,7 @@
     "name": "fit25",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit25"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit25"
   },
   {
     "cmc_attributes": {
@@ -1343,7 +1343,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1375,7 +1375,7 @@
     "name": "fit26",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit26"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit26"
   },
   {
     "cmc_attributes": {
@@ -1396,7 +1396,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1428,7 +1428,7 @@
     "name": "fit27",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit27"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit27"
   },
   {
     "cmc_attributes": {
@@ -1449,7 +1449,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1481,7 +1481,7 @@
     "name": "fit28",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit28"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit28"
   },
   {
     "cmc_attributes": {
@@ -1502,7 +1502,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1534,7 +1534,7 @@
     "name": "fit29",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit29"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit29"
   },
   {
     "cmc_attributes": {
@@ -1555,7 +1555,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1587,7 +1587,7 @@
     "name": "fit30",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit30"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit30"
   },
   {
     "cmc_attributes": {
@@ -1608,7 +1608,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1640,7 +1640,7 @@
     "name": "fit31",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit31"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit31"
   },
   {
     "cmc_attributes": {
@@ -1661,7 +1661,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1693,7 +1693,7 @@
     "name": "fit32",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit32"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit32"
   },
   {
     "cmc_attributes": {
@@ -1714,7 +1714,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1746,7 +1746,7 @@
     "name": "fit33",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit33"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit33"
   },
   {
     "cmc_attributes": {
@@ -1767,7 +1767,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1799,7 +1799,7 @@
     "name": "fit34",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit34"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit34"
   },
   {
     "cmc_attributes": {
@@ -1820,7 +1820,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1852,7 +1852,7 @@
     "name": "fit35",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit35"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit35"
   },
   {
     "cmc_attributes": {
@@ -1873,7 +1873,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1905,7 +1905,7 @@
     "name": "fit36",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit36"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit36"
   },
   {
     "cmc_attributes": {
@@ -1926,7 +1926,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -1958,7 +1958,7 @@
     "name": "fit37",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit37"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit37"
   },
   {
     "cmc_attributes": {
@@ -1979,7 +1979,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -2011,7 +2011,7 @@
     "name": "fit38",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit38"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit38"
   },
   {
     "cmc_attributes": {
@@ -2032,7 +2032,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -2064,7 +2064,7 @@
     "name": "fit39",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit39"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit39"
   },
   {
     "cmc_attributes": {
@@ -2085,7 +2085,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -2117,7 +2117,7 @@
     "name": "fit40",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit40"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit40"
   },
   {
     "cmc_attributes": {
@@ -2138,7 +2138,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -2170,7 +2170,7 @@
     "name": "fit41",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit41"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit41"
   },
   {
     "cmc_attributes": {
@@ -2191,7 +2191,7 @@
         "threads": 8
       }
     ],
-    "domain": "omf:r2lab.faraday",
+    "domain": "omf:r2lab",
     "gateway": "faraday.inria.fr",
     "hardware_type": "PC-Icarus",
     "hd_capacity": "240 GB",
@@ -2223,6 +2223,6 @@
     "name": "fit42",
     "ram": "8 GB",
     "ram_type": "DIMM Synchronous",
-    "urn": "urn:publicid:IDN+omf:faraday+node+fit42"
+    "urn": "urn:publicid:IDN+omf:r2lab+node+fit42"
   }
 ]

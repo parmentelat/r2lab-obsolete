@@ -1,12 +1,12 @@
 # default is for the production deployment
 OMF_SSH  = root@faraday.inria.fr
 OMF_DIR  = /root/omf_sfa
-OMF_NAME = fit
+OMF_NAME = r2lab
 
 # see the prep-* targets
 PREP_OMF_SSH  = root@bemol.pl.sophia.inria.fr
 PREP_OMF_DIR  = /root/omf_sfa
-PREP_OMF_NAME = fit-prep
+PREP_OMF_NAME = r2lab-prep
 
 # a convenience
 PREP_MAKE = $(MAKE) OMF_SSH=$(PREP_OMF_SSH) OMF_DIR=$(PREP_OMF_DIR) OMF_NAME=$(PREP_OMF_NAME)
@@ -21,8 +21,8 @@ faraday-json: json
 .PHONY: all faraday faraday-json
 
 SCRIPT = configure.py
-SOURCE = fit.csv
-BYPRODUCTS = $(OMF_NAME).json $(OMF_NAME).dnsmasq $(OMF_NAME).hosts fit-nagios-nodes.cfg fit-nagios-groups.cfg
+SOURCE = r2lab.map
+BYPRODUCTS = $(OMF_NAME).json $(OMF_NAME).dnsmasq $(OMF_NAME).hosts r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg
 
 # once everything has been redone, this target pushes everything, and commits to git
 fullmonty: configure
@@ -31,12 +31,7 @@ fullmonty: configure
 	$(MAKE) json infra nagios
 
 
-# if you've imported the csv file from google spreadsheet
-# and this ends up in your ~/Downloads directory
-import:
-	mv ${HOME}/Downloads/"00-FIT nodes - Feuille 1.csv" fit.csv
-
-.PHONY: fullmonty import
+.PHONY: fullmonty
 ####################
 configure: $(BYPRODUCTS)
 
@@ -74,8 +69,8 @@ infra: infra-push infra-restart
 
 ####################
 # this one makes sense only for faraday
-nagios-push: fit-nagios-static.cfg fit-nagios-nodes.cfg fit-nagios-groups.cfg
-	rsync -a fit-nagios*.cfg $(OMF_SSH):/etc/nagios3/conf.d
+nagios-push: r2lab-nagios-static.cfg r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg
+	rsync -a r2lab-nagios*.cfg $(OMF_SSH):/etc/nagios3/conf.d
 
 nagios-restart:
 	ssh $(OMF_SSH) service nagios3 restart
@@ -92,7 +87,7 @@ tools:
 
 ####################
 # refreshing the bemol deployment
-# the --prep-lab option creates files named fit-prep*
+# the --prep-lab option creates files named r2lab-prep*
 
 prep-files:
 	configure.py --prep-lab

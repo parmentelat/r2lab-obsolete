@@ -11,8 +11,9 @@ Assumptions here:
 """
 
 import re
-import csv
 import json
+# as of June 2015, we don't use a csv file as input but r2lab.map instead
+#import csv
 
 from argparse import ArgumentParser
 
@@ -62,7 +63,7 @@ class Node(object):
         return self.degree_to_float( (43, 36, 52.30) )
     
     def json_model(self):
-        domain = 'faraday'
+        domain = 'r2lab'
         return OrderedDict (
             cmc_attributes = {
                 "name": "{}:cm".format(self.log_name()),
@@ -81,7 +82,7 @@ class Node(object):
                 "cache_l1": "n/a",
                 "cache_l2": "8 Mb"
             }],
-            domain = 'omf:r2lab.faraday',
+            domain = 'omf:r2lab',
             gateway = 'faraday.inria.fr',
             hardware_type = "PC-Icarus",
             hd_capacity = "240 GB",
@@ -112,7 +113,7 @@ class Node(object):
             name = self.log_name(),
             ram = "8 GB",
             ram_type = "DIMM Synchronous",
-            urn = "urn:publicid:IDN+omf:faraday+node+{}".format(self.log_name()),
+            urn = "urn:publicid:IDN+omf:r2lab+node+{}".format(self.log_name()),
         )
 
     def dnsmasq_conf(self):
@@ -225,56 +226,64 @@ class Nodes(OrderedDict):
     """
     a repository of known nodes, indexed by physical number
     """
-    def __init__(self, csv_filename, out_basename, prep_lab, verbose):
+    def __init__(self, map_filename, out_basename, prep_lab, verbose):
         OrderedDict.__init__(self)
-        self.csv_filename = csv_filename
+        self.map_filename = map_filename
         self.out_basename = out_basename
         self.prep_lab = prep_lab
         self.verbose = verbose
 
-    # column 1 is physical node number (sticker)
-    # column 3 is logical node number (where it is deployed)
-    # in prep_lab mode we ignore column 3 and use column 1 instead
+    # format of a .map file is straightforward
+    # (1) first column is the pysical number written on the box (sticker)
+    # (2) second column is its main mac address
+    # (3) last column is its logical location where it is deployed in faraday
+    # 
+    # in regular mode, we hide nodes that are declared in preplab
+    # in prep_lab mode we expose all nodes, ignore column 3 and use column 1 instead
     def load(self):
-        with open(self.csv_filename, 'r') as csvfile:
-            reader = csv.reader(csvfile)
-            for lineno, line in enumerate(reader):
-                # silently ignore lines that obviously do not relate to a node
-                try:
-                    phy_num = int (line[1])
-                except:
+        f = self.map_filename
+        with open(f, 'r') as mapfile:
+            for lno, line in enumerate(mapfile):
+                # ignore comments
+                if line.startswith('#'):
                     continue
-                # for the other ones let's send out warnings
+                tokens = line.split()
+                if len(tokens) != 3:
+                    print("{}:{}: expecting 3 tokens - ignored".format(f, lno))
+                    continue
+                # get node number
                 try:
-                    if not self.prep_lab:
-                        log_num = int (line[3])
-                    else:
-                        log_num = phy_num
-                    # discard nodes that are not on-site
-                    if log_num <= 0:
-                        print ("-------- line {} - physical node {} ignored - not deployed"\
-                               .format(lineno,phy_num))
-                        if self.verbose: print(">>",line)
+                    phy_num = int(tokens[0])
+                except:
+                    print("{}:{}: cannot read first integer".format(f, lno))
+                    continue
+                # get logical number
+                if tokens[2].startswith('prep'):
+                    log_num = 0
+                else:
+                    try:
+                        log_num = int(tokens[2])
+                    except:
+                        print("{}:{}: cannot read last integer".format(f, lno))
                         continue
-                    mac = line[5]
-                    match = mac_regexp.match(mac)
-                    if match:
-                        prefix, last = match.group('prefix', 'last')
-                        byte = int (last, base=16)
-                        alt_last = hex(byte-1)[2:]
-                        alt_mac = prefix+alt_last
-                        self[phy_num] = Node(phy_num, log_num, mac, alt_mac)
-                    else:
-                        print ("-------- line {} - physical node {} ignored - wrong MAC"\
-                               .format(lineno,phy_num,mac.strip()))
-                        if self.verbose: print(">>",line)
-                except Exception as e:
-                    if self.verbose:
-                        print ("-------- line {} - physical node {} ignored - unexpected error"\
-                               .format(lineno, phy_num))
-                        print(">>",line)
-                        import traceback
-                        traceback.print_exc()
+                if self.prep_lab:
+                    log_num = phy_num
+                # discard nodes that are not on-site
+                if log_num <= 0:
+                    print ("{}:{} - undeployed physical node {} - ignored"
+                           .format(f, lno, phy_num))
+                    continue
+                mac = tokens[1]
+                match = mac_regexp.match(mac)
+                if match:
+                    prefix, last = match.group('prefix', 'last')
+                    byte = int (last, base=16)
+                    alt_last = hex(byte-1)[2:]
+                    alt_mac = prefix+alt_last
+                    self[phy_num] = Node(phy_num, log_num, mac, alt_mac)
+                else:
+                    print ("{}:{} physical node {} ignored - wrong MAC".format(f, lno))
+                    if self.verbose: print(">>",line)
     
     def keep_just_one(self):
         for k in self.keys()[1:]:
@@ -286,8 +295,7 @@ class Nodes(OrderedDict):
         with open (out_filename, 'w') as jsonfile:
             json_models = [ node.json_model() for node in self.values() ]
             json.dump (json_models, jsonfile, indent=2, separators=(',', ': '), sort_keys=True)
-        print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
-
+        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
 
     def write_dnsmasq(self):
         out_filename = self.out_basename+".dnsmasq"
@@ -295,7 +303,7 @@ class Nodes(OrderedDict):
             dnsmasqfile.write(dnsmasq_header)
             for node in self.values():
                 dnsmasqfile.write(node.dnsmasq_conf())
-        print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
+        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
 
     def write_hosts(self):
         out_filename = self.out_basename+".hosts"
@@ -303,7 +311,7 @@ class Nodes(OrderedDict):
             hostsfile.write(hosts_header)
             for node in self.values():
                 hostsfile.write(node.hosts_conf())
-        print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
+        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
     
 
     def write_nagios(self):
@@ -311,7 +319,7 @@ class Nodes(OrderedDict):
         with open(out_filename, 'w') as nagiosfile:
             for node in self.values():
                 nagiosfile.write(node.nagios_host_cfg())
-        print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
+        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
 
     def write_nagios_hostgroups(self):
         out_filename = self.out_basename+"-nagios-groups.cfg"
@@ -327,7 +335,7 @@ members {sn_members}
 }}
 """.format(**locals())
                 nagiosfile.write(hostgroup)
-        print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
+        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
 
 
     def write_diana_db(self):
@@ -335,7 +343,7 @@ members {sn_members}
         with open(out_filename, 'w') as nagiosfile:
             for node in self.values():
                 nagiosfile.write(node.diana_db())
-        print ("(Over)wrote {out_filename} from {self.csv_filename}".format(**locals()))
+        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
         
 ########################################        
 def main():
@@ -346,15 +354,15 @@ def main():
                         help="In prep-lab mode, all nodes are exposed, regardless of the 'slot' column")
     parser.add_argument("-s", "--small", action='store_true', default=False,
                         help="force output of only one node")
-    parser.add_argument("input", nargs='?', default='fit.csv')
+    parser.add_argument("input", nargs='?', default='r2lab.map')
     args = parser.parse_args()
 
     if args.output:
         output = args.output
     elif not args.prep_lab:
-        output =  args.input.replace(".csv","")
+        output =  args.input.replace(".map","")
     else:
-        output =  args.input.replace(".csv","-prep")
+        output =  args.input.replace(".map","-prep")
 
     nodes = Nodes(args.input, output, args.prep_lab, args.verbose)
     nodes.load()
