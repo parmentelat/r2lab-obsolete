@@ -57,9 +57,9 @@ class Node(object):
         return deg + min/60 + sec/3600
         
     # all nodes get the same position for now
-    def latitude(self):
-        return self.degree_to_float( (7, 4, 9.30) )
     def longitude(self):
+        return self.degree_to_float( (7, 4, 9.30) )
+    def latitude(self):
         return self.degree_to_float( (43, 36, 52.30) )
     
     def json_model(self):

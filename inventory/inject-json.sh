@@ -52,10 +52,14 @@ function run_in_omf_server() {
 
     ########## erase DB
     set -x
-    $DEBUG rake autoMigrate
+    # tmp : June 2015 - not working on postgresql
+    # rake db:reset
+    $DEBUG stop omf-sfa
+    $DEBUG psql template1 -c 'drop database inventory'
+    createdb --owner omf_sfa --encoding=UTF8 inventory
+    rake db:migrate
 
     ########## restart DB
-    $DEBUG stop omf-sfa
     $DEBUG start omf-sfa
 
     echo "Leaving 5s for the server to warm up"
