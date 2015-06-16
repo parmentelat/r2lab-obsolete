@@ -341,9 +341,10 @@ function focus-nodes-on () {
 doc-nodes focus-nodes-on "restrict current selection to nodes that are ON"
 
 ####################
-# reload .bashrc 
-alias bashrc="source ~/.bashrc"
-alias refresh="/root/diana/auto-update.sh; bashrc"
+# reload these tools
+alias reload="source /home/faraday/fitsophia/inventory/faraday.sh"
+# git pull and then reload; not allowed to everybody
+alias refresh="/home/faraday/fitsophia/auto-update.sh; reload"
 doc-alt refresh "install latest version of these utilities"
 
 ####################
@@ -573,4 +574,16 @@ alias sw=ping-switches
 doc-admin sw "\tping all 4 faraday switches"
 
 ##########
-# net-names : ssh fit36 ip addr show | grep UP | grep -v 'lo:'
+function net-names () {
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
+    nodes=$(cnorm $nodes)
+    for node in $nodes; do
+	ssh $node ip addr show | grep UP | grep -v 'lo:'
+    done
+}
+doc-nodes net-names "display network interface names"
+
+function chmod-private-key () {
+    chmod 600 ~/.ssh/id_rsa
+}
+doc-alt chmod-private-key "Chmod private key so that ssh won't complain anymore"
