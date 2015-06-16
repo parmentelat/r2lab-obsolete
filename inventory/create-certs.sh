@@ -75,6 +75,8 @@ function create-certificate () {
 	command="$command --resource-id ${resource_id} --root ${REPO}/trusted_roots/root.pem --duration 50000000 $verb"
 	echo "Creating $certificate using command:"
 	echo -e "\t $command"
+	# don't do it
+	[ -n "$DRY_RUN" ] && return
 	$command
 	echo "Extracting private key into $private_key"
 	extract-key-from-pem $certificate -o $private_key
@@ -92,7 +94,7 @@ function create-certificates () {
 	command="omf_cert.rb --email root@$DOMAIN -o root.pem --duration 50000000 create_root"
 	echo "Creating root certificate root.pem using command"
 	echo -e "\t $command"
-	$command
+	[ -z "$DRY_RUN" ] && $command
     fi
 
     ########## nitos_testbed_rc
@@ -128,5 +130,17 @@ function inria-specifics () {
     set +x
 }
 
-create-certificates
-inria-specifics
+function main () {
+    while getopts "d:n" opt; do
+	case $opt in
+	    d) REPO=$OPTARG;;
+	    n) DRY_RUN=true;;
+	esac
+    done
+    echo we have REPO=$REPO
+    echo and DRY_RUN=$DRY_RUN
+    create-certificates
+    [ -z "$DRY_RUN" ] && inria-specifics
+}
+
+main "$@"
