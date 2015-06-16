@@ -226,7 +226,7 @@ function releases () {
     [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
     for node in $(norm $nodes); do
 	echo ==================== $node
-	ssh $node "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release; gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
+	ssh root@$node "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release; gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
     done
 }
 
@@ -240,7 +240,7 @@ function map () {
     [ -z "$1" ] && { echo "usage: map command [args] - map command on $NODES"; return; }
     for node in $NODES; do
 	echo ==================== $node
-	ssh $node "$@"
+	ssh root@$node "$@"
     done
 }
 doc-nodes map "\trun an ssh command on all selected nodes"
@@ -578,7 +578,7 @@ function net-names () {
     [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     nodes=$(cnorm $nodes)
     for node in $nodes; do
-	ssh $node ip addr show | grep UP | grep -v 'lo:'
+	ssh root@$node ip addr show | grep UP | grep -v 'lo:'
     done
 }
 doc-nodes net-names "display network interface names"
