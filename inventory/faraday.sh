@@ -344,7 +344,7 @@ doc-nodes focus-nodes-on "restrict current selection to nodes that are ON"
 # reload these tools
 alias reload="source /home/faraday/fitsophia/inventory/faraday.sh"
 # git pull and then reload; not allowed to everybody
-alias refresh="/home/faraday/fitsophia/auto-update.sh; reload"
+alias refresh="/home/faraday/fitsophia/auto-update.sh; chown -R faraday:faraday ~faraday/fitsophia; reload"
 doc-alt refresh "install latest version of these utilities"
 
 ####################
