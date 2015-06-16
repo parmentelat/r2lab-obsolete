@@ -587,3 +587,22 @@ function chmod-private-key () {
     chmod 600 ~/.ssh/id_rsa
 }
 doc-alt chmod-private-key "Chmod private key so that ssh won't complain anymore"
+
+##########
+function restart-all () {
+    ### stop
+    echo Stopping omf-sfa
+    service omf-sfa stop
+    echo Stopping ntrc
+    stop ntrc
+    echo Stopping dnsmasq
+    service dnsmasq stop
+    ### start
+    echo Starting dnsmasq
+    service dnsmasq start
+    echo Starting ntrc
+    start ntrc
+    echo Starting omf-sfa
+    service omf-sfa start
+}
+doc-admin restart-all "Restart all 3 services omf-sfa, ntrc and dnsmasq"
