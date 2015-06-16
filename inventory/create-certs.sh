@@ -59,13 +59,14 @@ EOF
 
 ### create a certificate if needed
 function create-certificate () {
-    name=$1; shift
-    resource_type=$1; shift
     verb=$1; shift
+    name=$1; shift
+    email=$1; shift
+    resource_type=$1; shift
     
     certificate=${REPO}/${name}.pem
     private_key=${REPO}/${name}.pkey
-    email=${name}@${DOMAIN}
+    email=${email}@${DOMAIN}
     resource_id=xmpp://${name}@${XMPP_DOMAIN}
     if [ -f $certificate ] ; then
 	echo "Preserving $certificate"
@@ -92,16 +93,16 @@ function create-certificates () {
 	echo "Preserving $(pwd)/root.pem"
     else
 	command="omf_cert.rb --email root@$DOMAIN -o root.pem --duration 50000000 create_root"
-	echo "Creating root certificate root.pem using command"
+	echo "Creating root CA certificate root.pem using command"
 	echo -e "\t $command"
 	[ -z "$DRY_RUN" ] && $command
     fi
 
     ########## nitos_testbed_rc
 
-    create-certificate user_factory user_factory create_resource
-    create-certificate cm_factory cm_factory create_resource
-    create-certificate frisbee_factory frisbee_factory create_resource
+    create-certificate create_resource user_factory user_factory user_factory 
+    create-certificate create_resource cm_factory cm_factory cm_factory
+    create-certificate create_resource frisbee_factory frisbee_factory frisbee_factory
 
     # omf_cert.rb -o user_factory.pem --email user_factory@${DOMAIN} --resource-type user_factory --resource-id xmpp://user_factory@${XMPP_DOMAIN} --root /root/.omf/trusted_roots/root.pem --duration 50000000 create_resource 
     # omf_cert.rb -o cm_factory.pem --email cm_factory@${DOMAIN} --resource-type cm_factory --resource-id xmpp://cm_factory@${XMPP_DOMAIN} --root /root/.omf/trusted_roots/root.pem --duration 50000000 create_resource
@@ -109,11 +110,11 @@ function create-certificates () {
 
     ########## omf_sfa
 
-    create-certificate am am_controller create_resource  --geni_uri URI:urn:publicid:IDN+${AM_SERVER_DOMAIN}+user+am 
+    create-certificate create_resource am am am_controller --geni_uri URI:urn:publicid:IDN+${AM_SERVER_DOMAIN}+user+am 
     # omf_cert.rb -o am.pem  --geni_uri URI:urn:publicid:IDN+${AM_SERVER_DOMAIN}+user+am --email am@${DOMAIN} --resource-id xmpp://am_controller@${XMPP_DOMAIN} --resource-type am_controller --root ${REPO}/trusted_roots/root.pem --duration 50000000 create_resource
     #extract_key_from_pem ${REPO}/am.pem -o ${REPO}/am.pkey
     
-    create-certificate user_cert none create_user --user root  --geni_uri URI:urn:publicid:IDN+${AM_SERVER_DOMAIN}+user+root
+    create-certificate create_user user_cert root none --user root --geni_uri URI:urn:publicid:IDN+${AM_SERVER_DOMAIN}+user+root
     # omf_cert.rb -o user_cert.pem --geni_uri URI:urn:publicid:IDN+${AM_SERVER_DOMAIN}+user+root --email root@${DOMAIN} --user root --root ${REPO}/trusted_roots/root.pem --duration 50000000 create_user
     #extract_key_from_pem ${REPO}/user_cert.pem -o ${REPO}/user_cert.pkey
 }
@@ -137,8 +138,8 @@ function main () {
 	    n) DRY_RUN=true;;
 	esac
     done
-    echo we have REPO=$REPO
-    echo and DRY_RUN=$DRY_RUN
+#    echo we have REPO=$REPO
+#    echo and DRY_RUN=$DRY_RUN
     create-certificates
     [ -z "$DRY_RUN" ] && inria-specifics
 }
