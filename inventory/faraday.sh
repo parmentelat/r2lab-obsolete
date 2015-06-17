@@ -258,16 +258,16 @@ function load-image () {
 doc-nodes load-image "mandatory arg: image; load specified image on selected nodes"
 
 _images=""
-function load-u1410 ()   { load-image ubuntu14.10.ndz "$@" ; }
-_images="$_images ubuntu14.10.ndz"
+function load-u1410 ()   { load-image ubuntu-14.10.ndz "$@" ; }
+_images="$_images ubuntu-14.10.ndz"
 doc-nodes load-u1410 "Load image based on ubuntu 14.10"
 
-function load-u1504 ()   { load-image ubuntu15.04.ndz "$@" ; }
-_images="$_images ubuntu15.04.ndz"
+function load-u1504 ()   { load-image ubuntu-15.04.ndz "$@" ; }
+_images="$_images ubuntu-15.04.ndz"
 doc-nodes load-u1504 "Load image based on ubuntu 15.04"
 
-function load-f21 ()   { load-image fedora21.ndz "$@" ; }
-_images="$_images fedora21.ndz"
+function load-f21 ()   { load-image fedora-21.ndz "$@" ; }
+_images="$_images fedora-21.ndz"
 doc-nodes load-f21 "Load image based on fedora21"
 
 
@@ -279,8 +279,8 @@ function load-gr-u1504 () { load-image gnuradio-ubuntu-15.04.ndz "$@" ; }
 _images="$_images gnuradio-ubuntu-15.04.ndz"
 doc-nodes load-gr-u1504 "Load image based on ubuntu 15.04 with gnuradio installed"
 
-function load-gr-f21 () { load-image gnuradio-fedora21.ndz "$@" ; }
-_images="$_images gnuradio-fedora21.ndz"
+function load-gr-f21 () { load-image gnuradio-fedora-21.ndz "$@" ; }
+_images="$_images gnuradio-fedora-21.ndz"
 doc-nodes load-gr-f21 "Load image based on fedora 21 with gnuradio installed"
 
 function list-images {
@@ -292,7 +292,7 @@ doc-alt list-images "List available images"
 
 alias load-ubuntu=load-u1504
 alias load-fedora=load-f21
-alias load-gnuradio=load-gr-f21
+alias load-gnuradio=load-gr-u1410
 
 doc-nodes load-ubuntu "upload latest ubuntu image on all nodes"
 doc-nodes load-fedora "... latest fedora image"
