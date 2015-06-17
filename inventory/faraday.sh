@@ -595,7 +595,7 @@ doc-nodes net-names "display network interface names"
 function chmod-private-key () {
     chmod 600 ~/.ssh/id_rsa
 }
-doc-alt chmod-private-key "Chmod private key so that ssh won't complain anymore"
+doc-alt chmod-private-key "\n\t\tChmod private key so that ssh won't complain anymore"
 
 ##########
 function restart-all () {
