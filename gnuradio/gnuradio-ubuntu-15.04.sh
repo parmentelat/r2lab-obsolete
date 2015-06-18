@@ -36,8 +36,8 @@ cat > /etc/network/interfaces.d/usrp <<EOF
 # static IP address attached to the ethernet link towards USRP
 auto usrp
 iface usrp inet static
-  	address 192.168.10.1
-  	netmask 255.255.255.0
+    address 192.168.10.1
+    netmask 255.255.255.0
 ####################
 EOF
 
