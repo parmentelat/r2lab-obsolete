@@ -2,6 +2,10 @@
 #
 # inspired from
 # http://www.evanjones.ca/software/pxeimager-scratch.html
+# (not current any more)
+#
+# see also
+# http://superuser.com/questions/519264/reboot-the-system-from-an-initrd-without-causing-a-kernel-panic
 #
 # this shell is meant to run inside a dedicated build box
 # requirements
@@ -31,30 +35,57 @@
 COMMAND=$(basename $0 .sh)
 LOG=/build/$COMMAND.log
 
-DEFAULT_DISTRO=vivid
+###
+### PRELUDE
+###
+#
+# because frisbeeimage is a linux container (I think), I was not able
+# to run mount from within there
+# keeping it simple, I ran the following commands manually from the host (stupeflip)
+#
+# ISO=ubuntu-$VERSION-server-amd64.iso
+#
+DISTRO=vivid
+VERSION=15.04
+SH=/bin/sh
+#
+# root@stupeflip /vservers/frisbeeimage/build # mount -o loop ubuntu-15.04-server-amd64.iso mnt
+# mount: /dev/loop0 is write-protected, mounting read-only
+# root@stupeflip /vservers/frisbeeimage/build # cp mnt/install/netboot/ubuntu-installer/amd64/linux linux-15.04
+# root@stupeflip /vservers/frisbeeimage/build # cp mnt/install/netboot/ubuntu-installer/amd64/initrd.gz initrd.gz-15.04
+# root@stupeflip /vservers/frisbeeimage/build # umount mnt
+#
+# DISTRO=f21
+# VERSION=21
+# SH=/bin/bash
+#
+# root@stupeflip /vservers/frisbeeimage/build # mount -o loop Fedora-Server-netinst-x86_64-21.iso mnt
+#mount: /dev/loop0 is write-protected, mounting read-only
+#root@stupeflip /vservers/frisbeeimage/build # cp mnt/images/pxeboot/vmlinuz linux-f21
+#root@stupeflip /vservers/frisbeeimage/build # cp mnt/images/pxeboot/initrd.img initrd.img-f21
+#root@stupeflip /vservers/frisbeeimage/build # umount mnt
 
-function init_debootstrap () {
+DISTRO=mini15.04
+VERSION=mini15.04
+SH=/bin/sh
+
+# root@stupeflip /vservers/frisbeeimage/build # mount ubuntu-mini-remix-15.04-amd64.iso mnt
+# root@stupeflip /vservers/frisbeeimage/build # cp mnt/casper/vmlinuz linux-mini15.04
+# root@stupeflip /vservers/frisbeeimage/build # cp mnt/casper/initrd.lz initrd.lz-mini15.04
+# root@stupeflip /vservers/frisbeeimage/build # umount mnt
+
+function init_reference () {
+    apt-get install -y rsync lzma
     cd /build
     [ -d $REF ] && { echo reference already present ; return 0; }
     # wthout --variant, this is equivalent to --variant=minbase
-    debootstrap -no-gpg-check $DISTRO $REF
-    apt-get install -y rsync
+    mkdir -p $REF
+    cd $REF
+#    gzip -dc /build/initrd.gz-$VERSION | cpio -diu
+    #    cat /build/initrd.img-$DISTRO | cpio -diu
+    cat /build/initrd.lz-$VERSION | lzma -dc | cpio -diu
+    
 }
-
-# find the most recent deb file installed in /build
-function locate_kernel_deb () {
-    cd /build
-    kerneldeb=$(ls -rt linux-image*.deb | tail -1)
-#    [ -z "$kerneldeb" ] && apt-get download linux-image
-    [ -z "$kerneldeb" ] && { echo "You need to download some kernel-image deb package"; exit 1; }
-    kerneldeb=$(ls -rt linux-image*.deb | tail -1)
-    [ -z "$kerneldeb" ] && { echo "Cannot find linux kerneldeb -- exiting"; exit 1; }
-#    KERNEL_VER=$(echo $kerneldeb | sed -e s,linux-image_,, -e s,_amd64.deb,,)
-    KERNEL_DEB_ABS=/build/$kerneldeb
-    KERNEL_DEB_NAME=$kerneldeb
-    echo "Using KERNEL deb located in $KERNEL_DEB_ABS" 
-}
-
 
 function clone_and_tweak () {
 
@@ -63,15 +94,27 @@ function clone_and_tweak () {
 
     rsync -a $REF/ $ROOT/
 
-    chroot $ROOT << CHROOT
+    ########## entry point
+    # install our entry point in image's /bin/pxe-init
+    mkdir $ROOT/bin
+    rsync -av pxe-init $ROOT/bin
 
-cat > /etc/fstab << FSTAB
-# /etc/fstab: static file system information.
-# <file system> <mount point> <type> <options> <dump> <pass>
-/dev/ram0 / ext2 defaults 0 0
-proc /proc proc defaults 0 1
-tmpfs /tmp tmpfs defaults 0 1
-FSTAB
+# for the ubuntu old-style init-based image
+#    # tweak inittab so that our init program gets used
+#    sed --in-place=.ubuntu \
+#	-e 's,^\(::sysinit.*\),#\1,' \
+#	-e 's,^\(::respawn.*\),#\1,' \
+#	$ROOT/etc/inittab
+#    echo "::sysinit:/bin/pxe-init" >> $ROOT/etc/inittab
+
+    # tmp - used in pxe-init - requires that build runs same ubuntu
+    # probably requires dynamic libs anyway
+    mkdir $ROOT/sbin
+    rsync -av /sbin/fdisk $ROOT/sbin
+    rsync -av /lib/x86_64-linux-gnu $ROOT/lib
+
+    ########## networking
+    chroot $ROOT $SH << CHROOT
 
 cat > /etc/hostname << HOSTNAME
 pxefrisbee
@@ -92,15 +135,10 @@ INTERFACES
 CHROOT
 
     # remove root password
-    chroot $ROOT passwd --delete root
+    chroot $ROOT $SH << CHROOT
+passwd --delete root
+CHROOT
 
-    # kernel
-    dpkg-deb -x $KERNEL_DEB_ABS $ROOT/tmp
-    # turns out the debootstrap image has no /lib/modules/ directory at all...
-    mv $ROOT/tmp/lib $ROOT/modules
-    mv -f $ROOT/tmp/boot/vmlinuz* /build/kernel-pxe$DISTRO
-    # cleanup
-    rm -rf $ROOT/tmp/*
 }
 
 ########## telnet /ssh
@@ -112,7 +150,9 @@ function create_entry () {
 }
     
 function setup_ssh () {
-    chroot $ROOT apt-get install -y openssh-server
+    chroot $ROOT $SH << CHROOT
+apt-get install -y openssh-server
+CHROOT
     # looks like apt-get install enables the service with systemctl
     sed --in-place=.ubuntu \
 	-e 's,^#\?PermitRootLogin.*,PermitRootLogin yes,' \
@@ -124,8 +164,10 @@ function setup_ssh () {
 
 function setup_telnet () {
     echo deb http://archive.ubuntu.com/ubuntu $DISTRO universe > $ROOT/etc/apt/sources.list.d/universe.list
-    chroot $ROOT apt-get update
-    chroot $ROOT apt-get install -y telnetd
+    chroot $ROOT $SH << CHROOT
+apt-get update
+apt-get install -y telnetd
+CHROOT
     echo "XXX FIXME : telnet server setup incomplete"
 }
 
@@ -147,7 +189,7 @@ libnewt0.52 libpcap2 logrotate libpopt0 cron makedev apt apt-utils base-config
     # normalize - remove newlines
     to_trash=$(echo $to_trash)
     
-    chroot $ROOT << CHROOT
+    chroot $ROOT $SH << CHROOT
 dpkg --purge $to_trash
 CHROOT
 }
@@ -156,6 +198,7 @@ function wrap_up () {
     [ -n "$SKIP_WRAP" ] && { echo "SKIP_WRAP : no image produced"; return 0; }
     cd $ROOT
     find . | cpio -H newc -o | gzip -9 > /build/irfs-pxe$DISTRO.igz
+#    find . | cpio -H newc -o > /build/irfs-pxe$DISTRO
 }
 
 function usage () {
@@ -195,12 +238,13 @@ function main () {
 
     REF=/build/$DISTRO-root-ref
     ROOT=/build/$DISTRO-root
-    init_debootstrap
-    locate_kernel_deb
+    init_reference
     clone_and_tweak
     prune_useless_stuff
     install_newfrisbee
     create_entry
+#    echo "TMP END"
+#    exit 0
     wrap_up
 }
 
