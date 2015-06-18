@@ -615,3 +615,6 @@ function restart-all () {
     service omf-sfa start
 }
 doc-admin restart-all "Restart all 3 services omf-sfa, ntrc and dnsmasq"
+
+alias images="cd /var/lib/omf-images-6/"
+doc-admin images alias
