@@ -91,7 +91,7 @@ Note : It is also possible to run this command directly without making a nodes s
       
       $ on [off/reset]
       
-**5 - Load an image in the node**    
+**5 - Load an image in the selected nodes**    
 * Ubuntu 14.10
 
         $ load-u1410
