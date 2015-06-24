@@ -117,10 +117,12 @@ class Node(object):
         )
 
     def dnsmasq_conf(self):
-        control="dhcp-host=net:control,{},{},192.168.3.{}\n".\
-            format(self.mac, self.log_name('fit'), self.log_num)
-        data="dhcp-host=net:data,{},{}-exp,192.168.2.{}\n".\
-            format(self.alt_mac, self.log_name('data-'), self.log_num)
+        # for the control interfaces, provide IP + hostname
+        control="dhcp-host=net:control,{},192.168.3.{},{}\n".\
+            format(self.mac, self.log_num, self.log_name('fit'))
+        # do not expose a hostname on the data subnet
+        data="dhcp-host=net:data,{},192.168.2.{}\n".\
+            format(self.alt_mac, self.log_num)
         return control+data
 
 
@@ -128,9 +130,9 @@ class Node(object):
         # we cannot change the IP address of the CMC card, so this one is physical
         is_cmc = (sn_ip == self.subnets[0][0])
         num = self.phy_num if is_cmc else self.log_num
-        hostnames = self.log_name(prefix=sn_name+'-')
+        hostnames = self.log_name(prefix=sn_name)
         if sn_name == 'control':
-            hostnames += " " + self.log_name()
+            hostnames = self.log_name() + " " + hostnames
         return "192.168.{sn_ip}.{num}\t{hostnames}\n".format(**locals())
 
     def hosts_conf(self):
