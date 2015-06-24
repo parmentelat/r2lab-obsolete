@@ -28,7 +28,7 @@ function doc-admin () {
 
 function help-nodes () { echo -e $_doc_nodes; }
 function help-alt () { echo -e $_doc_alt; }
-alias help="help-nodes; help-alt;"
+function help () { help-nodes; help-alt; }
 function help-admin () { echo -e $_doc_admin; }
 doc-alt help-admin "list admin-oriented commands"
 
