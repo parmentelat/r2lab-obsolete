@@ -164,7 +164,7 @@ function norm () { py normalize fit "$@" ; }
 # norm 1 03 fit04 -> fit01,fit03,fit04
 function cnorm () { py comma_normalize fit "$@" ; }
 # normreboot 1 03 fit04 reboot-05 -> reboot-01 reboot-03 reboot-04 reboot-05
-function normreboot () { py normalize2 fit reboot- "$@" ; }
+function normreboot () { py normalize2 fit reboot "$@" ; }
 
 # set and/or show global NODES var
 # nodes
