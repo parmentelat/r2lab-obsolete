@@ -8,5 +8,5 @@ KERNEL kernel-pxevivid
 # 131072 is 128 Mb
 # 163840 is 160 Mb
 # 196608 is 192 Mb
-APPEND root=/dev/ram0 rw ramdisk_size=196608 initrd=irfs-irfs-pxevivid.igz biosdevname=0 control=eth0 xmpp=faraday.inria.fr slice=pxe_slice hrn=omf.nitos.%hostname%
+APPEND root=/dev/ram0 rw ramdisk_size=196608 initrd=irfs-pxevivid.igz biosdevname=0 control=eth0 xmpp=faraday.inria.fr slice=pxe_slice hrn=omf.nitos.%hostname%
 PROMPT 0

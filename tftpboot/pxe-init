@@ -1,0 +1,18 @@
+#!/bin/sh -e
+echo "Hello world (in shell)"
+
+echo ========== help
+help
+
+echo ========== ifup eth0 : not found
+ifup eth0
+echo ========== ip addr show
+ip addr show
+echo ========== fdisk -l - off
+#fdisk -l
+
+echo ========== mount - off
+#mount
+
+# echo sleeping
+sleep 1000000
