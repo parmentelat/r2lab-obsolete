@@ -28,8 +28,8 @@
 # Example of how to run this experiment (replace with your information):
 #
 # $ cd <path-to-nepi>/examples/linux [where the script has been copied]
-# python check_nodes.py -N <node A,node B,..> -U <r2lab-node-username> -i <ssh-key> -g <r2lab-gateway> -u <r2lab-slicename>
-# python check_nodes.py -N fit10,fit26 -U root -i ~/.ssh/id_rsa -g faraday.inria.fr -u mario
+# python sender_receiver.py -N <node A,node B,..> -U <r2lab-node-username> -i <ssh-key> -g <r2lab-gateway> -u <r2lab-slicename>
+# python sender_receiver.py -N fit10,fit26 -U root -i ~/.ssh/id_rsa -g faraday.inria.fr -u mario
 #
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState

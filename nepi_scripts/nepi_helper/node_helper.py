@@ -27,8 +27,8 @@
 # Example of how to run this experiment (replace with your information):
 #
 # $ cd <path-to-nepi>/examples/linux [where the script has been copied]
-# python check_nodes.py -A <action> -N <fitXX,fitZZ,..> -U <r2lab-node-username> -i <ssh-key> -g <r2lab-gateway> -u <r2lab-slicename>
-# python check_nodes.py -A status -N fit10,fit26,fit223 -U root -i ~/.ssh/id_rsa -g faraday.inria.fr  -u mario
+# python node_helper.py -A <action> -N <fitXX,fitZZ,..> -U <r2lab-node-username> -i <ssh-key> -g <r2lab-gateway> -u <r2lab-slicename>
+# python node_helper.py -A status -N fit10,fit26,fit223 -U root -i ~/.ssh/id_rsa -g faraday.inria.fr  -u mario
 #
 
 from nepi.execution.ec import ExperimentController
@@ -76,9 +76,12 @@ elif "off" in action:
 elif "reset" in action:
     # reset each node from the list
     result = reset(nodes, connection_information)
-elif "load" in action:
+elif "load-u1410" in action:
     # load image in each node from the list
-    result = load(nodes, connection_information)
+    result = load(nodes, 'u1410', connection_information)
+elif "load-u1504" in action:
+    # load image in each node from the list
+    result = load(nodes, 'u1504', connection_information)
 elif "alive" in action:
     # check if each node from the list anwer a ping
     result = alive(nodes, connection_information)

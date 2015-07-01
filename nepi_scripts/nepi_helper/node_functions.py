@@ -35,9 +35,10 @@ import re
 
 err_messages = ['error', 'err', 'unreachable', 'errors']
 
-def load(nodes, connection_information):
+def load(nodes, version, connection_information):
     """ Load a new image to the nodes from the list """
-    ec    = ExperimentController(exp_id="load")
+    valid_version(version)
+    ec    = ExperimentController(exp_id="load-{}".format(version))
     nodes = check_node_name(nodes)
 
     gw_node = ec.register_resource("linux::Node")
@@ -53,7 +54,7 @@ def load(nodes, connection_information):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "nodes {}; load-u1410".format(node) 
+        on_cmd_a = "nodes {}; load-{}".format(node, version) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -307,3 +308,13 @@ def number_node(alias):
     node = alias.lower().replace('fit', '')
     
     return int(node)
+
+def valid_version(version):
+    """ Check if the version to load """
+    versions = ['u1410', 'u1504', 'f21']
+    if version not in versions:
+        raise Exception("invalid version, must be {}".format(versions))
+        return False
+    else:
+        return version
+
