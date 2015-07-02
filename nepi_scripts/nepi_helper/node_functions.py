@@ -66,11 +66,10 @@ def load(nodes, version, connection_information):
 
     results = {}
     for app in apps:
-        ec.deploy(app)
-        #ec.wait_finished(app)
-    
         print "loading image at node {}".format(node_appid[app])
-        time.sleep(10)
+        ec.deploy(app)
+        ec.wait_finished(app)
+        #time.sleep(10)
         
     results = {}
     for app in apps:
@@ -116,18 +115,18 @@ def reset(nodes, connection_information):
 
     results = {}
     for app in apps:
-        ec.deploy(app)
-        #ec.wait_finished(app)
-
         print "restarting node {}".format(node_appid[app])
-        time.sleep(10)
+        ec.deploy(app)
+        ec.wait_finished(app)
+        #time.sleep(10)
+
         stdout    = remove_special(ec.trace(app, "stdout"))
         exitcode  = remove_special(ec.trace(app, 'exitcode'))
         results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
 
     ec.shutdown()
     
-    print_results(results, 'reseted')
+    print_results(results, 'reset')
 
     return results
 
@@ -224,8 +223,6 @@ def multiple_action(nodes, connection_information, action):
     ec.deploy(apps)
     ec.wait_finished(apps) 
 
-    #ec.register_condition(sender_app, ResourceAction.START, receiver_app, ResourceState.STARTED) 
-
     results = {}
     for app in apps:
         stdout    = remove_special(ec.trace(app, "stdout"))
@@ -238,9 +235,12 @@ def multiple_action(nodes, connection_information, action):
 
 def remove_special(str):
     """ Remove special caracters from a string """
-    new_str = str.replace('\n', '').replace('\r', '').lower()
-    new_str = re.sub('[^A-Za-z0-9]+', ' ', str)
-    
+    if str is not None:
+        new_str = str.replace('\n', '').replace('\r', '').lower()
+        new_str = re.sub('[^A-Za-z0-9]+', ' ', str)
+    else:
+        new_str = ''
+
     return new_str
 
 
@@ -290,7 +290,9 @@ def print_results(results, action=None, stdout=False):
     """ Print the results in a summary way"""
     print "+ + + + + + + + + "
     for key in sorted(results):
-        if int(results[key]['exit']) > 0:
+        if not results[key]['exit']:
+            new_result = 'fail, not answer found'
+        elif int(results[key]['exit']) > 0:
             new_result = 'fail'
         else:
             if stdout:
@@ -299,4 +301,5 @@ def print_results(results, action=None, stdout=False):
                 new_result = action
         print "node {:02}: {}".format(key, new_result)
     print "+ + + + + + + + +"
+
 
