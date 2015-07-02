@@ -33,7 +33,6 @@ import time
 import sys
 import re
 
-err_messages = ['error', 'err', 'unreachable', 'errors']
 
 def load(nodes, version, connection_information):
     """ Load a new image to the nodes from the list """
@@ -75,20 +74,13 @@ def load(nodes, version, connection_information):
         
     results = {}
     for app in apps:
-        the_trace = ec.trace(app, "stdout")
-        results.update({node_appid[app] : remove_special(the_trace)})
+        stdout    = remove_special(ec.trace(app, "stdout"))
+        exitcode  = remove_special(ec.trace(app, 'exitcode'))
+        results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
     
     ec.shutdown()
     
-    print "+ + + + + + + + + "
-    for key in sorted(results):
-        if set(err_messages).intersection(results[key].split()) or not results[key]:
-            new_result = 'fail'
-        else:
-            new_result = 'loaded'
-
-        print "node {:02}: {}".format(key, new_result)
-    print "+ + + + + + + + +"
+    print_results(results, 'loaded')
 
     return results
 
@@ -129,20 +121,13 @@ def reset(nodes, connection_information):
 
         print "restarting node {}".format(node_appid[app])
         time.sleep(10)
-        the_trace = ec.trace(app, "stdout")
-        results.update({node_appid[app] : remove_special(the_trace)})
+        stdout    = remove_special(ec.trace(app, "stdout"))
+        exitcode  = remove_special(ec.trace(app, 'exitcode'))
+        results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
 
     ec.shutdown()
     
-    print "+ + + + + + + + + "
-    for key in sorted(results):
-        if set(err_messages).intersection(results[key].split()) or not results[key]:
-            new_result = 'fail'
-        else:
-            new_result = 'restarted'
-
-        print "node {:02}: {}".format(key, new_result)
-    print "+ + + + + + + + +"
+    print_results(results, 'reseted')
 
     return results
 
@@ -183,22 +168,13 @@ def alive(nodes, connection_information):
 
     results = {}
     for app in apps:
-        the_trace = ec.trace(app, "stdout")
-        results.update({node_appid[app] : remove_special(the_trace)})
+        stdout    = remove_special(ec.trace(app, "stdout"))
+        exitcode  = remove_special(ec.trace(app, 'exitcode'))
+        results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
 
     ec.shutdown()
     
-    print "+ + + + + + + + + "
-    for key in sorted(results):
-        if set(err_messages).intersection(results[key].split()) or not results[key]:
-            new_result = 'fail'
-        else:
-            new_result = 'alive'
-
-        print "node {:02}: {}".format(key, new_result)
-    print "+ + + + + + + + +"
-
-    return results
+    print_results(results, 'alive')
 
 
 def status(nodes, connection_information):
@@ -252,22 +228,13 @@ def multiple_action(nodes, connection_information, action):
 
     results = {}
     for app in apps:
-        the_trace = ec.trace(app, "stdout")
-        results.update({node_appid[app] : remove_special(the_trace)})
+        stdout    = remove_special(ec.trace(app, "stdout"))
+        exitcode  = remove_special(ec.trace(app, 'exitcode'))
+        results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
 
     ec.shutdown()
     
-    print "+ + + + + + + + + "
-    for key in sorted(results):
-        if set(err_messages).intersection(results[key].split()) or not results[key]:
-            new_result = 'fail'
-        else:
-            new_result = results[key]
-
-        print "node {:02}: {}".format(key, new_result)
-    print "+ + + + + + + + +"
-
-    return results
+    print_results(results, action, True)
 
 def remove_special(str):
     """ Remove special caracters from a string """
@@ -292,6 +259,7 @@ def ip_node(alias):
 
 
 def check_node_name(nodes):
+    """ Returns the node without alias format """
     new_nodes = []
 
     for node in nodes:
@@ -317,4 +285,18 @@ def valid_version(version):
         return False
     else:
         return version
+
+def print_results(results, action=None, stdout=False):
+    """ Print the results in a summary way"""
+    print "+ + + + + + + + + "
+    for key in sorted(results):
+        if int(results[key]['exit']) > 0:
+            new_result = 'fail'
+        else:
+            if stdout:
+                new_result = results[key]['stdout']
+            else:
+                new_result = action
+        print "node {:02}: {}".format(key, new_result)
+    print "+ + + + + + + + +"
 
