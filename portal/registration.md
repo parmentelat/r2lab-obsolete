@@ -15,7 +15,7 @@ Once chosen the manual delegation of credentials option, a **[complementary step
  - (Default and recommended) I have no keys or I am not an advanced user or I have doubts what means, then:
 > With this policy choice the portal will generate and manage the keypair identity for you.
 
-- Finally, confirm the form in the button ***sign up***
+- Finally, confirm the form in the button **sign up**
 
 - You should receive a message like this:<br>
 > **Sign up information received**.
