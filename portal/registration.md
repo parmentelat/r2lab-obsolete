@@ -7,17 +7,15 @@ Enter the official OneLab portal at [http://portal.onelab.eu](http://portal.onel
 
 - Click the **[Sign up](http://dev.myslice.info/register)** button 
 - In the Organization tab, select: **INRIA - INRIA OneLab**
-- Fill the for with the requested info (*name, surname, password, etc*).
-
-As far as keys, you'll have two options:
-- (Advanced) I know what means and I aready have a key generated, then:
+- Fill the for with the requested info (*name, surname, password, etc*). However, as far as keys, you'll have two options:
+ - (Advanced) I know what means and I aready have a key generated, then:
 > Clic in select file button, find at your directiories your key and add to the form.<br>
 Once chosen the manual delegation of credentials option, a **[complementary step](https://portal.onelab.eu/portal/manual_delegation)** is required and can be done after the validation of your account by the manager of your organization.
 
-- (Default and recommended) I have no keys or I am not an advanced user or I have doubts what means, then:
+ - (Default and recommended) I have no keys or I am not an advanced user or I have doubts what means, then:
 > With this policy choice the portal will generate and manage the keypair identity for you.
 
-- Finally, confirm the request clicking in the button
+- Finally, confirm the form in the button ***sign up***
 
 - You should receive a message like this:<br>
 > **Sign up information received**.
