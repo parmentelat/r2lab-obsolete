@@ -62,29 +62,29 @@ username    = args.username
 gateway     = args.gateway
 gateway_username = args.gateway_username
 identity    = args.ssh_key
-connection_information = [nodes, username, gateway, gateway_username, identity]
+connection_info = { 'nodes':nodes, 'username':username, 'gateway':gateway, 'gateway_username':gateway_username, 'identity':identity }
 
 if "status" in action or "st" in action:
     # check status of each node from the list
-    result = status(nodes, connection_information)
+    result = status(nodes, connection_info)
 elif "on" in action:
     # turn on each node from the list
-    result = on(nodes, connection_information)
+    result = on(nodes, connection_info)
 elif "off" in action:
     # turn off each node from the list
-    result = off(nodes, connection_information)
+    result = off(nodes, connection_info)
 elif "reset" in action:
     # reset each node from the list
-    result = reset(nodes, connection_information)
+    result = reset(nodes, connection_info)
 elif "load-u1410" in action:
     # load image in each node from the list
-    result = load(nodes, 'u1410', connection_information)
+    result = load(nodes, 'u1410', connection_info)
 elif "load-u1504" in action:
     # load image in each node from the list
-    result = load(nodes, 'u1504', connection_information)
+    result = load(nodes, 'u1504', connection_info)
 elif "alive" in action:
     # check if each node from the list anwer a ping
-    result = alive(nodes, connection_information)
+    result = alive(nodes, connection_info)
 else:
     print "invalid option: {}".format(action)
     exit()

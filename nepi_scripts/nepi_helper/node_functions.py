@@ -34,16 +34,16 @@ import sys
 import re
 
 
-def load(nodes, version, connection_information):
+def load(nodes, version, connection_info, show_results=True):
     """ Load a new image to the nodes from the list """
     valid_version(version)
     ec    = ExperimentController(exp_id="load-{}".format(version))
     nodes = check_node_name(nodes)
 
     gw_node = ec.register_resource("linux::Node")
-    ec.set(gw_node, "hostname", connection_information[2])
-    ec.set(gw_node, "username", connection_information[3])
-    ec.set(gw_node, "identity", connection_information[4])
+    ec.set(gw_node, "hostname", connection_info['gateway'])
+    ec.set(gw_node, "username", connection_info['gateway_username'])
+    ec.set(gw_node, "identity", connection_info['identity'])
     ec.set(gw_node, "cleanExperiment", True)
     ec.set(gw_node, "cleanProcesses", False)
     ec.set(gw_node, "cleanProcessesAfter", False)
@@ -66,10 +66,9 @@ def load(nodes, version, connection_information):
 
     results = {}
     for app in apps:
-        print "loading image at node {}".format(node_appid[app])
+        print "-- loading image at node {}".format(node_appid[app])
         ec.deploy(app)
         ec.wait_finished(app)
-        #time.sleep(10)
         
     results = {}
     for app in apps:
@@ -78,21 +77,28 @@ def load(nodes, version, connection_information):
         results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
     
     ec.shutdown()
-    
-    print_results(results, 'loaded')
+
+    for key_node in sorted(results):
+        if '0' in results[key_node]['exit']:
+            # imprement thread for improvements and check in parallel
+            ans = check_if_node_answer(key_node, connection_info, 2, 30)
+            results.update(ans)
+
+    if show_results:
+        print_results(results, 'loaded')
 
     return results
 
 
-def reset(nodes, connection_information):
+def reset(nodes, connection_info, show_results=True):
     """ Reset all nodes from the list """
     ec    = ExperimentController(exp_id="reset")
     nodes = check_node_name(nodes)
     
     gw_node = ec.register_resource("linux::Node")
-    ec.set(gw_node, "hostname", connection_information[2])
-    ec.set(gw_node, "username", connection_information[3])
-    ec.set(gw_node, "identity", connection_information[4])
+    ec.set(gw_node, "hostname", connection_info['gateway'])
+    ec.set(gw_node, "username", connection_info['gateway_username'])
+    ec.set(gw_node, "identity", connection_info['identity'])
     ec.set(gw_node, "cleanExperiment", True)
     ec.set(gw_node, "cleanProcesses", False)
     ec.set(gw_node, "cleanProcessesAfter", False)
@@ -115,31 +121,36 @@ def reset(nodes, connection_information):
 
     results = {}
     for app in apps:
-        print "restarting node {}".format(node_appid[app])
+        print "-- restarting node {}".format(node_appid[app])
         ec.deploy(app)
         ec.wait_finished(app)
-        #time.sleep(10)
-
+        
         stdout    = remove_special(ec.trace(app, "stdout"))
         exitcode  = remove_special(ec.trace(app, 'exitcode'))
         results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
 
     ec.shutdown()
     
-    print_results(results, 'reset')
+    for key_node in sorted(results):
+        if '0' in results[key_node]['exit']:
+            ans = check_if_node_answer(key_node, connection_info)
+            results.update(ans)
+
+    if show_results:
+        print_results(results, 'reset')
 
     return results
 
 
-def alive(nodes, connection_information):
+def alive(nodes, connection_info, show_results=True):
     """ Check if a node answer a ping command """
     ec    = ExperimentController(exp_id="alive")
     nodes = check_node_name(nodes)
 
     gw_node = ec.register_resource("linux::Node")
-    ec.set(gw_node, "hostname", connection_information[2])
-    ec.set(gw_node, "username", connection_information[3])
-    ec.set(gw_node, "identity", connection_information[4])
+    ec.set(gw_node, "hostname", connection_info['gateway'])
+    ec.set(gw_node, "username", connection_info['gateway_username'])
+    ec.set(gw_node, "identity", connection_info['identity'])
     ec.set(gw_node, "cleanExperiment", True)
     ec.set(gw_node, "cleanProcesses", False)
     ec.set(gw_node, "cleanProcessesAfter", False)
@@ -172,34 +183,37 @@ def alive(nodes, connection_information):
         results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
 
     ec.shutdown()
-    
-    print_results(results, 'alive')
+
+    if show_results:
+        print_results(results, 'alive')
+
+    return results
 
 
-def status(nodes, connection_information):
+def status(nodes, connection_info, show_results=True):
     """ Check the status of all nodes from the list """
-    return multiple_action(nodes, connection_information, 'status')
+    return multiple_action(nodes, connection_info, 'status')
 
 
-def on(nodes, connection_information):
+def on(nodes, connection_info, show_results=True):
     """ Turn on all nodes from the list """
-    return multiple_action(nodes, connection_information, 'on')
+    return multiple_action(nodes, connection_info, 'on')
 
 
-def off(nodes, connection_information):
+def off(nodes, connection_info, show_results=True):
     """ Turn off all nodes from the list """
-    return multiple_action(nodes, connection_information, 'off')
+    return multiple_action(nodes, connection_info, 'off')
 
 
-def multiple_action(nodes, connection_information, action):
+def multiple_action(nodes, connection_info, action, show_results=True):
     """ Execute the command in all nodes from the list """
     ec    = ExperimentController(exp_id=action)
     nodes = check_node_name(nodes)
 
     gw_node = ec.register_resource("linux::Node")
-    ec.set(gw_node, "hostname", connection_information[2])
-    ec.set(gw_node, "username", connection_information[3])
-    ec.set(gw_node, "identity", connection_information[4])
+    ec.set(gw_node, "hostname", connection_info['gateway'])
+    ec.set(gw_node, "username", connection_info['gateway_username'])
+    ec.set(gw_node, "identity", connection_info['identity'])
     ec.set(gw_node, "cleanExperiment", True)
     ec.set(gw_node, "cleanProcesses", False)
     ec.set(gw_node, "cleanProcessesAfter", False)
@@ -231,13 +245,16 @@ def multiple_action(nodes, connection_information, action):
 
     ec.shutdown()
     
-    print_results(results, action, True)
+    if show_results:
+        print_results(results, action, True)
+
+    return results
 
 def remove_special(str):
     """ Remove special caracters from a string """
     if str is not None:
         new_str = str.replace('\n', '').replace('\r', '').lower()
-        new_str = re.sub('[^A-Za-z0-9]+', ' ', str)
+        #new_str = re.sub('[^A-Za-z0-9]+', ' ', str)
     else:
         new_str = ''
 
@@ -261,12 +278,16 @@ def ip_node(alias):
 def check_node_name(nodes):
     """ Returns the node without alias format """
     new_nodes = []
+    nodes = (map(str,nodes))
 
+    if not type(nodes) is list:
+        raise Exception("invalid paramenter: {}, must be a list".format(nodes))
+        return False
     for node in nodes:
         if "fit" in node:
             new_nodes.append(number_node(node))
         else:
-            new_nodes.append(node)
+            new_nodes.append(int(node))
 
     return new_nodes
 
@@ -289,17 +310,46 @@ def valid_version(version):
 def print_results(results, action=None, stdout=False):
     """ Print the results in a summary way"""
     print "+ + + + + + + + + "
-    for key in sorted(results):
-        if not results[key]['exit']:
-            new_result = 'fail, not answer found'
-        elif int(results[key]['exit']) > 0:
-            new_result = 'fail'
-        else:
-            if stdout:
-                new_result = results[key]['stdout']
+    if results:
+        for key in sorted(results):
+            if not results[key]['exit']:
+                new_result = 'fail'
+            elif int(results[key]['exit']) > 0:
+                new_result = 'fail'
             else:
-                new_result = action
-        print "node {:02}: {}".format(key, new_result)
+                if stdout:
+                    new_result = results[key]['stdout']
+                else:
+                    new_result = action
+            print "node {:02}: {}".format(key, new_result)
+    else:
+        print "-- no results to show"
     print "+ + + + + + + + +"
 
+
+def check_if_node_answer(node, connection_info, times=2, wait_for=10):
+    results = {}
+    turn = 0
+    for n in range(times):
+        turn += 1
+        print "-- attempt #{} for node {}".format(n+1, node)
+                
+        ans = alive([node], connection_info, False)
+        if '0' in ans[node]['exit']:
+            results.update(ans)
+            break
+        else:
+            if times > turn:
+                print "-- waiting for a while for new attempt"
+                wait_and_update_progress_bar(wait_for)
+
+    return results
+
+
+def wait_and_update_progress_bar(wait_for):
+    for n in range(wait_for):
+        time.sleep(1)
+        print '\b.',
+        sys.stdout.flush()
+    print ""
 
