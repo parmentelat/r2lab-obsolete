@@ -5,12 +5,15 @@ PUBLISH_HOST = root@r2lab.inria.fr
 PUBLISH_PATH = /var/www/html
 PUBLISH_RSYNC = $(PUBLISH_HOST):$(PUBLISH_PATH)/
 
-# this one apparently needs more work
-LAYOUT = bootstrap3
+# I am using the custom-made 'r2lab' layout
+# that is available from my fork of markdown-styles on github
 
+LAYOUT = ./r2lab-layout
+
+# this one apparently needs more work
+#LAYOUT = bootstrap3
 # not too bad but not quite all right either
 #LAYOUT = mixu-bootstrap-2col
-
 #LAYOUT = github
 #LAYOUT = roryg-ghostwriter
 #LAYOUT = mixu-book
@@ -23,20 +26,12 @@ LAYOUT = bootstrap3
 GITS = $(shell git ls-files ../)
 GIT_MDS = $(filter %.md, $(GITS))
 
-LOCAL_MDS = $(wildcard *.md)
-
-# set this to true if you want to see all known mds in git as well
-# make ALL=true
-
-ifeq ("$(ALL)","")
-ALL_MDS = $(LOCAL_MDS)
-else
-ALL_MDS = $(sort $(GIT_MDS) $(LOCAL_MDS))
-endif
+ALL_MDS = index.md overview.md tuto-*md status.md
+ALL_MEDIAS = *.png
 
 prepare:
 	@[ -d markdown ] || mkdir markdown
-	rsync -av --delete $(ALL_MDS) markdown
+	rsync -av --delete $(ALL_MDS) $(ALL_MEDIAS) markdown
 
 index:
 	@[ -d html ] || mkdir html
