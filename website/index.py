@@ -9,7 +9,7 @@ from glob import glob
 source = "index.md"
 output_dir = "markdown"
 
-index_line_format = " * [{base}]({base}.html)\n"
+index_line_format = " * [{base} ({dir})]({base}.html)\n"
 
 def main():
     if not os.path.isfile(source):
@@ -18,14 +18,16 @@ def main():
 
     output = os.path.join(output_dir, source)
     with open(output, 'w') as result:
+        # copy index.md
         with open(source) as input:
             result.write(input.read())
-        for other in glob("{}/*.md".format(output_dir)):
+        for other in sys.argv[1:]:
+            dir = os.path.dirname(other) or "."
             base = os.path.basename(other).replace(".md", "")
             # skip index from the index...
-            if base == source:
+            if base == "index":
                 continue
-            result.write(index_line_format.format(base=base))
+            result.write(index_line_format.format(dir=dir, base=base))
     print("(Over)wrote {}".format(output))
 
 main()

@@ -1,7 +1,7 @@
 # Pre-requisite #
 
 Obtain a slice account on R2LAB (faraday)
-# Direct access to the node through ssh #
+# Direct ssh access to the node
 
 Example IP addresses of the target node
 

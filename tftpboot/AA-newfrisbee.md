@@ -1,22 +1,28 @@
+title: Preparing the newfribee image
+---
 # Preparing the image
 
 As a short reminder, here's the gist of how I came up with my modified PXE image
 
 * start from the PXE image in operation with other OMF deployments
 
-###
+i.e.
+    
     parmentelat ~/git/fitsophia/images/tftpboot $ ls -l initramfs-omf6.igz.oldfrisbee
     -rwxr-xr-x  1 parmentelat  staff  71103697 Feb 17 10:04 initramfs-omf6.igz.oldfrisbee
+
 * unwrap it
 
-###
+i.e.
+
     mkdir unwrap-initramfs-omf6
     cd unwrap-initramfs-omf6
     gzip -cd ../tftpboot/initramfs-omf6.igz | cpio -diu
     
 * overwrite old binaries / install new stuff 
 
-###
+i.e.
+
     cp .../frisbee usr/sbin
     cp .../frisbeed usr/sbin
     cp .../imagezip usr/bin
@@ -25,7 +31,8 @@ As a short reminder, here's the gist of how I came up with my modified PXE image
 
 * check (against a pristine unwrapped copy)
 
-###        
+i.e.
+
     parmentelat ~/git/fitsophia/images $ diff -r unwrap-initramfs-omf6 wrap-new-frisbee
     diff: unwrap-initramfs-omf6/etc/mtab: No such file or directory
     diff: wrap-new-frisbee/etc/mtab: No such file or directory
@@ -44,12 +51,14 @@ As a short reminder, here's the gist of how I came up with my modified PXE image
     
 * rebuild the new image
 
-###
+i.e.
+
     find . | cpio -H newc -o | gzip -9 > ../tftpboot/initramfs-omf6.igz.newfrisbee
     
 * results
+
+i.e. 
  
-###
     parmentelat ~/git/fitsophia/images/tftpboot $ ls -l initramfs-omf6.igz.*
     -rwxr-xr-x  1 parmentelat  staff  70491187 Feb 17 10:35 initramfs-omf6.igz.newfrisbee
     -rwxr-xr-x  1 parmentelat  staff  71103697 Feb 17 10:04 initramfs-omf6.igz.oldfrisbee
@@ -75,7 +84,7 @@ and then install `initramfs-omf6.igz.newfrisbee`
 
 ## convenience tools
 
-this now comes as part as `comp-faraday.ish`
+This now comes as part as `faraday.sh`
 
     root@bemol:~# pxe-new
     new pxe-frisbee config
@@ -101,8 +110,3 @@ this now comes as part as `comp-faraday.ish`
     -rwxr-xr-x 1 root root   981304 Feb 17 14:22 /usr/sbin/frisbeed-new-64
     -rwxr-xr-x 1 root root   917624 Aug  9  2012 /usr/sbin/frisbeed-old-64
     
-See also a `pxe-hybrid` version
-
-# Additions : hybrid image
-
-trashed - this contained 'new' frisbee in some unknown state (feb 2015)

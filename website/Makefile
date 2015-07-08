@@ -1,30 +1,48 @@
-all: prepare convert publish
-.PHONY: all prepare convert publish 
+all: prepare index convert publish
+.PHONY: all prepare index convert publish 
 
-PUBLISH_HOST = root@r2lab.pl.sophia.inria.fr
+PUBLISH_HOST = root@r2lab.inria.fr
 PUBLISH_PATH = /var/www/html
 PUBLISH_RSYNC = $(PUBLISH_HOST):$(PUBLISH_PATH)/
 
 # this one apparently needs more work
-#LAYOUT = bootstrap3
+LAYOUT = bootstrap3
 
-LAYOUT = mixu-bootstrap-2col
+# not too bad but not quite all right either
+#LAYOUT = mixu-bootstrap-2col
+
+#LAYOUT = github
+#LAYOUT = roryg-ghostwriter
+#LAYOUT = mixu-book
+
 
 
 # temporary:
 # consider all the md files we have under git
 
-ALL_GITS = $(shell git ls-files ../)
-ALL_MDS = $(filter %.md, $(ALL_GITS))
+GITS = $(shell git ls-files ../)
+GIT_MDS = $(filter %.md, $(GITS))
 
+LOCAL_MDS = $(wildcard *.md)
+
+# set this to true if you want to see all known mds in git as well
+# make ALL=true
+
+ifeq ("$(ALL)","")
+ALL_MDS = $(LOCAL_MDS)
+else
+ALL_MDS = $(sort $(GIT_MDS) $(LOCAL_MDS))
+endif
 
 prepare:
 	@[ -d markdown ] || mkdir markdown
 	rsync -av --delete $(ALL_MDS) markdown
 
-convert: 
+index:
 	@[ -d html ] || mkdir html
-	./index.py
+	./index.py $(ALL_MDS)
+
+convert: 
 	generate-md --layout $(LAYOUT) --input markdown --output html
 
 publish:
