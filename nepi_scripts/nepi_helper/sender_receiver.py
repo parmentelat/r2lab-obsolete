@@ -36,6 +36,7 @@ from nepi.execution.resource import ResourceAction, ResourceState
 import os
 from nepi.util.sshfuncs import logger
 import logging
+from argparse import ArgumentParser
 
 usage = ("usage: %prog -N <node-A-and-Node-B> -U <node-username> -i <ssh-key> -g <gateway> -u <slicename>")
 
