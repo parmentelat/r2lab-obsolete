@@ -1,4 +1,6 @@
 all: prepare index meta convert publish
+preview: prepare index meta convert
+
 .PHONY: all prepare index meta convert publish 
 
 PUBLISH_HOST = root@r2lab.inria.fr
