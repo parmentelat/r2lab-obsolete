@@ -1,5 +1,5 @@
-all: prepare index convert publish
-.PHONY: all prepare index convert publish 
+all: prepare index meta convert publish
+.PHONY: all prepare index meta convert publish 
 
 PUBLISH_HOST = root@r2lab.inria.fr
 PUBLISH_PATH = /var/www/html
@@ -33,9 +33,15 @@ prepare:
 	@[ -d markdown ] || mkdir markdown
 	rsync -av --delete $(ALL_MDS) $(ALL_MEDIAS) markdown
 
+# index.py is hard-wired to output in markdown/
 index:
-	@[ -d html ] || mkdir html
+	@[ -d markdown ] || mkdir markdown
 	./index.py $(ALL_MDS)
+
+# likewise
+meta:
+	@[ -d markdown ] || mkdir markdown
+	./meta.py
 
 convert: 
 	generate-md --layout $(LAYOUT) --input markdown --output html
