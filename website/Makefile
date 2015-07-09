@@ -1,30 +1,43 @@
-all: prepare convert publish
-.PHONY: all prepare convert publish 
+all: prepare index convert publish
+.PHONY: all prepare index convert publish 
 
-PUBLISH_HOST = root@r2lab.pl.sophia.inria.fr
+PUBLISH_HOST = root@r2lab.inria.fr
 PUBLISH_PATH = /var/www/html
 PUBLISH_RSYNC = $(PUBLISH_HOST):$(PUBLISH_PATH)/
 
+# I am using the custom-made 'r2lab' layout
+# that is available from my fork of markdown-styles on github
+
+LAYOUT = ./r2lab-layout
+
 # this one apparently needs more work
 #LAYOUT = bootstrap3
+# not too bad but not quite all right either
+#LAYOUT = mixu-bootstrap-2col
+#LAYOUT = github
+#LAYOUT = roryg-ghostwriter
+#LAYOUT = mixu-book
 
-LAYOUT = mixu-bootstrap-2col
 
 
 # temporary:
 # consider all the md files we have under git
 
-ALL_GITS = $(shell git ls-files ../)
-ALL_MDS = $(filter %.md, $(ALL_GITS))
+GITS = $(shell git ls-files ../)
+GIT_MDS = $(filter %.md, $(GITS))
 
+ALL_MDS = index.md overview.md tuto-*md status.md events.md
+ALL_MEDIAS = *.png
 
 prepare:
 	@[ -d markdown ] || mkdir markdown
-	rsync -av --delete $(ALL_MDS) markdown
+	rsync -av --delete $(ALL_MDS) $(ALL_MEDIAS) markdown
+
+index:
+	@[ -d html ] || mkdir html
+	./index.py $(ALL_MDS)
 
 convert: 
-	@[ -d html ] || mkdir html
-	./index.py
 	generate-md --layout $(LAYOUT) --input markdown --output html
 
 publish:

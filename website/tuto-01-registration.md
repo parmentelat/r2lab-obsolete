@@ -1,5 +1,11 @@
+<<<<<<< HEAD:website/registration.md
 ![R2Lab](https://onelab.eu/static/images/onelab.png)
 
+=======
+title: Registration Tutorial 
+tab: tutorials
+---
+>>>>>>> 392149cd33954e2b573a9a712ea1bb5e471c5ab9:website/tuto-01-registration.md
 # Entry point
 Enter the official OneLab portal at [http://portal.onelab.eu](http://portal.onelab.eu)
 
