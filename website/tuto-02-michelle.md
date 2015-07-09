@@ -1,4 +1,4 @@
-title: Tutorial : First steps
+title: Tutorial - First steps
 tab: tutorials
 ---
 
