@@ -23,8 +23,8 @@ LAYOUT = ./r2lab-layout
 # temporary:
 # consider all the md files we have under git
 
-GITS = $(shell git ls-files ../)
-GIT_MDS = $(filter %.md, $(GITS))
+#GITS = $(shell git ls-files ../)
+#GIT_MDS = $(filter %.md, $(GITS))
 
 ALL_MDS = index.md overview.md tuto-*md status.md events.md
 ALL_MEDIAS = *.png
