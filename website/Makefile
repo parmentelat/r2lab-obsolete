@@ -26,7 +26,7 @@ LAYOUT = ./r2lab-layout
 GITS = $(shell git ls-files ../)
 GIT_MDS = $(filter %.md, $(GITS))
 
-ALL_MDS = index.md overview.md tuto-*md status.md
+ALL_MDS = index.md overview.md tuto-*md status.md events.md
 ALL_MEDIAS = *.png
 
 prepare:

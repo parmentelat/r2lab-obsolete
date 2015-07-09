@@ -1,3 +1,7 @@
+title: Tutorial : First steps
+tab: tutorials
+---
+
 # Pre-requisite #
 
 Obtain a slice account on R2LAB (faraday)
