@@ -1,72 +1,47 @@
-![R2Lab](https://onelab.eu/static/images/onelab.png)
-
 # Entry point
-Enter the official OneLab portal at [http://portal.onelab.eu](http://portal.onelab.eu)
+The official OneLab portal is located at [http://portal.onelab.eu](http://portal.onelab.eu).
 
-> Note there is also a [development portal](http://dev.myslice.info) that is also connected to R2Lab, but usage should be restricted in theory
+Note there is also a [development portal](http://dev.myslice.info) that is also connected to R2Lab, but usage should be restricted in theory.
 
 # Registration
+To proceed your registration ate onelab portal:
 
-- Click the **[sign up](http://dev.myslice.info/register)** button 
-- In the Organization tab, select: **INRIA - INRIA OneLab**
-- Fill the form with the requested info (*name, surname, password, etc*). However, as far as keys, you'll have two options:
+**1)** Fill the form with the requested info. Organization, first name, etc ... . If your organization is not listed in the portal, you can [request](https://portal.onelab.eu/portal/join) its addition.
 
- - **[Default and recommended]** -  I have no keys or I am not an advanced user or I have doubts what means, then:
-> With this policy choice the portal will generate and manage the keypair identity for you.
+In the keys form, you'll find two options:
 
- - **[Advanced]** -  I know what means and I aready have a key generated, then:
-> Click in select file button, search at your computer your correspondent key and add to the form.<br>
-Once chosen the manual delegation of credentials option, a **[complementary step](https://portal.onelab.eu/portal/manual_delegation)** is required and can be done after the validation of your account by the manager of your organization.
+**Default/Automatic:** Choose this option if you have no keys generated in your device or if you are not an advanced user. In case of any doubts about the keys process, this option is recommended as well.
 
-- Finally, confirm the form in the button **sign up**
+With this policy choice selected the portal will generate and manage the keypair identity for you.
 
-- You should receive a message like this:<br>
- - **Sign up information received**.
-<br>You can now log in to the portal. You will have limited access.
-To gain full access, two steps are required:
-<br> **1.** You confirm your signup request by clicking on the link in the email that we have sent to your email address.
-Please be aware that it can happen that this email was automatically filtered to your spam box. 
-<br>
-Please check your spam box if you do not receive the email in a few minutes
-<br>
-**2.** A manager from your organization validates your request. Upon confirmation of your signup request,
-we will send an email to the managers at your organization with a validation request.
-of the confirmation will I should receive an e-mail, but it won't hurt if you send one to me directly as well so I can vouch for you and activate the request.
+**Advanced/Manual:** Choose this option if you have knowledge about keys pairs and you already have them generated.
+
+A file button is provided to search at your computer your correspondent key and upload to the portal.
+Once chosen the manual delegation of credentials option, a **[complementary step](https://portal.onelab.eu/portal/manual_delegation)** is required. This step can be done after the validation of your account by the manager of your organization.
+
+**2)** An email will be send to confirm your subscription. At this point you are a limited user. To gain full access you must **click at the link present** in the email confirmation and wait for the **manager organization validation** of your request.
 
 # Your experiments
-In order to use the plataform and play your experiments, two ways are proposed. The first one concerns **create a project**, the second one concerns in **join a project** that already exists.
+In order to use the plataform, run and play your experiments, you must **create a new project** or **join a project** that already exists and book an **slice** inside of it. These concepts and how to interact with them are explained as follows.
 
-# Project
-A **project** is a sub-authority under the responsability of your institution gathering users, who will be able to create slices for their experiments.
+### Project:
+A **project** is a sub-authority under the responsibility of your institution gathering users who will be able to create slices for their experiments.
+Once logged in your dashboard a **[create/join project](https://portal.onelab.eu/portal/project_request/)**  project link is proposed and you can:
 
-- **[Crete a project]**
-  
- > Once logged, in your dashboard a **[create/join project](https://portal.onelab.eu/portal/project_request/)** link is proposed. 
-Using the link, three fields are requested: project name, authority and a description of the purpose.
-<br>
-When a project request is created, a confirmation email resumes your action and your request will be send to authority manager validation.
+- **create new project** tab:  
+In this option some informations for your new project are required.
+Once this information is given the project could be submited.
 
-- **[Join a project]**
-> In this option, a list of projects already created are proposed. Just select the project you would like to join and confirm. 
-<br>
-When a project join is made, a confirmation email resumes your action and your request will be send to authority manager validation.
+- **Join a project** tab:
+In this option a list of projects already created are proposed. Select the project you would like to join and confirm. 
 
-- **[Join INRIA's project]**
-> For the sake of simplicity we have created a single project for now, that is named: `onelab.inria.r2lab`	
+An email confirmation resumes your action and your request will be send to authority manager validation.
 
-# Slices
-A **slice** is a set of testbed resources on which you can conduct an experiment. 
-Either ask your colleagues to give you access to an existing slice or request a new one.
+### Slices
+A **slice** is a set of testbed resources on which you can conduct an experiment. You can request a new slice or either ask your colleagues to give you access to an existing one.
 
-- **[Crete a slice]**
-> Once logged, in your dashboard a **[request slice](https://portal.onelab.eu/portal/slice_request/)** link is proposed. 
-Using the link, four fields are requested: slice name, project name - under which you want your slice, an URL for the experiment and a single description of the purpose.
-<br>
+- **Create a slice**:
+Once logged, in your dashboard a **[request slice](https://portal.onelab.eu/portal/slice_request/)** link is proposed. 
+Once this information is given the slice could be required.
+
 When a slice request is created, a confirmation email resumes your action and your request will be send to authority manager validation.
-
-- **[INRIA's slice]**
- > From the fields required in the **[slice request](https://portal.onelab.eu/portal/slice_request/)**, please use this name `onelab.inria.r2lab` project as a placeholder for you slice.
-
-Once the slice request action is done and activated by the manager, you can see the slice in the dashboard, click on it and obtain the resource browser for attaching and reserving nodes.
-
-# Nodes

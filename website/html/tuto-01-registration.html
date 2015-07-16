@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Registration Tutorial</title>
+      <link rel="icon" type="image/png" href="assets/img/r2lab-icon.png"/>
+
+    <link type="text/css" rel="stylesheet" href="assets/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/css/bootstrap_and_overrides.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/css/pilcrow.css"/>
+    <link type="text/css" rel="stylesheet" href="assets/css/hljs-github.min.css"/>
+    <!-- adding jquery to the mix -->
+    <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
+    <!-- our script for setting the active tabs right -->
+    <script type="text/javascript" src="assets/js/active-tab.js"></script>
+    <!-- extra space for navbar-fixed-top -->
+    <style type="text/css">
+      body { padding-top: 70px; }
+    </style>
+  </head>
+<body>
+
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+          <img alt="logo" style="height:18px;" src="assets/img/r2lab-logo.png" />
+        </a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li id="tab-overview"  tab="tutorials"><a href="overview.html">Overview</a></li>
+          <li class="dropdown" id="tab-tutorials" tab="tutorials">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorials <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="tuto-01-registration.html#">Registration</a></li>
+              <li><a href="tuto-02-michelle.html">Michelle's</a></li>
+            </ul>
+          </li>
+          <li id="tab-status" tab="tutorials"><a href="status.html">Status</a></li>
+          <li id="tab-events" tab="tutorials"><a href="events.html">Events</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a href="http://portal.onelab.eu" target="_blank">
+              <img src="assets/img/onelab-logo.png" style="height:18px;"> FIT Portal
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="jumbotron" style="background:url(assets/img/back.jpg)no-repeat; background-size:100%; height:310px ;">
+  </div>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>Registration Tutorial </h1>
+    </div><h1 id="entry-point"><a class="header-link" href="#entry-point"></a>Entry point</h1>
+<p>The official OneLab portal is located at <a href="http://portal.onelab.eu">http://portal.onelab.eu</a>.</p>
+<p>Note there is also a <a href="http://dev.myslice.info">development portal</a> that is also connected to R2Lab, but usage should be restricted in theory.</p>
+<h1 id="registration"><a class="header-link" href="#registration"></a>Registration</h1>
+<p>To proceed your registration ate onelab portal:</p>
+<p><strong>1 -</strong> Fill the form with the requested info. Organization, first name, etc ... . </p>
+<center>
+<img src="assets/img/register.png" alt="register"><br>
+Fig. 1 - Register
+</center>
+
+<p>If your organization is not listed in the portal, you can <a href="https://portal.onelab.eu/portal/join">request</a> its addition (fig 1, <font color="red"><strong>A</strong></font>).</p>
+<p>In the keys form (fig 1, <font color="red"><strong>B</strong></font>), you&#39;ll find two options:</p>
+<p><strong>default/automatic:</strong> Choose this option if you have no keys generated in your device or if you are not an advanced user. In case of any doubts about the keys process, this option is recommended as well.</p>
+<p>With this policy choice selected the portal will generate and manage the key pair identity for you.</p>
+<p><strong>advanced/manual:</strong> Choose this option if you have knowledge about keys pairs and you already have them generated.</p>
+<p>A file button is provided to search at your computer your correspondent key and upload to the portal.
+Once chosen the manual delegation of credentials option, a <strong><a href="https://portal.onelab.eu/portal/manual_delegation">complementary step</a></strong> is required. This step can be done after the validation of your account by the manager of your organization.</p>
+<p><strong>2 -</strong> An email will be send to confirm your subscription. At this point you are a limited user. To gain full access you must <strong>click at the link present</strong> in the email confirmation and wait for the <strong>manager organization validation</strong> of your request.</p>
+<h1 id="your-experiments"><a class="header-link" href="#your-experiments"></a>Your experiments</h1>
+<p>In order to use the plataform, run and play your experiments, you must <strong>create a new project</strong> or <strong>join a project</strong> that already exists and book an <strong>slice</strong> inside of it. These concepts and how to interact with them are explained as follows.</p>
+<center>
+<img src="assets/img/dashboard.png" alt="dashboard"><br>
+Fig. 2 - Dashboard
+</center>
+
+<h3 id="project"><a class="header-link" href="#project"></a>Project</h3>
+<p>A <strong>project</strong> is a sub-authority under the responsibility of your institution gathering users who will be able to create slices for their experiments.
+Once logged in your dashboard a <strong><a href="https://portal.onelab.eu/portal/project_request/">create/join project</a></strong> (fig 2, <font color="red"><strong>A</strong></font>) project link is proposed and you can:</p>
+<ul class="list">
+<li><p><strong>create new project</strong> tab: In this option some informations for your new project are required.
+Once this information is given the project could be submited.</p>
+</li>
+<li><p><strong>join a project</strong> tab: In this option a list of projects already created are proposed. Select the project you would like to join and confirm. </p>
+</li>
+</ul>
+<p>An email confirmation resumes your action and your request will be send to authority manager validation.</p>
+<h3 id="slices"><a class="header-link" href="#slices"></a>Slices</h3>
+<p>A <strong>slice</strong> is a set of testbed resources on which you can conduct an experiment. You can request a new slice or either ask your colleagues to give you access to an existing one.</p>
+<ul class="list">
+<li><strong>create a slice</strong>: Once logged, in your dashboard a <strong><a href="https://portal.onelab.eu/portal/slice_request/">request slice</a></strong> (fig 2, <font color="red"><strong>B</strong></font>) link is proposed. 
+Once this information is given the slice could be required.</li>
+</ul>
+<p>When a slice request is created, a confirmation email resumes your action and your request will be send to authority manager validation.
+Once the validation is done your dashboard present the slices list (fig 2, <font color="red"><strong>C</strong></font>) and the resource reservation is available.</p>
+<p>The resources could be reserved in some easy steps:</p>
+<ul class="list">
+<li>Select the resource using a <strong>table list</strong>, a <strong>map</strong> or the <strong>scheduler</strong> (fig 3, <font color="red"><strong>A</strong></font>).</li>
+<li>Check the resources in the table list <strong>or</strong> click on the icon in the map <strong>or</strong> select the range time of your interest when the scheduler tool is open (fig 3, <font color="red"><strong>B</strong></font>).</li>
+<li>Once the submit button is clicked the reservation progress will appear (fig 3, <font color="red"><strong>C</strong></font>).</li>
+</ul>
+<center>
+<img src="assets/img/slice_a.png" alt="dashboard"><br>
+Fig. 3 - Slice Dashboard
+</center>
+
+<h3 id="resources-nodes"><a class="header-link" href="#resources-nodes"></a>Resources/Nodes</h3>
+  </div>
+
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+</body>
+</html>
