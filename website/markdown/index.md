@@ -8,7 +8,7 @@ tab: index
       <span style="font-size:6em;" class="glyphicon glyphicon-signal" aria-hidden="true"></span>
       <h2>Open Platform</h2>
       <p>Create your account in a few clicks, or login if you already have an account.</p>
-      <p><a class="btn btn-default" href="http://portal.onelab.eu/" role="button">Get started »</a></p>
+      <p><a class="btn btn-default" href="http://portal.onelab.eu/" role="button">get started »</a></p>
     </div><!-- /.col-lg-4 -->
     <div class="col-lg-4">
       <span style="font-size:6em;" class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -19,7 +19,7 @@ tab: index
       <span style="font-size:6em;" class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
       <h2>Open Tools</h2>
       <p>Deploy and run your experiments using Nepi: Network Experiment Programming Interface</p>
-      <p><a class="btn btn-default" href="http://nepi.inria.fr" role="button">View details »</a></p>
+      <p><a class="btn btn-default" href="http://nepi.inria.fr" role="button">view details »</a></p>
     </div><!-- /.col-lg-4 -->
   </div><!-- /.row -->
 
@@ -31,7 +31,7 @@ tab: index
   </h2>
 
   <br>
-  
+
   <div class="row">
   <div class="col-md-3">
     <h4>1. Subscribe in the portal</h4>
