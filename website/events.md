@@ -2,8 +2,6 @@ title: Upcoming and past events
 tab: events
 ---
 
-# R2Lab Events
-
 ### September 22<sup>nd</sup> 2015
 
 du texte
