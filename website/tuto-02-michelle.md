@@ -4,7 +4,9 @@ tab: tutorials
 
 # Pre-requisite #
 
-Obtain a slice account on R2LAB (faraday)
+[Obtain a slice account on R2LAB (faraday)](tuto-01-registration.html)
+
+
 # Direct ssh access to the node
 
 Example IP addresses of the target node
@@ -127,7 +129,7 @@ Note : It is also possible to run this command directly without making a nodes s
 
 Use one of the scripts below
 
-* ![r2lab_testbed_bootstrap.py](./r2lab_testbed_bootstrap.py "r2lab_testbed_bootstrap.py")
+* [r2lab_testbed_bootstrap.py](r2lab_testbed_bootstrap.py)
 
 This is a maintenance script used to bootstrap the nodes from
 INRIA testbed (R2Lab) before running an experiment using Nitos nodes.   
@@ -140,7 +142,7 @@ Example of how to run this experiment (replace with your information):
     $ python r2lab_testbed_bootstrap.py -H <fitXX,fitZZ,..> -U <r2lab-node-username> -i <ssh-key> -g <r2lab-gateway> -u <r2lab-slicename>
     $ python r2lab_testbed_bootstrap.py -H fit12,fit18 -U root -i ~/.ssh -g faraday.inria.fr -u root
 
-* ![r2lab_testbed_reset_eth.py](./r2lab_testbed_reset_eth.py "r2lab_testbed_reset_eth.py")
+* [r2lab_testbed_reset_eth.py](r2lab_testbed_reset_eth.py)
 
 This is a maintenance script used to reset the nodes from
 INRIA testbed (R2Lab) before running a OMF experiment using Nitos nodes.    
@@ -152,7 +154,7 @@ Example of how to run this experiment (replace with your information):
     $ python r2lab_testbed_reset_eth.py -H <fitXX,fitZZ,..> -U <r2lab-node-username> -i <ssh-key> -g <r2lab-gateway> -u <r2lab-slicename>
     $ python r2lab_testbed_reset_eth.py -H fit12,fit18 -U root -i ~/.ssh -g faraday.inria.fr  -u root
 
-* ![r2lab_testbed_reset_wlan.py](./r2lab_testbed_reset_wlan.py "r2lab_testbed_reset_wlan.py")
+* [r2lab_testbed_reset_wlan.py](r2lab_testbed_reset_wlan.py)
 
 This is a maintenance script used to prepare the nodes from INRIA 
 testbed (R2Lab) before running an OMF experiment using Nitos nodes with WiFi.   
@@ -165,7 +167,7 @@ Example of how to run this experiment (replace with your information):
     $ python r2lab_testbed_reset_wlan.py -H <fitXX,fitZZ,..> -U <r2lab-node-username> -i <ssh-key> -g <r2lab-gateway> -u <r2lab-slicename>
     $ python r2lab_testbed_reset_wlan.py -H fit12,fit18 -U root -i ~/.ssh -g faraday.inria.fr  -u root
     
-* ![r2lab_testbed_wlping.py](./r2lab_testbed_wlping.py "r2lab_testbed_wlping.py")
+* [r2lab_testbed_wlping.py](r2lab_testbed_wlping.py)
 
     Testbed : R2LAB   
     
