@@ -1,13 +1,13 @@
-title: Tutorial - First steps
-tab: tutorials
+title: SSH access
+tab: guides
 ---
 
-# Pre-requisite #
+###Pre-requisite #
 
 [Obtain a slice account on R2LAB (faraday)](tuto-01-registration.html)
 
 
-# Direct ssh access to the node
+###Direct ssh access to the node
 
 Example IP addresses of the target node
 
@@ -54,7 +54,7 @@ The baseline image `baseline.ndz` is located in `/var/lib/omf-images-6`.
 
 	$ omf6 save -n fit25
 
-# Using short commands through ssh #
+###Using short commands through ssh #
 
 **1 - Connect to your account in faraday**
 
@@ -124,83 +124,3 @@ Note : It is also possible to run this command directly without making a nodes s
 **7 - Find other short commands**
 
         $ help
-
-# Access with NEPI
-
-Use one of the scripts below
-
-* [r2lab_testbed_bootstrap.py](r2lab_testbed_bootstrap.py)
-
-This is a maintenance script used to bootstrap the nodes from
-INRIA testbed (R2Lab) before running an experiment using Nitos nodes.   
-This script loads an image into the nodes (image name can be changed at l. 84)
-then resets the nodes, starts the wlan interface without configuring it.
-   
-Example of how to run this experiment (replace with your information):
-   
-    $ cd <path-to-nepi>/examples/linux [where the script has been copied]
-    $ python r2lab_testbed_bootstrap.py -H <fitXX,fitZZ,..> -U <r2lab-node-username> -i <ssh-key> -g <r2lab-gateway> -u <r2lab-slicename>
-    $ python r2lab_testbed_bootstrap.py -H fit12,fit18 -U root -i ~/.ssh -g faraday.inria.fr -u root
-
-* [r2lab_testbed_reset_eth.py](r2lab_testbed_reset_eth.py)
-
-This is a maintenance script used to reset the nodes from
-INRIA testbed (R2Lab) before running a OMF experiment using Nitos nodes.    
-This script restarts the nodes, then starts the wlan interface without configuring it.
-
-Example of how to run this experiment (replace with your information):
-    
-    $ cd <path-to-nepi>/examples/linux [where the script has been copied]
-    $ python r2lab_testbed_reset_eth.py -H <fitXX,fitZZ,..> -U <r2lab-node-username> -i <ssh-key> -g <r2lab-gateway> -u <r2lab-slicename>
-    $ python r2lab_testbed_reset_eth.py -H fit12,fit18 -U root -i ~/.ssh -g faraday.inria.fr  -u root
-
-* [r2lab_testbed_reset_wlan.py](r2lab_testbed_reset_wlan.py)
-
-This is a maintenance script used to prepare the nodes from INRIA 
-testbed (R2Lab) before running an OMF experiment using Nitos nodes with WiFi.   
-This script restarts the nodes, then starts and configures their 
-WLAN interface (ad-hoc mode). IP address, ESSID and channel can be changed at line 118.
-
-Example of how to run this experiment (replace with your information):
-    
-    $ cd <path-to-nepi>/examples/linux [where the script has been copied]
-    $ python r2lab_testbed_reset_wlan.py -H <fitXX,fitZZ,..> -U <r2lab-node-username> -i <ssh-key> -g <r2lab-gateway> -u <r2lab-slicename>
-    $ python r2lab_testbed_reset_wlan.py -H fit12,fit18 -U root -i ~/.ssh -g faraday.inria.fr  -u root
-    
-* [r2lab_testbed_wlping.py](r2lab_testbed_wlping.py)
-
-    Testbed : R2LAB   
-    
-        Node fitXX    
-             0   
-             |   
-             0   
-        Node fitYY   
-   
-    PING OVER WI-FI   
-     - Experiment:  
-       - t0 : Deployment and configuration   
-       - t1 : Ping Start (3 packets sent over the air)  
-       - t2 : Kill the application and retrieve traces  
-
-
-Example of how to run this experiment (replace with your information):
-    
-    $ cd <path-to-nepi>/examples/linux [where the script has been copied]
-    $ python r2lab_testbed_wlping.py -x <fitXX> -y <fitYY> -c <channel> -e <essid> -u <r2lab-slicename> -i <ssh-key> -g <r2lab-gateway> -U <r2lab-node-username>
-    $ python r2lab_testbed_wlping.py -x fit12 -y fit18 -c 03 -e fitessai -u root -i ~/.ssh -g faraday.inria.fr -U root
-
-# X11 Access (to be confirmed)   
- 1 - Install `xterm`  on the target node (e.g., fit25)
- 
-    $ apt-get update
-    $ apt-get install xterm   
- 2 - Connect to faraday from your user host with the "-X" option
-
-    $ ssh -X my-account@faraday.inria.fr
- 3 - Hop to the Nitos node with the "-X" option
-
-    $ ssh -X fit25
- 4 - Launch `xterm` to obtain the graphic display of the node
- 
-    $ xterm

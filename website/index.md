@@ -19,7 +19,7 @@ tab: index
       <span style="font-size:6em;" class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
       <h2>Open Tools</h2>
       <p>Deploy and run your experiments using Nepi: Network Experiment Programming Interface</p>
-      <p><a class="btn btn-default" href="http://nepi.inria.fr" role="button">view details »</a></p>
+      <p><a class="btn btn-default" href="tools.html" role="button">view details »</a></p>
     </div><!-- /.col-lg-4 -->
   </div><!-- /.row -->
 
@@ -58,7 +58,7 @@ tab: index
   <footer class="footer footer-collapse">
     <div class="container">
       Interested in more? <a href="events.html">Follow the last <strong>news</strong> » </a>
-      <p class="text-muted">Copyright © R2Lab INRIA - <a href="#www.inria.fr/sophia">About us</a></p>
+      <p class="text-muted">Copyright © R2Lab INRIA - <a href="http://www.inria.fr/sophia" target="_blank">About us</a></p>
     </div>
   </footer>
 

@@ -1,8 +1,8 @@
-title: What is R2Lab ?
+title: Overview
 tab: overview
 ---
 
-
+### What is R2Lab ?
 <div class="row">
   <div class="col-md-6">  
   R2Lab is a Wi-fi mesh testbed infrastructure suitable for testing wireless devices and heterogeneous wireless communication.
@@ -19,6 +19,18 @@ tab: overview
   <div class="col-md-6">
   	<br>
   	<img src="assets/img/over_1.JPG">
+  </div>
+</div>
+
+<br>
+### The resources/nodes
+<div class="row">
+  <div class="col-md-6">
+    <br>
+    <img src="assets/img/node_1.JPG">
+  </div>
+  <div class="col-md-6">  
+  Nodes...
   </div>
 </div>
 

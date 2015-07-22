@@ -10,7 +10,7 @@ import glob
 hard_wired_meta = {
    # '*' means this is visible to all input files unless overridden
    # in a more specific location
-   '*' : { 'logos_height': "18px"}
+   '*' : { 'logos_height': '18px'}
    }
 
 title_header = 'title:'

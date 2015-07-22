@@ -29,27 +29,34 @@
           <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="index.html">
-          <img alt="logo" style="height:{{logos_height}};" src="{{asset 'img/r2lab-logo.png'}}" />
+          <img alt="logo" style="height:18px;" src="{{asset 'img/r2lab-logo.png'}}" />
         </a>
       </div>
 
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
           <li id="tab-overview"  tab="{{tab}}"><a href="overview.html">Overview</a></li>
-          <li class="dropdown" id="tab-tutorials" tab="{{tab}}">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorials <b class="caret"></b></a>
+          <li class="dropdown" id="tab-platform" tab="{{tab}}">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Platform<b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="tuto-01-registration.html#">Registration</a></li>
-              <li><a href="tuto-02-michelle.html">Michelle's</a></li>
+              <li><a href="topology.html">Topology</a></li>
+              <li><a href="hardware.html">Hardware</a></li>
+              <li><a href="tools.html">Tools</a></li>
             </ul>
           </li>
-          <li id="tab-status" tab="{{tab}}"><a href="status.html">Status</a></li>
+          <li class="dropdown" id="tab-guides" tab="{{tab}}">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Guides<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="tuto-01-registration.html">Registration</a></li>
+              <li><a href="tuto-02-michelle.html">SSH access</a></li>
+            </ul>
+          </li>
           <li id="tab-events" tab="{{tab}}"><a href="events.html">Events</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
             <a href="http://portal.onelab.eu" target="_blank">
-              <img src="{{asset 'img/onelab-logo.png'}}" style="height:{{logos_height}};"> FIT Portal
+              <img src="{{asset 'img/onelab-logo.png'}}" style="height:18px;"> FIT Portal
             </a>
           </li>
         </ul>
