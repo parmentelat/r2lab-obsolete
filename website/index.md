@@ -26,7 +26,7 @@ tab: index
   <hr class="featurette-divider">
 
   <h2 class="text-center" style="color:green;" >
-  Start your experiment quickly and easily<br>
+  start your experiment quickly and easily<br>
   <span class="text-muted lead">run your code on our nodes in few steps</span><br>
   </h2>
 

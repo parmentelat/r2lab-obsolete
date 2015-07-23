@@ -33,7 +33,7 @@ tab: overview
   
   <div class="col-md-7"> 
   <br>
-  R2lab platform consists in a set of thirty seven nodes in an anechoic chamber of ≈ 90m<sup>2</sup> distributed in mesh layout to offer an advanced simulation wi-fi site.
+  R2lab platform consists in a set of thirty-seven nodes in an anechoic chamber of **≈ 90m<sup>2</sup>** distributed in mesh layout to offer an advanced simulation wi-fi site.
   <br>
   <br> 
   A full control of network nodes is provided with direct access to the gateway nodes. A full stack monitoring capability allow monitoring feedback from all network metrics like energy consumption, delay, throughput, overhead and etc. 
