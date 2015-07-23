@@ -618,3 +618,38 @@ doc-admin restart-all "Restart all 3 services omf-sfa, ntrc and dnsmasq"
 
 alias images="cd /var/lib/omf-images-6/"
 doc-admin images alias
+
+alias r2lab-users="ls -d /home/onelab.inria.r2lab*"
+doc-admin r2lab-users alias
+
+####################
+# initialize user environment
+
+function init-user-env () {
+    SLICE=$(id --user --name)
+    MY_CERT=$HOME/.omf/user_cert.pem
+    MY_KEY=$HOME/.ssh/id_rsa
+    CURL_OPTIONS="--cert $MY_CERT --key $MY_KEY"
+    # root user does has a plain pem with private key embedded
+    if [ "$SLICE" == root ]; then
+	MY_KEY=$HOME/.omf/user_cert.pkey
+	CURL_OPTIONS="--cert $MY_CERT"
+    fi
+}
+
+init-user-env
+
+function slice () {
+    [ -n "$1" ] && SLICE=$1
+    echo Using slice=$SLICE
+}
+
+function GET () {
+    request=$1; shift
+    curl -k $CURL_OPTIONS https://localhost:12346/resources/$request
+}
+doc-alt GET "\tIssue a REST GET api call - expects one arguments like 'users' or 'users?name=onelab.inria.r2lab.admin'"
+
+function get-my-account () { GET users?name=$SLICE ; }
+doc-alt get-my-account "Displays current account $SLICE as obtained by REST"
+
