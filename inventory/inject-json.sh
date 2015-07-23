@@ -71,7 +71,7 @@ function run_in_omf_server() {
 
     # use the REST interface instead that is much faster
 
-    curl -k --cert /root/.omf/user_cert.pem --key /root/.omf/user_cert.pkey \
+    curl -k --cert /root/.omf/user_cert.pem \
 	 -H "Accept: application/json" -H "Content-Type:application/json" -X POST \
 	 -d @$json -i https://localhost:12346/resources/nodes
     
