@@ -6,10 +6,12 @@ ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
 
 
 ########## default target
-all: prepare index meta convert resources publish
-preview: prepare index meta convert resources
+all: preview-local
 
-.PHONY: all prepare index meta convert publish 
+preview: prepare index meta convert resources
+full: prepare index meta convert resources publish
+
+.PHONY: all preview full prepare index meta convert publish 
 
 ########## global vars
 PUBLISH_HOST = root@r2lab.inria.fr
@@ -59,5 +61,6 @@ convert-local:
 	../../markdown-styles/bin/generate-md --layout ./r2lab-layout --input markdown --output html
 
 preview-local: prepare index meta convert-local resources
+full-local: prepare index meta convert-local resources publish
 
-.PHONY: convert-local preview-local
+.PHONY: convert-local preview-local full-local
