@@ -19,7 +19,7 @@ tab: overview
 
   <div class="col-md-6">
   	<br>
-  	<img src="assets/img/over_1.JPG">
+  	<img src="assets/img/nodes_range.jpg">
   </div>
 </div>
 
@@ -28,7 +28,7 @@ tab: overview
 <div class="row">
   <div class="col-md-3">
     <br>
-    <img src="assets/img/node_1.JPG">
+    <img src="assets/img/node_back.jpg">
   </div>
   
   <div class="col-md-7"> 
