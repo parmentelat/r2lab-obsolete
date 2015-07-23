@@ -623,33 +623,54 @@ alias r2lab-users="ls -d /home/onelab.inria.r2lab*"
 doc-admin r2lab-users alias
 
 ####################
-# initialize user environment
+# user environment
 
 function init-user-env () {
-    SLICE=$(id --user --name)
+
+    SLICE=$(id --user --name 2>/dev/null || id -un)
+
     MY_CERT=$HOME/.omf/user_cert.pem
     MY_KEY=$HOME/.ssh/id_rsa
-    CURL_OPTIONS="--cert $MY_CERT --key $MY_KEY"
+    CURL_CERT="--cert $MY_CERT --key $MY_KEY"
     # root user does has a plain pem with private key embedded
     if [ "$SLICE" == root ]; then
 	MY_KEY=$HOME/.omf/user_cert.pkey
-	CURL_OPTIONS="--cert $MY_CERT"
+	CURL_CERT="--cert $MY_CERT"
     fi
+
+    CURL="curl -k $CURL_CERT"
+
+    CURL_JSON='-H "Accept: application/json" -H "Content-Type:application/json"'
+
+    REST="$CURL $CURL_JSON"
+
+    REST_ROOT=https://localhost:12346/
+
 }
+doc-alt CURL "\tenv. variable: CURL=$CURL"
+doc-alt REST "\tenv. variable: CURL + use-json"
+doc-alt REST_ROOT "env. variable: REST_ROOT=$REST_ROOT"
 
 init-user-env
 
 function slice () {
     [ -n "$1" ] && SLICE=$1
-    echo Using slice=$SLICE
+    echo Using SLICE=$SLICE
 }
+doc-alt slice "\tDisplay current slice (and optionnally set it)"
 
 function GET () {
     request=$1; shift
-    curl -k $CURL_OPTIONS https://localhost:12346/resources/$request
+    $CURL https://localhost:12346/resources/$request
 }
-doc-alt GET "\tIssue a REST GET api call - expects one arguments like 'users' or 'users?name=onelab.inria.r2lab.admin'"
+doc-alt GET "\tIssue a REST GET api call - expects one arguments like 'accounts' or 'accounts?name=onelab.inria.r2lab.admin'"
 
-function get-my-account () { GET users?name=$SLICE ; }
+function get-my-account () { GET accounts?name=$SLICE ; }
 doc-alt get-my-account "Displays current account $SLICE as obtained by REST"
+
+ADMIN=onelab.inria.r2lab.admin
+
+alias admin-account="su - $ADMIN"
+doc-admin admin-account alias
+
 
