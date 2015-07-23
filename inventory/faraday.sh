@@ -644,12 +644,12 @@ function init-user-env () {
 
     REST="$CURL $CURL_JSON"
 
-    REST_ROOT=https://localhost:12346/
+    RES=https://localhost:12346/resources/
 
 }
 doc-alt CURL "\tenv. variable: CURL=$CURL"
 doc-alt REST "\tenv. variable: CURL + use-json"
-doc-alt REST_ROOT "env. variable: REST_ROOT=$REST_ROOT"
+doc-alt RES "\tenv. variable: RES=$RES"
 
 init-user-env
 
