@@ -631,7 +631,9 @@ function init-user-env () {
 
     MY_CERT=$HOME/.omf/user_cert.pem
     MY_KEY=$HOME/.ssh/id_rsa
-    CURL_CERT="--cert $MY_CERT --key $MY_KEY"
+    # turns out regular users cannot use REST; sigh..
+    #CURL_CERT="--cert $MY_CERT --key $MY_KEY"
+    CURL_CERT=""
     # root user does has a plain pem with private key embedded
     if [ "$SLICE" == root ]; then
 	MY_KEY=$HOME/.omf/user_cert.pkey
