@@ -6,10 +6,10 @@ R2Lab testbed project offers a hight quality anechoic room for your experiments.
 
 ###Status
 
-Here is the ground plan layout of the anechoic room which provide thirty-seven wireless nodes distributed in a ??m<sup>2</sup> room.
+Here is the ground plan layout of the anechoic room which provide thirty-seven wireless nodes distributed in a **≈ 90m<sup>2</sup>** room.
 
 <center>
-	![Nodes location in the room](map.png)<br>
+	<img src="layout.png" style="width:950px; height:592px;"/><br>
 	Fig. 1 - Resources status 
 </center>
 
@@ -23,6 +23,6 @@ Bla
 <br>
 
 <center>
-	![Nodes location in the room](topology.png)<br>
+	<img src="topology.png" style="width:950px; height:592px;"/><br>
 	Fig. 2 - Resources layout 
 </center>
