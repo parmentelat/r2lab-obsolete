@@ -54,7 +54,7 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
     <div class="panel-heading" role="tab" id="headingTwo">
       <h4 class="panel-title">
         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          Make your experiments
+          Reserve the resources for your experiments
         </a>
       </h4>
     </div>
@@ -110,13 +110,37 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
     <div class="panel-heading" role="tab" id="headingThree">
       <h4 class="panel-title">
         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          Control your resources/nodes
+          Access your resources/nodes
         </a>
       </h4>
     </div>
     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
       <div class="panel-body">
-        Bla
+        Once the schedule has finished you can reach your resources. In order to do it, the gateway is reacheble by ssh connection.
+        <br>
+        <br>
+        <b>1 - Connect to your account in faraday</b>
+        <p>
+        	<pre class="hljs"><code>$ ssh your_account@faraday<span class="hljs-class">.inria</span><span class="hljs-class">.fr</span></code></pre>
+      	</p>
+      	<h6>
+      		Note that your account name is composed by: <b>project name"."slice name</b>.
+      		<p>
+		      	Example:<br>
+		      	<b>Project Name:</b> onelab.inria.name<br>
+		      	<b>Slice Name:</b> tutorial<br>
+		      	<b>Your account</b>: onelab.inria.name.tutorial
+	      	</p>
+      	</h6>
+        <b>2 - Connect your node</b>
+				<p>
+        	<pre class="hljs"><code>$ ssh root@your_node</span></code></pre>        
+      	</p>
+      	
+      	<p>
+      	[See more](tuto-02-michelle.html) how to manipulate the resources/nodes.
+      	</p>
+      
       </div>
     </div>
   </div>
