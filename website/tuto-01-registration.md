@@ -119,12 +119,15 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
         Once the schedule has finished you can reach your resources. In order to do it, the gateway is reacheble by ssh connection.
         <br>
         <br>
+        
         <b>1 - Connect to your account in faraday</b>
         <p>
         	<pre class="hljs"><code>$ ssh your_account@faraday<span class="hljs-class">.inria</span><span class="hljs-class">.fr</span></code></pre>
       	</p>
       	<h6>
       		Note that your account name is composed by: <b>project name"."slice name</b>.
+      		<br>
+      		<br>
       		<p>
 		      	Example:<br>
 		      	<b>Project Name:</b> onelab.inria.name<br>
@@ -132,12 +135,21 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 		      	<b>Your account</b>: onelab.inria.name.tutorial
 	      	</p>
       	</h6>
+
         <b>2 - Connect your node</b>
 				<p>
-        	<pre class="hljs"><code>$ ssh root@your_node</span></code></pre>        
-      	</p>
-      	
-      	<p>
+        	<pre class="hljs"><code>$ ssh root@your_reserved_resource</span></code></pre>
+        </p>
+      	<h6>
+
+      		<p>
+      		Example:<br>
+		      root@fit10
+		      <br>
+		      root@fit26
+		    	</p>
+      	</h6>
+
       	[See more](tuto-02-michelle.html) how to manipulate the resources/nodes.
       	</p>
       
