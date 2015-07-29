@@ -78,10 +78,13 @@ elif "reset" in action:
     result = reset(nodes, connection_info)
 elif "load-u1410" in action:
     # load image in each node from the list
-    result = load(nodes, 'u1410', connection_info)
+    result = load(nodes, 'ubuntu-14.10.ndz', connection_info)
 elif "load-u1504" in action:
     # load image in each node from the list
-    result = load(nodes, 'u1504', connection_info)
+    result = load(nodes, 'ubuntu-15.04.ndz', connection_info)
+elif "load-f21" in action:
+    # load image in each node from the list
+    result = load(nodes, 'fedora-21.ndz', connection_info)
 elif "alive" in action:
     # check if each node from the list anwer a ping
     result = alive(nodes, connection_info)

@@ -53,7 +53,7 @@ def load(nodes, version, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "nodes {}; load-{}".format(node, version) 
+        on_cmd_a = "omf6 load -t fit{} {} ".format(node, version) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -80,8 +80,8 @@ def load(nodes, version, connection_info, show_results=True):
 
     for key_node in sorted(results):
         if '0' in results[key_node]['exit']:
-            # imprement thread for improvements and check in parallel
-            ans = check_if_node_answer(key_node, connection_info, 2, 30)
+            # implement thread for improvements and check in parallel
+            ans = check_if_node_answer(key_node, connection_info, 2, 45)
             results.update(ans)
 
     if show_results:
@@ -133,7 +133,7 @@ def reset(nodes, connection_info, show_results=True):
     
     for key_node in sorted(results):
         if '0' in results[key_node]['exit']:
-            ans = check_if_node_answer(key_node, connection_info)
+            ans = check_if_node_answer(key_node, connection_info, 3, 10)
             results.update(ans)
 
     if show_results:
@@ -160,7 +160,7 @@ def alive(nodes, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "ping -c1 192.168.1.{}".format(node) 
+        on_cmd_a = "ping -c1 192.168.3.{}".format(node) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -300,7 +300,7 @@ def number_node(alias):
 
 def valid_version(version):
     """ Check if the version to load """
-    versions = ['u1410', 'u1504', 'f21']
+    versions = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz']
     if version not in versions:
         raise Exception("invalid version, must be {}".format(versions))
         return False
