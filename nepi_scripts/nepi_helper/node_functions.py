@@ -37,7 +37,7 @@ import re
 def load(nodes, version, connection_info, show_results=True):
     """ Load a new image to the nodes from the list """
     valid_version(version)
-    ec    = ExperimentController(exp_id="load-{}".format(version))
+    ec    = ExperimentController(exp_id="ld-{}".format(version))
     nodes = check_node_name(nodes)
 
     gw_node = ec.register_resource("linux::Node")
@@ -53,7 +53,7 @@ def load(nodes, version, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "omf6 load -t fit{} {} ".format(node, version) 
+        on_cmd_a = "omf6 load -t fit{} -i {} ".format(node, version) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -79,9 +79,12 @@ def load(nodes, version, connection_info, show_results=True):
     ec.shutdown()
 
     for key_node in sorted(results):
-        if '0' in results[key_node]['exit']:
+        if error_presence(results[key_node]['stdout']):            
+            exitcode  = 1
+            results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
+        elif '0' in results[key_node]['exit']:
             # implement thread for improvements and check in parallel
-            ans = check_if_node_answer(key_node, connection_info, 2, 45)
+            ans = check_if_node_answer(key_node, connection_info, 3, 15)
             results.update(ans)
 
     if show_results:
@@ -132,6 +135,9 @@ def reset(nodes, connection_info, show_results=True):
     ec.shutdown()
     
     for key_node in sorted(results):
+        if error_presence(results[key_node]['stdout']):            
+            exitcode  = 1
+            results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
         if '0' in results[key_node]['exit']:
             ans = check_if_node_answer(key_node, connection_info, 3, 10)
             results.update(ans)
@@ -249,6 +255,7 @@ def multiple_action(nodes, connection_info, action, show_results=True):
         print_results(results, action, True)
 
     return results
+    
 
 def remove_special(str):
     """ Remove special caracters from a string """
@@ -298,6 +305,7 @@ def number_node(alias):
     
     return int(node)
 
+
 def valid_version(version):
     """ Check if the version to load """
     versions = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz']
@@ -316,11 +324,14 @@ def print_results(results, action=None, stdout=False):
                 new_result = 'fail'
             elif int(results[key]['exit']) > 0:
                 new_result = 'fail'
+            elif error_presence(results[key]['stdout']):
+                new_result = 'fail'
             else:
                 if stdout:
                     new_result = results[key]['stdout']
                 else:
                     new_result = action
+           
             print "node {:02}: {}".format(key, new_result)
     else:
         print "-- no results to show"
@@ -353,3 +364,11 @@ def wait_and_update_progress_bar(wait_for):
         sys.stdout.flush()
     print ""
 
+
+def error_presence(stdout):
+    err_words = ['error', 'errors', 'fail']
+
+    if set(err_words).intersection(stdout.split()):
+        return True
+    else:
+        return False
