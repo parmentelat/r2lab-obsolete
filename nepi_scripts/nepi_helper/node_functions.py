@@ -72,8 +72,8 @@ def load(nodes, version, connection_info, show_results=True):
         
     results = {}
     for app in apps:
-        stdout    = remove_special(ec.trace(app, "stdout"))
-        exitcode  = remove_special(ec.trace(app, 'exitcode'))
+        stdout    = remove_special_char(ec.trace(app, "stdout"))
+        exitcode  = remove_special_char(ec.trace(app, 'exitcode'))
         results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
     
     ec.shutdown()
@@ -88,7 +88,10 @@ def load(nodes, version, connection_info, show_results=True):
             results.update(ans)
 
     if show_results:
-        print_results(results, 'loaded')
+        results = format_results(results, 'loaded')
+        print_results(results)
+
+    results.save_in_file()
 
     return results
 
@@ -128,8 +131,8 @@ def reset(nodes, connection_info, show_results=True):
         ec.deploy(app)
         ec.wait_finished(app)
         
-        stdout    = remove_special(ec.trace(app, "stdout"))
-        exitcode  = remove_special(ec.trace(app, 'exitcode'))
+        stdout    = remove_special_char(ec.trace(app, "stdout"))
+        exitcode  = remove_special_char(ec.trace(app, 'exitcode'))
         results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
 
     ec.shutdown()
@@ -143,7 +146,8 @@ def reset(nodes, connection_info, show_results=True):
             results.update(ans)
 
     if show_results:
-        print_results(results, 'reset')
+        results = format_results(results, 'reset')
+        print_results(results)
 
     return results
 
@@ -184,14 +188,15 @@ def alive(nodes, connection_info, show_results=True):
 
     results = {}
     for app in apps:
-        stdout    = remove_special(ec.trace(app, "stdout"))
-        exitcode  = remove_special(ec.trace(app, 'exitcode'))
+        stdout    = remove_special_char(ec.trace(app, "stdout"))
+        exitcode  = remove_special_char(ec.trace(app, 'exitcode'))
         results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
 
     ec.shutdown()
 
     if show_results:
-        print_results(results, 'alive')
+        results = format_results(results, 'alive')
+        print_results(results)
 
     return results
 
@@ -245,19 +250,22 @@ def multiple_action(nodes, connection_info, action, show_results=True):
 
     results = {}
     for app in apps:
-        stdout    = remove_special(ec.trace(app, "stdout"))
-        exitcode  = remove_special(ec.trace(app, 'exitcode'))
+        stdout    = remove_special_char(ec.trace(app, "stdout"))
+        exitcode  = remove_special_char(ec.trace(app, 'exitcode'))
         results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
 
     ec.shutdown()
     
     if show_results:
-        print_results(results, action, True)
+        results = format_results(results, action, True)
+        print_results(results)
+
+    save_in_file(results)
 
     return results
-    
 
-def remove_special(str):
+
+def remove_special_char(str):
     """ Remove special caracters from a string """
     if str is not None:
         new_str = str.replace('\n', '').replace('\r', '').lower()
@@ -315,9 +323,10 @@ def valid_version(version):
     else:
         return version
 
-def print_results(results, action=None, stdout=False):
-    """ Print the results in a summary way"""
-    print "+ + + + + + + + + "
+def format_results(results, action=None, stdout=False):
+    """ Format the results in a summary way """
+    formated_results = {}
+    
     if results:
         for key in sorted(results):
             if not results[key]['exit']:
@@ -331,14 +340,26 @@ def print_results(results, action=None, stdout=False):
                     new_result = results[key]['stdout']
                 else:
                     new_result = action
-           
-            print "node {:02}: {}".format(key, new_result)
+
+            formated_results.update({ key : {'result' : new_result}})
+            #print "node {:02}: {}".format(key, new_result)
+
     else:
-        print "-- no results to show"
+        formated_results.update({ key : {'result' : 'no results to show'}})
+        #print "-- no results to show"
+
+    return formated_results
+
+def print_results(results):
+    """ Print the results """
+    print "+ + + + + + + + +"
+    for key, value in results.iteritems():
+        print "node {:02}: {}".format(key, value['result'])
     print "+ + + + + + + + +"
 
 
 def check_if_node_answer(node, connection_info, times=2, wait_for=10):
+    """ Wait for a while and to try a ping by 'alive' method """
     results = {}
     turn = 0
     for n in range(times):
@@ -358,6 +379,7 @@ def check_if_node_answer(node, connection_info, times=2, wait_for=10):
 
 
 def wait_and_update_progress_bar(wait_for):
+    """ Print the progress bar when waiting for a while """
     for n in range(wait_for):
         time.sleep(1)
         print '\b.',
@@ -366,9 +388,22 @@ def wait_and_update_progress_bar(wait_for):
 
 
 def error_presence(stdout):
+    """ Check so error mentions in the output results """
     err_words = ['error', 'errors', 'fail']
 
     if set(err_words).intersection(stdout.split()):
         return True
     else:
         return False
+
+
+def save_in_file(results, file_name=None):
+    """ Save the result in a txt file """
+
+    if file_name is None:
+        file_name = 'results.txt'
+
+    file = open(file_name, "w")
+    file.write(str(results))
+    file.close()
+
