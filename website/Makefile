@@ -8,7 +8,7 @@ ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
 ########## default target
 all: preview-local
 
-preview: prepare index meta convert resources
+preview: prepare index meta convert resources status
 full: prepare index meta convert resources publish
 
 .PHONY: all preview full prepare index meta convert publish 
@@ -37,6 +37,11 @@ index:
 meta:
 	@[ -d markdown ] || mkdir markdown
 	./meta.py
+
+# status by Nepi check
+status:
+	@[ -d markdown ] || mkdir markdown
+	./status.py
 
 convert: 
 	generate-md --layout $(LAYOUT) --input markdown --output html
