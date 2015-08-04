@@ -91,7 +91,7 @@ def load(nodes, version, connection_info, show_results=True):
         results = format_results(results, 'loaded')
         print_results(results)
 
-    results.save_in_file()
+    save_in_file(results, 'load_results.txt')
 
     return results
 
@@ -149,6 +149,8 @@ def reset(nodes, connection_info, show_results=True):
         results = format_results(results, 'reset')
         print_results(results)
 
+    save_in_file(results, 'reset_results.txt')
+
     return results
 
 
@@ -197,6 +199,8 @@ def alive(nodes, connection_info, show_results=True):
     if show_results:
         results = format_results(results, 'alive')
         print_results(results)
+
+    save_in_file(results, 'alive_results.txt')
 
     return results
 
@@ -260,7 +264,7 @@ def multiple_action(nodes, connection_info, action, show_results=True):
         results = format_results(results, action, True)
         print_results(results)
 
-    save_in_file(results)
+    save_in_file(results, 'multiple_results.txt')
 
     return results
 
