@@ -5,32 +5,33 @@ import sys
 import os
 
 
-def join_node_results():
+def merge_dicts(*dict_args):
     """
-    help
+    Given any number of dicts, shallow copy and merge into a new dictionary
     """
-    path = '/'
-    files = ['multiple_results.txt', 'alive_results.txt', 'reset_results.txt', 'load_results.txt']
+    result = {}
+    for dictionary in dict_args:
+        result.update(dictionary)
+    return result
 
-    node_status = {}
-    
-    file = open("load_results.txt", "r")
-    data = json.load(file)
-    file.close()
-
-    return data
 
 def export_node_status():
     """
     help
     """
 
-    join_node_results()
+    path_read = ''
+    path_save = 'markdown/'
+    files = ['reset_results.txt', 'load_results.txt']
 
-    nodes_status = join_node_results()
+    for fl in files:
+        file = open(path_read+fl, "r")
+        data = file.read()
+        file.close()
 
-    with open('markdown/node_status.json', 'w') as output:
-      json.dump(nodes_status, output)
+        file_name = fl.replace('.txt', '.json')
+        with open(path_save+file_name, 'w') as output:
+            json.dump(data, output)
 
 
 def main():
