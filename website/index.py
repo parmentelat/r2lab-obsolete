@@ -37,6 +37,7 @@ def main():
             # skip index from the index...
             if base == "index":
                 continue
+            # menu generated
             #result.write(index_line_format.format(**locals()))
     print("(Over)wrote {}".format(output))
 

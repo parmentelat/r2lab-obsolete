@@ -10,7 +10,7 @@ Below is the ground plan layout of the anechoic room which provide thirty-seven 
 
 <center>
 	<img src="assets/img/status.png" style="width:950px; height:592px;"/><br>
-	Fig. 1 - Resources status 
+	Fig. 1 - Resources status
 </center>
 
 <br>
