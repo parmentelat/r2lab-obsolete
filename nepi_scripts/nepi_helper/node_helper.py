@@ -57,7 +57,7 @@ parser.add_argument("-i", "--ssh-key", dest="ssh_key",
 args = parser.parse_args()
 
 action      = args.action
-nodes       = args.nodes.split(',')
+nodes       = args.nodes
 username    = args.username
 gateway     = args.gateway
 gateway_username = args.gateway_username

@@ -38,6 +38,8 @@ def load(nodes, version, connection_info, show_results=True):
     """ Load a new image to the nodes from the list """
     valid_version(version)
     ec    = ExperimentController(exp_id="ld-{}".format(version))
+    
+    nodes = format_nodes(nodes)
     nodes = check_node_name(nodes)
 
     gw_node = ec.register_resource("linux::Node")
@@ -88,10 +90,10 @@ def load(nodes, version, connection_info, show_results=True):
             results.update(ans)
 
     if show_results:
-        results = format_results(results, 'loaded')
+        results = format_results(results, 'load')
         print_results(results)
 
-    save_in_file(results, 'load_results.txt')
+    save_in_file(results, 'load_results.json')
 
     return results
 
@@ -99,8 +101,10 @@ def load(nodes, version, connection_info, show_results=True):
 def reset(nodes, connection_info, show_results=True):
     """ Reset all nodes from the list """
     ec    = ExperimentController(exp_id="reset")
-    nodes = check_node_name(nodes)
     
+    nodes = format_nodes(nodes)
+    nodes = check_node_name(nodes)
+
     gw_node = ec.register_resource("linux::Node")
     ec.set(gw_node, "hostname", connection_info['gateway'])
     ec.set(gw_node, "username", connection_info['gateway_username'])
@@ -149,7 +153,7 @@ def reset(nodes, connection_info, show_results=True):
         results = format_results(results, 'reset')
         print_results(results)
 
-    save_in_file(results, 'reset_results.txt')
+    save_in_file(results, 'reset_results.json')
 
     return results
 
@@ -157,6 +161,8 @@ def reset(nodes, connection_info, show_results=True):
 def alive(nodes, connection_info, show_results=True):
     """ Check if a node answer a ping command """
     ec    = ExperimentController(exp_id="alive")
+    
+    nodes = format_nodes(nodes)
     nodes = check_node_name(nodes)
 
     gw_node = ec.register_resource("linux::Node")
@@ -200,7 +206,7 @@ def alive(nodes, connection_info, show_results=True):
         results = format_results(results, 'alive')
         print_results(results)
 
-    save_in_file(results, 'alive_results.txt')
+    save_in_file(results, 'alive_results.json')
 
     return results
 
@@ -223,6 +229,8 @@ def off(nodes, connection_info, show_results=True):
 def multiple_action(nodes, connection_info, action, show_results=True):
     """ Execute the command in all nodes from the list """
     ec    = ExperimentController(exp_id=action)
+    
+    nodes = format_nodes(nodes)
     nodes = check_node_name(nodes)
 
     gw_node = ec.register_resource("linux::Node")
@@ -264,7 +272,7 @@ def multiple_action(nodes, connection_info, action, show_results=True):
         results = format_results(results, action, True)
         print_results(results)
 
-    save_in_file(results, 'multiple_results.txt')
+    save_in_file(results, 'multiple_results.json')
 
     return results
 
@@ -327,7 +335,7 @@ def valid_version(version):
     else:
         return version
 
-def format_results(results, action=None, stdout=False):
+def format_results(results, action, stdout=False):
     """ Format the results in a summary way """
     formated_results = {}
     
@@ -345,11 +353,11 @@ def format_results(results, action=None, stdout=False):
                 else:
                     new_result = action
 
-            formated_results.update({ key : {'result' : new_result}})
+            formated_results.update({ key : {action : new_result}})
             #print "node {:02}: {}".format(key, new_result)
 
     else:
-        formated_results.update({ key : {'result' : 'no results to show'}})
+        formated_results.update({ key : {action : 'no results to show'}})
         #print "-- no results to show"
 
     return formated_results
@@ -358,7 +366,7 @@ def print_results(results):
     """ Print the results """
     print "+ + + + + + + + +"
     for key, value in results.iteritems():
-        print "node {:02}: {}".format(key, value['result'])
+        print "node {:02}: {}".format(key, value)
     print "+ + + + + + + + +"
 
 
@@ -402,12 +410,31 @@ def error_presence(stdout):
 
 
 def save_in_file(results, file_name=None):
-    """ Save the result in a txt file """
+    """ Save the result in a json file """
 
     if file_name is None:
-        file_name = 'results.txt'
+        file_name = 'results.json'
 
     file = open(file_name, "w")
     file.write(str(results))
     file.close()
+
+
+def all_nodes():
+    """Range of all nodes in faraday """
+    
+    nodes = range(1,38)
+    
+    return nodes
+
+
+def format_nodes(nodes):
+    """Correct format when inserted 'all' in -N nodes parameter """
+
+    if 'all' in nodes.lower():
+        nodes = all_nodes()
+    else:
+        nodes = nodes.split(',')
+    
+    return nodes
 
