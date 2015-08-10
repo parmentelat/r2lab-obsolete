@@ -431,10 +431,14 @@ def all_nodes():
 def format_nodes(nodes):
     """Correct format when inserted 'all' in -N nodes parameter """
 
-    if 'all' in nodes.lower():
+    if 'all' in nodes:
         nodes = all_nodes()
     else:
-        nodes = nodes.split(',')
-    
+        if not type(nodes) is list:
+            if ',' in nodes:
+                nodes = nodes.split(',')
+            else:
+                nodes = nodes.split()
+
     return nodes
 
