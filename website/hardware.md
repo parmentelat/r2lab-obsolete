@@ -33,19 +33,8 @@ full control and granted access<br>
 		&nbsp; R2Lab offers a connection to the testbed infrastructure trough a gateway access which allow the researchers control each reserved node.
   </div>
 </div>
-
+<br>
 <div class="row">
-  <div class="col-md-3">
-    <br>
-    <img src="assets/img/icarus.png">
-    <center>Fig. 1 - Resource/Node Icarus</center>
-    <br>
-    <br>
-    <br>
-    <img src="assets/img/node_back.jpg">
-    <center>Fig. 2 - Resource back wired details</center>
-  </div>
-  
   <div class="col-md-7"> 
   <span>
     <h3>Node details</h3>
@@ -89,12 +78,22 @@ full control and granted access<br>
   
   <br>
   <br>
-  **Control interface(OMF)**:<br>
+  **Control interface( OMF)**:<br>
   OMF is a Testbed Control, Measurement and Management Framework. Was developed for wireless testbed platforms and had being extended to support features and facilities for testbed's control, measurement, and management.
   The CI OMF interface is available at: 192.168.**3**.<font color="blue">**xx**</font>.
   
   <br>
   <br>
 
+  </div>
+  <div class="col-md-3">
+    <br>
+    <img src="assets/img/icarus.png">
+    <center>Fig. 1 - Resource/Node Icarus</center>
+    <br>
+    <br>
+    <br>
+    <img src="assets/img/node_back.jpg">
+    <center>Fig. 2 - Resource back wired details</center>
   </div>
 </div>
