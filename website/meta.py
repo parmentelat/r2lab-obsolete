@@ -34,12 +34,12 @@ def tuto_contents(md):
 def main():
 
    meta = hard_wired_meta
-
+   
    # enrich it
    # get the list of tutorials
    tuto_files = glob.glob("tuto*.md")
    # make sure the '*' key is present
-   wildcard = meta.setdefault('*', {})
+   wildcard = meta.setdefault('*', None)
    wildcard['tutos'] = [ tuto_contents(tf) for tf in tuto_files]
 
    # save

@@ -94,14 +94,21 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 				<br>
 				The resources could be reserved in some easy steps:
 				<ul>
-					<li>Select the resource using a **table list**, a **map** or the **scheduler** (fig 3, <font color="red">**A**</font>).</li>
-				 	<li>Check the resources in the table list **or** click on the icon in the map **or** select the range time of your interest when the scheduler tool is open (fig 3, <font color="red">**B**</font>).</li>
-				 	<li>Once the submit button is clicked the reservation progress will appear (fig 3, <font color="red">**C**</font>).</li>
+					<li>Check the resources in the table list **or** click on the icon in the map.</li>
+					<li>Select the resource using a table list (fig 3, <font color="red">**B**</font>) or using the map (fig 3, <font color="red">**A**</font>).</li>
+					<li>Send the request using the submit button (fig 3, <font color="red">**C**</font>) and wait for the reservation. A progress message will appear.</li>
+					<li>For each resource scheduled a slice time must be selected to operate in the resource. In ** scheduler tab, ** item (fig 3, <font color="red">**A**</font>) is possible book the resource. Once the scheduler tool is open, select the range time of your interest (fig 4)</li>
 				</ul>
 				<br>
 				<center>
 				![dashboard](assets/img/slice_a.png)<br>
 				Fig. 3 - Slice Dashboard
+				</center>
+				<br>
+				<br>
+				<center>
+				![dashboard](assets/img/schedule_details.png)<br>
+				Fig. 4 - Booking a resource/node
 				</center>
       </div>
     </div>
@@ -144,15 +151,20 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 
       		<p>
       		Example:<br>
-		      root@fit10
+		      ssh root@fit10
 		      <br>
-		      root@fit26
+		      ssh root@fit26
 		    	</p>
       	</h6>
 
       	[See more](tuto-02-michelle.html) how to manipulate the resources/nodes.
       	</p>
       
+      	<b>3 - Troubleshooting</b>
+				<p>
+      	<p>If you have the <code>Permission denied (publickey).</code> error, check if you correctly pasted your public key on the OneLab portal.
+      	Alternatively, restart the tutorial registration from the beginning.</p>
+
       </div>
     </div>
   </div>

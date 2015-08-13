@@ -4,12 +4,8 @@ tab: events
 
 ### September 22<sup>nd</sup> 2015
 
-du texte
-
-##### xxx LabEx / Com4Innov meeting - Add description and link
+##### LabEx / Com4Innov meeting
 
 ### July 9<sup>th</sup> 2015
 
-du texte
-
-##### xxx ANR FIT Meeting in Paris - Add description and link
+##### ANR FIT Meeting in Paris
