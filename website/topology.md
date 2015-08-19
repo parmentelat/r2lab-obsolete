@@ -8,7 +8,7 @@ R2Lab testbed project offers a hight quality anechoic room for your experiments.
 
 Below is the ground plan layout of the anechoic room which provide thirty-seven wireless nodes distributed in a **≈ 90m<sup>2</sup>** room.
 
-The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal) of distance between them. Except by the nodes 12, 16, 17, 20 and 23, 24, 27 or the nodes sorrounding the columns room.
+The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal) of distance between them. Except by the nodes 12, 16, 17, 20 and 23, 24, 27 or the nodes surrounding the columns room.
 
 <center>
 	<img src="assets/img/status.png" style="width:950px; height:592px;"/><br>
@@ -18,7 +18,8 @@ The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal)
 <br>
 
 ###Status
-The status table below inform the availability of each node in our platform.
+Frequently a routine checks the availability of our resource/nodes platform. Three items are checked: if the node is available correctly (availability column); if the node answer a single ping (ping column); which are the node status (on/off column). <br>
+The status table of these queries are presented below.
 
 <div id="div_error" class="alert alert-danger" role="alert">
   One or more problem may block the proper running:<br>
@@ -28,128 +29,103 @@ The status table below inform the availability of each node in our platform.
 <table class="table table-condensed">
   <thead>
     <tr>
-      <th id="t11">node</th>
-      <th id="t12">availability</th>
-      <th id="t13">ping</th>
-      <th id="t14">on/off</th>
+      <th>node</th>
+      <th>availability</th>
+      <th>ping</th>
+      <th>on/off</th>
     </tr>
   </thead>
-  <tbody>
-    <tr>
-      <th id="t21" scope="row">10</th>
-      <td id="t22"></td>
-      <td id="t23"></td>
-      <td id="t24"></td>
-    </tr>
-    <tr>
-      <th id="t31" scope="row">26</th>
-      <td id="t32"></td>
-      <td id="t33"></td>
-      <td id="t34"></td>
-    </tr>
-  </tbody>
+  <tbody id="t_body"></tbody>
 </table>
 
-#<script type="text/javascript" src="load_results.json"></script>
-#<script type="text/javascript" src="reset_results.json"></script>
+<!-- <script type="text/javascript" src="load_results.json"></script> -->
+<!-- <script type="text/javascript" src="reset_results.json"></script> -->
 <script type="text/javascript" src="alive_results.json"></script>
 <script type="text/javascript" src="answer_results.json"></script>
 <script type="text/javascript" src="multiple_results.json"></script>
 
 <script type="text/javascript">
   
-  $("#div_error").hide()
+  Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+  };
+
+  $("#div_error").hide();
 
   try {
-    var data_alive_results = JSON.parse(alive_results);
-    res = data_alive_results[0][10].alive
-    if (res == 'alive'){
-      $("#t22").append( '<span class="label label-success">available</span>' );
-    }
-    else{
-      $("#t22").append( '<span class="label label-danger">'+res+'</span>' );
-    }
+    var data_alive_results    = JSON.parse(alive_results);    // alive consider the CM card
+    var data_multiple_results = JSON.parse(multiple_results); // must be 'status' on Nepi
+    var data_answer_results   = JSON.parse(answer_results);   // answer consider the answer for a single ping 
   }
   catch(err) {
     $("#div_error").show();
-    $("#div_error").append( '<ul><li>Alive file fails</li></ul>' );
+    $("#div_error").append( '<ul><li>One or more file information were not loaded correctly</li></ul>' );
   }
 
-  try {
-    var data_alive_results = JSON.parse(alive_results);
-    res = data_alive_results[0][26].alive
-    if (res == 'alive'){
-      $("#t32").append( '<span class="label label-success">available</span>' );
-    }
-    else{
-      $("#t32").append( '<span class="label label-danger">'+res+'</span>' );
-    }
-  }
-  catch(err) {
-    $("#div_error").show();
-    $("#div_error").append( '<ul><li>Alive file fails</li></ul>' );
-  }
-
+  var total_nodes = 38;
+  var table_content = '';
   
-  try {
-    var data_multiple_results = JSON.parse(multiple_results);
-    res = data_multiple_results[0][10].status
-    if (res == 'on'){
-      $("#t24").append( '<span class="label label-success">'+res+'</span>' );
+  for (var key=1; key < total_nodes; key++) {
+    table_content += '<tr>';
+    
+    //Fist column
+    table_content += '<th scope="row">'+ key +'</th>';
+
+    //Second column
+    try {
+      res = data_alive_results[key].alive;  
+      
+      if (res == 'alive'){
+        table_content += '<td><span class="label label-success">available</span></td>';
+      }
+      else {
+        table_content += '<td><span class="label label-danger">unavailable</span></td>';
+      }
     }
-    else{
-      $("#t24").append( '<span class="label label-danger">'+res+'</span>' );
+    catch(err) {
+      table_content += '<td><span class="label label-default">ignored</span></td>';  
     }
-  }
-  catch(err) {
-    $("#div_error").show();
-    $("#div_error").append( '<ul><li>Multiple file fails</li></ul>' );
+
+    //Third column
+    try {
+      res = data_answer_results[key].answer;
+
+      if (res == 'answer'){
+        table_content += '<td><span class="label label-success">yes</span></td>';
+      }
+      else {
+        table_content += '<td><span class="label label-danger">fail</span></td>';
+      }
+    }
+    catch(err) {
+      table_content += '<td><span class="label label-default">ignored</span></td>';  
+    }
+
+    //Fourth column
+    try {
+      res = data_multiple_results[key].status;
+
+      if (res == 'on'){
+        table_content += '<td><span class="label label-success">on</span></td>';
+      }
+      else if (res == 'off'){
+        table_content += '<td><span class="label label-danger">off</span></td>';
+      }
+      else {
+        table_content += '<td><span class="label label-warning">unreachable</span></td>';
+      }
+    }
+    catch(err) {
+      table_content += '<td><span class="label label-default">ignored</span></td>';  
+    }
+
+    table_content += '</tr>';
   }
 
-  try {
-    var data_multiple_results = JSON.parse(multiple_results);
-    res = data_multiple_results[0][26].status
-    if (res == 'on'){
-      $("#t34").append( '<span class="label label-success">'+res+'</span>' );
-    }
-    else{
-      $("#t34").append( '<span class="label label-danger">'+res+'</span>' );
-    }
-  }
-  catch(err) {
-    $("#div_error").show();
-    $("#div_error").append( '<ul><li>Multiple file fails</li></ul>' );
-  }
-
-
-  try {
-    var data_answer_results = JSON.parse(answer_results);
-    res = data_answer_results[0][10].answer
-    if (res == 'answer'){
-      $("#t23").append( '<span class="label label-success">yes</span>' );
-    }
-    else{
-      $("#t23").append( '<span class="label label-danger">fail</span>' );
-    }
-  }
-  catch(err) {
-    $("#div_error").show();
-    $("#div_error").append( '<ul><li>Answer file fails</li></ul>' );
-  }
-
-  try {
-    var data_answer_results = JSON.parse(answer_results);
-    res = data_answer_results[0][26].status
-    if (res == 'answer'){
-      $("#t33").append( '<span class="label label-success">yes</span>' );
-    }
-    else{
-      $("#t33").append( '<span class="label label-danger">fail</span>' );
-    }
-  }
-  catch(err) {
-    $("#div_error").show();
-    $("#div_error").append( '<ul><li>Answer file fails</li></ul>' );
-  }
+  $("#t_body").append(table_content);
 
 </script>

@@ -402,7 +402,10 @@ def format_results(results, action, stdout=False):
                 new_result = 'fail'
             else:
                 if stdout:
-                    new_result = results[key]['stdout']
+                    if results[key]['stdout'] == 'already on':
+                        new_result = 'ok'
+                    else:
+                        new_result = results[key]['stdout']
                 else:
                     new_result = action
 
@@ -465,12 +468,10 @@ def error_presence(stdout):
 def save_in_file(results, file_name=None):
     """ Save the result in a json file """
     """ The format will be: """
-    """ variable_name = '[
-                            {
-                                "key1" : {"name1" : "value1", "name2" : "value2"}, 
-                                "key2" : {"name1" : "value1", "name2" : "value2"}
-                            } 
-                         ]' 
+    """ variable_name = '{
+                            "key1" : {"name1" : "value1", "name2" : "value2"}, 
+                            "key2" : {"name1" : "value1", "name2" : "value2"}
+                         }' 
     """
 
     ext = ".json"
@@ -479,7 +480,7 @@ def save_in_file(results, file_name=None):
         file_name = 'results'+ext
 
     file = open(file_name+ext, "w")
-    file.write(file_name + " = '[" + json.dumps(results) + "]'")
+    file.write(file_name + " = '" + json.dumps(results) + "'")
     file.close()
 
 
