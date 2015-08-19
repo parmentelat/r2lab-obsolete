@@ -32,6 +32,7 @@ from nepi.util.sshfuncs import logger
 import time
 import sys
 import re
+import json
 
 
 def load(nodes, version, connection_info, show_results=True):
@@ -93,7 +94,7 @@ def load(nodes, version, connection_info, show_results=True):
         results = format_results(results, 'load')
         print_results(results)
 
-    save_in_file(results, 'load_results.json')
+    save_in_file(results, 'load_results')
 
     return results
 
@@ -153,14 +154,13 @@ def reset(nodes, connection_info, show_results=True):
         results = format_results(results, 'reset')
         print_results(results)
 
-    save_in_file(results, 'reset_results.json')
+    save_in_file(results, 'reset_results')
 
     return results
 
-
-def alive(nodes, connection_info, show_results=True):
-    """ Check if a node answer a ping command """
-    ec    = ExperimentController(exp_id="alive")
+def answer(nodes, connection_info, show_results=True):
+    """ Check if a node answer a ping command in control interface """
+    ec    = ExperimentController(exp_id="answer")
     
     nodes = format_nodes(nodes)
     nodes = check_node_name(nodes)
@@ -203,10 +203,63 @@ def alive(nodes, connection_info, show_results=True):
     ec.shutdown()
 
     if show_results:
+        results = format_results(results, 'answer')
+        print_results(results)
+
+    save_in_file(results, 'answer_results')
+
+    return results
+
+
+def alive(nodes, connection_info, show_results=True):
+    """ Check if a node answer a ping command in the CM card """
+    ec    = ExperimentController(exp_id="alive")
+    
+    nodes = format_nodes(nodes)
+    nodes = check_node_name(nodes)
+
+    gw_node = ec.register_resource("linux::Node")
+    ec.set(gw_node, "hostname", connection_info['gateway'])
+    ec.set(gw_node, "username", connection_info['gateway_username'])
+    ec.set(gw_node, "identity", connection_info['identity'])
+    ec.set(gw_node, "cleanExperiment", True)
+    ec.set(gw_node, "cleanProcesses", False)
+    ec.set(gw_node, "cleanProcessesAfter", False)
+
+    node_appname = {}
+    node_appid   = {}
+    apps         = []
+
+    for node in nodes:
+        on_cmd_a = "ping -c1 192.168.1.{}".format(node) 
+        node_appname.update({node : 'app_{}'.format(node)}) 
+        node_appname[node] = ec.register_resource("linux::Application")
+        ec.set(node_appname[node], "command", on_cmd_a)
+        ec.register_connection(node_appname[node], gw_node)
+        # contains the app id given when register the app by EC
+        node_appid.update({node_appname[node] : node})
+        apps.append(node_appname[node])
+
+    ec.deploy(gw_node)
+
+    ec.deploy(apps)
+    ec.wait_finished(apps) 
+
+    #ec.register_condition(sender_app, ResourceAction.START, receiver_app, ResourceState.STARTED) 
+
+    results = {}
+    for app in apps:
+        stdout    = remove_special_char(ec.trace(app, "stdout"))
+        exitcode  = remove_special_char(ec.trace(app, 'exitcode'))
+        results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
+
+    ec.shutdown()
+
+    if show_results:
         results = format_results(results, 'alive')
         print_results(results)
 
-    save_in_file(results, 'alive_results.json')
+    save_in_file(results, 'alive_results')
 
     return results
 
@@ -272,7 +325,7 @@ def multiple_action(nodes, connection_info, action, show_results=True):
         results = format_results(results, action, True)
         print_results(results)
 
-    save_in_file(results, 'multiple_results.json')
+    save_in_file(results, 'multiple_results')
 
     return results
 
@@ -371,14 +424,14 @@ def print_results(results):
 
 
 def check_if_node_answer(node, connection_info, times=2, wait_for=10):
-    """ Wait for a while and to try a ping by 'alive' method """
+    """ Wait for a while and to try a ping by 'answer' method """
     results = {}
     turn = 0
     for n in range(times):
         turn += 1
         print "-- attempt #{} for node {}".format(n+1, node)
                 
-        ans = alive([node], connection_info, False)
+        ans = answer([node], connection_info, False)
         if '0' in ans[node]['exit']:
             results.update(ans)
             break
@@ -411,12 +464,22 @@ def error_presence(stdout):
 
 def save_in_file(results, file_name=None):
     """ Save the result in a json file """
+    """ The format will be: """
+    """ variable_name = '[
+                            {
+                                "key1" : {"name1" : "value1", "name2" : "value2"}, 
+                                "key2" : {"name1" : "value1", "name2" : "value2"}
+                            } 
+                         ]' 
+    """
+
+    ext = ".json"
 
     if file_name is None:
-        file_name = 'results.json'
+        file_name = 'results'+ext
 
-    file = open(file_name, "w")
-    file.write(str(results))
+    file = open(file_name+ext, "w")
+    file.write(file_name + " = '[" + json.dumps(results) + "]'")
     file.close()
 
 
