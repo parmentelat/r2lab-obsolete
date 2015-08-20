@@ -8,8 +8,8 @@ ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
 ########## default target
 all: preview-local
 
-preview: prepare index meta convert resources topology
-full: prepare index meta convert resources publish
+preview: prepare index meta topology convert resources
+full: prepare index meta topology convert resources publish
 
 .PHONY: all preview full prepare index meta convert publish 
 

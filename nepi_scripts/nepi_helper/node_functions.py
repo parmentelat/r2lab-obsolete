@@ -211,6 +211,61 @@ def answer(nodes, connection_info, show_results=True):
     return results
 
 
+def info(nodes, connection_info, show_results=True):
+    """ Get the info from the operational system """
+    ec    = ExperimentController(exp_id="info")
+    
+    nodes = format_nodes(nodes)
+    nodes = check_node_name(nodes)
+
+    node_appname = {}
+    node_appid   = {}
+    apps         = []
+
+    for node in nodes:        
+        by_node = ec.register_resource("linux::Node")
+
+        ec.set(by_node, "hostname", 'fit'+str(node))
+        ec.set(by_node, "username", 'root')
+        ec.set(by_node, "identity", connection_info['identity'])
+        ec.set(by_node, "gateway", connection_info['gateway'])
+        ec.set(by_node, "gatewayUser", connection_info['gateway_username'])
+        ec.set(by_node, "cleanExperiment", True)
+        ec.set(by_node, "cleanProcesses", False)
+        ec.set(by_node, "cleanProcessesAfter", False)
+
+
+        on_cmd_a = "lsb_release -a | awk 'NR==2 {print $2\" \"$3}'" 
+        node_appname.update({node : 'app_{}'.format(node)}) 
+        node_appname[node] = ec.register_resource("linux::Application")
+        ec.set(node_appname[node], "command", on_cmd_a)
+        ec.register_connection(node_appname[node], by_node)
+        # contains the app id given when register the app by EC
+        node_appid.update({node_appname[node] : node})
+        apps.append(node_appname[node])
+
+        ec.deploy(by_node)
+
+        ec.deploy(node_appname[node])
+        ec.wait_finished(node_appname[node]) 
+
+    results = {}
+    for app in apps:
+        stdout    = remove_special_char(ec.trace(app, "stdout"))
+        exitcode  = remove_special_char(ec.trace(app, 'exitcode'))
+        results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
+
+    ec.shutdown()
+
+    if show_results:
+        results = format_results(results, 'info', True)
+        print_results(results)
+
+    save_in_file(results, 'info_results')
+
+    return results
+
+
 def alive(nodes, connection_info, show_results=True):
     """ Check if a node answer a ping command in the CM card """
     ec    = ExperimentController(exp_id="alive")

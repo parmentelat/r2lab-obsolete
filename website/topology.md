@@ -29,17 +29,20 @@ The status table of these queries are presented below.
 <table class="table table-condensed">
   <thead>
     <tr>
-      <th>node</th>
-      <th>availability</th>
-      <th>ping</th>
-      <th>on/off</th>
+      <th id="cl_01">node<br><font style="font-weight:normal; font-size:xx-small;">last update</font></th>
+      <th id="cl_02">availability</th>
+      <th id="cl_03">ping</th>
+      <th id="cl_04">on/off</th>
+      <th id="cl_05">O.S.</th>
     </tr>
   </thead>
   <tbody id="t_body"></tbody>
 </table>
 
+<script type="text/javascript" src="info_files.json"></script>
 <!-- <script type="text/javascript" src="load_results.json"></script> -->
 <!-- <script type="text/javascript" src="reset_results.json"></script> -->
+<script type="text/javascript" src="info_results.json"></script>
 <script type="text/javascript" src="alive_results.json"></script>
 <script type="text/javascript" src="answer_results.json"></script>
 <script type="text/javascript" src="multiple_results.json"></script>
@@ -57,13 +60,33 @@ The status table of these queries are presented below.
   $("#div_error").hide();
 
   try {
+    var data_info_files       = JSON.parse(info_files);       // get the last update information  
     var data_alive_results    = JSON.parse(alive_results);    // alive consider the CM card
     var data_multiple_results = JSON.parse(multiple_results); // must be 'status' on Nepi
-    var data_answer_results   = JSON.parse(answer_results);   // answer consider the answer for a single ping 
+    var data_answer_results   = JSON.parse(answer_results);   // consider the answer for a single ping
+    var data_info_results     = JSON.parse(info_results);     // check the SO version  
   }
   catch(err) {
     $("#div_error").show();
     $("#div_error").append( '<ul><li>One or more file information were not loaded correctly</li></ul>' );
+  }
+
+
+  //Last update info at the table header
+  try {
+    cl_02 = data_info_files['alive_results'].last_modified;
+    cl_03 = data_info_files['answer_results'].last_modified;
+    cl_04 = data_info_files['info_results'].last_modified;
+    cl_05 = data_info_files['load_results'].last_modified;
+
+    $("#cl_02").append( '<br><font style="font-weight:normal; font-size:xx-small;">'+cl_02+'</font>');
+    $("#cl_03").append( '<br><font style="font-weight:normal; font-size:xx-small;">'+cl_03+'</font>');
+    $("#cl_04").append( '<br><font style="font-weight:normal; font-size:xx-small;">'+cl_04+'</font>');
+    $("#cl_05").append( '<br><font style="font-weight:normal; font-size:xx-small;">'+cl_05+'</font>');
+  }
+  catch(err) {
+    $("#div_error").show();
+    $("#div_error").append( '<ul><li>Info file informations were not loaded correctly</li></ul>' );
   }
 
   var total_nodes = 38;
@@ -71,7 +94,7 @@ The status table of these queries are presented below.
   
   for (var key=1; key < total_nodes; key++) {
     table_content += '<tr>';
-    
+
     //Fist column
     table_content += '<th scope="row">'+ key +'</th>';
 
@@ -118,6 +141,27 @@ The status table of these queries are presented below.
       else {
         table_content += '<td><span class="label label-warning">unreachable</span></td>';
       }
+    }
+    catch(err) {
+      table_content += '<td><span class="label label-default">ignored</span></td>';  
+    }
+
+    //Fifth column
+    try {
+      res = data_info_results[key].info;
+
+      if (res == 'fail'){
+        table_content += '<td><span class="label label-danger">fail</span></td>';
+      }
+      else if (res.indexOf('ubuntu') >= 0){
+
+        table_content += '<td><img src="assets/img/ub.png" height="20" width="20">&nbsp;<font style="font-size:x-small;">'+res.replace('ubuntu','');+'</font></td>';
+      }
+      else if (res.indexOf('fedora') >= 0){
+
+        table_content += '<td><img src="assets/img/fd.png" height="20" width="20">&nbsp;<font style="font-size:x-small;">'+res.replace('fedora','');+'</font></td>';
+      }
+      
     }
     catch(err) {
       table_content += '<td><span class="label label-default">ignored</span></td>';  
