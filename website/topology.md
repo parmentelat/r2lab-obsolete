@@ -8,7 +8,7 @@ R2Lab testbed project offers a hight quality anechoic room for your experiments.
 
 Below is the ground plan layout of the anechoic room which provide thirty-seven wireless nodes distributed in a **≈ 90m<sup>2</sup>** room.
 
-The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal) of distance between them. Except by the nodes 12, 16, 17, 20 and 23, 24, 27 or the nodes surrounding the columns room.
+The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal) of distance between them, except by the nodes 12, 16, 17, 20 and 23, 24, 27 which are the nodes surrounding the columns room.
 
 <center>
 	<img src="assets/img/status.png" style="width:950px; height:592px;"/><br>
@@ -155,11 +155,11 @@ The status table of these queries are presented below.
       }
       else if (res.indexOf('ubuntu') >= 0){
 
-        table_content += '<td><img src="assets/img/ub.png" height="20" width="20">&nbsp;<font style="font-size:x-small;">'+res.replace('ubuntu','');+'</font></td>';
+        table_content += '<td><img src="assets/img/ub.png" height="20" width="20">&nbsp;<font style="font-size:x-small;">'+res+'</font></td>';
       }
       else if (res.indexOf('fedora') >= 0){
 
-        table_content += '<td><img src="assets/img/fd.png" height="20" width="20">&nbsp;<font style="font-size:x-small;">'+res.replace('fedora','');+'</font></td>';
+        table_content += '<td><img src="assets/img/fd.png" height="20" width="20">&nbsp;<font style="font-size:x-small;">'+res.replace(' (twenty one)','');+'</font></td>';
       }
       
     }

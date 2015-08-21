@@ -235,7 +235,7 @@ def info(nodes, connection_info, show_results=True):
         ec.set(by_node, "cleanProcessesAfter", False)
 
 
-        on_cmd_a = "lsb_release -a | awk 'NR==2 {print $2\" \"$3}'" 
+        on_cmd_a = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'" 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -388,7 +388,7 @@ def multiple_action(nodes, connection_info, action, show_results=True):
 def remove_special_char(str):
     """ Remove special caracters from a string """
     if str is not None:
-        new_str = str.replace('\n', '').replace('\r', '').lower()
+        new_str = str.replace('\n', '').replace('\r', '').replace('\"', '').lower()
         #new_str = re.sub('[^A-Za-z0-9]+', ' ', str)
     else:
         new_str = ''
