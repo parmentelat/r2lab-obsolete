@@ -8,7 +8,7 @@ ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
 ########## default target
 all: preview-local
 
-preview: prepare index meta topology convert resources
+preview: prepare index meta nepi_all convert resources
 full: prepare index meta topology convert resources publish
 
 .PHONY: all preview full prepare index meta convert publish 
@@ -38,7 +38,32 @@ meta:
 	@[ -d markdown ] || mkdir markdown
 	./meta.py
 
-# topology by Nepi check
+##############################
+# Nodes functions
+##############################
+
+# check all nepi
+nepi_all: nepi_alive nepi_answer nepi_status nepi_info topology
+
+# check the availability of the nodes
+nepi_alive:
+	python node_helper.py -A alive -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
+
+# check the answer of the nodes
+nepi_answer:
+	python node_helper.py -A answer -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
+
+# check the status of the nodes
+nepi_status:
+	python node_helper.py -A status -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
+
+# check the status of the nodes
+nepi_info:
+	python node_helper.py -A info -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario|| (echo "command fail $$?"; exit 1)
+
+################################
+
+# compile topology informatios  by Nepi check
 topology:
 	@[ -d markdown ] || mkdir markdown
 	./topology.py

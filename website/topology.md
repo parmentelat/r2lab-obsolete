@@ -26,7 +26,7 @@ The status table of these queries are presented below.
 </div>
 
 <!-- MUST BE GENERATED AUTOMATICALLY -->
-<table class="table table-condensed">
+<table id="results_table" class="table table-condensed">
   <thead>
     <tr>
       <th id="cl_01">node<br><font style="font-weight:normal; font-size:xx-small;">last update</font></th>
@@ -58,6 +58,7 @@ The status table of these queries are presented below.
   };
 
   $("#div_error").hide();
+  //$("#results_table").show();
 
   try {
     var data_info_files       = JSON.parse(info_files);       // get the last update information  
@@ -67,6 +68,7 @@ The status table of these queries are presented below.
     var data_info_results     = JSON.parse(info_results);     // check the SO version  
   }
   catch(err) {
+    //$("#results_table").hide();
     $("#div_error").show();
     $("#div_error").append( '<ul><li>One or more file information were not loaded correctly</li></ul>' );
   }
@@ -76,8 +78,8 @@ The status table of these queries are presented below.
   try {
     cl_02 = data_info_files['alive_results'].last_modified;
     cl_03 = data_info_files['answer_results'].last_modified;
-    cl_04 = data_info_files['info_results'].last_modified;
-    cl_05 = data_info_files['load_results'].last_modified;
+    cl_04 = data_info_files['multiple_results'].last_modified;
+    cl_05 = data_info_files['info_results'].last_modified;
 
     $("#cl_02").append( '<br><font style="font-weight:normal; font-size:xx-small;">'+cl_02+'</font>');
     $("#cl_03").append( '<br><font style="font-weight:normal; font-size:xx-small;">'+cl_03+'</font>');
