@@ -8,7 +8,10 @@ ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
 ########## default target
 all: preview-local
 
-preview: prepare index meta nepi_all convert resources
+preview_and_nepiall: prepare index meta nepi_all topology convert resources
+full_and_nepiall: prepare index meta nepi_all topology convert resources publish
+
+preview: prepare index meta topology convert resources
 full: prepare index meta topology convert resources publish
 
 .PHONY: all preview full prepare index meta convert publish 
@@ -43,23 +46,35 @@ meta:
 ##############################
 
 # check all nepi
-nepi_all: nepi_alive nepi_answer nepi_status nepi_info topology
+nepi_all: nepi_alive nepi_answer nepi_status nepi_info
+
+# load ubuntu 1410 at the nodes
+nepi_load-u1410:
+	python node_helper.py -A load-u1410 -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
+
+# load ubuntu 1410 at the nodes
+nepi_load-u1504:
+	python node_helper.py -A load-u1504 -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
+
+# load ubuntu 1410 at the nodes
+nepi_load-f21:
+	python node_helper.py -A load-f21 -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
 
 # check the availability of the nodes
 nepi_alive:
-	python node_helper.py -A alive -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
+	python node_helper.py -A alive -N all -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
 
 # check the answer of the nodes
 nepi_answer:
-	python node_helper.py -A answer -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
+	python node_helper.py -A answer -N all -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
 
 # check the status of the nodes
 nepi_status:
-	python node_helper.py -A status -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
+	python node_helper.py -A status -N all -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario || (echo "command fail $$?"; exit 1)
 
 # check the status of the nodes
 nepi_info:
-	python node_helper.py -A info -N fit10,fit26 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario|| (echo "command fail $$?"; exit 1)
+	python node_helper.py -A info -N fit10,fit26,fit12,fit18 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario|| (echo "command fail $$?"; exit 1)
 
 ################################
 

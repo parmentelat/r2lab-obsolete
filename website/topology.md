@@ -18,7 +18,7 @@ The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal)
 <br>
 
 ###Status
-Frequently a routine checks the availability of our resource/nodes platform. Three items are checked: if the node is available correctly (availability column); if the node answer a single ping (ping column); which are the node status (on/off column). <br>
+Frequently a routine checks the availability of our resource/nodes platform. Some main items are checked: - if the node is available correctly (availability column); - if the node answer a single ping (ping column); - which are the node status (on/off column); - what is the operational system is running (O.S column). <br>
 The status table of these queries are presented below.
 
 <div id="div_error" class="alert alert-danger" role="alert">
