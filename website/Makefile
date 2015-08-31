@@ -1,3 +1,7 @@
+eval 'ssh-agent'
+
+#source $HOME/.keychain/$HOSTNAME-sh
+
 ########## contents
 ALL_MDS = index.md overview.md tuto-*md events.md topology.md hardware.md tools.md 
 
