@@ -1,7 +1,3 @@
-eval 'ssh-agent'
-
-#source $HOME/.keychain/$HOSTNAME-sh
-
 ########## contents
 ALL_MDS = index.md overview.md tuto-*md events.md topology.md hardware.md tools.md 
 
@@ -80,6 +76,11 @@ nepi_status:
 nepi_info:
 	python node_helper.py -A info -N fit10,fit26,fit12,fit18 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario|| (echo "command fail $$?"; exit 1)
 
+temp:
+	eval 'ssh-agent'
+	#source $HOME/.keychain/$HOSTNAME-sh
+
+temp_st: temp nepi_status
 ################################
 
 # compile topology informatios  by Nepi check
