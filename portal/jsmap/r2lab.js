@@ -1,6 +1,7 @@
 /* should be in sync with r2lab-server.js */
 var port_number = 3000;
-var channel = 'r2lab-status';
+var channel = 'r2lab-news';
+var signalling = 'r2lab-signalling';
 
 /*
  XXX - needs to change when in production
@@ -174,7 +175,9 @@ function Node (node_spec) {
        currently we know about
        {
        'id' : this is how this node instance is located
-       'status' : for now we know about 'on' and 'off', to be extended
+       'status' : 'on' and 'off'
+       'busy' : 'busy' or 'free'
+       , to be extended
        }
     */
     this.handle_status = function(node_info) {
@@ -186,16 +189,15 @@ function Node (node_spec) {
 	}
 	this.display_on_off();
 	var busy = node_info['busy'];
-	if (busy == 'yes') {
+	if (busy == 'busy') {
 	    this.busy = 1;
-	} else if (busy == 'no') {
+	} else if (busy == 'free') {
 	    this.busy = 0;
 	}
 	this.display_busy();
     }
-
 }
-    
+
 function Pillar(pillar_spec) {
     this.id = pillar_spec['id'];
     /* i and j refer to a logical grid */
@@ -285,9 +287,6 @@ function R2Lab() {
 		return this.nodes[i];
     }
     
-    /* e.g.
-       [ { "id" : 1, "status" : "on"}, {"id":34, "busy" : "no"}]
-    */
     this.handle_json_status = function(json) {
 	console.log("received JSON nodes_info " + json);
 	var nodes_info = JSON.parse(json);
@@ -303,13 +302,13 @@ function R2Lab() {
 function init_socket_io(lab) {
     var url = "http://" + server_hostname + ":" + port_number;
     var socket = io(url);
-    socket.on('chat message', function(msg){
-        console.log("received chat message " + msg);
-    });
+    /* what to do when receiving news */
     socket.on(channel, function(json){
         lab.handle_json_status(json);
     });
-}    
+    /* request for initial status (could maybe send some client id instead) */
+    socket.emit(signalling, 'INIT');
+}
 
 window.onload = function() {
     lab = new R2Lab();

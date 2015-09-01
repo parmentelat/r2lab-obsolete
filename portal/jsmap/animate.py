@@ -7,7 +7,8 @@ import time
 from argparse import ArgumentParser
 
 #
-status_filename = 'r2lab-status.json'
+complete_filename = 'r2lab-complete.json'
+news_filename = 'r2lab-news.json'
 
 # in s
 default_cycle = 0.5
@@ -15,8 +16,15 @@ default_runs = 0
 
 node_ids = range(1, 38)
 max_nodes = 3
-busy_values = [ 'yes', 'no' ]
+busy_values = [ 'busy', 'free' ]
 status_values = [ 'on', 'off' ]
+
+def init_status(verbose):
+    complete = [ random_status(id) for id in node_ids ]
+    with open(complete_filename, 'w') as f:
+        if verbose:
+            print 'Creating ' + complete_filename
+        f.write(json.dumps(complete))
 
 def random_ids():
     how_many = random.randint(1, max_nodes)
@@ -42,12 +50,14 @@ def main():
 
     cycle = args.cycle
     
+    init_status(args.verbose)
+    
     if args.verbose:
         print "Using cycle {}s".format(cycle)
     counter = 0
     while True:
         output = [ random_status(id) for id in random_ids()]
-        with open(status_filename, 'w') as f:
+        with open(news_filename, 'w') as f:
             if args.verbose:
                 print output
             f.write(json.dumps(output))
@@ -58,5 +68,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-            
-            
