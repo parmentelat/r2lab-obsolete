@@ -288,7 +288,7 @@ function R2Lab() {
     }
     
     this.handle_json_status = function(json) {
-	console.log("received JSON nodes_info " + json);
+	/*console.log("received JSON nodes_info " + json);*/
 	var nodes_info = JSON.parse(json);
 	for (var i=0; i < nodes_info.length; i++) {
 	    var node_info = nodes_info[i];
