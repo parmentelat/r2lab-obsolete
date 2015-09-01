@@ -1,5 +1,16 @@
+/* should be in sync with r2lab-server.js */
+var port_number = 3000;
+var channel = 'r2lab-status';
+
+/*
+ XXX - needs to change when in production
+ when running locally - i.e. loading r2lab.html from a file
+ we need to figure hostname somehow
+*/
+var server_hostname = "localhost"
+
 /* output from r2lab.py */
-node_specs=[
+node_specs = [
 { id: 1, i:8, j:0 },
 { id: 2, i:8, j:1 },
 { id: 3, i:8, j:2 },
@@ -39,7 +50,7 @@ node_specs=[
 { id: 37, i:0, j:4 },
 ];
 /* the  two pillars - this is manual */
-pillar_specs=[
+pillar_specs = [
 { id: 'left', i:3, j:1 },
 { id: 'right', i:5, j:1 },
 ];
@@ -50,8 +61,8 @@ verbose = 0;
 
 /******************************/
 /* the space around the walls in the canvas */
-margin_x=50;
-margin_y=50;
+margin_x = 50;
+margin_y = 50;
 
 /* distance between nodes */
 space_x = 80;
@@ -65,7 +76,7 @@ steps_y = 4;
 
 /* the attributes for drawing the walls 
    as well as the inside of the room */
-walls_style=
+walls_style =
     {
         fill: '90-#425790-#64a0c1'
 	/*'90-#526c7a-#64a0c1'*/ /*'90-bbc1d0-f0d0e4'*/,
@@ -77,6 +88,11 @@ walls_style=
 walls_radius = 30;
 /* the attributes of nodes */
 node_radius = 16;
+node_label_style = {
+    'font-family': 'monaco',
+    'font-size': 16
+}
+/* free - busy */
 free_node_style={
     gradient: '0-#cfc-beb-cfc',
     'fill-opacity': 0.5
@@ -85,10 +101,12 @@ busy_node_style={
     gradient: '0-#fcc-ebb-fcc',
     'fill-opacity': 0.5
 };
-node_label_style = {
-    'font-family': 'monaco',
-    'font-size': 16
-}
+on_node_style = {
+    'stroke-width' : 6,
+};
+off_node_style = {
+    'stroke-width' : 2,
+};
 
 /* the attributes of the pillars */
 pillar_radius = 16;
@@ -110,7 +128,8 @@ function Node (node_spec) {
     /* i and j refer to a logical grid */
     this.i = node_spec['i'];
     this.j = node_spec['j'];
-    this.status = 0;
+    this.busy = 0;
+    this.on = 1;
 
     /* compute actual coordinates */
     var coords = grid_to_canvas (this.i, this.j);
@@ -118,36 +137,63 @@ function Node (node_spec) {
     this.y = coords[1];
     
     this.clicked = function () {
-	console.log("in Node.clicked "+this.id);
-	this.toggle_status();
+	this.toggle_busy();
     }
 
     this.display = function(paper) {
 	this.circle = paper.circle(this.x, this.y,
 				   node_radius, node_radius);
-	this.set_status();
+	this.display_busy();
+	this.display_on_off();
 
 	var label = ""; label += this.id;
 	if (verbose) label += "["+ this.i + "x" + this.j+"]";
 	this.label = paper.text(this.x, this.y, label);
 	this.label.attr(node_label_style);
 
-	var self=this;
+	var self = this;
 	var clicked = function(){self.clicked();};
 	this.circle.click(clicked);
 	this.label.click(clicked);
-
     }
 
-    this.set_status = function () {
-	this.circle.attr (this.status ? busy_node_style : free_node_style);
+    this.display_busy = function () {
+	this.circle.attr (this.busy ? busy_node_style : free_node_style);
     }
 
-    this.toggle_status = function () {
-	this.status = 1-this.status;
-	this.set_status();
-    }	    
+    this.display_on_off = function () {
+	this.circle.attr (this.on ? on_node_style : off_node_style);
+    }
+
+    this.toggle_busy = function () {
+	this.busy = 1-this.busy;
+	this.display_busy();
+    }
     
+    /* node_info is a struct coming through socket.io in JSON
+       currently we know about
+       {
+       'id' : this is how this node instance is located
+       'status' : for now we know about 'on' and 'off', to be extended
+       }
+    */
+    this.handle_status = function(node_info) {
+	var on_off = node_info['status'];
+	if (on_off == 'on') {
+	    this.on = 1;
+	} else if (on_off == 'off') {
+	    this.on = 0;
+	}
+	this.display_on_off();
+	var busy = node_info['busy'];
+	if (busy == 'yes') {
+	    this.busy = 1;
+	} else if (busy == 'no') {
+	    this.busy = 0;
+	}
+	this.display_busy();
+    }
+
 }
     
 function Pillar(pillar_spec) {
@@ -231,10 +277,42 @@ function R2Lab() {
 	    this.nodes[i].display(paper);
 	}
     }
-	
+
+
+    this.locate_node_by_id = function(id) {
+	for (var i=0; i<this.nodes.length; i++)
+	    if (this.nodes[i].id == id)
+		return this.nodes[i];
+    }
+    
+    /* e.g.
+       [ { "id" : 1, "status" : "on"}, {"id":34, "busy" : "no"}]
+    */
+    this.handle_json_status = function(json) {
+	console.log("received JSON nodes_info " + json);
+	var nodes_info = JSON.parse(json);
+	for (var i=0; i < nodes_info.length; i++) {
+	    var node_info = nodes_info[i];
+	    var id = node_info['id'];
+	    var node = this.locate_node_by_id(id);
+	    node.handle_status(node_info);
+	}
+    }
 }
+
+function init_socket_io(lab) {
+    var url = "http://" + server_hostname + ":" + port_number;
+    var socket = io(url);
+    socket.on('chat message', function(msg){
+        console.log("received chat message " + msg);
+    });
+    socket.on(channel, function(json){
+        lab.handle_json_status(json);
+    });
+}    
 
 window.onload = function() {
     lab = new R2Lab();
     lab.init_nodes();
+    init_socket_io(lab);
 }
