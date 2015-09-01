@@ -74,7 +74,7 @@ nepi_status:
 
 # check the status of the nodes
 nepi_info:
-	python node_helper.py -A info -N fit10,fit26,fit12,fit18 -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario|| (echo "command fail $$?"; exit 1)
+	python node_helper.py -A info -N all -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario|| (echo "command fail $$?"; exit 1)
 
 ################################
 

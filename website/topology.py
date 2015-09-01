@@ -22,7 +22,8 @@ def modification_date(filename):
     Return file modification datetime
     """
     t = os.path.getmtime(filename)
-    return datetime.datetime.fromtimestamp(t)
+    date_time_file = datetime.datetime.fromtimestamp(t)
+    return date_time_file.strftime('%Y-%m-%d %H:%M')
 
 
 def import_node_status():
