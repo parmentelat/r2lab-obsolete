@@ -674,5 +674,3 @@ ADMIN=onelab.inria.r2lab.admin
 
 alias admin-account="su - $ADMIN"
 doc-admin admin-account alias
-
-
