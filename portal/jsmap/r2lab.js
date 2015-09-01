@@ -310,8 +310,10 @@ function init_socket_io(lab) {
     socket.emit(signalling, 'INIT');
 }
 
-window.onload = function() {
+/* autoload */
+function r2lab_init() {
     lab = new R2Lab();
     lab.init_nodes();
     init_socket_io(lab);
 }
+$(r2lab_init);
