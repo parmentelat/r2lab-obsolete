@@ -15,7 +15,7 @@ default_cycle = 0.5
 default_runs = 0
 
 node_ids = range(1, 38)
-max_nodes = 3
+max_nodes_impacted = 10
 busy_values = [ 'busy', 'free' ]
 status_values = [ 'on', 'off' ]
 
@@ -27,7 +27,7 @@ def init_status(verbose):
         f.write(json.dumps(complete))
 
 def random_ids():
-    how_many = random.randint(1, max_nodes)
+    how_many = random.randint(1, max_nodes_impacted)
     return [ random.choice(node_ids) for i in range(how_many)]
 
 def random_status(id):
