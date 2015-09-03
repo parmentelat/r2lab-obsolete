@@ -137,15 +137,15 @@ function Node (node_spec) {
     this.x = coords[0];
     this.y = coords[1];
     
-    this.clicked = function () {
-	this.toggle_busy();
-    }
+//    this.clicked = function () {
+//	this.toggle_busy();
+//    }
 
+    // initial display won't show busy or status
+    // this is expected to be updated later on
     this.display = function(paper) {
 	this.circle = paper.circle(this.x, this.y,
 				   node_radius, node_radius);
-	this.display_busy();
-	this.display_on_off();
 
 	var label = ""; label += this.id;
 	if (verbose) label += "["+ this.i + "x" + this.j+"]";
@@ -154,8 +154,10 @@ function Node (node_spec) {
 
 	var self = this;
 	var clicked = function(){self.clicked();};
-	this.circle.click(clicked);
-	this.label.click(clicked);
+	/* setting id on the svg elt */
+	this.circle.node.setAttribute('id', 'fit' + this.id);
+//	this.circle.click(clicked);
+//	this.label.click(clicked);
     }
 
     this.display_busy = function () {
