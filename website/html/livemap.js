@@ -1,9 +1,13 @@
-/* should be in sync with r2lab-server.js */
+/* must be in sync with r2lab-server.js */
 var port_number = 8000;
+
+/**** the 2 socket.io channels that are used ****/
+/* this is where actual JSON status is sent */
 var channel = 'r2lab-news';
+/* this one is used for triggering a broadcast of the complete status */
 var signalling = 'r2lab-signalling';
 
-/* output from r2lab.py */
+/* output from livemap-prep.py */
 node_specs = [
 { id: 1, i:8, j:0 },
 { id: 2, i:8, j:1 },

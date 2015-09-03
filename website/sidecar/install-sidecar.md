@@ -1,4 +1,4 @@
-# r2lab.inria.fr
+# install sidecar on r2lab.inria.fr
 
 ## git
 
@@ -19,6 +19,8 @@
     
 After what
      
-    [root@r2lab jsmap]# node r2lab-server.js
-    listening on *:3000	     
+    # cd /root/fitsophia/website/sidecar
+    [root@r2lab sidecar]# node r2lab-sidecar.js
+    listening on *:8000	
+    
 
