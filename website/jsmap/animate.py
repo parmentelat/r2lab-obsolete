@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+# XXX - todo
+# it would make a lot of sense to make sure that changes (as written in news)
+# get reflected in the complete status file as well
+
+
 import random
 import json
 import time
