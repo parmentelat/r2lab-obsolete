@@ -102,12 +102,8 @@ busy_node_style={
     gradient: '0-#fcc-ebb-fcc',
     'fill-opacity': 0.5
 };
-on_node_style = {
-    'stroke-width' : 6,
-};
-off_node_style = {
-    'stroke-width' : 2,
-};
+on_node_radius = 18;
+off_node_radius = 4;
 
 /* the attributes of the pillars */
 pillar_radius = 16;
@@ -165,7 +161,10 @@ function Node (node_spec) {
     }
 
     this.display_on_off = function () {
-	this.circle.attr (this.on ? on_node_style : off_node_style);
+	d3.selectAll('#fit'+this.id)
+	    .transition()
+	    .duration(400)
+	    .attr('r', this.on ? on_node_radius : off_node_radius);
     }
 
     this.toggle_busy = function () {
