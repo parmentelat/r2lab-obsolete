@@ -35,12 +35,18 @@ def random_ids(max_nodes_impacted):
     how_many = random.randint(1, max_nodes_impacted)
     return [ random.choice(node_ids) for i in range(how_many)]
 
-def random_status(id):
-    return {
+def random_status(id, index=0):
+    # for testing incomplete news on the livemap side
+    # we expose one or the other or both
+    # however the default always expose the full monty
+    template = {
         'id' : id,
         'busy' : random.choice(busy_values),
         'status' : random.choice(status_values)
-        }
+    }
+    if   index%3 == 1:  del template['busy']
+    elif index%3 == 2:  del template['status']
+    return template
     
 def main():
     parser = ArgumentParser()
@@ -64,7 +70,8 @@ def main():
         print "Using cycle {}s".format(cycle)
     counter = 0
     while True:
-        output = [ random_status(id) for id in random_ids(args.max_nodes_impacted)]
+        output = [ random_status(id, index)
+                   for index, id in enumerate(random_ids(args.max_nodes_impacted))]
         with open(news_filename, 'w') as f:
             if args.verbose:
                 print output

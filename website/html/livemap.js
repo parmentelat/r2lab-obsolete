@@ -1,5 +1,5 @@
 /* must be in sync with r2lab-server.js */
-var port_number = 8000;
+var sidecar_port_number = 8000;
 
 /**** the 2 socket.io channels that are used ****/
 /* this is where actual JSON status is sent */
@@ -8,7 +8,7 @@ var channel = 'r2lab-news';
 var signalling = 'r2lab-signalling';
 
 /* output from livemap-prep.py */
-node_specs = [
+var node_specs = [
 { id: 1, i:8, j:0 },
 { id: 2, i:8, j:1 },
 { id: 3, i:8, j:2 },
@@ -48,33 +48,33 @@ node_specs = [
 { id: 37, i:0, j:4 },
 ];
 /* the  two pillars - this is manual */
-pillar_specs = [
+var pillar_specs = [
 { id: 'left', i:3, j:1 },
 { id: 'right', i:5, j:1 },
 ];
 
+//global - mostly for debugging and convenience
+var the_r2lab;
+
 /* set to 0 to keep only node ids (remove coords) */
-verbose = 1;
-verbose = 0;
+var verbose = 1;
+var verbose = 0;
 
 /******************************/
 /* the space around the walls in the canvas */
-margin_x = 50;
-margin_y = 50;
+var margin_x = 50, margin_y = 50;
 
 /* distance between nodes */
-space_x = 80;
-space_y = 80;
+var space_x = 80, space_y = 80;
 /* distance between nodes and walls */
-padding_x = 40;
-padding_y = 40;
+var padding_x = 40, padding_y = 40;
 /* total number of rows and columns */
-steps_x = 8;
-steps_y = 4;
+var steps_x = 8, steps_y = 4;
 
 /* the attributes for drawing the walls 
    as well as the inside of the room */
-walls_style =
+var walls_radius = 30, 
+    walls_style =
     {
         fill: '90-#425790-#64a0c1'
 	/*'90-#526c7a-#64a0c1'*/ /*'90-bbc1d0-f0d0e4'*/,
@@ -83,14 +83,14 @@ walls_style =
         'stroke-linejoin': 'round',
 	'stroke-miterlimit': 8
     };
-walls_radius = 30;
-/* the attributes of nodes */
-node_radius = 16;
-node_label_style = {
-    'font-family': 'monaco',
-    'font-size': 16
-}
+/* the initial attributes of nodes */
+var node_radius = 16,
+    node_label_style = {
+	'font-family': 'monaco',
+	'font-size': 16
+    }
 /* free - busy */
+/*
 free_node_style={
     gradient: '0-#cfc-beb-cfc',
     'fill-opacity': 0.5
@@ -99,17 +99,17 @@ busy_node_style={
     gradient: '0-#fcc-ebb-fcc',
     'fill-opacity': 0.5
 };
-on_node_radius = 18;
-off_node_radius = 4;
+*/
+var free_node_fill = 'lightgreen', busy_node_fill = 'red';
+var on_node_radius = 18, off_node_radius = 0;
 
 /* the attributes of the pillars */
-pillar_radius = 16;
-pillar_style = JSON.parse(JSON.stringify(walls_style));
+var pillar_radius = 16,
+    pillar_style = JSON.parse(JSON.stringify(walls_style));
 pillar_style['fill'] = '#101030';
 
 /* intermediate - the overall room size */
-room_x = steps_x*space_x + 2*padding_x;
-room_y = steps_y*space_y + 2*padding_y;
+var room_x = steps_x*space_x + 2*padding_x, room_y = steps_y*space_y + 2*padding_y;
 
 function grid_to_canvas (i, j) {
     return [i*space_x+margin_x+padding_x,
@@ -130,11 +130,12 @@ function Node (node_spec) {
     this.x = coords[0];
     this.y = coords[1];
     
-//    this.clicked = function () {
-//	this.toggle_busy();
-//    }
+    this.clicked = function () {
+	console.log("clicked on node " + this.id + " - tmp for dbg, this does a manual refresh");
+	the_r2lab.request_complete_from_sidecar();
+    }
 
-    // initial display won't show busy or status
+    // initial display won't show anything about status
     // this is expected to be updated later on
     this.display = function(paper) {
 	this.circle = paper.circle(this.x, this.y,
@@ -145,54 +146,32 @@ function Node (node_spec) {
 	this.label = paper.text(this.x, this.y, label);
 	this.label.attr(node_label_style);
 
+	/* setting id on the svg elts */
+	this.circle.node.setAttribute('class', 'node-circle');
+	this.label.node.setAttribute('class', 'node-text');
+
+	// arm click callbacks
 	var self = this;
 	var clicked = function(){self.clicked();};
-	/* setting id on the svg elt */
-	this.circle.node.setAttribute('id', 'fit' + this.id);
-//	this.circle.click(clicked);
-//	this.label.click(clicked);
+	this.circle.click(clicked);
+	this.label.click(clicked);
     }
 
-    this.display_busy = function () {
-	this.circle.attr (this.busy ? busy_node_style : free_node_style);
-    }
-
-    this.display_on_off = function () {
-	d3.selectAll('#fit'+this.id)
-	    .transition()
-	    .duration(400)
-	    .attr('r', this.on ? on_node_radius : off_node_radius);
-    }
-
-    this.toggle_busy = function () {
-	this.busy = 1-this.busy;
-	this.display_busy();
-    }
-    
-    /* node_info is a struct coming through socket.io in JSON
+    /* 
+       node_info is a struct coming through socket.io in JSON
        currently we know about
        {
-       'id' : this is how this node instance is located
-       'status' : 'on' and 'off'
-       'busy' : 'busy' or 'free'
-       , to be extended
+        'id' : this is how this node instance is located
+        'status' : 'on' and 'off'
+        'busy' : 'busy' or 'free'
+           to be extended/tweaked...
        }
     */
-    this.handle_status = function(node_info) {
-	var on_off = node_info['status'];
-	if (on_off == 'on') {
-	    this.on = 1;
-	} else if (on_off == 'off') {
-	    this.on = 0;
-	}
-	this.display_on_off();
-	var busy = node_info['busy'];
-	if (busy == 'busy') {
-	    this.busy = 1;
-	} else if (busy == 'free') {
-	    this.busy = 0;
-	}
-	this.display_busy();
+    this.update_from_news = function(node_info) {
+	if (node_info.status != undefined)
+	    this.status = (node_info.status == 'on') ? 1 : 0;
+	if (node_info.busy != undefined)
+	    this.busy = (node_info.busy == 'busy') ? 1 : 0;
     }
 }
 
@@ -271,8 +250,7 @@ function R2Lab() {
     this.nodes = [];
 
     this.init_nodes = function () {
-	var i;
-	for (i=0; i < this.nb_nodes; i++) { 
+	for (var i=0; i < this.nb_nodes; i++) { 
 	    this.nodes[i] = new Node(node_specs[i]);
 	    this.nodes[i].display(paper);
 	}
@@ -280,44 +258,70 @@ function R2Lab() {
 
 
     this.locate_node_by_id = function(id) {
-	for (var i=0; i<this.nodes.length; i++)
+	for (var i=0; i< this.nodes.length; i++)
 	    if (this.nodes[i].id == id)
 		return this.nodes[i];
     }
     
     this.handle_json_status = function(json) {
-	/*console.log("received JSON nodes_info " + json);*/
 	var nodes_info = JSON.parse(json);
+	// first we write this data into the Node structures
 	for (var i=0; i < nodes_info.length; i++) {
 	    var node_info = nodes_info[i];
 	    var id = node_info['id'];
 	    var node = this.locate_node_by_id(id);
-	    node.handle_status(node_info);
+	    node.update_from_news(node_info);
 	}
+	this.animate_changes();
     }
-}
 
-function init_socket_io(lab) {
-    // try to figure hostname to get in touch with
-    var server_hostname = ""
-    server_hostname = new URL(window.location.href).hostname;
-    if ( ! server_hostname)
-	server_hostname = 'localhost';
-    var url = "http://" + server_hostname + ":" + port_number;
-    console.log("Trying to reach r2lab status server at " + url);
-    var socket = io(url);
-    /* what to do when receiving news */
-    socket.on(channel, function(json){
-        lab.handle_json_status(json);
-    });
-    /* request for initial status (could maybe send some client id instead) */
-    socket.emit(signalling, 'INIT');
+    this.animate_changes = function() {
+	console.log('animate with ' + this.nodes.length + 'nodes in this.nodes');
+	var circles = d3.selectAll('.node-circle')
+	    .data(this.nodes)
+	    .transition()
+	    .duration(500)
+	    .attr('r',
+		  function(node) {return node.status ? on_node_radius : off_node_radius;});
+	var labels = d3.selectAll('.node-text')
+	    .data(this.nodes)
+	    .transition()
+	    .duration(500)
+	    .attr('fill',
+		  function(node) {return node.busy ? busy_node_fill : free_node_fill;});
+    }
+
+    this.init_sidecar_socket_io = function() {
+	// try to figure hostname to get in touch with
+	var sidecar_hostname = ""
+	sidecar_hostname = new URL(window.location.href).hostname;
+	if ( ! sidecar_hostname)
+	    sidecar_hostname = 'localhost';
+	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
+	console.log("Connecting to r2lab status sidecar server at " + url);
+	this.sidecar_socket = io(url);
+	/* what to do when receiving news from sidecar */
+	var lab=this;
+	this.sidecar_socket.on(channel, function(json){
+            lab.handle_json_status(json);
+	});
+	this.request_complete_from_sidecar();
+    }
+
+    /* 
+       request sidecar for initial status on the signalling channel
+       content is not actually used by sidecar server
+       could maybe send some client id instead
+    */
+    this.request_complete_from_sidecar = function() {
+	this.sidecar_socket.emit(signalling, 'INIT');
+    }
+	
 }
 
 /* autoload */
-function r2lab_init() {
-    lab = new R2Lab();
-    lab.init_nodes();
-    init_socket_io(lab);
-}
-$(r2lab_init);
+$(function() {
+    the_r2lab = new R2Lab();
+    the_r2lab.init_nodes();
+    the_r2lab.init_sidecar_socket_io();
+})
