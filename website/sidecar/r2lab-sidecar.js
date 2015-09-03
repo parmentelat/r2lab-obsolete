@@ -11,6 +11,8 @@ var complete_filename = 'r2lab-complete.json';
 
 var port_number = 8000;
 
+var debug=false;
+
 app.get('/', function(req, res){
     /* answer something */
     res.sendFile(__dirname + '/r2lab-complete.json');
@@ -54,7 +56,7 @@ function emit_file(filename){
 			/* convert ArrayBuffer to string */
 			var buffer = new Uint8Array(data)
 			var string = String.fromCharCode.apply(null, data)
-			console.log("emitting on channel " + channel + ":" + string);
+			if (debug) console.log("emitting on channel " + channel + ":" + string);
 			io.emit(channel, string);
 		    });
     }
@@ -65,7 +67,7 @@ function emit_file(filename){
 
 fs.watch(news_filename, 
 	 function(event, filename){
-	     console.log("watch -> event=" + event);
+	     if (debug) console.log("watch -> event=" + event);
 	     emit_file(news_filename);
 	 });
 
