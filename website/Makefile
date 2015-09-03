@@ -109,3 +109,7 @@ preview-local: prepare index meta convert-local resources
 full-local: prepare index meta convert-local resources publish
 
 .PHONY: convert-local preview-local full-local
+
+########## push local stuff onto faraday for testing
+push-mario:
+	rsync -av ./ root@faraday.inria.fr:/root/mario/website/
