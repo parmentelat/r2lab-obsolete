@@ -9,7 +9,7 @@ var signalling = 'r2lab-signalling';
 var news_filename = 'r2lab-news.json';
 var complete_filename = 'r2lab-complete.json';
 
-var port_number = 3000;
+var port_number = 8000;
 
 app.get('/', function(req, res){
     /* answer something */

@@ -1,14 +1,7 @@
 /* should be in sync with r2lab-server.js */
-var port_number = 3000;
+var port_number = 8000;
 var channel = 'r2lab-news';
 var signalling = 'r2lab-signalling';
-
-/*
- XXX - needs to change when in production
- when running locally - i.e. loading r2lab.html from a file
- we need to figure hostname somehow
-*/
-var server_hostname = "localhost"
 
 /* output from r2lab.py */
 node_specs = [
@@ -301,7 +294,13 @@ function R2Lab() {
 }
 
 function init_socket_io(lab) {
+    // try to figure hostname to get in touch with
+    var server_hostname = ""
+    server_hostname = new URL(window.location.href).hostname;
+    if ( ! server_hostname)
+	server_hostname = 'localhost';
     var url = "http://" + server_hostname + ":" + port_number;
+    console.log("Trying to reach r2lab status server at " + url);
     var socket = io(url);
     /* what to do when receiving news */
     socket.on(channel, function(json){
