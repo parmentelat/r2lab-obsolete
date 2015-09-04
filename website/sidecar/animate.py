@@ -16,13 +16,18 @@ complete_filename = 'r2lab-complete.json'
 news_filename = 'r2lab-news.json'
 
 # in s
-default_cycle = 0.5
+default_cycle = 1
 default_runs = 0
 
 node_ids = range(1, 38)
 default_max_nodes_impacted = 10
-busy_values = [ 'busy', 'free' ]
-status_values = [ 'on', 'off' ]
+field_values = {
+    'cmc_on_off' : [ 'on', 'off', 'fail' ],
+    'control_ping' : [ 'on', 'off' ],
+    'data_ping' : [ 'on', 'off' ],
+    'control_ssh' : [ 'on', 'off' ],
+    'os_release' : [ 'fedora-21', 'ubuntu-15.04', 'fedora-21-gnuradio', 'fail' ],
+}
 
 def init_status(verbose):
     complete = [ random_status(id) for id in node_ids ]
@@ -39,13 +44,16 @@ def random_status(id, index=0):
     # for testing incomplete news on the livemap side
     # we expose one or the other or both
     # however the default always expose the full monty
-    template = {
-        'id' : id,
-        'busy' : random.choice(busy_values),
-        'status' : random.choice(status_values)
-    }
-    if   index%3 == 1:  del template['busy']
-    elif index%3 == 2:  del template['status']
+    template = { 'id' : id }
+    # fill template with all known keys
+    template.update( { field : random.choice(values) 
+                       for field, values in field_values.iteritems() })
+    # index == 0 means we need a complete record
+    # otherwise let's remove some
+    items_to_remove = index % len(field_values)
+    keys_to_remove = random.sample(field_values.keys(), items_to_remove)
+    for field in keys_to_remove:
+        del template[field]
     return template
     
 def main():
@@ -55,7 +63,7 @@ def main():
                         help="Cycle duration in seconds (default={})".format(default_cycle))
     parser.add_argument('-r', '--runs', dest='runs', default=default_runs,
                         type=int,
-                        help="How many runs (default={}; 0 means forever)".format(default_cycle))
+                        help="How many runs (default={}; 0 means forever)".format(default_runs))
     parser.add_argument('-n', '--nodes', dest='max_nodes_impacted', default=default_max_nodes_impacted,
                         type=int,
                         help="Maximum number of nodes impacted by each cycle")

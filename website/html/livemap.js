@@ -77,8 +77,9 @@ var steps_x = 8, steps_y = 4;
 var walls_radius = 30, 
     walls_style =
     {
-        fill: '90-#425790-#64a0c1'
-	/*'90-#526c7a-#64a0c1'*/ /*'90-bbc1d0-f0d0e4'*/,
+//        fill: '90-f0ffff-fff0ff-f0f0ff',
+	//'90-#526c7a-#64a0c1'
+	//'90-bbc1d0-f0d0e4'
         stroke: '#3b4449',
         'stroke-width': 6,
         'stroke-linejoin': 'round',
@@ -104,9 +105,6 @@ function grid_to_canvas (i, j) {
 // see also styling in .css
 // it feels like we cannot animate using css though, as interpolation
 // is done by d3 is js code
-
-var node_free_fill = 'lightgreen', node_busy_fill = 'red';
-var node_on_radius = 18, node_off_radius = 0;
 
 /******************************/
 /* our mental model is y increase to the top, not to the bottom 
@@ -173,30 +171,75 @@ function Node (node_spec) {
     var coords = grid_to_canvas (this.i, this.j);
     this.x = coords[0];
     this.y = coords[1];
+    
     // status details are filled upon reception of news
 
-    /* 
-       node_info is a struct coming through socket.io in JSON
-       currently we know about
-       {
-        'id' : this is how this node instance is located
-        'status' : 'on' and 'off'
-        'busy' : 'busy' or 'free'
-           to be extended/tweaked...
-       }
-    */
+    // node_info is a dict coming through socket.io in JSON
+    // simply copy the fieds present in this dict in the local object
+    // for further usage in animate_changes
     this.update_from_news = function(node_info) {
-	if (node_info.status != undefined)
-	    this.status = (node_info.status == 'on') ? 1 : 0;
-	if (node_info.busy != undefined)
-	    this.busy = (node_info.busy == 'busy') ? 1 : 0;
+	if (node_info.cmc_on_off != undefined)
+	    this.cmc_on_off = node_info.cmc_on_off;
+	if (node_info.control_ping != undefined)
+	    this.control_ping = node_info.control_ping;
+	if (node_info.os_release != undefined)
+	    this.os_release = node_info.os_release;
+	// these 2 are not sniffed yet
+	if (node_info.data_ping != undefined)
+	    this.data_ping = node_info.data_ping;
+	if (node_info.control_ssh != undefined)
+	    this.control_ssh = node_info.control_ssh;
     }
 
+    // data_ping and control_ssh are not yet available
     this.radius = function() {
-	return this.status ? node_on_radius : node_off_radius;
+	var node_radius_ok = 18, node_radius_half = 9, node_radius_ko = 0;
+	// everything OK
+	if ((this.control_ping == 'on')
+	     && (this.os_release != 'fail'))
+	    return node_radius_ok;
+	// no ssh
+	else if (this.os_release == 'fail')
+	    return node_radius_half;
+	else
+	    return node_radius_ko;
     }
-    this.color = function() {
-	return this.busy ? node_busy_fill : node_free_fill;
+    this.text_color = function() {
+	var node_label_ok = '#67b41f', node_label_unknown = '#f68e1d', node_label_ko = '#e75752';
+	return (this.cmc_on_off == 'on')
+	    ? node_label_ok
+	    : (this.cmc_on_off == 'off')
+	    ? node_label_ko
+	    : node_label_unknown;
+    }
+
+    this.text_x = function() {
+	var delta = 22;
+	return this.x + ((this.radius() == 0) ? 0 : delta);
+    }	    
+
+    this.text_y = function() {
+	var delta = 20;
+	return this.y + ((this.radius() == 0) ? 0 : delta);
+    }	    
+
+    this.circle_color = function() {
+	var fedora_color = '#05285e', ubuntu_color = '#de4915', unknwon_color = 'black';
+	if (this.os_release.indexOf('fedora') >= 0)
+	    return fedora_color;
+	else if (this.os_release.indexOf('ubuntu') >= 0)
+	    return ubuntu_color;
+	else return unknwon_color;
+    }
+
+    this.circle_filter = function() {
+	var filter_name;
+	if (this.os_release.indexOf('fedora') >= 0)
+	    filter_name = 'fedora_logo';
+	else if (this.os_release.indexOf('ubuntu') >= 0)
+	    filter_name = 'ubuntu_logo';
+	else return undefined;
+	return "url(#" + filter_name + ")";
     }
 
 }
@@ -207,8 +250,6 @@ function R2Lab() {
     var canvas_y = room_y +2*margin_y;
     var paper = new Raphael(document.getElementById('livemap_container'),
 			    canvas_x, canvas_y, margin_x, margin_y);
-
-    if (verbose) console.log("canvas_x = " + canvas_x);
 
     this.walls = paper.path(walls_path());
     this.walls.attr(walls_style);
@@ -250,7 +291,6 @@ function R2Lab() {
     }
 
     this.animate_changes = function() {
-	console.log('animate with ' + this.nodes.length + 'nodes in this.nodes');
 	var svg = d3.select('svg');
 	var circles = svg.selectAll('circle')
 	    .data(this.nodes, function(node) {return node.id;});
@@ -264,6 +304,10 @@ function R2Lab() {
 	    .transition()
 	    .duration(500)
 	    .attr('r', function(node){return node.radius();})
+	    .attr('stroke', function(node){return node.circle_color();})
+// xxx somehow this is broken; although the declarations look fine and all
+// plus, the same html output seems to work when not in a dynamic environment
+//	    .attr('filter', function(node){return node.circle_filter();})
 	;
 	var labels = svg.selectAll('text')
 	    .data(this.nodes, function(node) {return node.id;});
@@ -277,7 +321,9 @@ function R2Lab() {
 	labels
 	    .transition()
 	    .duration(1000)
-	    .attr('fill', function(node){return node.color();})
+	    .attr('fill', function(node){return node.text_color();})
+	    .attr('x', function(node){return node.text_x();})
+	    .attr('y', function(node){return node.text_y();})
 	;
 
     }
@@ -307,7 +353,32 @@ function R2Lab() {
     this.request_complete_from_sidecar = function() {
 	this.sidecar_socket.emit(signalling, 'INIT');
     }
-	
+
+    this.declare_filter = function (id_filename) {
+//        // raphael already has created a <defs> element
+//        var defs = d3.select("livemap_container svg defs");
+//        var filter = defs.append("filter")
+//            .attr("id", id_filename)
+//	    .attr("x", "0%")
+//	    .attr("y", "0%")
+//	    .attr("width", "100%")
+//	    .attr("height", "100%")
+//	;
+//        filter.append("feImage")
+//	    .attr("xlink:href", id_filename + ".png");
+//	console.log("declared "+ id_filename + " " + defs.length + "<defs> found");
+
+// xxx - the code above does not seem to work, no <filter> tag remain at the end
+// so using the ugly way for now
+	var filter;
+	filter = '<filter id="' + id_filename + '" x="0%" y="0%" width="100%" height="100%"><feImage xlink:href="' + id_filename + '.png"/></filter>';
+	$('#livemap_container svg defs').append(filter);
+//	console.log("declared "+ id_filename + " filter" + $('svg defs filter').length + "<filter> found");
+    }
+
+    this.declare_filter('fedora_logo');
+    this.declare_filter('fedora_ubuntu');
+
 }
 
 /* autoload */
