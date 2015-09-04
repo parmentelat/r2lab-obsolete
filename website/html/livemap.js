@@ -214,13 +214,15 @@ function Node (node_spec) {
     }
 
     this.text_x = function() {
-	var delta = 22;
-	return this.x + ((this.radius() == 0) ? 0 : delta);
+	var delta = 5;
+	var radius = this.radius();
+	return this.x + ((radius == 0) ? 0 : (radius + delta));
     }	    
 
     this.text_y = function() {
-	var delta = 20;
-	return this.y + ((this.radius() == 0) ? 0 : delta);
+	var delta = 5;
+	var radius = this.radius();
+	return this.y + ((radius == 0) ? 0 : (radius + delta));
     }	    
 
     this.circle_color = function() {
