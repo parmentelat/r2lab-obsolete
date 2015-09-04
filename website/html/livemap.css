@@ -1,0 +1,11 @@
+.node-circle {
+    stroke: black;
+    stroke-width:1.2;
+    fill-opacity:0;
+}
+.node-label {
+    font-family: monaco;
+    font-size: 16;
+    text-anchor: middle;
+    alignment-baseline: middle;
+}

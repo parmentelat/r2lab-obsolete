@@ -1,13 +1,13 @@
-/* must be in sync with r2lab-server.js */
+/**** must be in sync with r2lab-sidecar.js ****/
+// the 2 socket.io channels that are used
+// (1) this is where actual JSON status is sent
+var channel = 'r2lab-news';
+// (2) this one is used for triggering a broadcast of the complete status
+var signalling = 'r2lab-signalling';
+// port number
 var sidecar_port_number = 8000;
 
-/**** the 2 socket.io channels that are used ****/
-/* this is where actual JSON status is sent */
-var channel = 'r2lab-news';
-/* this one is used for triggering a broadcast of the complete status */
-var signalling = 'r2lab-signalling';
-
-/* output from livemap-prep.py */
+/**** output from livemap-prep.py ****/
 var node_specs = [
 { id: 1, i:8, j:0 },
 { id: 2, i:8, j:1 },
@@ -47,7 +47,8 @@ var node_specs = [
 { id: 36, i:0, j:3 },
 { id: 37, i:0, j:4 },
 ];
-/* the  two pillars - this is manual */
+
+// the  two pillars - this is manual
 var pillar_specs = [
 { id: 'left', i:3, j:1 },
 { id: 'right', i:5, j:1 },
@@ -61,18 +62,18 @@ var verbose = 1;
 var verbose = 0;
 
 /******************************/
-/* the space around the walls in the canvas */
+// the space around the walls in the canvas
 var margin_x = 50, margin_y = 50;
 
-/* distance between nodes */
+// distance between nodes
 var space_x = 80, space_y = 80;
-/* distance between nodes and walls */
+// distance between nodes and walls
 var padding_x = 40, padding_y = 40;
-/* total number of rows and columns */
+// total number of rows and columns
 var steps_x = 8, steps_y = 4;
 
-/* the attributes for drawing the walls 
-   as well as the inside of the room */
+/**** static area ****/
+// walls and inside
 var walls_radius = 30, 
     walls_style =
     {
@@ -84,38 +85,28 @@ var walls_radius = 30,
 	'stroke-miterlimit': 8
     };
 
-/* the attributes of the pillars, derived from the walls */
+// pillars - derived from the walls
 var pillar_radius = 16,
     pillar_style = JSON.parse(JSON.stringify(walls_style));
 pillar_style['fill'] = '#101030';
 
-/* intermediate - the overall room size */
+// the overall room size
 var room_x = steps_x*space_x + 2*padding_x, room_y = steps_y*space_y + 2*padding_y;
 
-/* the initial attributes of nodes */
-var node_radius = 16,
-    node_label_style = {
-	'font-family': 'monaco',
-	'font-size': 16
-    }
-/* free - busy */
-/*
-free_node_style={
-    gradient: '0-#cfc-beb-cfc',
-    'fill-opacity': 0.5
-};
-busy_node_style={
-    gradient: '0-#fcc-ebb-fcc',
-    'fill-opacity': 0.5
-};
-*/
-var free_node_fill = 'lightgreen', busy_node_fill = 'red';
-var on_node_radius = 18, off_node_radius = 0;
-
+// translate i, j into actual coords
 function grid_to_canvas (i, j) {
-    return [i*space_x+margin_x+padding_x,
-	    (steps_y-j)*space_y+margin_y+padding_y];
+    return [i*space_x + margin_x + padding_x,
+	    (steps_y-j)*space_y + margin_y + padding_y];
 }
+
+/******************************/
+// dynamic stuff, depending on status received on the news channel
+// see also styling in .css
+// it feels like we cannot animate using css though, as interpolation
+// is done by d3 is js code
+
+var node_free_fill = 'lightgreen', node_busy_fill = 'red';
+var node_on_radius = 18, node_off_radius = 0;
 
 /******************************/
 /* our mental model is y increase to the top, not to the bottom 
@@ -147,9 +138,10 @@ function walls_path() {
 }
 
 /******************************/
+// pillars are static and get created in a procedural fashion using raphael
 function Pillar(pillar_spec) {
     this.id = pillar_spec['id'];
-    /* i and j refer to a logical grid */
+    // i and j refer to a logical grid
     this.i = pillar_spec['i'];
     this.j = pillar_spec['j'];
     var coords = grid_to_canvas(this.i, this.j);
@@ -162,13 +154,16 @@ function Pillar(pillar_spec) {
 	pillar.attr(pillar_style);
 	var id = this.id;
 	pillar.click(function(){
-	    console.log("Clicked on pillar "+id);
+	    console.log("Clicked on pillar " + this.id + " - tmp for dbg, this does a manual refresh");
+	    the_r2lab.request_complete_from_sidecar();
 	});
 	return pillar;
     }
 }
 
 /******************************/
+// nodes are dynamic
+// their visual rep. get created through d3 enter mechanism
 function Node (node_spec) {
     this.id = node_spec['id'];
     // i and j refer to a logical grid 
@@ -178,37 +173,7 @@ function Node (node_spec) {
     var coords = grid_to_canvas (this.i, this.j);
     this.x = coords[0];
     this.y = coords[1];
-    // status details 
-    this.busy = 0;
-    this.on = 1;
-
-    // click callback
-    this.clicked = function () {
-	console.log("clicked on node " + this.id + " - tmp for dbg, this does a manual refresh");
-	the_r2lab.request_complete_from_sidecar();
-    }
-
-    // initial display won't show anything about status
-    // this is expected to be updated later on
-    this.display = function(paper) {
-	this.circle = paper.circle(this.x, this.y,
-				   node_radius, node_radius);
-
-	var label = ""; label += this.id;
-	if (verbose) label += "["+ this.i + "x" + this.j+"]";
-	this.label = paper.text(this.x, this.y, label);
-	this.label.attr(node_label_style);
-
-	/* setting id on the svg elts */
-	this.circle.node.setAttribute('class', 'node-circle');
-	this.label.node.setAttribute('class', 'node-text');
-
-	// arm click callbacks
-	var self = this;
-	var clicked = function(){self.clicked();};
-	this.circle.click(clicked);
-	this.label.click(clicked);
-    }
+    // status details are filled upon reception of news
 
     /* 
        node_info is a struct coming through socket.io in JSON
@@ -226,13 +191,21 @@ function Node (node_spec) {
 	if (node_info.busy != undefined)
 	    this.busy = (node_info.busy == 'busy') ? 1 : 0;
     }
+
+    this.radius = function() {
+	return this.status ? node_on_radius : node_off_radius;
+    }
+    this.color = function() {
+	return this.busy ? node_busy_fill : node_free_fill;
+    }
+
 }
 
 /******************************/
 function R2Lab() {
     var canvas_x = room_x +2*margin_x;
     var canvas_y = room_y +2*margin_y;
-    var paper = new Raphael(document.getElementById('canvas_container'),
+    var paper = new Raphael(document.getElementById('livemap_container'),
 			    canvas_x, canvas_y, margin_x, margin_y);
 
     if (verbose) console.log("canvas_x = " + canvas_x);
@@ -254,7 +227,6 @@ function R2Lab() {
     this.init_nodes = function () {
 	for (var i=0; i < this.nb_nodes; i++) { 
 	    this.nodes[i] = new Node(node_specs[i]);
-	    this.nodes[i].display(paper);
 	}
     }
 
@@ -279,18 +251,35 @@ function R2Lab() {
 
     this.animate_changes = function() {
 	console.log('animate with ' + this.nodes.length + 'nodes in this.nodes');
-	var circles = d3.selectAll('.node-circle')
-	    .data(this.nodes)
+	var svg = d3.select('svg');
+	var circles = svg.selectAll('circle')
+	    .data(this.nodes, function(node) {return node.id;});
+	circles.enter()
+	    .append('circle')
+	    .attr('class', 'node-circle')
+	    .attr('cx', function(node){return node.x;})
+	    .attr('cy', function(node){return node.y;})
+	;
+	circles
 	    .transition()
 	    .duration(500)
-	    .attr('r',
-		  function(node) {return node.status ? on_node_radius : off_node_radius;});
-	var labels = d3.selectAll('.node-text')
-	    .data(this.nodes)
+	    .attr('r', function(node){return node.radius();})
+	;
+	var labels = svg.selectAll('text')
+	    .data(this.nodes, function(node) {return node.id;});
+	labels.enter()
+	    .append('text')
+	    .attr('class', 'node-label')
+	    .text(function(node) {return "" + node.id;})
+	    .attr('x', function(node){return node.x;})
+	    .attr('y', function(node){return node.y;})
+	;
+	labels
 	    .transition()
-	    .duration(500)
-	    .attr('fill',
-		  function(node) {return node.busy ? busy_node_fill : free_node_fill;});
+	    .duration(1000)
+	    .attr('fill', function(node){return node.color();})
+	;
+
     }
 
     this.init_sidecar_socket_io = function() {
