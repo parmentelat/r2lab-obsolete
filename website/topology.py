@@ -57,38 +57,98 @@ def translate_single_json_file():
     results = {}
 
     for node in range(1,38):
-        results.update({node : {"cmi_card":"","ping":"","on_off":"","os_release":""}})
-    
+        results.update({node : {"id":"", "cmc_on_off":"off","control_ping":"off","control_ssh":"off","os_release":"fail"}})
+        #results.update({node : {"id":"", "cmc_on_off":"","control_ping":"","data_ping":"","control_ssh":"","os_release":""}})
+        
     temp = {}
     for file in glob.glob(os.path.join(source_dir, '*.json')):    
         with open(file) as data_file:
             data = json.load(data_file)
             file_name = os.path.basename(file)
             
-            
-            if "multiple_results.json" in file_name:
-                element_from = "status"
-                element_to   = "on_off"
-            elif "alive_results.json" in file_name:
-                element_from = "alive"
-                element_to   = "cmi_card"
-            elif "answer_results.json" in file_name:
-                element_from = "answer"
-                element_to   = "ping"
-            elif "info_results.json" in file_name:
-                element_from = "info"
-                element_to   = "os_release"
-
             for k,v in data.items():
-                value = v[element_from]
-                if value == "alive" or value == "load" or value == "answer" or value == "reset":
-                    value = "ok"
+                
+                if "multiple_results.json" in file_name:
+                    pass
+                    #element_from = "status"
+                    #element_to   = "data_ping"
+                    #value = v[element_from]
+                    # if value == "fail":
+                    #     value = "off"
+                    # else:
+                    #     value = "on"
 
-                key   = int(k)
-                results[key][element_to] = value
+                    #key   = int(k)
+                    #results[key]["id"] = k
+                    #results[key][element_to] = value
+
+                elif "alive_results.json" in file_name:
+                    element_from = "alive"
+                    element_to   = "cmc_on_off"
+                    value = v[element_from]
+                    if value == "alive":
+                        value = "on"
+                    elif value == "fail":
+                        value == "fail"
+                    else:
+                        value = "off"
+
+                    key   = int(k)
+                    results[key]["id"] = k
+                    results[key][element_to] = value
+
+                elif "answer_results.json" in file_name:
+                    element_from = "answer"
+                    element_to   = "control_ping"
+                    value = v[element_from]
+                    if value == "answer":
+                        value = "on"
+                    else:
+                        value = "off"
+
+                    key   = int(k)
+                    results[key]["id"] = k
+                    results[key][element_to] = value
+                                    
+                elif "info_results.json" in file_name:
+                    element_from = "info"
+                    element_to   = "os_release"
+                    value = v[element_from]
+                    if value == "fail" or value == "":
+                        value = "fail"
+                    elif "ubuntu 15" in value:
+                        value = "ubuntu-15.04"
+                    elif "ubuntu 14" in value:
+                        value = "ubuntu-14.10"
+                    elif "gnuradio" in value:
+                        value = "fedora-21-gnuradio"
+                    elif "fedora 21" in value:
+                        value = "fedora-21"
+
+                    key   = int(k)
+                    results[key]["id"] = k
+                    results[key][element_to] = value
+
+                    # fake control of ssh connection - if we can connect the node without ssh key
+                    element_from = "info"
+                    element_to   = "control_ssh"
+                    value = v[element_from]
+                    if value == "fail" or value == "":
+                        value = "off"
+                    else:
+                        value = "on"
+
+                    key   = int(k)
+                    results[key]["id"] = k
+                    results[key][element_to] = value
+
+
+    templist = []
+    for k,v in results.items():
+        templist.append(v) 
 
     with open(dest_dir+'all_results_from_nepi.json', 'w') as outfile:
-        json.dump(results, outfile)
+        json.dump(templist, outfile)    
 
 
 def main():
