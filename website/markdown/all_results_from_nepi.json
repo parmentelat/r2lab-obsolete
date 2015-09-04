@@ -1,0 +1,224 @@
+{
+    "1": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "fail",
+        "so_release": "fail"
+    },
+    "2": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "3": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "4": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "5": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "6": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "7": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "8": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "9": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "10": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": "ubuntu 15.04"
+    },
+    "11": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "12": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "13": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "14": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "15": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "16": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "17": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "18": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": "ubuntu 14.04.1 lts"
+    },
+    "19": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "20": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "21": {
+        "cmi_card": "fail",
+        "on_off": "fail",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "22": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "23": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "24": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "25": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "26": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": "fedora 21 (twenty one)"
+    },
+    "27": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "28": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "29": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "30": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "31": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "32": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "33": {
+        "cmi_card": "ok",
+        "on_off": "off",
+        "ping": "fail",
+        "so_release": ""
+    },
+    "34": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "35": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "36": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    },
+    "37": {
+        "cmi_card": "ok",
+        "on_off": "on",
+        "ping": "ok",
+        "so_release": ""
+    }
+}

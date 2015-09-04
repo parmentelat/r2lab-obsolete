@@ -57,7 +57,7 @@ def translate_single_json_file():
     results = {}
 
     for node in range(1,38):
-        results.update({node : {"cmi_card":"","ping":"","on_off":"","so_release":""}})
+        results.update({node : {"cmi_card":"","ping":"","on_off":"","os_release":""}})
     
     temp = {}
     for file in glob.glob(os.path.join(source_dir, '*.json')):    
@@ -77,7 +77,7 @@ def translate_single_json_file():
                 element_to   = "ping"
             elif "info_results.json" in file_name:
                 element_from = "info"
-                element_to   = "so_release"
+                element_to   = "os_release"
 
             for k,v in data.items():
                 value = v[element_from]
@@ -87,7 +87,7 @@ def translate_single_json_file():
                 key   = int(k)
                 results[key][element_to] = value
 
-    with open(dest_dir+'all_resuls_from_nepi.json', 'w') as outfile:
+    with open(dest_dir+'all_results_from_nepi.json', 'w') as outfile:
         json.dump(results, outfile)
 
 
