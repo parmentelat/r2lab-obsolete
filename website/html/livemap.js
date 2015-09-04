@@ -307,8 +307,6 @@ function R2Lab() {
 	    .duration(500)
 	    .attr('r', function(node){return node.radius();})
 	    .attr('stroke', function(node){return node.circle_color();})
-// xxx somehow this is broken; although the declarations look fine and all
-// plus, the same html output seems to work when not in a dynamic environment
 	    .attr('filter', function(node){return node.circle_filter();})
 	;
 	var labels = svg.selectAll('text')
