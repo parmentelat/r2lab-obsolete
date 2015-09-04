@@ -377,7 +377,7 @@ function R2Lab() {
     }
 
     this.declare_filter('fedora_logo');
-    this.declare_filter('fedora_ubuntu');
+    this.declare_filter('ubuntu_logo');
 
 }
 
