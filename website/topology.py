@@ -47,8 +47,53 @@ def import_node_status():
     file.close()
 
 
+def translate_single_json_file():
+    """
+    Join all the results in one json file
+    """
+    source_dir = os.getcwd() + "/results_nepi/"
+    dest_dir   = os.getcwd() + '/markdown/'
+    
+    results = {}
+
+    for node in range(1,38):
+        results.update({node : {"cmi_card":"","ping":"","on_off":"","so_release":""}})
+    
+    temp = {}
+    for file in glob.glob(os.path.join(source_dir, '*.json')):    
+        with open(file) as data_file:
+            data = json.load(data_file)
+            file_name = os.path.basename(file)
+            
+            
+            if "multiple_results.json" in file_name:
+                element_from = "status"
+                element_to   = "on_off"
+            elif "alive_results.json" in file_name:
+                element_from = "alive"
+                element_to   = "cmi_card"
+            elif "answer_results.json" in file_name:
+                element_from = "answer"
+                element_to   = "ping"
+            elif "info_results.json" in file_name:
+                element_from = "info"
+                element_to   = "so_release"
+
+            for k,v in data.items():
+                value = v[element_from]
+                if value == "alive" or value == "load" or value == "answer" or value == "reset":
+                    value = "ok"
+
+                key   = int(k)
+                results[key][element_to] = value
+
+    with open(dest_dir+'all_resuls_from_nepi.json', 'w') as outfile:
+        json.dump(results, outfile)
+
+
 def main():
     import_node_status()
+    translate_single_json_file()
 
     
 if __name__ == '__main__':

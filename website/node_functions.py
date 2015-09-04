@@ -521,6 +521,31 @@ def error_presence(stdout):
         return False
 
 
+def save_in_json(results, file_name=None):
+    """ Save the result in a json file """
+    """ The format will be: """
+    """ {
+            "key1" : {"name1" : "value1", "name2" : "value2"}, 
+            "key2" : {"name1" : "value1", "name2" : "value2"}
+        } 
+    """
+
+    dir = os.getcwd() + "/results_nepi/"
+    ext = ".json"
+
+    if file_name is None:
+        file_name = 'results'+ext
+
+    try:
+        os.stat(dir)
+    except:
+        os.mkdir(dir)
+
+    file = open(dir+file_name+ext, "w")
+    file.write(json.dumps(results))
+    file.close()
+
+
 def save_in_file(results, file_name=None):
     """ Save the result in a json file """
     """ The format will be: """
@@ -544,6 +569,7 @@ def save_in_file(results, file_name=None):
     file = open(dir+file_name+ext, "w")
     file.write(file_name + " = '" + json.dumps(results) + "'")
     file.close()
+    save_in_json(results, file_name)
 
 
 def all_nodes():
