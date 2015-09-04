@@ -77,7 +77,7 @@ var steps_x = 8, steps_y = 4;
 var walls_radius = 30, 
     walls_style =
     {
-//        fill: '90-f0ffff-fff0ff-f0f0ff',
+        fill: 'fdfdfd',
 	//'90-#526c7a-#64a0c1'
 	//'90-bbc1d0-f0d0e4'
         stroke: '#3b4449',
@@ -226,7 +226,7 @@ function Node (node_spec) {
     }	    
 
     this.circle_color = function() {
-	var fedora_color = '#05285e', ubuntu_color = '#de4915', unknwon_color = 'black';
+	var fedora_color = '#05285e', ubuntu_color = '#de4915', unknwon_color = '#ccc';
 	if (this.os_release.indexOf('fedora') >= 0)
 	    return fedora_color;
 	else if (this.os_release.indexOf('ubuntu') >= 0)

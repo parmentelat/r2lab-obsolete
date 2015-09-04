@@ -1,6 +1,6 @@
 .node-circle {
-    stroke-width:1.2;
-    fill-opacity:0;
+    stroke-width: 5;
+    fill-opacity: 0;
 }
 .node-label {
     font-family: consolas, monaco, times-new-roman;
