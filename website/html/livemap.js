@@ -83,6 +83,15 @@ var walls_radius = 30,
         'stroke-linejoin': 'round',
 	'stroke-miterlimit': 8
     };
+
+/* the attributes of the pillars, derived from the walls */
+var pillar_radius = 16,
+    pillar_style = JSON.parse(JSON.stringify(walls_style));
+pillar_style['fill'] = '#101030';
+
+/* intermediate - the overall room size */
+var room_x = steps_x*space_x + 2*padding_x, room_y = steps_y*space_y + 2*padding_y;
+
 /* the initial attributes of nodes */
 var node_radius = 16,
     node_label_style = {
@@ -103,33 +112,77 @@ busy_node_style={
 var free_node_fill = 'lightgreen', busy_node_fill = 'red';
 var on_node_radius = 18, off_node_radius = 0;
 
-/* the attributes of the pillars */
-var pillar_radius = 16,
-    pillar_style = JSON.parse(JSON.stringify(walls_style));
-pillar_style['fill'] = '#101030';
-
-/* intermediate - the overall room size */
-var room_x = steps_x*space_x + 2*padding_x, room_y = steps_y*space_y + 2*padding_y;
-
 function grid_to_canvas (i, j) {
     return [i*space_x+margin_x+padding_x,
 	    (steps_y-j)*space_y+margin_y+padding_y];
 }
 
 /******************************/
+/* our mental model is y increase to the top, not to the bottom 
+ * also, using l (relative) instead of L (absolute) is simpler
+ * but it keeps roundPathCorners from rounding.js from working fine
+ * keep it this way from now, a class would help keep track here
+*/
+function line_x(x) {return "l " + x + " 0 ";}
+function line_y(y) {return "l 0 " + -y + " ";}
+
+function walls_path() {
+    var path="";
+    path += "M " + (room_x+margin_x) + " " + (room_y+margin_y) + " ";
+    path += line_x(-(7*space_x+2*padding_x));
+    path += line_y(3*space_y);
+    path += line_x(-1*space_x);
+    path += line_y(space_y+2*padding_y);
+    path += line_x(2*space_x+2*padding_x);
+    path += line_y(-space_y);
+    path += line_x(4*space_x-2*padding_x);
+    path += line_y(space_y);
+    path += line_x(2*space_x+2*padding_x);
+    path += "Z";
+/*    console.log("path   ="+path);
+    console.log("radius ="+walls_radius);
+    path = roundPathCorners(path, walls_radius, false);
+    console.log("rounded="+path);*/
+    return path;
+}
+
+/******************************/
+function Pillar(pillar_spec) {
+    this.id = pillar_spec['id'];
+    /* i and j refer to a logical grid */
+    this.i = pillar_spec['i'];
+    this.j = pillar_spec['j'];
+    var coords = grid_to_canvas(this.i, this.j);
+    this.x = coords[0];
+    this.y = coords[1];
+
+    this.display = function(paper) {
+	var pillar = paper.rect (this.x-pillar_radius, this.y-pillar_radius,
+			     2*pillar_radius, 2*pillar_radius);
+	pillar.attr(pillar_style);
+	var id = this.id;
+	pillar.click(function(){
+	    console.log("Clicked on pillar "+id);
+	});
+	return pillar;
+    }
+}
+
+/******************************/
 function Node (node_spec) {
     this.id = node_spec['id'];
-    /* i and j refer to a logical grid */
+    // i and j refer to a logical grid 
     this.i = node_spec['i'];
     this.j = node_spec['j'];
-    this.busy = 0;
-    this.on = 1;
-
-    /* compute actual coordinates */
+    // compute actual coordinates
     var coords = grid_to_canvas (this.i, this.j);
     this.x = coords[0];
     this.y = coords[1];
-    
+    // status details 
+    this.busy = 0;
+    this.on = 1;
+
+    // click callback
     this.clicked = function () {
 	console.log("clicked on node " + this.id + " - tmp for dbg, this does a manual refresh");
 	the_r2lab.request_complete_from_sidecar();
@@ -173,57 +226,6 @@ function Node (node_spec) {
 	if (node_info.busy != undefined)
 	    this.busy = (node_info.busy == 'busy') ? 1 : 0;
     }
-}
-
-function Pillar(pillar_spec) {
-    this.id = pillar_spec['id'];
-    /* i and j refer to a logical grid */
-    this.i = pillar_spec['i'];
-    this.j = pillar_spec['j'];
-    var coords = grid_to_canvas(this.i, this.j);
-    this.x = coords[0];
-    this.y = coords[1];
-
-    this.display = function(paper) {
-	var pillar = paper.rect (this.x-pillar_radius, this.y-pillar_radius,
-			     2*pillar_radius, 2*pillar_radius);
-	pillar.attr(pillar_style);
-	var id = this.id;
-	pillar.click(function(){
-	    console.log("Clicked on pillar "+id);
-	});
-	return pillar;
-    }
-}
-
-
-/******************************/
-/* our mental model is y increase to the top, not to the bottom 
- * also, using l (relative) instead of L (absolute) is simpler
- * but it keeps roundPathCorners from rounding.js from working fine
- * keep it this way from now, a class would help keep track here
-*/
-function line_x(x) {return "l " + x + " 0 ";}
-function line_y(y) {return "l 0 " + -y + " ";}
-
-function walls_path() {
-    var path="";
-    path += "M " + (room_x+margin_x) + " " + (room_y+margin_y) + " ";
-    path += line_x(-(7*space_x+2*padding_x));
-    path += line_y(3*space_y);
-    path += line_x(-1*space_x);
-    path += line_y(space_y+2*padding_y);
-    path += line_x(2*space_x+2*padding_x);
-    path += line_y(-space_y);
-    path += line_x(4*space_x-2*padding_x);
-    path += line_y(space_y);
-    path += line_x(2*space_x+2*padding_x);
-    path += "Z";
-/*    console.log("path   ="+path);
-    console.log("radius ="+walls_radius);
-    path = roundPathCorners(path, walls_radius, false);
-    console.log("rounded="+path);*/
-    return path;
 }
 
 /******************************/
