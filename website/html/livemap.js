@@ -309,7 +309,7 @@ function R2Lab() {
 	    .attr('stroke', function(node){return node.circle_color();})
 // xxx somehow this is broken; although the declarations look fine and all
 // plus, the same html output seems to work when not in a dynamic environment
-//	    .attr('filter', function(node){return node.circle_filter();})
+	    .attr('filter', function(node){return node.circle_filter();})
 	;
 	var labels = svg.selectAll('text')
 	    .data(this.nodes, function(node) {return node.id;});
@@ -356,30 +356,28 @@ function R2Lab() {
 	this.sidecar_socket.emit(signalling, 'INIT');
     }
 
-    this.declare_filter = function (id_filename) {
-//        // raphael already has created a <defs> element
-//        var defs = d3.select("livemap_container svg defs");
-//        var filter = defs.append("filter")
-//            .attr("id", id_filename)
-//	    .attr("x", "0%")
-//	    .attr("y", "0%")
-//	    .attr("width", "100%")
-//	    .attr("height", "100%")
-//	;
-//        filter.append("feImage")
-//	    .attr("xlink:href", id_filename + ".png");
-//	console.log("declared "+ id_filename + " " + defs.length + "<defs> found");
-
-// xxx - the code above does not seem to work, no <filter> tag remain at the end
-// so using the ugly way for now
-	var filter;
-	filter = '<filter id="' + id_filename + '" x="0%" y="0%" width="100%" height="100%"><feImage xlink:href="' + id_filename + '.png"/></filter>';
-	$('#livemap_container svg defs').append(filter);
-//	console.log("declared "+ id_filename + " filter" + $('svg defs filter').length + "<filter> found");
+    this.declare_image_filter = function (id_filename) {
+	console.log('decl. fil. ' + id_filename);
+	// create defs element if not yet present
+	if ( ! $('#livemap_container svg defs').length) {
+	    console.log("creating defs");
+	    d3.select('#livemap_container svg').append('defs');
+	}
+	// create filter in there
+        var defs = d3.select("#livemap_container svg defs");
+        var filter = defs.append("filter")
+            .attr("id", id_filename)
+	    .attr("x", "0%")
+	    .attr("y", "0%")
+	    .attr("width", "100%")
+	    .attr("height", "100%")
+	;
+        filter.append("feImage")
+	    .attr("xlink:href", id_filename + ".png");
     }
 
-    this.declare_filter('fedora_logo');
-    this.declare_filter('ubuntu_logo');
+    this.declare_image_filter('fedora_logo');
+    this.declare_image_filter('ubuntu_logo');
 
 }
 
