@@ -193,7 +193,9 @@ function Node (node_spec) {
 
     // data_ping and control_ssh are not yet available
     this.radius = function() {
-	var node_radius_ok = 18, node_radius_half = 9, node_radius_ko = 0;
+	var node_radius_ok = 16,
+	    node_radius_half = 8,
+	    node_radius_ko = 0;
 	// everything OK
 	if ((this.control_ping == 'on')
 	     && (this.os_release != 'fail'))
@@ -204,8 +206,11 @@ function Node (node_spec) {
 	else
 	    return node_radius_ko;
     }
+
     this.text_color = function() {
-	var node_label_ok = '#67b41f', node_label_unknown = '#f68e1d', node_label_ko = '#e75752';
+	var node_label_ok = '#67b41f', // green-ish
+	    node_label_ko = '#e75752', // red-ish
+	    node_label_unknown = '#ccc'; // gray-ish
 	return (this.cmc_on_off == 'on')
 	    ? node_label_ok
 	    : (this.cmc_on_off == 'off')
@@ -213,20 +218,25 @@ function Node (node_spec) {
 	    : node_label_unknown;
     }
 
+    // shift label south-east a little
+    // we cannot just add a constant to the radius
+    this.offset = function(radius) { return Math.max(5, 12-radius/2);}
+
     this.text_x = function() {
-	var delta = 5;
 	var radius = this.radius();
+	var delta = this.offset(radius);
 	return this.x + ((radius == 0) ? 0 : (radius + delta));
     }	    
-
     this.text_y = function() {
-	var delta = 5;
 	var radius = this.radius();
+	var delta = this.offset(radius);
 	return this.y + ((radius == 0) ? 0 : (radius + delta));
     }	    
 
     this.circle_color = function() {
-	var fedora_color = '#05285e', ubuntu_color = '#de4915', unknwon_color = '#ccc';
+	var fedora_color = '#05285e',
+	    ubuntu_color = '#de4915',
+	    unknwon_color = '#ccc';
 	if (this.os_release.indexOf('fedora') >= 0)
 	    return fedora_color;
 	else if (this.os_release.indexOf('ubuntu') >= 0)
@@ -240,7 +250,8 @@ function Node (node_spec) {
 	    filter_name = 'fedora_logo';
 	else if (this.os_release.indexOf('ubuntu') >= 0)
 	    filter_name = 'ubuntu_logo';
-	else return undefined;
+	else
+	    return undefined;
 	return "url(#" + filter_name + ")";
     }
 
