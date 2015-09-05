@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # computes an index file in markdown/index.md from ./index.md with all the other md files referenced
 

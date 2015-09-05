@@ -24,3 +24,19 @@ After what
     listening on *:8000	
     
 
+# install website on r2lab.inria.fr
+
+## make
+
+    yum install make
+    
+## markdown-styles 
+
+Check you get at least 3.0
+
+    npm install -g markdown-styles 
+    
+## Unicode
+
+`r2lab.inria.fr` was not too happy to run `index.py`, because of accents
+instead of messing with the system config I have tweaked `website/Makefile` to export LC_ALL and now it seems OK. Doing this system-wide would definitely be better.

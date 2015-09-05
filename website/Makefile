@@ -34,7 +34,7 @@ prepare:
 # index.py is hard-wired to output in markdown/
 index:
 	@[ -d markdown ] || mkdir markdown
-	./index.py $(ALL_MDS)
+	export LC_ALL=en_US.UTF-8; ./index.py $(ALL_MDS)
 
 # likewise
 meta:
