@@ -24,9 +24,10 @@ default_max_nodes_impacted = 10
 field_values = {
     'cmc_on_off' : [ 'on', 'off', 'fail' ],
     'control_ping' : [ 'on', 'off' ],
-    'data_ping' : [ 'on', 'off' ],
     'control_ssh' : [ 'on', 'off' ],
     'os_release' : [ 'fedora-21', 'ubuntu-15.04', 'fedora-21-gnuradio', 'fail' ],
+# not supported yet
+#    'data_ping' : [ 'on', 'off' ],
 }
 
 def init_status(verbose):
@@ -40,21 +41,32 @@ def random_ids(max_nodes_impacted):
     how_many = random.randint(1, max_nodes_impacted)
     return [ random.choice(node_ids) for i in range(how_many)]
 
+# heuristics to avoid too inconsistent data
+def normalize_status(node_info):
+    if node_info['os_release'] != 'fail':
+        node_info.update({'cmc_on_off' : 'on',
+                          'control_ping' : 'on',
+                          'control_ssh' : 'on',
+        })
+    return node_info
+
 def random_status(id, index=0):
     # for testing incomplete news on the livemap side
     # we expose one or the other or both
     # however the default always expose the full monty
-    template = { 'id' : id }
-    # fill template with all known keys
-    template.update( { field : random.choice(values) 
+    node_info = { 'id' : id }
+    # fill node_info with all known keys
+    node_info.update( { field : random.choice(values) 
                        for field, values in field_values.iteritems() })
+    # make sure this is mostly consistent
+    normalize_status(node_info)
     # index == 0 means we need a complete record
     # otherwise let's remove some
     items_to_remove = index % len(field_values)
     keys_to_remove = random.sample(field_values.keys(), items_to_remove)
     for field in keys_to_remove:
-        del template[field]
-    return template
+        del node_info[field]
+    return node_info
     
 def main():
     parser = ArgumentParser()
