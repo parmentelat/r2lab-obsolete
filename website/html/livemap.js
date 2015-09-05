@@ -191,66 +191,78 @@ function Node (node_spec) {
 	    this.control_ssh = node_info.control_ssh;
     }
 
-    // data_ping and control_ssh are not yet available
-    this.radius = function() {
-	var node_radius_ok = 16,
-	    node_radius_half = 8,
-	    node_radius_ko = 0;
-	// everything OK
-	if ((this.control_ping == 'on')
-	     && (this.os_release != 'fail'))
-	    return node_radius_ok;
-	// no ssh
-	else if (this.os_release == 'fail')
-	    return node_radius_half;
-	else
-	    return node_radius_ko;
-    }
-
-    this.text_color = function() {
-	var node_label_ok = '#67b41f', // green-ish
-	    node_label_ko = '#e75752', // red-ish
-	    node_label_unknown = '#ccc'; // gray-ish
-	return (this.cmc_on_off == 'on')
-	    ? node_label_ok
-	    : (this.cmc_on_off == 'off')
-	    ? node_label_ko
-	    : node_label_unknown;
-    }
-
     // shift label south-east a little
     // we cannot just add a constant to the radius
-    this.offset = function(radius) { return Math.max(5, 12-radius/2);}
-
+    this.text_offset = function(radius) {
+	return Math.max(5, 12-radius/2);
+    }
     this.text_x = function() {
 	var radius = this.radius();
-	var delta = this.offset(radius);
+	var delta = this.text_offset(radius);
 	return this.x + ((radius == 0) ? 0 : (radius + delta));
     }	    
     this.text_y = function() {
 	var radius = this.radius();
-	var delta = this.offset(radius);
+	var delta = this.text_offset(radius);
 	return this.y + ((radius == 0) ? 0 : (radius + delta));
     }	    
 
-    this.circle_color = function() {
-	var fedora_color = '#05285e',
-	    ubuntu_color = '#de4915',
-	    unknwon_color = '#ccc';
-	if (this.os_release.indexOf('fedora') >= 0)
-	    return fedora_color;
-	else if (this.os_release.indexOf('ubuntu') >= 0)
-	    return ubuntu_color;
-	else return unknwon_color;
+    ////////// node radius
+    // this is how we convey most of the info
+    // when turned off, the node's circle vanishes
+    // when it's on but does not yet answer ping, a little larger
+    // when answers ping, still larger
+    // when ssh : full size with OS badge
+    // control_ssh is not yet available from real probe
+    // but animate.py does show that
+    this.radius = function() {
+	var node_radius_ok = 18,
+	    node_radius_pinging = 12,
+	    node_radius_warming = 6,
+	    node_radius_ko = 0;
+	// completely off
+	if (this.cmc_on_off == 'off')
+	    return node_radius_ko;
+	// does not even ping
+	else if (this.control_ping == 'off')
+	    return node_radius_warming;
+	// pings but cannot get ssh
+	else if (this.os_release == 'fail')
+	    return node_radius_pinging;
+	// ssh is answering
+	else
+	    return node_radius_ok;
     }
 
+    // it feels like right now this color does not convey much info
+    this.text_color = function() {
+	return '#555';
+    }
+
+    // luckily this is not rendered when a filter is at work
+    this.circle_color = function() {
+	return '#bbb';
+//	var fedora_color = '#05285e',
+//	    ubuntu_color = '#de4915',
+//	    unknown_color = '#ccc';
+//	if (this.os_release.indexOf('fedora') >= 0)
+//	    return fedora_color;
+//	else if (this.os_release.indexOf('ubuntu') >= 0)
+//	    return ubuntu_color;
+//	else return unknown_color;
+    }
+
+    // showing an image (or not, if filter is undefined)
+    // depending on the OS
     this.circle_filter = function() {
 	var filter_name;
-	if (this.os_release.indexOf('fedora') >= 0)
+	if (this.os_release.indexOf('other') >= 0)
+	    filter_name = 'other_logo';
+	else if (this.os_release.indexOf('fedora') >= 0)
 	    filter_name = 'fedora_logo';
 	else if (this.os_release.indexOf('ubuntu') >= 0)
 	    filter_name = 'ubuntu_logo';
-	else
+	else 
 	    return undefined;
 	return "url(#" + filter_name + ")";
     }
@@ -259,8 +271,8 @@ function Node (node_spec) {
 
 /******************************/
 function R2Lab() {
-    var canvas_x = room_x +2*margin_x;
-    var canvas_y = room_y +2*margin_y;
+    var canvas_x = room_x + 2 * margin_x;
+    var canvas_y = room_y + 2 * margin_y;
     var paper = new Raphael(document.getElementById('livemap_container'),
 			    canvas_x, canvas_y, margin_x, margin_y);
 
@@ -387,6 +399,7 @@ function R2Lab() {
 
     this.declare_image_filter('fedora_logo');
     this.declare_image_filter('ubuntu_logo');
+    this.declare_image_filter('other_logo');
 
 }
 

@@ -24,8 +24,11 @@ default_max_nodes_impacted = 10
 field_values = {
     'cmc_on_off' : [ 'on', 'off', 'fail' ],
     'control_ping' : [ 'on', 'off' ],
-    'control_ssh' : [ 'on', 'off' ],
-    'os_release' : [ 'fedora-21', 'ubuntu-15.04', 'fedora-21-gnuradio', 'fail' ],
+#    'control_ssh' : [ 'on', 'off' ],
+    'os_release' : [ 'fedora-21', 'ubuntu-15.04',
+                     'fedora-21-gnuradio',
+                     'other',
+                     'fail' ],
 # not supported yet
 #    'data_ping' : [ 'on', 'off' ],
 }
@@ -46,7 +49,6 @@ def normalize_status(node_info):
     if node_info['os_release'] != 'fail':
         node_info.update({'cmc_on_off' : 'on',
                           'control_ping' : 'on',
-                          'control_ssh' : 'on',
         })
     return node_info
 
