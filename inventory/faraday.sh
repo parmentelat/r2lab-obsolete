@@ -138,7 +138,7 @@ def normalize (*args):
 def comma_normalize (*args):
     return _normalize(',', *args)
 
-# normalize2 fit reboot- 1-3 fit04 reboot-05 -> 
+# normalize2 fit reboot 1-3 fit04 reboot05 -> 
 def normalize2 (*args):
 #    print('normalize', args)
     constant = args[0]
@@ -163,7 +163,7 @@ EOF
 function norm () { py normalize fit "$@" ; }
 # norm 1 03 fit04 -> fit01,fit03,fit04
 function cnorm () { py comma_normalize fit "$@" ; }
-# normreboot 1 03 fit04 reboot-05 -> reboot-01 reboot-03 reboot-04 reboot-05
+# normreboot 1 03 fit04 reboot05 -> reboot01 reboot03 reboot04 reboot05
 function normreboot () { py normalize2 fit reboot "$@" ; }
 
 # set and/or show global NODES var
@@ -332,7 +332,7 @@ doc-nodes wait "\twait for all nodes to respond to ping on their control interfa
 # nodes-on : filter nodes that are on from args, or NODES if not provided
 function show-nodes-on () {
     [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
-    st $nodes | grep ' on' | awk '{print $1;}' | sed -e s,reboot-,fit,
+    st $nodes | grep ' on' | awk '{print $1;}' | sed -e s,reboot,fit,
 }
 doc-nodes show-nodes-on "display only selected nodes that are ON - does not change selection"
 function focus-nodes-on () {
