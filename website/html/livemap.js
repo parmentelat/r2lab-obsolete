@@ -178,17 +178,9 @@ function Node (node_spec) {
     // simply copy the fieds present in this dict in the local object
     // for further usage in animate_changes
     this.update_from_news = function(node_info) {
-	if (node_info.cmc_on_off != undefined)
-	    this.cmc_on_off = node_info.cmc_on_off;
-	if (node_info.control_ping != undefined)
-	    this.control_ping = node_info.control_ping;
-	if (node_info.os_release != undefined)
-	    this.os_release = node_info.os_release;
-	// these 2 are not sniffed yet
-	if (node_info.data_ping != undefined)
-	    this.data_ping = node_info.data_ping;
-	if (node_info.control_ssh != undefined)
-	    this.control_ssh = node_info.control_ssh;
+	for (var prop in node_info)
+	    if (node_info[prop] != undefined)
+		this[prop] = node_info[prop];
     }
 
     // shift label south-east a little
@@ -234,14 +226,17 @@ function Node (node_spec) {
 	    return node_radius_ok;
     }
 
-    // it feels like right now this color does not convey much info
+    // right now this is visible only for intermediate radius
+    // let's show some lightgreen for the 2/3 radius (ssh is up)
     this.text_color = function() {
 	return '#555';
     }
 
     // luckily this is not rendered when a filter is at work
     this.circle_color = function() {
-	return '#bbb';
+	var radius = this.radius();
+	return (radius == 12) ? '#71edb0' :
+	    (radius == 6) ? '#f7d8dd' : '#bbb';
 //	var fedora_color = '#05285e',
 //	    ubuntu_color = '#de4915',
 //	    unknown_color = '#ccc';
