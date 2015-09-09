@@ -27,6 +27,7 @@ var filename_complete = 'r2lab-complete.json';
 var port_number = 8000;
 
 var debug=false;
+//debug=true;
 
 // program this webserver so that a GET to /
 // exposes the complete json status
@@ -70,18 +71,6 @@ io.on('connection', function(socket){
 });
 
 // convenience function to read a file as a string and do something with result
-// throw exception in case of problem
-function read_file_as_string(filename, callback){
-    if (debug) console.log("Reading file " + filename);
-    fs.readFile(filename,
-		'utf8',
-		function(err, string){
-		    if (err) throw err;
-		    callback(string);
-		});
-}
-
-// same but synchroneous
 function sync_read_file_as_string(filename){
     try{
 	if (debug) console.log("sync Reading file " + filename);
@@ -91,18 +80,27 @@ function sync_read_file_as_string(filename){
     }
 }
 
-// convenience function to save a JS record into a file
-function save_records_in_file(filename, records){
-    fs.writeFile(filename, record,
-		 'utf8',
-		 function(err){
-		     if (debug) console.log("(Over)wrote file " + filename);
-		 });
+// allow for 2 attempts
+function sync_read_file_as_infos(filename) {
+    try {
+	// xxx hack - sometimes (quite often indeed) we see
+	// this read returning an empty string
+	return JSON.parse(sync_read_file_as_string(filename));
+    } catch(err) {
+	try {
+	    console.log("2nd attempt to read " + filename);
+	    return JSON.parse(sync_read_file_as_string(filename));
+	} catch(err) {
+	    console.log("Could not parse JSON in " + filename + " after 2 attempts");
+	}
+    }
 }
 
-function sync_save_records_in_file(filename, records){
+// convenience function to save a list of JS infos (records) into a file
+// we do everything synchroneously to avoid trouble
+function sync_save_infos_in_file(filename, infos){
     try{
-	fs.writeFileSync(filename, JSON.stringify(records), 'utf8');
+	fs.writeFileSync(filename, JSON.stringify(infos), 'utf8');
 	if (debug) console.log("sync (Over)wrote " + filename)
     } catch(err) {
 	console.log("Could not sync write " + filename + err);
@@ -110,48 +108,35 @@ function sync_save_records_in_file(filename, records){
     
 }    
     
-// merge news record into complete record; return new complete
-function merge_news_into_complete(complete, news_infos){
+// merge news info into complete infos; return new complete
+function merge_news_into_complete(complete_infos, news_infos){
     for (var nav=0; nav < news_infos.length; nav++) {
 	var node_info = news_infos[nav];
 	var id = node_info.id;
-	for (var nav2=0; nav2 < complete.length; nav2++) {
-	    var complete_info = complete[nav2];
+	for (var nav2=0; nav2 < complete_infos.length; nav2++) {
+	    var complete_info = complete_infos[nav2];
 	    if (complete_info['id'] == id) {
-		// found the place where to update complete
-		// xxx this is a cut-n-paste from livemap.js, should be refactored
-		if (node_info.cmc_on_off != undefined)
-		    complete_info.cmc_on_off = node_info.cmc_on_off;
-		if (node_info.control_ping != undefined)
-		    complete_info.control_ping = node_info.control_ping;
-		if (node_info.os_release != undefined)
-		    complete_info.os_release = node_info.os_release;
-		// these 2 are not sniffed yet
-		if (node_info.data_ping != undefined)
-		    complete_info.data_ping = node_info.data_ping;
-		if (node_info.control_ssh != undefined)
-		    complete_info.control_ssh = node_info.control_ssh;
-		// we're done, skip rest of search in complete
+		// copy all contents from node_info into complete_infos
+		for (var prop in node_info)
+		    if (node_info[prop] != undefined)
+			complete_info[prop] = node_info[prop];
+		// we're done, skip rest of search in complete_infos
 		break;
 	    }
 	}
     }
-    return complete;
+    return complete_infos;
 }
 		
 
 // utility to open a file and broadcast its contents on channel_news
 function emit_file(filename){
-    var emit_callback = function(string){
-	if (debug) console.log("emitting on channel " + channel_news + ":" + string);
-	io.emit(channel_news, string);
-    };
-    try {
-	read_file_as_string(filename, emit_callback);
-    } 
-    catch(err){
-	console.log("Error when emitting file " + filename);
-    }
+    var complete_string = sync_read_file_as_string(filename);
+    if (debug) console.log("emitting on channel " + channel_news + ":" + complete_string);
+    if (complete_string == "")
+	console.log("OOPS - empty contents in " + filename)
+    else
+	io.emit(channel_news, complete_string);
 }
 
 
@@ -159,16 +144,24 @@ function emit_file(filename){
 // (*) open and read r2lab-complete
 // (*) merge news dictionary
 // (*) save result in r2lab-complete
-function update_complete_file(news_infos){
-    var callback = function(complete_string){
-	var complete_records = JSON.parse(complete_string);
-	var news_string = sync_read_file_as_string(filename_news);
-	var news_records = JSON.parse(news_string);
-	complete_records = merge_news_into_complete(complete_records, news_records);
-	sync_save_records_in_file(filename_complete, complete_records);
-	if (debug) console.log(new Date() + " merged -> " + JSON.stringify(complete_records));
+function update_complete_file_from_news(){
+    try{
+	
+	var complete_infos = sync_read_file_as_infos(filename_complete);
+	var news_infos = sync_read_file_as_infos(filename_news);
+	complete_infos = merge_news_into_complete(complete_infos, news_infos);
+	sync_save_infos_in_file(filename_complete, complete_infos);
+	if (debug) console.log(new Date() + " merged -> " + JSON.stringify(complete_infos));
+	return complete_infos;
+    } catch(err) {
+	if (news_string == "")
+	    console.log(new Date() + " OOPS - empty news feed - ignored");
+	else {
+	    console.log("OOPS - unexpected exception in update_complete_file_from_news " + err);
+	    console.log("news_string is " + news_string);
+	    console.log("strack trace is " + err.stack);
+	}
     }
-    read_file_as_string(filename_complete, callback);
 }
 
 // watch complete status file: set callback
@@ -176,11 +169,9 @@ fs.watch(filename_news,
 	 function(event, filename){
 	     if (debug) console.log("watch -> event=" + event);
 	     // update complete from news
-	     read_file_as_string(filename_news,
-				 update_complete_file);
-	     // xxx mmh, this should probably be specified as a callback
-	     // and not called synchroneously like this
-	     emit_file(filename_news);
+	     var complete_infos = update_complete_file_from_news();
+	     // should do emit_file but we already have the data at hand
+	     io.emit(channel_news, JSON.stringify(complete_infos));
 	 });
 
 // run http server
