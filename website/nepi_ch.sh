@@ -6,4 +6,5 @@
 /usr/bin/keychain $HOME/.ssh/id_rsa.pub
 #source $HOME/.keychain/$LOCALHOST-sh
 source $HOME/.keychain/pacify-sh
-cd /home/mzancana/Inria/fitsophia/website/; make full_and_nepiall
+# Place the routine to execute or use the make file
+#cd /home/mzancana/Inria/fitsophia/website/; make full_and_nepiall
