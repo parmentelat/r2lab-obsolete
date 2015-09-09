@@ -85,13 +85,13 @@ elif "load-u1504" in action:
 elif "load-f21" in action:
     # load image in each node from the list
     result = load(nodes, 'fedora-21.ndz', connection_info)
-elif "alive" in action:
+elif "alive" in action or "cmc_on_off" in action:
     # check if each node from the list anwer a ping in the CM card
     result = alive(nodes, connection_info)
-elif "answer" in action:
+elif "answer" in action or "control_ping" in action:
     # check if each node from the list anwer a ping
     result = answer(nodes, connection_info)
-elif "info" in action:
+elif "info" in action or "os_release" in action or "control_ssh" in action:
     # check the S.O. info
     result = info(nodes, connection_info)
 else:

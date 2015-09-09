@@ -589,6 +589,9 @@ def format_nodes(nodes):
         if not type(nodes) is list:
             if ',' in nodes:
                 nodes = nodes.split(',')
+            elif '-' in nodes:
+                nodes = nodes.strip("[]").split('-')
+                nodes = range(int(nodes[0]), int(nodes[1])+1)
             else:
                 nodes = nodes.split()
 
