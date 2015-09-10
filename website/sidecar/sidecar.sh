@@ -13,7 +13,12 @@ case $1 in
 	pkill node && echo stopped
     ;;
     status)
-	ps $(pgrep node)
+	pids=$(pgrep node)
+	if [ -z "$pids" ] ; then
+	    echo No instane of node running
+	else
+	    ps $pids
+	fi
     ;;
     *)
 	echo unknown subcommand $1
