@@ -159,12 +159,16 @@ function emit_file(filename){
 // (*) open and read r2lab-complete
 // (*) merge news dictionary
 // (*) save result in r2lab-complete
-function update_complete_file_from_news(news_infos){
+function update_complete_file_from_news(news_string){
     try{
-	
+	// start from the complete infos
 	var complete_infos = sync_read_file_as_infos(filename_complete);
+	// convert string into infos
+	var news_infos = JSON.parse(news_string);
+	// merge both
 	complete_infos = merge_news_into_complete(complete_infos, news_infos);
 	verbose("merged news : " + JSON.stringify(news_infos));
+	// save result
 	sync_save_infos_in_file(filename_complete, complete_infos);
 	return complete_infos;
     } catch(err) {
@@ -183,11 +187,11 @@ var watcher = fs.watch(
     filename_news, 
     function(event, filename){
 	verbose("watch -> event=" + event);
-	// update complete from news
-	var news_infos = sync_read_file_as_infos(filename_news);
-	var complete_infos = update_complete_file_from_news(news_infos);
+	// read news file as a string
+	var news_string = sync_read_file_as_string(filename_news);
+	// update complete from news_string
+	var complete_infos = update_complete_file_from_news(news_string);
 	// should do emit_file but we already have the data at hand
-	var news_string = JSON.stringify(news_infos);
 	verbose("NEWS: sending on channel " + channel_news + ":" + news_string);
 	io.emit(channel_news, news_string);
     });
