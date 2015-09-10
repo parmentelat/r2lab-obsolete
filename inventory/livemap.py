@@ -133,6 +133,27 @@ def pass2_os_release(node_ids, infos):
             remaining_ids.append(id)
     return remaining_ids
 
+def pass3_control_ping(node_ids, infos):
+    """
+    check for control_ping 
+    the ones that do answer are kept out of the next passes (should be empty)
+
+    same mechanism as pass1 in terms of side-effects and return value
+    """
+    remaining_ids = []
+    for id in node_ids:
+        debug("pass3 : {id}".format(**locals()))
+        # -c 1 : one packet -- -t 1 : wait for 1 second max
+        control = hostname(id)
+        command = [ "ping", "-c", "1", "-t", "1", control ]
+        try:
+            subprocess.check_call(command)
+            insert_or_refine(id, infos, {'control_ping' : 'on'})
+        except:
+            insert_or_refine(id, infos, {'control_ping' : 'off'})
+    return remaining_ids
+                    
+
 ##########
 arg_matcher = re.compile('[^0-9]*(?P<id>\d+)')
 def normalize(cli_arg):
@@ -165,15 +186,16 @@ def main():
     ### init    
     remaining_ids = node_ids
     infos = []
-    # pass1
+
     remaining_ids = pass1_on_off(remaining_ids, infos)
-    # pass2
     remaining_ids = pass2_os_release(remaining_ids, infos)
+    remaining_ids = pass3_control_ping(remaining_ids, infos)
 
     with open(args.output, 'w') if args.output else sys.stdout as output:
         print(json.dumps(infos), file=output)
 
-    print("remaining = ", remaining_ids, file=sys.stderr)
+    if remaining_ids:
+        print("OOPS - unexpected remaining nodes = ", remaining_ids, file=sys.stderr)
     
 
 if __name__ == '__main__':
