@@ -8,8 +8,18 @@
     
 ## node.js
 
+### r2lab (fedora)
     yum install -y nodejs npm
     
+### faraday (ubuntu)
+
+I some point I thought I would install this on faraday too; however
+
+~~`apt-get install nodejs`~~
+    
+This does not work right away; some kind of unmet dependency...
+
+I put this in standby for now; not crucial anyway
 
 ## fitsophia
  
