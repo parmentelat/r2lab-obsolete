@@ -152,7 +152,7 @@ function update_complete_file_from_news(){
 	var news_infos = sync_read_file_as_infos(filename_news);
 	complete_infos = merge_news_into_complete(complete_infos, news_infos);
 	sync_save_infos_in_file(filename_complete, complete_infos);
-	if (verbose) console.log(new Date() + " merged -> " + JSON.stringify(complete_infos));
+	if (verbose) console.log(new Date() + " merged -> " + JSON.stringify(news_infos));
 	return complete_infos;
     } catch(err) {
 	if (news_string == "")
