@@ -299,15 +299,19 @@ function R2Lab() {
     }
     
     this.handle_json_status = function(json) {
-	var nodes_info = JSON.parse(json);
-	// first we write this data into the Node structures
-	for (var i=0; i < nodes_info.length; i++) {
-	    var node_info = nodes_info[i];
-	    var id = node_info['id'];
-	    var node = this.locate_node_by_id(id);
-	    node.update_from_news(node_info);
+	try {
+	    var nodes_info = JSON.parse(json);
+	    // first we write this data into the Node structures
+	    for (var i=0; i < nodes_info.length; i++) {
+		var node_info = nodes_info[i];
+		var id = node_info['id'];
+		var node = this.locate_node_by_id(id);
+		node.update_from_news(node_info);
+	    }
+	    this.animate_changes();
+	} catch(err) {
+	    console.log("Could not parse JSON - ignored" + json);
 	}
-	this.animate_changes();
     }
 
     this.animate_changes = function() {
@@ -373,7 +377,7 @@ function R2Lab() {
     }
 
     this.declare_image_filter = function (id_filename) {
-	console.log('decl. fil. ' + id_filename);
+//	console.log('decl. fil. ' + id_filename);
 	// create defs element if not yet present
 	if ( ! $('#livemap_container svg defs').length) {
 	    console.log("creating defs");
