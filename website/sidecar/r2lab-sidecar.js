@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // deps
 var app = require('express')();
 var http = require('http').Server(app);
@@ -26,8 +27,8 @@ var filename_complete = 'r2lab-complete.json';
 ////
 var port_number = 8000;
 
-var debug=false;
-//debug=true;
+var verbose=false;
+//verbose=true;
 
 // program this webserver so that a GET to /
 // exposes the complete json status
@@ -73,7 +74,7 @@ io.on('connection', function(socket){
 // convenience function to read a file as a string and do something with result
 function sync_read_file_as_string(filename){
     try{
-	if (debug) console.log("sync Reading file " + filename);
+	if (verbose) console.log("sync Reading file " + filename);
 	return fs.readFileSync(filename, 'utf8');
     } catch(err){
 	console.log("Could not sync read " + filename + err);
@@ -101,7 +102,7 @@ function sync_read_file_as_infos(filename) {
 function sync_save_infos_in_file(filename, infos){
     try{
 	fs.writeFileSync(filename, JSON.stringify(infos), 'utf8');
-	if (debug) console.log("sync (Over)wrote " + filename)
+	if (verbose) console.log("sync (Over)wrote " + filename)
     } catch(err) {
 	console.log("Could not sync write " + filename + err);
     }
@@ -132,7 +133,7 @@ function merge_news_into_complete(complete_infos, news_infos){
 // utility to open a file and broadcast its contents on channel_news
 function emit_file(filename){
     var complete_string = sync_read_file_as_string(filename);
-    if (debug) console.log("emitting on channel " + channel_news + ":" + complete_string);
+    if (verbose) console.log("emitting on channel " + channel_news + ":" + complete_string);
     if (complete_string == "")
 	console.log("OOPS - empty contents in " + filename)
     else
@@ -151,7 +152,7 @@ function update_complete_file_from_news(){
 	var news_infos = sync_read_file_as_infos(filename_news);
 	complete_infos = merge_news_into_complete(complete_infos, news_infos);
 	sync_save_infos_in_file(filename_complete, complete_infos);
-	if (debug) console.log(new Date() + " merged -> " + JSON.stringify(complete_infos));
+	if (verbose) console.log(new Date() + " merged -> " + JSON.stringify(complete_infos));
 	return complete_infos;
     } catch(err) {
 	if (news_string == "")
@@ -167,12 +168,18 @@ function update_complete_file_from_news(){
 // watch complete status file: set callback
 fs.watch(filename_news, 
 	 function(event, filename){
-	     if (debug) console.log("watch -> event=" + event);
+	     if (verbose) console.log("watch -> event=" + event);
 	     // update complete from news
 	     var complete_infos = update_complete_file_from_news();
 	     // should do emit_file but we already have the data at hand
 	     io.emit(channel_news, JSON.stringify(complete_infos));
 	 });
+
+// very rough parsing of command line args - to set verbosity
+var argv = process.argv.slice(2);
+argv.forEach(function (val, index, array) {
+    if (val == "-v") verbose=true;
+});
 
 // run http server
 http.listen(port_number, function(){
