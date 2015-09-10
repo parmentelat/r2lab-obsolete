@@ -97,6 +97,9 @@ The status table of these queries are presented below.
   for (var key=1; key < total_nodes; key++) {
     table_content += '<tr>';
 
+    if (key < 10)
+      key = '0'+key;
+
     //Fist column
     table_content += '<th scope="row">'+ key +'</th>';
 

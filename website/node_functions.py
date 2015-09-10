@@ -425,7 +425,7 @@ def check_node_name(nodes):
         if "fit" in node:
             new_nodes.append(number_node(node))
         else:
-            new_nodes.append(int(node))
+            new_nodes.append(node)
 
     return new_nodes
 
@@ -434,7 +434,7 @@ def number_node(alias):
     """ Returns the number from the node alias [fitXX] """
     node = alias.lower().replace('fit', '')
     
-    return int(node)
+    return node
 
 
 def valid_version(version):
@@ -480,7 +480,7 @@ def print_results(results):
     """ Print the results """
     print "+ + + + + + + + +"
     for key, value in results.iteritems():
-        print "node {:02}: {}".format(key, value)
+        print "node {:02}: {}".format(int(key), value)
     print "+ + + + + + + + +"
 
 
@@ -578,6 +578,10 @@ def all_nodes():
     """Range of all nodes in faraday """
     
     nodes = range(1,38)
+    nodes = map(str, nodes)
+    for k, v in enumerate(nodes):
+        if int(v) < 10:
+            nodes[k] = v.rjust(2, '0')
     
     return nodes
 
@@ -594,6 +598,10 @@ def format_nodes(nodes):
             elif '-' in nodes:
                 nodes = nodes.strip("[]").split('-')
                 nodes = range(int(nodes[0]), int(nodes[1])+1)
+                nodes = map(str, nodes)
+                for k, v in enumerate(nodes):
+                    if int(v) < 10:
+                        nodes[k] = v.rjust(2, '0')
             else:
                 nodes = nodes.split()
 
