@@ -16,13 +16,14 @@ var channel_signalling = 'r2lab-signalling';
 // the file that is watched for changes
 // when another program writes this file, we send its contents
 // to all clients
-var filename_news = 'r2lab-news.json';
+// xxx todo - a command line option to say we use the files in current dir
+var filename_news = '/var/lib/livemap/news.json';
 // this is where we read and write current complete status
 // it typically is expected to be written by an outside program
 // but any changes seen in r2lab-news.json are merged and stored
 // in this file, so that it should always contain a consistent
 // global view
-var filename_complete = 'r2lab-complete.json';
+var filename_complete = '/var/lib/livemap/complete.json';
 
 ////
 var port_number = 8000;
