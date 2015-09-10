@@ -25,6 +25,7 @@ import sys
 import re
 import subprocess
 import json
+import signal
 from argparse import ArgumentParser
 
 def hostname(node_id, prefix="fit"):
@@ -32,32 +33,78 @@ def hostname(node_id, prefix="fit"):
 
 verbose = None
 
-def debug(*args, **keywords):
+########## timeouts (floats are probably OK but I have not tried)
+# this should amply enough
+timeout_curl = 2
+# ssh should fail in 3s in normal conditions
+# seeing ssh hang in some pathological situations is the reason
+# for these timeouts in the first place
+timeout_ssh = 4
+# here again should be amply enough
+timeout_ping = 2
+
+########## helper
+def display(*args, **keywords):
     keywords['file'] = sys.stderr
     print("livemap", *args, **keywords)
+    sys.stderr.flush()
+
+def debug(*args, **keywords):
+    if verbose:
+        display(*args, **keywords)
 
 ##########
-def insert_or_refine(id, overall, override=None):
+# a convenience function that adds a timeout to subprocess.check_output
+# stolen in http://stackoverflow.com/questions/1191374/subprocess-with-timeout
+class AlarmDeep(Exception): pass
+class Alarm(Exception): pass
+
+def alarm_handler(signum, frame):
+    raise AlarmDeep
+
+def check_output_timeout(command, timeout, **keywords):
+    signal.signal(signal.SIGALRM, alarm_handler)
+    signal.alarm(timeout)
+    try:
+        check_output = subprocess.check_output(command, **keywords)
+        signal.alarm(0)
+        return check_output
+    except AlarmDeep as e:
+        raise Alarm("timeout after {timeout} seconds".format(timeout=timeout))
+
+def check_call_timeout(command, timeout, **keywords):
+    signal.signal(signal.SIGALRM, alarm_handler)
+    signal.alarm(timeout)
+    try:
+        check_call = subprocess.check_call(command, **keywords)
+        signal.alarm(0)
+        return check_call
+    except AlarmDeep as e:
+        raise Alarm("timeout after {timeout} seconds".format(timeout=timeout))
+    
+
+##########
+def insert_or_refine(id, infos, override=None):
     """
-    locate an info in overall with that id (or create one)
+    locate an info in infos with that id (or create one)
     then update it with override if provided
-    returns overall
+    returns infos
     """
-    the_info = None
-    for info in overall:
-        if info['id'] == id:
-            the_info = info
+    node_info = None
+    for scan in infos:
+        if scan['id'] == id:
+            node_info = scan
             break
-    if not the_info:
-        the_info = {'id' : id,
+    if not node_info:
+        node_info = {'id' : id,
                     'cmc_on_off' : 'off',
                     'control_ping' : 'off',
                     'os_release' : 'fail',
                 }
-        overall.append(the_info)
+        infos.append(node_info)
     if override:
-        the_info.update(override)
-    return overall
+        node_info.update(override)
+    return infos
 
 ##########
 def pass1_on_off(node_ids, infos):
@@ -71,10 +118,10 @@ def pass1_on_off(node_ids, infos):
     """
     remaining_ids = []
     for id in node_ids:
-        debug("pass1 : {id}".format(**locals()))
+        debug("pass1 : {id} (CMC status via curl)".format(**locals()))
         reboot = hostname(id, "reboot")
         command = [ "curl", "--silent", "http://{reboot}/status".format(**locals()) ]
-        result = subprocess.check_output(command, universal_newlines=True).strip()
+        result = check_output_timeout(command, timeout_curl, universal_newlines=True).strip()
         try:
             if result == 'off':
                 insert_or_refine(id, infos)
@@ -83,7 +130,8 @@ def pass1_on_off(node_ids, infos):
                 remaining_ids.append(id)
             else:
                 raise Exception("unexpected result on CMC status request " + result)
-        except:
+        except Exception as e:
+            debug(e)
             insert_or_refine(id, infos, {'cmc_on_off' : 'fail'})
     return remaining_ids
 
@@ -101,7 +149,7 @@ def pass2_os_release(node_ids, infos):
     """
     remaining_ids = []
     for id in node_ids:
-        debug("pass2 : {id}".format(**locals()))
+        debug("pass2 : {id} (os_release via ssh)".format(**locals()))
         control = hostname(id)
         remote_command_1 = "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release"
         remote_command_2 = "gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
@@ -111,7 +159,7 @@ def pass2_os_release(node_ids, infos):
             remote_command_1 + ";" + remote_command_2
         ]
         try:
-            output = subprocess.check_output(ssh_command, universal_newlines=True)
+            output = check_output_timeout(ssh_command, timeout_ssh, universal_newlines=True)
             # there should be 2 lines in general
             line1, line2 = output.strip().split("\n")
             # line1
@@ -142,14 +190,15 @@ def pass3_control_ping(node_ids, infos):
     """
     remaining_ids = []
     for id in node_ids:
-        debug("pass3 : {id}".format(**locals()))
+        debug("pass3 : {id} (control_ping via ping)".format(**locals()))
         # -c 1 : one packet -- -t 1 : wait for 1 second max
         control = hostname(id)
         command = [ "ping", "-c", "1", "-t", "1", control ]
         try:
-            subprocess.check_call(command)
+            check_call_timeout(command, timeout_ping)
             insert_or_refine(id, infos, {'control_ping' : 'on'})
-        except:
+        except Exception as e:
+            debug(e)
             insert_or_refine(id, infos, {'control_ping' : 'off'})
     return remaining_ids
                     
@@ -164,7 +213,7 @@ def normalize(cli_arg):
         if match:
             id = match.group('id')
         else:
-            print("discarded malformed argument {cli_arg}".format(**locals()), file=sys.stderr)
+            display("discarded malformed argument {cli_arg}".format(**locals()), file=sys.stderr)
             return None
     return int(id)
 
@@ -177,7 +226,8 @@ def main():
     args = parser.parse_args()
     global verbose
     verbose = args.verbose
-    if not args.nodes : args.nodes = default_nodes
+    if not args.nodes:
+        args.nodes = default_nodes
     
     ### elaborate global focus
     node_ids = [ normalize(x) for x in args.nodes ]
@@ -195,7 +245,7 @@ def main():
         print(json.dumps(infos), file=output)
 
     if remaining_ids:
-        print("OOPS - unexpected remaining nodes = ", remaining_ids, file=sys.stderr)
+        display("OOPS - unexpected remaining nodes = ", remaining_ids, file=sys.stderr)
     
 
 if __name__ == '__main__':
