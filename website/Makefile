@@ -92,6 +92,9 @@ resources:
 publish:
 	rsync -av --delete html/ $(PUBLISH_RSYNC)
 
+publish-local:
+	rsync -av --delete html/ $(PUBLISH_PATH)/
+
 debug:
 	echo ALL_MDS=$(ALL_MDS)
 
@@ -110,6 +113,3 @@ full-local: prepare index meta convert-local resources publish
 
 .PHONY: convert-local preview-local full-local
 
-########## push local stuff onto faraday for testing
-push-mario:
-	rsync -av ./ root@faraday.inria.fr:/root/mario/website/
