@@ -151,6 +151,7 @@ def normalize(cli_arg):
 def main():
     parser = ArgumentParser()
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
+    parser.add_argument("-o", "--output", action='store', default=None)
     parser.add_argument("nodes", nargs='*')
     args = parser.parse_args()
     global verbose
@@ -169,9 +170,12 @@ def main():
     # pass2
     remaining_ids = pass2_os_release(remaining_ids, infos)
 
-    print(json.dumps(infos))
+    with open(args.output, 'w') if args.output else sys.stdout as output:
+        print(json.dumps(infos), file=output)
 
     print("remaining = ", remaining_ids, file=sys.stderr)
     
 
-main()
+if __name__ == '__main__':
+    main()
+    sys.exit(0)
