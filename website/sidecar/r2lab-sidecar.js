@@ -164,8 +164,8 @@ function update_complete_file_from_news(news_infos){
 	
 	var complete_infos = sync_read_file_as_infos(filename_complete);
 	complete_infos = merge_news_into_complete(complete_infos, news_infos);
+	verbose("merged news : " + JSON.stringify(news_infos));
 	sync_save_infos_in_file(filename_complete, complete_infos);
-	verbose("merged -> " + JSON.stringify(news_infos));
 	return complete_infos;
     } catch(err) {
 	if (news_string == "")
@@ -179,17 +179,18 @@ function update_complete_file_from_news(news_infos){
 }
 
 // watch complete status file: set callback
-fs.watch(filename_news, 
-	 function(event, filename){
-	     verbose("watch -> event=" + event);
-	     // update complete from news
-	     var news_infos = sync_read_file_as_infos(filename_news);
-	     var complete_infos = update_complete_file_from_news(news_infos);
-	     // should do emit_file but we already have the data at hand
-	     var news_string = JSON.stringify(news_infos);
-	     verbose("NEWS: sending on channel " + channel_news + ":" + news_string);
-	     io.emit(channel_news, news_string);
-	 });
+var watcher = fs.watch(
+    filename_news, 
+    function(event, filename){
+	verbose("watch -> event=" + event);
+	// update complete from news
+	var news_infos = sync_read_file_as_infos(filename_news);
+	var complete_infos = update_complete_file_from_news(news_infos);
+	// should do emit_file but we already have the data at hand
+	var news_string = JSON.stringify(news_infos);
+	verbose("NEWS: sending on channel " + channel_news + ":" + news_string);
+	io.emit(channel_news, news_string);
+    });
 
 // very rough parsing of command line args - to set verbosity
 var argv = process.argv.slice(2);
