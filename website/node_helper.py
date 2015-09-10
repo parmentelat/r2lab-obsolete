@@ -64,34 +64,35 @@ gateway_username = args.gateway_username
 identity    = args.ssh_key
 connection_info = { 'nodes':nodes, 'username':username, 'gateway':gateway, 'gateway_username':gateway_username, 'identity':identity }
 
-if "status" in action or "st" in action:
+
+if "status" == action or "st" == action:
     # check status of each node from the list
     result = status(nodes, connection_info)
-elif "on" in action:
+elif "on" == action:
     # turn on each node from the list
     result = on(nodes, connection_info)
-elif "off" in action:
+elif "off" == action:
     # turn off each node from the list
     result = off(nodes, connection_info)
-elif "reset" in action:
+elif "reset" == action:
     # reset each node from the list
     result = reset(nodes, connection_info)
-elif "load-u1410" in action:
+elif "load-u1410" == action:
     # load image in each node from the list
     result = load(nodes, 'ubuntu-14.10.ndz', connection_info)
-elif "load-u1504" in action:
+elif "load-u1504" == action:
     # load image in each node from the list
     result = load(nodes, 'ubuntu-15.04.ndz', connection_info)
-elif "load-f21" in action:
+elif "load-f21" == action:
     # load image in each node from the list
     result = load(nodes, 'fedora-21.ndz', connection_info)
-elif "alive" in action or "cmc_on_off" in action:
+elif "alive" == action or "cmc-on-off" == action:
     # check if each node from the list anwer a ping in the CM card
     result = alive(nodes, connection_info)
-elif "answer" in action or "control_ping" in action:
+elif "answer" == action or "control-ping" == action:
     # check if each node from the list anwer a ping
     result = answer(nodes, connection_info)
-elif "info" in action or "os_release" in action or "control_ssh" in action:
+elif "info" == action or "os-release" == action or "control-ssh" == action:
     # check the S.O. info
     result = info(nodes, connection_info)
 else:

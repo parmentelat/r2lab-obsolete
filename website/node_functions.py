@@ -228,8 +228,10 @@ def info(nodes, connection_info, show_results=True):
         ec.set(by_node, "hostname", 'fit'+str(node))
         ec.set(by_node, "username", 'root')
         ec.set(by_node, "identity", connection_info['identity'])
-        ec.set(by_node, "gateway", connection_info['gateway'])
-        ec.set(by_node, "gatewayUser", connection_info['gateway_username'])
+        if not "localhost" in connection_info['gateway']:
+            ec.set(by_node, "gateway", connection_info['gateway'])
+            ec.set(by_node, "gatewayUser", connection_info['gateway_username'])
+
         ec.set(by_node, "cleanExperiment", True)
         ec.set(by_node, "cleanProcesses", False)
         ec.set(by_node, "cleanProcessesAfter", False)
