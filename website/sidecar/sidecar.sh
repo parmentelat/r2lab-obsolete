@@ -33,6 +33,7 @@ function action() {
 	restart)
 	    action stop
 	    action start
+	    ;;
 	*)
 	    echo unknown subcommand $1
 	    exit 1
