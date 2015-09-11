@@ -12,9 +12,16 @@ remote_dest=/var/lib/sidecar/news.json
 
 # nodes can be specified on the command line, defaults to all nodes
 
-# xxx  todo - add option to specify delay
-delay = 5
+# options
+delay=5
 
+while getopts ":d:" opt; do
+    case $opt in
+	d)
+	    delay=$OPTARG;;
+    esac
+done
+shift $((OPTIND-1))
 
 cd /root/fitsophia/website/sidecar
 # just in case
