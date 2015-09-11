@@ -1,7 +1,10 @@
 #!/bin/bash
 
 CODEDIR=/root/fitsophia/website/sidecar
+DATADIR=/var/lib/sidecar
 LOG=/var/log/sidecar.log
+
+mkdir -p $DATADIR
 
 case $1 in
     start)

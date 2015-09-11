@@ -22,9 +22,9 @@ ssh $remote mkdir -p $(dirname $remote_dest)
 
 while true; do
     echo ==================== Running script
-    ./livemap.py -v -o livemap.json "$@"
+    ./monitor.py -v -o monitor.json "$@"
     echo ==================== Installing result
     # a bit surprisingly, pushing with rsync won't do it, it feels like it uses tricks that bypass fs.watch
-    cat livemap.json | ssh $remote cat \> $remote_dest
+    cat monitor.json | ssh $remote cat \> $remote_dest
     sleep $delay
 done
