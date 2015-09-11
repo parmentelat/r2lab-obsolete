@@ -12,8 +12,8 @@ import time
 from argparse import ArgumentParser
 
 #
-complete_filename = 'r2lab-complete.json'
-news_filename = 'r2lab-news.json'
+complete_filename = 'complete.json'
+news_filename = 'news.json'
 
 # in s
 default_cycle = 1
