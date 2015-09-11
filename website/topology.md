@@ -4,7 +4,7 @@ tab: platform
 
 R2Lab testbed project offers a hight quality anechoic room for your experiments. Following are the details of the anechoic room.
 
-###Layout
+### Layout
 
 Below is the ground plan layout of the anechoic room which provide thirty-seven wireless nodes distributed in a **≈ 90m<sup>2</sup>** room.
 
@@ -17,7 +17,7 @@ The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal)
 
 <br>
 
-###Status
+### Status
 Frequently a routine checks the availability of our resource/nodes platform. Some main items are checked: - if the node is available correctly (availability column); - if the node answer a single ping (ping column); - which are the node status (on/off column); - what is the operational system is running (O.S column). <br>
 The status table of these queries are presented below.
 
