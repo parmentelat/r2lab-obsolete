@@ -12,7 +12,7 @@ REMOTE_DEST=/var/lib/sidecar/news.json
 LOCAL_LOG=/var/log/monitor.log
 
 function display() {
-    echo $(date) "$@"
+    echo $(date '+%m/%d %H:%M:%S') "$@"
 }
 
 # nodes can be specified on the command line, defaults to all nodes
