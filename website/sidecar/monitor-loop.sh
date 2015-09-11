@@ -35,12 +35,14 @@ cd /root/fitsophia/website/sidecar
 # just in case
 ssh $REMOTE_ID mkdir -p $(dirname $REMOTE_DEST)
 
+display "Destination is $REMOTE_ID:$REMOTE_DEST" >> $LOCAL_LOG
+
 while true; do
-    display ===== Running monitor.py
+    display probing
     ./monitor.py $verbose -o monitor.json "$@"
-    display ===== Pushing onto $REMOTE_ID:$REMOTE_DEST
+    display pushing
     # a bit surprisingly, pushing with rsync won't do it, it feels like it uses tricks that bypass fs.watch
     cat monitor.json | ssh $REMOTE_ID cat \> $REMOTE_DEST
-    display going to sleep for $delay s
+    display sleep $delay s
     sleep $delay
-done > $LOCAL_LOG 2>&1
+done >> $LOCAL_LOG 2>&1
