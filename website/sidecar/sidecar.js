@@ -128,9 +128,11 @@ function merge_news_into_complete(complete_infos, news_infos){
     for (var nav=0; nav < news_infos.length; nav++) {
 	var node_info = news_infos[nav];
 	var id = node_info.id;
+	var found = false;
 	for (var nav2=0; nav2 < complete_infos.length; nav2++) {
 	    var complete_info = complete_infos[nav2];
 	    if (complete_info['id'] == id) {
+		found = true;
 		// copy all contents from node_info into complete_infos
 		for (var prop in node_info)
 		    if (node_info[prop] != undefined)
@@ -139,6 +141,10 @@ function merge_news_into_complete(complete_infos, news_infos){
 		break;
 	    }
 	}
+	// complete gets created empty at the very beginning
+	// so, if id is not yet known, add it as-is
+	if (! found)
+	    complete_infos.push(node_info);
     }
     return complete_infos;
 }
