@@ -56,7 +56,7 @@ def load(nodes, version, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "omf6 load -t fit{} -i {} ".format(node, version) 
+        on_cmd_a = "omf6 load -t fit{} -i {} ".format(int(node), version) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -119,7 +119,7 @@ def reset(nodes, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "curl 192.168.1.{}/reset".format(node) 
+        on_cmd_a = "curl 192.168.1.{}/reset".format(int(node)) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -178,7 +178,7 @@ def answer(nodes, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "ping -c1 192.168.3.{}".format(node) 
+        on_cmd_a = "ping -c1 192.168.3.{}".format(int(node)) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -285,7 +285,7 @@ def alive(nodes, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "ping -c1 192.168.1.{}".format(node) 
+        on_cmd_a = "ping -c1 192.168.1.{}".format(int(node)) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -353,7 +353,7 @@ def multiple_action(nodes, connection_info, action, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "curl 192.168.1.{}/{}".format(node, action) 
+        on_cmd_a = "curl 192.168.1.{}/{}".format(int(node), action) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
