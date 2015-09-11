@@ -213,16 +213,15 @@ def answer(nodes, connection_info, show_results=True):
 
 def info(nodes, connection_info, show_results=True):
     """ Get the info from the operational system """
-    ec    = ExperimentController(exp_id="info")
-    
     nodes = format_nodes(nodes)
     nodes = check_node_name(nodes)
 
     node_appname = {}
     node_appid   = {}
-    apps         = []
-
+    results      = {}
     for node in nodes:        
+        ec    = ExperimentController(exp_id="info")
+
         by_node = ec.register_resource("linux::Node")
 
         ec.set(by_node, "hostname", 'fit'+str(node))
@@ -245,20 +244,17 @@ def info(nodes, connection_info, show_results=True):
         ec.register_connection(node_appname[node], by_node)
         # contains the app id given when register the app by EC
         node_appid.update({node_appname[node] : node})
-        apps.append(node_appname[node])
-
+        
         ec.deploy(by_node)
 
         ec.deploy(node_appname[node])
         ec.wait_finished(node_appname[node]) 
 
-    results = {}
-    for app in apps:
-        stdout    = remove_special_char(ec.trace(app, "stdout"))
-        exitcode  = remove_special_char(ec.trace(app, 'exitcode'))
-        results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
+        stdout    = remove_special_char(ec.trace(node_appname[node], "stdout"))
+        exitcode  = remove_special_char(ec.trace(node_appname[node], 'exitcode'))
+        results.update({ node_appid[node_appname[node]] : {'exit' : exitcode, 'stdout' : stdout}})
 
-    ec.shutdown()
+        ec.shutdown()
 
     if show_results:
         results = format_results(results, 'info', True)
