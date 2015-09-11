@@ -15,7 +15,7 @@ case $1 in
     status)
 	pids=$(pgrep node)
 	if [ -z "$pids" ] ; then
-	    echo No instane of node running
+	    echo No instance of node running
 	else
 	    ps $pids
 	fi

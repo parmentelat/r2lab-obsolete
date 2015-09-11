@@ -8,7 +8,7 @@ hostname | grep -q faraday || {
 
 # details on where to put stuff
 remote=root@r2lab.pl.sophia.inria.fr
-remote_dest=/var/lib/livemap/news.json
+remote_dest=/var/lib/sidecar/news.json
 
 # nodes can be specified on the command line, defaults to all nodes
 

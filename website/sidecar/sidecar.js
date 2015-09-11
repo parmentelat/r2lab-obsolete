@@ -4,6 +4,7 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
+var path = require('path');
 
 //// names for the channels used
 // sending deltas; json is flying on this channel
@@ -16,14 +17,14 @@ var channel_signalling = 'r2lab-signalling';
 // the file that is watched for changes
 // when another program writes this file, we send its contents
 // to all clients
-// xxx todo - a command line option to say we use the files in current dir
-var filename_news = '/var/lib/livemap/news.json';
+// use -l command line option to use files in local dir
+var filename_news = '/var/lib/sidecar/news.json';
 // this is where we read and write current complete status
 // it typically is expected to be written by an outside program
 // but any changes seen in r2lab-news.json are merged and stored
 // in this file, so that it should always contain a consistent
 // global view
-var filename_complete = '/var/lib/livemap/complete.json';
+var filename_complete = '/var/lib/sidecar/complete.json';
 
 ////
 var port_number = 8000;
@@ -99,7 +100,7 @@ function sync_read_file_as_string(filename){
 function sync_read_file_as_infos(filename) {
     try {
 	// xxx hack - sometimes (quite often indeed) we see
-	// this read returning an empty string
+	// this read returning an empty string...
 	return JSON.parse(sync_read_file_as_string(filename));
     } catch(err) {
 	try {
@@ -120,7 +121,6 @@ function sync_save_infos_in_file(filename, infos){
     } catch(err) {
 	display("Could not sync write " + filename + err);
     }
-    
 }    
     
 // merge news info into complete infos; return new complete
@@ -182,28 +182,62 @@ function update_complete_file_from_news(news_string){
 	}
     }
 }
-
-// watch complete status file: set callback
-var watcher = fs.watch(
-    filename_news, 
-    function(event, filename){
-	verbose("watch -> event=" + event);
-	// read news file as a string
-	var news_string = sync_read_file_as_string(filename_news);
-	// update complete from news_string
-	var complete_infos = update_complete_file_from_news(news_string);
-	// should do emit_file but we already have the data at hand
-	verbose("NEWS: sending on channel " + channel_news + ":" + news_string);
-	io.emit(channel_news, news_string);
+function parse_args() {
+    // very rough parsing of command line args - to set verbosity
+    var argv = process.argv.slice(2);
+    argv.forEach(function (val, index, array) {
+	// verbose
+	if (val == "-v")
+	    verbose_flag=true;
+	// local dev (use json files in .)
+	if (val == "-l") {
+	    console.log("in " + filename_news);
+	    filename_news = path.basename(filename_news);
+	    filename_complete = path.basename(filename_complete);
+	    console.log("out " + filename_news);
+	}
     });
+    verbose("news file = " + filename_news,
+	    "complete file = " + filename_complete);
+}
 
-// very rough parsing of command line args - to set verbosity
-var argv = process.argv.slice(2);
-argv.forEach(function (val, index, array) {
-    if (val == "-v") verbose_flag=true;
-});
+function init_watcher() {
+    var touch_if_missing = function(filename) {
+	try {
+	    fs.statSync(filename);
+	} catch (err) {
+	    sync_save_infos_in_file(filename, []);
+	}
+    }
+    touch_if_missing(filename_news);
+    touch_if_missing(filename_complete);
+
+    // watch news file and attach callback
+    var watcher = fs.watch(
+	filename_news, 
+	function(event, filename){
+	    verbose("watch -> event=" + event);
+	    // read news file as a string
+	    var news_string = sync_read_file_as_string(filename_news);
+	    // update complete from news_string
+	    var complete_infos = update_complete_file_from_news(news_string);
+	    // should do emit_file but we already have the data at hand
+	    verbose("NEWS: sending on channel " + channel_news + ":" + news_string);
+	    io.emit(channel_news, news_string);
+	});
+}
 
 // run http server
-http.listen(port_number, function(){
-    display('listening on *:' + port_number);
-});
+function run_server() {
+    http.listen(port_number, function(){
+	display('listening on *:' + port_number);
+    });
+}
+
+function main() {
+    parse_args();
+    init_watcher();
+    run_server();
+}
+
+main()
