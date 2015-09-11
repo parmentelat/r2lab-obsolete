@@ -310,7 +310,7 @@ function R2Lab() {
 	    }
 	    this.animate_changes();
 	} catch(err) {
-	    console.log("Could not parse JSON - ignored :[" + json + "]");
+	    console.log("Could not parse JSON - ignored :<<" + json + ">>");
 	}
     }
 

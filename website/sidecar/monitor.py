@@ -121,8 +121,8 @@ def pass1_on_off(node_ids, infos):
         debug("pass1 : {id} (CMC status via curl)".format(**locals()))
         reboot = hostname(id, "reboot")
         command = [ "curl", "--silent", "http://{reboot}/status".format(**locals()) ]
-        result = check_output_timeout(command, timeout_curl, universal_newlines=True).strip()
         try:
+            result = check_output_timeout(command, timeout_curl, universal_newlines=True).strip()
             if result == 'off':
                 insert_or_refine(id, infos)
             elif result == 'on':
@@ -155,6 +155,7 @@ def pass2_os_release(node_ids, infos):
         remote_command_2 = "gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
         ssh_command = [
             "ssh",
+            "-q",
             "root@{control}".format(**locals()),
             remote_command_1 + ";" + remote_command_2
         ]
