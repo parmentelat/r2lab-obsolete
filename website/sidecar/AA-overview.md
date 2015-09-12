@@ -1,4 +1,4 @@
-![Overview](/Users/parmentelat/git/fitsophia/website/AA-overview.png)
+![Overview](AA-overview.png)
 
 # faraday
 
