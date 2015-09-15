@@ -351,6 +351,32 @@ function R2Lab() {
 
     }
 
+    // filters for backgrounds
+    this.declare_image_filter = function (id_filename) {
+//	console.log('decl. fil. ' + id_filename);
+	// create defs element if not yet present
+	if ( ! $('#livemap_container svg defs').length) {
+	    console.log("creating defs");
+	    d3.select('#livemap_container svg').append('defs');
+	}
+	// create filter in there
+        var defs = d3.select("#livemap_container svg defs");
+        var filter = defs.append("filter")
+            .attr("id", id_filename)
+	    .attr("x", "0%")
+	    .attr("y", "0%")
+	    .attr("width", "100%")
+	    .attr("height", "100%")
+	;
+        filter.append("feImage")
+	    .attr("xlink:href", id_filename + ".png");
+    }
+
+    this.declare_image_filter('fedora_logo');
+    this.declare_image_filter('ubuntu_logo');
+    this.declare_image_filter('other_logo');
+
+    ////////// socket.io business
     this.init_sidecar_socket_io = function() {
 	// try to figure hostname to get in touch with
 	var sidecar_hostname = ""
@@ -376,30 +402,6 @@ function R2Lab() {
     this.request_complete_from_sidecar = function() {
 	this.sidecar_socket.emit(signalling, 'INIT');
     }
-
-    this.declare_image_filter = function (id_filename) {
-//	console.log('decl. fil. ' + id_filename);
-	// create defs element if not yet present
-	if ( ! $('#livemap_container svg defs').length) {
-	    console.log("creating defs");
-	    d3.select('#livemap_container svg').append('defs');
-	}
-	// create filter in there
-        var defs = d3.select("#livemap_container svg defs");
-        var filter = defs.append("filter")
-            .attr("id", id_filename)
-	    .attr("x", "0%")
-	    .attr("y", "0%")
-	    .attr("width", "100%")
-	    .attr("height", "100%")
-	;
-        filter.append("feImage")
-	    .attr("xlink:href", id_filename + ".png");
-    }
-
-    this.declare_image_filter('fedora_logo');
-    this.declare_image_filter('ubuntu_logo');
-    this.declare_image_filter('other_logo');
 
 }
 
