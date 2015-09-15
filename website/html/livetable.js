@@ -53,17 +53,19 @@ function LiveTable() {
 	return this.nodes[id-1];
     }
     
-    this.animate_changes = function(json) {
+    this.animate_changes = function(nodes_info) {
 	var tbody = d3.select("tbody#livetable_container");
 	var rows = tbody.selectAll('tr')
 	    .data(this.nodes, function(node) {return node.id;})
 	  .enter()
 	    .append('tr');
+	// this is a nested selection like in http://bost.ocks.org/mike/nest/
 	var td = rows.selectAll('td')
 	    .data(function(node) {return node.data;})
           .enter()
 	    .append('td');
 	td.html(function(d) {return d;});
+	console.log("animated " + nodes_info.length + " node infos");
     }
 
     ////////// socket.io business
@@ -77,7 +79,7 @@ function LiveTable() {
 		var node = this.locate_node_by_id(id);
 		node.update_from_news(node_info);
 	    }
-	    this.animate_changes();
+	    this.animate_changes(nodes_info);
 	} catch(err) {
 	    if (json != "") {
 		console.log("Could not parse JSON - ignored :<<" + json + ">>");
