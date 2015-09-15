@@ -316,7 +316,7 @@ function R2Lab() {
     }
 
     this.animate_changes = function() {
-	var svg = d3.select('svg');
+	var svg = d3.select('div#livemap_container svg');
 	var circles = svg.selectAll('circle')
 	    .data(this.nodes, function(node) {return node.id;});
 	circles.enter()
