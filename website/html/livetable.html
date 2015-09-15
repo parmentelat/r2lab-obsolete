@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <title>R2Lab Table Prototype</title>
+	<link rel="icon" type="image/png" href="/assets/img/r2lab-icon.png"/>
+      <!-- third-party stuff -->
+	<script src="assets/js/d3.min.js"></script>
+	<script src="assets/js/jquery-2.1.4.min.js"></script>
+	<script src="assets/js/socket.io-1.3.6.js"></script>
+	<!-- local stuff -->
+        <script type="text/javascript" src="livetable.js"></script>
+	<link rel="stylesheet" type="text/css" href="livemap.css">
+    </head>
+    <body>
+      <div class="livetable">
+	<table>
+	  <thead> <tr>
+	    <td>avail</td><td>on/off</td><td>ping</td><td>O.S.</td>
+	  </tr></thead>
+	  <!-- hook for livetable.js -->
+	  <tbody id="livetable_container"></tbody>
+         </table></div>
+    </body>
+</html>
