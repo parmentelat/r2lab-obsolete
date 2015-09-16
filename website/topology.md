@@ -17,7 +17,24 @@ The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal)
 
 <br>
 
-### Status
+### Livemap
+
+In order to allow full information concerning R2lab platform, our livemap keep the users posted about the techincal and incidents details.<br>
+The livemap brings the .
+
+<script src="assets/js/d3.min.js"></script>
+<script src="assets/js/jquery-2.1.4.min.js"></script>
+<script src="assets/js/socket.io-1.3.6.js"></script>
+<script src="assets/js/raphael-min.js"></script>
+<script src="assets/js/rounding.js"></script>
+<!-- local stuff -->
+<script type="text/javascript" src="livemap.js"></script>
+<link rel="stylesheet" type="text/css" href="livemap.css">
+
+<div id="livemap_container"></div>
+
+<h3>Status</h3>
+
 Frequently a routine checks the availability of our resource/nodes platform. Some main items are checked: - if the node is available correctly (availability column); - if the node answer a single ping (ping column); - which are the node status (on/off column); - what is the operational system is running (O.S column). <br>
 The status table of these queries are presented below.
 
