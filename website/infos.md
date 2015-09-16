@@ -1,4 +1,4 @@
-title: Last news, infos or troubles
+title: Latest news, infos or troubles
 tab: infos
 ---
 
