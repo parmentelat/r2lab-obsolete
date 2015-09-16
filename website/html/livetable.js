@@ -13,7 +13,7 @@ var nb_nodes = 37;
 // their table row and cells get created through d3 enter mechanism
 function Node (id) {
     this.id = id;
-    this.cell_texts = [id,	    // id
+    this.cell_texts = [id,  // id
 		 undefined, // avail
 		 undefined, // on/off
 		 undefined, // ping
@@ -30,8 +30,10 @@ function Node (id) {
 	// rewrite actual representation in cell_texts 
 	// pedestrian for now
 	// fill in this.cell_texts that is passed to d3.data for each node
-	this.cell_texts[2] = this.cmc_on_off == 'fail' ? 'Unknown' : this.cmc_on_off;
-	this.cell_texts[3] = this.control_ping == 'on' ? 'OK' : 'KO';
+	this.cell_texts[2] =
+	    this.cmc_on_off == 'fail' ? 'N/A'
+	    : this.cmc_on_off == 'on' ? 'ON' : 'OFF';
+	this.cell_texts[3] = this.control_ping == 'on' ? 'PING' : '--';
 	this.cell_texts[4] = this.rewrite_release(this.os_release);
 	//console.log("after update_from_news -> " + this.data);
     }
@@ -66,7 +68,7 @@ function LiveTable() {
     
     this.init_nodes = function () {
 	for (var i=0; i < nb_nodes; i++) { 
-	    this.nodes[i] = new Node(i);
+	    this.nodes[i] = new Node(i+1);
 	}
     }
 
