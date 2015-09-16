@@ -156,7 +156,7 @@ The status table of these queries are presented below.
       res = data_info_results[key].info;
 
       if (res == 'fail'){
-        table_content += '<td><span class="label label-danger">fail</span></td>';
+        table_content += '<td><span class="label label-default">ignored</span></td>';
       }
       else if (res.indexOf('ubuntu') >= 0){
 
