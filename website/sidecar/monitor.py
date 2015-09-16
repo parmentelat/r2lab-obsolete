@@ -36,13 +36,13 @@ verbose = None
 
 ########## timeouts (floats are probably OK but I have not tried)
 # this should amply enough
-timeout_curl = 2
+timeout_curl = 1
 # ssh should fail in 3s in normal conditions
 # seeing ssh hang in some pathological situations is the reason
 # for these timeouts in the first place
-timeout_ssh = 4
+timeout_ssh = 1
 # here again should be amply enough
-timeout_ping = 2
+timeout_ping = 1
 
 ########## helper
 def display(*args, **keywords):
