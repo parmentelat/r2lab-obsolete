@@ -10,33 +10,37 @@ Below is the ground plan layout of the anechoic room which provide thirty-seven 
 
 The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal) of distance between them, except by the nodes 12, 16, 17, 20 and 23, 24, 27 which are the nodes surrounding the columns room.
 
-<center>
+<left>
 	<img src="assets/img/status.png" style="width:950px; height:592px;"/><br>
-	Fig. 1 - Resources status
-</center>
+	<!-- <center> Fig. 1 - Resources status</center> -->
+</left>
 
 <br>
 
 ### Livemap
 
-In order to allow full information concerning R2lab platform, our livemap keep the users posted about the techincal and incidents details.<br>
-The livemap brings the .
+Frequently a routine checks the availability of our resource/nodes platform. In order to allow real time and multiple information concerning R2lab platform, our live map keep the users posted about the state of each resource/node concerning technical infos, incidents and operational details.<br>
+- The red/green round informs if the node responds or not a ping at the experiment interface.
+- The round O.S. brand informs that the node is turned on and running the referenced O.S..
+- The node is turned off when only the number is presented in the map.
 
-<script src="assets/js/d3.min.js"></script>
-<script src="assets/js/jquery-2.1.4.min.js"></script>
-<script src="assets/js/socket.io-1.3.6.js"></script>
-<script src="assets/js/raphael-min.js"></script>
-<script src="assets/js/rounding.js"></script>
-<!-- local stuff -->
-<script type="text/javascript" src="livemap.js"></script>
-<link rel="stylesheet" type="text/css" href="livemap.css">
-
-<div id="livemap_container"></div>
+<iframe src="livemap.html"  scrolling="no" width="100%" height="460px" frameBorder="0"></iframe>
+<!-- <center> Fig. 1 - Resources status</center> -->
 
 <h3>Status</h3>
 
-Frequently a routine checks the availability of our resource/nodes platform. Some main items are checked: - if the node is available correctly (availability column); - if the node answer a single ping (ping column); - which are the node status (on/off column); - what is the operational system is running (O.S column). <br>
-The status table of these queries are presented below.
+Complementary to the live map above, this status table present an alternative format the queries results.
+- The <b>availability</b> column: 
+	Reports that the node are controllable or not. In fail case the node could be physically powered off or in maintenance.
+- The <b>on/off</b> column:
+	Reports that the node is ready to be used or not.
+- The <b>ping</b> column: 
+	Reports that the node answers a single ping at the experiment interface.
+- The <b>O.S</b> column:
+	Reports that the node responds a ssh connection sending back the operational system release.
+<br>
+
+The table with these queries are presented below.
 
 <div id="div_error" class="alert alert-danger" role="alert">
   One or more problem may block the proper running:<br>
@@ -48,8 +52,8 @@ The status table of these queries are presented below.
     <tr>
       <th id="cl_01">node<br><font style="font-weight:normal; font-size:xx-small;">last update</font></th>
       <th id="cl_02">availability</th>
-      <th id="cl_03">ping</th>
-      <th id="cl_04">on/off</th>
+      <th id="cl_03">on/off</th>
+      <th id="cl_04">ping</th>
       <th id="cl_05">O.S.</th>
     </tr>
   </thead>
@@ -94,8 +98,8 @@ The status table of these queries are presented below.
   //Last update info at the table header
   try {
     cl_02 = data_info_files['alive_results'].last_modified;
-    cl_03 = data_info_files['answer_results'].last_modified;
-    cl_04 = data_info_files['multiple_results'].last_modified;
+    cl_03 = data_info_files['multiple_results'].last_modified;
+    cl_04 = data_info_files['answer_results'].last_modified;
     cl_05 = data_info_files['info_results'].last_modified;
 
     $("#cl_02").append( '<br><font style="font-weight:normal; font-size:xx-small;">'+cl_02+'</font>');
@@ -135,22 +139,7 @@ The status table of these queries are presented below.
       table_content += '<td><span class="label label-default">ignored</span></td>';  
     }
 
-    //Third column
-    try {
-      res = data_answer_results[key].answer;
-
-      if (res == 'answer'){
-        table_content += '<td><span class="label label-success">yes</span></td>';
-      }
-      else {
-        table_content += '<td><span class="label label-danger">fail</span></td>';
-      }
-    }
-    catch(err) {
-      table_content += '<td><span class="label label-default">ignored</span></td>';  
-    }
-
-    //Fourth column
+		//Third column
     try {
       res = data_multiple_results[key].status;
 
@@ -167,6 +156,23 @@ The status table of these queries are presented below.
     catch(err) {
       table_content += '<td><span class="label label-default">ignored</span></td>';  
     }
+
+
+    //Fourth column
+    try {
+      res = data_answer_results[key].answer;
+
+      if (res == 'answer'){
+        table_content += '<td><span class="label label-success">yes</span></td>';
+      }
+      else {
+        table_content += '<td><span class="label label-danger">fail</span></td>';
+      }
+    }
+    catch(err) {
+      table_content += '<td><span class="label label-default">ignored</span></td>';  
+    }
+
 
     //Fifth column
     try {
