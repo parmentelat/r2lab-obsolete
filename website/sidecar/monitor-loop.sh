@@ -18,7 +18,7 @@ function display() {
 # nodes can be specified on the command line, defaults to all nodes
 
 # options
-delay=5
+delay=3
 verbose=
 
 while getopts ":d:" opt; do
@@ -45,4 +45,4 @@ while true; do
     cat monitor.json | ssh $REMOTE_ID cat \> $REMOTE_DEST
     display sleep $delay s
     sleep $delay
-done >> $LOCAL_LOG 2>&1
+done >> $LOCAL_LOG 2>&1 &

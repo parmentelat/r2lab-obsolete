@@ -21,6 +21,7 @@ this is as optimized as we can think about it
 
 default_nodes = range(1, 38)
 
+from datetime import datetime
 import sys
 import re
 import subprocess
@@ -196,7 +197,8 @@ def pass3_control_ping(node_ids, infos):
         control = hostname(id)
         command = [ "ping", "-c", "1", "-t", "1", control ]
         try:
-            check_call_timeout(command, timeout_ping)
+            with open('/dev/null', 'w') as null:
+                check_call_timeout(command, timeout_ping, stdout=null, stderr=null)
             insert_or_refine(id, infos, {'control_ping' : 'on'})
         except Exception as e:
             debug(e)
@@ -220,6 +222,7 @@ def normalize(cli_arg):
 
 
 def main():
+    start = datetime.now()
     parser = ArgumentParser()
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-o", "--output", action='store', default=None)
@@ -245,10 +248,26 @@ def main():
     with open(args.output, 'w') if args.output else sys.stdout as output:
         print(json.dumps(infos), file=output)
 
+    # should not happen
     if remaining_ids:
         display("OOPS - unexpected remaining nodes = ", remaining_ids, file=sys.stderr)
     
+    # print one-line status
+    for info in infos:
+        if 'os_release' in info and info['os_release'] != 'fail':
+            char = '^'
+        elif 'control_ping' in info and info['control_ping'] != 'off':
+            char = 'O'
+        elif 'cmc_on_off' in info and info['cmc_on_off'] == 'on':
+            char = 'o'
+        else:
+            char = '.'
+        print(char, end='')
+    duration = datetime.now() - start
+    print(" - total {} s {} ms".format(duration.seconds, int(duration.microseconds/1000)))
+    print()
 
+        
 if __name__ == '__main__':
     main()
     sys.exit(0)
