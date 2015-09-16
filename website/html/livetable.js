@@ -10,10 +10,11 @@ var sidecar_port_number = 8000;
 var nb_nodes = 37;
 /******************************/
 // nodes are dynamic
-// their visual rep. get created through d3 enter mechanism
+// their table row and cells get created through d3 enter mechanism
 function Node (id) {
     this.id = id;
-    this.data = [undefined, // avail
+    this.cell_texts = [id,	    // id
+		 undefined, // avail
 		 undefined, // on/off
 		 undefined, // ping
 		 undefined // os_release
@@ -21,20 +22,40 @@ function Node (id) {
 		 
     // node_info is a dict coming through socket.io in JSON
     // simply copy the fieds present in this dict in the local object
-    // for further usage in animate_changes
     this.update_from_news = function(node_info) {
+	// update fields like node.cmc_on_off
 	for (var prop in node_info)
 	    if (node_info[prop] != undefined)
 		this[prop] = node_info[prop];
+	// rewrite actual representation in cell_texts 
 	// pedestrian for now
-	// fill in this.data that is passed to d3.data for each node
-	this.data[1] = this.cmc_on_off;
-	this.data[2] = this.control_ping;
-	this.data[3] = this.os_release;
+	// fill in this.cell_texts that is passed to d3.data for each node
+	this.cell_texts[2] = this.cmc_on_off == 'fail' ? 'Unknown' : this.cmc_on_off;
+	this.cell_texts[3] = this.control_ping == 'on' ? 'OK' : 'KO';
+	this.cell_texts[4] = this.rewrite_release(this.os_release);
 	//console.log("after update_from_news -> " + this.data);
     }
 
+    // quick and dirty
+    this.rewrite_release = function(os_release) {
+	var gr_msg = (os_release.search('gnuradio') >= 0) ? ' + GNURADIO' : '';
+	if (os_release.startsWith('fedora'))
+	    return 'Fedora' + gr_msg;
+	else if (os_release.startsWith('ubuntu'))
+	    return 'Ubuntu' + gr_msg;
+	else if (os_release == 'other')
+	    return 'Other (ssh OK)';
+	else
+	    return 'N/A';
+    }
+
 }
+
+var get_node_id = function(node){return node.id;}
+var get_node_data = function(node){return node.cell_texts;}
+var ident = function(d) { return d; };
+// rewriting info should happen in update_from_news
+var get_html = ident;
 
 /******************************/
 function LiveTable() {
@@ -55,17 +76,20 @@ function LiveTable() {
     
     this.animate_changes = function(nodes_info) {
 	var tbody = d3.select("tbody#livetable_container");
+	// row update selection
 	var rows = tbody.selectAll('tr')
-	    .data(this.nodes, function(node) {return node.id;})
-	  .enter()
+	    .data(this.nodes, get_node_id);
+	////////// create rows as needed
+	rows.enter()
 	    .append('tr');
 	// this is a nested selection like in http://bost.ocks.org/mike/nest/
-	var td = rows.selectAll('td')
-	    .data(function(node) {return node.data;})
-          .enter()
+	var cells = rows.selectAll('td')
+	    .data(get_node_data);
+	cells.enter()
 	    .append('td');
-	td.html(function(d) {return d;});
-	console.log("animated " + nodes_info.length + " node infos");
+	////////// update existing ones
+	cells.html(get_html);
+	return;
     }
 
     ////////// socket.io business
