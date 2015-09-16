@@ -2,7 +2,7 @@ title: SSH access
 tab: guides
 ---
 
-###Pre-requisite #
+###Pre-requisite
 
 [Obtain a slice account on R2LAB (faraday)](tuto-01-registration.html)
 
