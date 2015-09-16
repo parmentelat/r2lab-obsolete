@@ -47,7 +47,8 @@ full control and granted access<br>
   <br>
   **The [Nitos](http://nitlab.inf.uth.gr/NITlab/) X50 nodes are:**
   <p>
-  **CPU** Intel Core i7-2600 processor; 8M **Cache**, at 3.40GHz; **RAM** kingston 4GB HYPERX BLU DDR3; **Wireless Interfaces** Atheros 802.11 a/b/g and Atheros  802.11 a/b/g/n (MIMO).
+**2 Wireless Interfaces** Atheros 802.11 a/b/g and Atheros  802.11 a/b/g/n (MIMO);  **CPU** Intel Core i7-2600 processor; 
+  **RAM** kingston 4GB HYPERX BLU DDR3; 8M **Cache**, at 3.40GHz.
   </p>
   **Our USRP X10 device are:**
   <p>
@@ -59,7 +60,6 @@ full control and granted access<br>
   </p>
   **CM card**:<br>
   A small web server run in a Chassis Manager Card (CM card) to control and monitor the nodes. The CM card answer HTTP requests to expose on/off actions, status and others like: 
-  <br>
   <br>
   - Remote on/off and reset of a NITOS node<br>
   - Monitoring of the node's status (on or off)<br>
@@ -74,7 +74,10 @@ full control and granted access<br>
   <br>
 
   **Experiment interface**:<br>
-  The experiment interface allow the access to the resource/node and is available at: 192.168.**2**.<font color="green">**xx**</font>.
+  The experiment interface offers wired connectivity between nodes and
+  to the infrastructure; this is entirely dedicated to experimenters -
+  and is not turned on by default, but can easily be enabled from the
+  node using DHCP, in which case it becomes available at: 192.168.**2**.<font color="green">**xx**</font>.
   
   <br>
   <br>
@@ -88,12 +91,12 @@ full control and granted access<br>
   </div>
   <div class="col-md-3">
     <br>
-    <img src="assets/img/icarus.png">
+    <img src="assets/img/icarus.png" width="300px">
     <center>Fig. 1 - Resource/Node Icarus</center>
     <br>
     <br>
     <br>
-    <img src="assets/img/node_back.jpg">
+    <img src="assets/img/node_back.jpg" width="300px">
     <center>Fig. 2 - Resource back wired details</center>
   </div>
 </div>
