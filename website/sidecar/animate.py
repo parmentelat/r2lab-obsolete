@@ -95,8 +95,9 @@ def main():
                         help="Maximum number of nodes impacted by each cycle")
     parser.add_argument('-l', '--live', dest='live', action='store_true', default=False,
                         help="If set, only rx/tx data are animated")
-    parser.add_argument('-s', '--socket-io', dest='socket_io', action='store_true', default=False,
-                        help="If set, sends status data to localhost:8000 using socketio instead of storing on file")
+    parser.add_argument('-s', '--socket-io-url', action='store', default=None,
+                        help="""If set, sends status data to socketio instead of storing on file
+- use something like ws://localhost:8000/""")
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
     args = parser.parse_args()
 
@@ -112,9 +113,21 @@ def main():
     if args.verbose:
         print("Using cycle {}s".format(cycle))
 
-    if args.socket_io:
+    if args.socket_io_url:
+        from urllib.parse import urlparse
+        try:
+            hostname, port = urlparse(args.socket_io_url).netloc.split(':')
+            port = int(port)
+            if args.verbose:
+                print("Sending to sidecar at {hostname} on {port}".format(**locals()))
+        except:
+            print("Could not parse websocket URL {}".format(args.socket_io_url))
+            import traceback
+            traceback.print_exc()
+            exit(1)
+        
         from socketIO_client import SocketIO, LoggingNamespace
-        socketIO = SocketIO('localhost', 8000, LoggingNamespace)
+        socketIO = SocketIO(hostname, port, LoggingNamespace)
         def io_callback(*args, **kwds): print('on socketIO response', *args, **kwds)
 
     counter = 0
@@ -122,9 +135,11 @@ def main():
         news_infos = [ random_status(id, index)
                    for index, id in enumerate(random_ids(args.max_nodes_impacted)) ]
         if args.verbose:
-            print("{} -- on {} nodes (id, len(fields)) : {}".format(counter, len(news_infos), [ (info['id'], len(info)-1) for info in news_infos]))
+            print("{} -- on {} nodes (id, len(fields)) : {}"
+                  .format(counter, len(news_infos),
+                          [ (info['id'], len(info)-1) for info in news_infos]))
         news_string = json.dumps(news_infos)
-        if args.socket_io:
+        if args.socket_io_url:
                 socketIO.emit('r2lab-news', news_string, io_callback)
                 # what is that supposed to do ?
                 #socketIO.wait_for_callbacks(seconds=1)
@@ -136,7 +151,7 @@ def main():
             break
         time.sleep(cycle)
 
-    if args.socket_io:
+    if args.socket_io_url:
         # xxx should clean up the socket io client
         pass
 

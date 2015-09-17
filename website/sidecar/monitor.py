@@ -20,6 +20,7 @@ this is as optimized as we can think about it
 """
 
 default_nodes = range(1, 38)
+default_socket_io_url = "ws://r2lab.inria.fr:8000/"
 
 from datetime import datetime
 import sys
@@ -27,7 +28,11 @@ import re
 import subprocess
 import json
 import signal
+from urllib.parse import urlparse
+
 from argparse import ArgumentParser
+
+from socketIO_client import SocketIO, LoggingNamespace
 
 def hostname(node_id, prefix="fit"):
     return "{prefix}{node_id:02d}".format(**locals())
@@ -220,21 +225,13 @@ def normalize(cli_arg):
             return None
     return int(id)
 
+def io_callback(*args, **kwds):
+    print('on socketIO response', *args, **kwds)
 
-def main():
+def one_loop(nodes, socketio):
     start = datetime.now()
-    parser = ArgumentParser()
-    parser.add_argument("-v", "--verbose", action='store_true', default=False)
-    parser.add_argument("-o", "--output", action='store', default=None)
-    parser.add_argument("nodes", nargs='*')
-    args = parser.parse_args()
-    global verbose
-    verbose = args.verbose
-    if not args.nodes:
-        args.nodes = default_nodes
-    
     ### elaborate global focus
-    node_ids = [ normalize(x) for x in args.nodes ]
+    node_ids = [ normalize(x) for x in nodes ]
     node_ids = [ x for x in node_ids if x]
 
     ### init    
@@ -245,9 +242,8 @@ def main():
     remaining_ids = pass2_os_release(remaining_ids, infos)
     remaining_ids = pass3_control_ping(remaining_ids, infos)
 
-    with open(args.output, 'w') if args.output else sys.stdout as output:
-        print(json.dumps(infos), file=output)
-
+    socketio.emit('r2lab-news', json.dumps(remaining_ids), io_callback)
+                
     # should not happen
     if remaining_ids:
         display("OOPS - unexpected remaining nodes = ", remaining_ids, file=sys.stderr)
@@ -267,6 +263,33 @@ def main():
     print(" - total {} s {} ms".format(duration.seconds, int(duration.microseconds/1000)))
     print()
 
+##########        
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("-v", "--verbose", action='store_true', default=False)
+#    parser.add_argument("-o", "--output", action='store', default=None,
+#                        help="Supersedes the -s option; use -o - for stdout")
+    parser.add_argument("-s", "--socket-io-url", action='store', default=default_socket_io_url,
+                        help="""If specified, writes output through socket.io and not to a file
+- default={}""".format(default_socket_io_url))
+    parser.add_argument("nodes", nargs='*')
+    args = parser.parse_args()
+    global verbose
+    verbose = args.verbose
+    if not args.nodes:
+        args.nodes = default_nodes
+
+    try:
+        hostname, port = urlparse(args.socket_io_url).netloc.split(':')
+        port = int(port)
+    except:
+        print("Could not parse websocket URL {}".format(args.socket_io_url))
+        exit(1)
+
+    # connect socketio
+    socketio = SocketIO(hostname, 8000, LoggingNamespace)
+
+    one_loop(args.nodes, socketio)
         
 if __name__ == '__main__':
     main()

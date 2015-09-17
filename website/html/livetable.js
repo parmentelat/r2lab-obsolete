@@ -115,8 +115,8 @@ function LiveTable() {
 	    this.animate_changes(nodes_info);
 	} catch(err) {
 	    if (json != "") {
-		console.log("Could not parse JSON - ignored :<<" + json + ">>");
-		console.log(err);
+	    console.log("Could not apply news - ignored  - JSON=<<" + json + ">>");
+	    console.log(err.stack);
 	    }
 	}
     }
