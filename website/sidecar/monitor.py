@@ -242,7 +242,7 @@ def one_loop(nodes, socketio):
     remaining_ids = pass2_os_release(remaining_ids, infos)
     remaining_ids = pass3_control_ping(remaining_ids, infos)
 
-    socketio.emit('r2lab-news', json.dumps(remaining_ids), io_callback)
+    socketio.emit('r2lab-news', json.dumps(infos), io_callback)
                 
     # should not happen
     if remaining_ids:
