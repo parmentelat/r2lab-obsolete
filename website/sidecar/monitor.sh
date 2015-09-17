@@ -20,7 +20,7 @@ function display() {
 function locate_pid() {
     key=$1; shift
     pids=$(pgrep -f $key)
-    [ -n "$pids" ] && ps $pids | egrep -v 'PID' | awk '{print $1;}'
+    [ -n "$pids" ] && ps $pids | egrep -v 'PID|stop' | awk '{print $1;}'
 }
 
 function start() {
