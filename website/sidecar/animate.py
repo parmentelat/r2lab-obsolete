@@ -1,9 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # XXX - todo
 # it would make a lot of sense to make sure that changes (as written in news)
 # get reflected in the complete status file as well
-
 
 import random
 import json
@@ -28,7 +27,7 @@ def drange(start, stop, step):
     r = start
     while r < stop:
         result.append(r)
-    	r += step
+        r += step
     return result
 
 ######## valid values for initializing
@@ -50,7 +49,7 @@ def init_status(verbose):
     complete = [ random_status(id) for id in node_ids ]
     with open(complete_filename, 'w') as f:
         if verbose:
-            print 'Creating ' + complete_filename
+            print('Creating', complete_filename)
         f.write(json.dumps(complete))
 
 def random_ids(max_nodes_impacted):
@@ -72,7 +71,7 @@ def random_status(id, index=0):
     node_info = { 'id' : id }
     # fill node_info with all known keys
     node_info.update( { field : random.choice(values) 
-                       for field, values in field_possible_values.iteritems() })
+                       for field, values in field_possible_values.items() })
     # make sure this is mostly consistent
     normalize_status(node_info)
     # index == 0 means we need a complete record
@@ -96,6 +95,8 @@ def main():
                         help="Maximum number of nodes impacted by each cycle")
     parser.add_argument('-l', '--live', dest='live', action='store_true', default=False,
                         help="If set, only rx/tx data are animated")
+    parser.add_argument('-s', '--socket-io', dest='socket_io', action='store_true', default=False,
+                        help="If set, sends status data to localhost:8000 using socketio instead of storing on file")
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
     args = parser.parse_args()
 
@@ -109,19 +110,35 @@ def main():
             del field_possible_values[k]
 
     if args.verbose:
-        print "Using cycle {}s".format(cycle)
+        print("Using cycle {}s".format(cycle))
+
+    if args.socket_io:
+        from socketIO_client import SocketIO, LoggingNamespace
+        socketIO = SocketIO('localhost', 8000, LoggingNamespace)
+        def io_callback(*args, **kwds): print('on socketIO response', *args, **kwds)
+
     counter = 0
     while True:
-        output = [ random_status(id, index)
-                   for index, id in enumerate(random_ids(args.max_nodes_impacted))]
-        with open(news_filename, 'w') as f:
-            if args.verbose:
-                print output
-            f.write(json.dumps(output))
+        news_infos = [ random_status(id, index)
+                   for index, id in enumerate(random_ids(args.max_nodes_impacted)) ]
+        if args.verbose:
+            print("{} -- on {} nodes (id, len(fields)) : {}".format(counter, len(news_infos), [ (info['id'], len(info)-1) for info in news_infos]))
+        news_string = json.dumps(news_infos)
+        if args.socket_io:
+                socketIO.emit('r2lab-news', news_string, io_callback)
+                # what is that supposed to do ?
+                #socketIO.wait_for_callbacks(seconds=1)
+        else:
+            with open(news_filename, 'w') as f:
+                f.write(news_string)
         counter += 1
         if args.runs and counter >= args.runs:
             break
         time.sleep(cycle)
+
+    if args.socket_io:
+        # xxx should clean up the socket io client
+        pass
 
 if __name__ == '__main__':
     main()

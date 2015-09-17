@@ -1,4 +1,4 @@
-/**** must be in sync with r2lab-sidecar.js ****/
+////////// must be in sync with r2lab-sidecar.js 
 // the 2 socket.io channels that are used
 // (1) this is where actual JSON status is sent
 var channel = 'r2lab-news';
@@ -7,7 +7,7 @@ var signalling = 'r2lab-signalling';
 // port number
 var sidecar_port_number = 8000;
 
-/**** output from livemap-prep.py ****/
+////////// originally output from livemap-prep.py 
 var node_specs = [
 { id: 1, i:8, j:0 },
 { id: 2, i:8, j:1 },
@@ -57,11 +57,7 @@ var pillar_specs = [
 //global - mostly for debugging and convenience
 var the_r2lab;
 
-/* set to 0 to keep only node ids (remove coords) */
-var verbose = 1;
-var verbose = 0;
-
-/******************************/
+//////////////////// configuration
 // the space around the walls in the canvas
 var margin_x = 50, margin_y = 50;
 
@@ -72,7 +68,7 @@ var padding_x = 40, padding_y = 40;
 // total number of rows and columns
 var steps_x = 8, steps_y = 4;
 
-/**** static area ****/
+//// static area 
 // walls and inside
 var walls_radius = 30, 
     walls_style =
@@ -91,6 +87,10 @@ var pillar_radius = 16,
     pillar_style = JSON.parse(JSON.stringify(walls_style));
 pillar_style['fill'] = '#101030';
 
+//// nodes
+
+
+////////////////////////////////////////
 // the overall room size
 var room_x = steps_x*space_x + 2*padding_x, room_y = steps_y*space_y + 2*padding_y;
 
@@ -100,18 +100,11 @@ function grid_to_canvas (i, j) {
 	    (steps_y-j)*space_y + margin_y + padding_y];
 }
 
-/******************************/
-// dynamic stuff, depending on status received on the news channel
-// see also styling in .css
-// it feels like we cannot animate using css though, as interpolation
-// is done by d3 is js code
-
-/******************************/
-/* our mental model is y increase to the top, not to the bottom 
- * also, using l (relative) instead of L (absolute) is simpler
- * but it keeps roundPathCorners from rounding.js from working fine
- * keep it this way from now, a class would help keep track here
-*/
+//////////////////////////////
+// our mental model is y increase to the top, not to the bottom 
+// also, using l (relative) instead of L (absolute) is simpler
+// but it keeps roundPathCorners from rounding.js from working fine
+// keep it this way from now, a class would help keep track here
 function line_x(x) {return "l " + x + " 0 ";}
 function line_y(y) {return "l 0 " + -y + " ";}
 
@@ -128,14 +121,10 @@ function walls_path() {
     path += line_y(space_y);
     path += line_x(2*space_x+2*padding_x);
     path += "Z";
-/*    console.log("path   ="+path);
-    console.log("radius ="+walls_radius);
-    path = roundPathCorners(path, walls_radius, false);
-    console.log("rounded="+path);*/
     return path;
 }
 
-/******************************/
+//////////////////////////////
 // pillars are static and get created in a procedural fashion using raphael
 function Pillar(pillar_spec) {
     this.id = pillar_spec['id'];
@@ -159,10 +148,10 @@ function Pillar(pillar_spec) {
     }
 }
 
-/******************************/
+//////////////////////////////
 // nodes are dynamic
 // their visual rep. get created through d3 enter mechanism
-function Node (node_spec) {
+var Node = function (node_spec) {
     this.id = node_spec['id'];
     // i and j refer to a logical grid 
     this.i = node_spec['i'];
@@ -181,6 +170,16 @@ function Node (node_spec) {
 	for (var prop in node_info)
 	    if (node_info[prop] != undefined)
 		this[prop] = node_info[prop];
+	// prepare a 4-items data list for ticks
+	// the order is important
+	this.rxtx = [ this.wlan0_rx_rate, this.wlan0_tx_rate,
+		      this.wlan1_rx_rate, this.wlan1_tx_rate, ];
+    }
+
+    this.is_alive = function() {
+	return this.cmc_on_off == 'on'
+	    && this.control_ping == 'on'
+	    && this.os_release != 'fail';
     }
 
     // shift label south-east a little
@@ -205,7 +204,6 @@ function Node (node_spec) {
     // when it's on but does not yet answer ping, a little larger
     // when answers ping, still larger
     // when ssh : full size with OS badge
-    // control_ssh is not yet available from real probe
     // but animate.py does show that
     this.radius = function() {
 	var node_radius_ok = 18,
@@ -264,7 +262,10 @@ function Node (node_spec) {
 
 }
 
-/******************************/
+var ident = function(d) { return d; };
+var get_node_id = function(node) {return node.id;}
+
+//////////////////////////////
 function R2Lab() {
     var canvas_x = room_x + 2 * margin_x;
     var canvas_y = room_y + 2 * margin_y;
@@ -323,7 +324,7 @@ function R2Lab() {
     this.animate_changes = function() {
 	var svg = d3.select('div#livemap_container svg');
 	var circles = svg.selectAll('circle')
-	    .data(this.nodes, function(node) {return node.id;});
+	    .data(this.nodes, get_node_id);
 	circles.enter()
 	    .append('circle')
 	    .attr('class', 'node-circle')
@@ -339,11 +340,11 @@ function R2Lab() {
 	    .attr('opacity', .5)
 	;
 	var labels = svg.selectAll('text')
-	    .data(this.nodes, function(node) {return node.id;});
+	    .data(this.nodes, get_node_id);
 	labels.enter()
 	    .append('text')
 	    .attr('class', 'node-label')
-	    .text(function(node) {return "" + node.id;})
+	    .text(get_node_id)
 	    .attr('x', function(node){return node.x;})
 	    .attr('y', function(node){return node.y;})
 	;
@@ -355,34 +356,53 @@ function R2Lab() {
 	    .attr('y', function(node){return node.text_y();})
 	;
 
-	var ticks_rx0 = svg.selectAll('rect.rx0')
-	    .data(this.nodes, function(node) {return node.id;});
-	ticks_rx0.enter()
+	var ticks_groups = svg.selectAll('g.ticks')
+	    .data(this.nodes, get_node_id);
+	ticks_groups.enter()
+	    .append('g')
+	    .attr("transform",
+		  function(node){ return "translate(" + node.x + "," + node.y + ")";})
+	    .attr('class', 'ticks')
+	;
+	ticks_groups
+	    .attr('display', function(node) {
+		return node.is_alive() ? "on" : "none";
+	    })
+	;
+	var ticks = ticks_groups.selectAll('rect')
+	    .data(function(node){return node.rxtx;});
+	ticks.enter()
 	    .append('rect')
-	    .attr('class', 'rx0')
+	    .attr('class', function(d, i) {return 'rxtx' + i;})
 	    .attr('width',3)
-//	    .attr('height', function(node) {return node.wlan0_rx_rate;})
-	    .attr('height', 20)
 	    .attr('x', function(node){return node.x;})
 	    .attr('y', function(node){return node.y;})
 	    .attr('stroke', '#bbb')
 	    .attr('fill', '#fff')
-	    .attr('transform',
-		  function(node){
-		      var res = 'rotate(60,' + node.x + ',' + node.y + ')';
-		      res += ' translate(0, 22)';
-		      console.log("transform="+res);
-		      return res;})
 	;
-	ticks_rx0
+	var alpha = 70;
+	ticks
 	    .transition()
-	    .duration(250)
-	    .attr('height', function(node) {return node.wlan0_rx_rate;});
-	    // .attr('display', 'none')
+	    .duration(100)
+	    .attr('height', ident)
+	// each rxtx tick is included in a <g> already at the right position
+	// we set a rotate angle to get the desired effect
+	// + a translation that puts the tick off the center
+	// compute angle
+	// 0 : 90-alpha
+	// 1 : 90+alpha
+	// 2 & 3 : 0 & 1 + 180 resp.
+	    .attr('transform',
+		  function(data, i){
+		      var even = i%2 ? 1 : -1;
+		      var half_rounds = Math.floor(i/2);
+		      var angle = (90+even*(90-alpha)) + half_rounds*180;
+		      return "rotate(" + angle + ")" + " translate(0, 22)";})
+	;
 	;
     }
 
-    // filters for backgrounds
+    // filters nice_float(for background)s
     this.declare_image_filter = function (id_filename) {
 //	console.log('decl. fil. ' + id_filename);
 	// create defs element if not yet present
@@ -417,7 +437,7 @@ function R2Lab() {
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
 	console.log("Connecting to r2lab status sidecar server at " + url);
 	this.sidecar_socket = io(url);
-	/* what to do when receiving news from sidecar */
+	// what to do when receiving news from sidecar 
 	var lab=this;
 	this.sidecar_socket.on(channel, function(json){
             lab.handle_json_status(json);
@@ -425,18 +445,16 @@ function R2Lab() {
 	this.request_complete_from_sidecar();
     }
 
-    /* 
-       request sidecar for initial status on the signalling channel
-       content is not actually used by sidecar server
-       could maybe send some client id instead
-    */
+    // request sidecar for initial status on the signalling channel
+    // content is not actually used by sidecar server
+    // could maybe send some client id instead
     this.request_complete_from_sidecar = function() {
 	this.sidecar_socket.emit(signalling, 'INIT');
     }
 
 }
 
-/* autoload */
+// autoload
 $(function() {
     the_r2lab = new R2Lab();
     the_r2lab.init_nodes();

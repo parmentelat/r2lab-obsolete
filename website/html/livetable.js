@@ -1,4 +1,4 @@
-/**** must be in sync with r2lab-sidecar.js ****/
+////////// must be in sync with r2lab-sidecar.js 
 // the 2 socket.io channels that are used
 // (1) this is where actual JSON status is sent
 var channel = 'r2lab-news';
@@ -7,11 +7,13 @@ var signalling = 'r2lab-signalling';
 // port number
 var sidecar_port_number = 8000;
 
+
+//////////////////////////////
 var nb_nodes = 37;
-/******************************/
+
 // nodes are dynamic
 // their table row and cells get created through d3 enter mechanism
-function Node (id) {
+var Node = function (id) {
     this.id = id;
     this.cell_texts = [id,  // id
 		 undefined, // avail
@@ -57,13 +59,14 @@ function Node (id) {
     }
 }
 
+var ident = function(d) { return d; };
 var get_node_id = function(node){return node.id;}
 var get_node_data = function(node){return node.cell_texts;}
-var ident = function(d) { return d; };
 // rewriting info should happen in update_from_news
 var get_html = ident;
 var nice_float = function(f) {return Number(f).toLocaleString();}
-/******************************/
+
+//////////////////////////////
 function LiveTable() {
 
     // not even sure this makes sense
@@ -127,7 +130,7 @@ function LiveTable() {
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
 	console.log("Connecting to r2lab status sidecar server at " + url);
 	this.sidecar_socket = io(url);
-	/* what to do when receiving news from sidecar */
+	// what to do when receiving news from sidecar
 	var lab=this;
 	this.sidecar_socket.on(channel, function(json){
             lab.handle_json_status(json);
@@ -135,18 +138,16 @@ function LiveTable() {
 	this.request_complete_from_sidecar();
     }
 
-    /* 
-       request sidecar for initial status on the signalling channel
-       content is not actually used by sidecar server
-       could maybe send some client id instead
-    */
+    // request sidecar for initial status on the signalling channel
+    // content is not actually used by sidecar server
+    // could maybe send some client id instead
     this.request_complete_from_sidecar = function() {
 	this.sidecar_socket.emit(signalling, 'INIT');
     }
 
 }
 
-/* autoload */
+// autoload
 $(function() {
     the_livetable = new LiveTable();
     the_livetable.init_nodes();
