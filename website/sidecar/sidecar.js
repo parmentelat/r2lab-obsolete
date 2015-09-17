@@ -76,8 +76,8 @@ io.on('connection', function(socket){
     // so we can send JSON messages manually (e.g. using a chat app)
     socket.on(channel_news, function(news_string){
 	update_complete_file_from_news(news_string);
-	vdisplay("Forwarding on channel " + channel_news + ":" + msg);
-	io.emit(channel_news, msg);
+	vdisplay("Forwarding on channel " + channel_news + ":" + news_string);
+	io.emit(channel_news, news_string);
     });
     // this is more crucial, this is how complete status gets transmitted initially 
     socket.on(channel_signalling, function(msg){
