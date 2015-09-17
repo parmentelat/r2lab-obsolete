@@ -32,7 +32,7 @@ def drange(start, stop, step):
     return result
 
 ######## valid values for initializing
-field_values = {
+field_possible_values = {
     'cmc_on_off' : [ 'on', 'off', 'fail' ],
     'control_ping' : [ 'on', 'off' ],
     'os_release' : [ 'fedora-21', 'ubuntu-15.04',
@@ -59,10 +59,10 @@ def random_ids(max_nodes_impacted):
 
 # heuristics to avoid too inconsistent data
 def normalize_status(node_info):
-    if node_info['os_release'] != 'fail':
+    if 'os_release' in node_info and node_info['os_release'] != 'fail':
         node_info.update({'cmc_on_off' : 'on',
                           'control_ping' : 'on',
-        })
+                      })
     return node_info
 
 def random_status(id, index=0):
@@ -72,13 +72,13 @@ def random_status(id, index=0):
     node_info = { 'id' : id }
     # fill node_info with all known keys
     node_info.update( { field : random.choice(values) 
-                       for field, values in field_values.iteritems() })
+                       for field, values in field_possible_values.iteritems() })
     # make sure this is mostly consistent
     normalize_status(node_info)
     # index == 0 means we need a complete record
     # otherwise let's remove some
-    items_to_remove = index % len(field_values)
-    keys_to_remove = random.sample(field_values.keys(), items_to_remove)
+    items_to_remove = index % len(field_possible_values)
+    keys_to_remove = random.sample(field_possible_values.keys(), items_to_remove)
     for field in keys_to_remove:
         del node_info[field]
     return node_info
@@ -94,13 +94,20 @@ def main():
     parser.add_argument('-n', '--nodes', dest='max_nodes_impacted', default=default_max_nodes_impacted,
                         type=int,
                         help="Maximum number of nodes impacted by each cycle")
+    parser.add_argument('-l', '--live', dest='live', action='store_true', default=False,
+                        help="If set, only rx/tx data are animated")
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
     args = parser.parse_args()
 
     cycle = args.cycle
-    
+
     init_status(args.verbose)
     
+    if args.live:
+        to_remove = [ k for k in field_possible_values if 'rx' not in k and 'tx' not in k]
+        for k in to_remove:
+            del field_possible_values[k]
+
     if args.verbose:
         print "Using cycle {}s".format(cycle)
     counter = 0
