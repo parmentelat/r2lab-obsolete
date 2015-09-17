@@ -20,7 +20,7 @@ function display() {
 function locate_pid() {
     key=$1; shift
     pids=$(pgrep -f $key)
-    [ -n "$pids" ] && ps $pids | grep -v restart | egrep 'start|monitor.py' | awk '{print $1;}'
+    [ -n "$pids" ] && ps $pids | egrep -v 'PID' | awk '{print $1;}'
 }
 
 function start() {
@@ -84,7 +84,7 @@ function main() {
 	start) start "$@" ;;
 	stop) stop ;;
 	status) status ;;
-	restart) stop ; start "$@" ;;
+	restart) echo "please run $0 stop; $0 start" ;;
 	*) echo No such verb $1; exit 1 ;;
     esac
 }
