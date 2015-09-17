@@ -15,24 +15,37 @@ from argparse import ArgumentParser
 complete_filename = 'complete.json'
 news_filename = 'news.json'
 
-# in s
+# in seconds
 default_cycle = 1
 default_runs = 0
 
 node_ids = range(1, 38)
 default_max_nodes_impacted = 10
+
+######## helper to create float ranges
+def drange(start, stop, step):
+    result = []
+    r = start
+    while r < stop:
+        result.append(r)
+    	r += step
+    return result
+
+######## valid values for initializing
 field_values = {
     'cmc_on_off' : [ 'on', 'off', 'fail' ],
     'control_ping' : [ 'on', 'off' ],
-#    'control_ssh' : [ 'on', 'off' ],
     'os_release' : [ 'fedora-21', 'ubuntu-15.04',
                      'fedora-21-gnuradio',
                      'other',
                      'fail' ],
-# not supported yet
-#    'data_ping' : [ 'on', 'off' ],
+    'wlan0_rx_rate' : drange(0., 20., .6),
+    'wlan0_tx_rate' : drange(0., 20., .6),
+    'wlan1_rx_rate' : drange(0., 20., .6),
+    'wlan1_tx_rate' : drange(0., 20., .6),
 }
 
+####################    
 def init_status(verbose):
     complete = [ random_status(id) for id in node_ids ]
     with open(complete_filename, 'w') as f:

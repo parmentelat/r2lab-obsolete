@@ -299,6 +299,11 @@ function R2Lab() {
     }
     
     this.handle_json_status = function(json) {
+	// xxx somehow we get nois in the mix
+	if (json == "") {
+	    console.log("Bloops..");
+	    return;
+	}
 	try {
 	    var nodes_info = JSON.parse(json);
 	    // first we write this data into the Node structures
@@ -310,8 +315,8 @@ function R2Lab() {
 	    }
 	    this.animate_changes();
 	} catch(err) {
-	    if (json != "")
-		console.log("Could not parse JSON - ignored :<<" + json + ">>");
+	    console.log("Could not parse JSON - ignored :<<" + json + ">>");
+	    console.log(err.stack);
 	}
     }
 
@@ -331,6 +336,7 @@ function R2Lab() {
 	    .attr('r', function(node){return node.radius();})
 	    .attr('stroke', function(node){return node.circle_color();})
 	    .attr('filter', function(node){return node.circle_filter();})
+	    .attr('opacity', .5)
 	;
 	var labels = svg.selectAll('text')
 	    .data(this.nodes, function(node) {return node.id;});
@@ -349,6 +355,31 @@ function R2Lab() {
 	    .attr('y', function(node){return node.text_y();})
 	;
 
+	var ticks_rx0 = svg.selectAll('rect.rx0')
+	    .data(this.nodes, function(node) {return node.id;});
+	ticks_rx0.enter()
+	    .append('rect')
+	    .attr('class', 'rx0')
+	    .attr('width',3)
+//	    .attr('height', function(node) {return node.wlan0_rx_rate;})
+	    .attr('height', 20)
+	    .attr('x', function(node){return node.x;})
+	    .attr('y', function(node){return node.y;})
+	    .attr('stroke', '#bbb')
+	    .attr('fill', '#fff')
+	    .attr('transform',
+		  function(node){
+		      var res = 'rotate(60,' + node.x + ',' + node.y + ')';
+		      res += ' translate(0, 22)';
+		      console.log("transform="+res);
+		      return res;})
+	;
+	ticks_rx0
+	    .transition()
+	    .duration(250)
+	    .attr('height', function(node) {return node.wlan0_rx_rate;});
+	    // .attr('display', 'none')
+	;
     }
 
     // filters for backgrounds

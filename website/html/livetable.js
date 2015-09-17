@@ -30,11 +30,16 @@ function Node (id) {
 	// rewrite actual representation in cell_texts 
 	// pedestrian for now
 	// fill in this.cell_texts that is passed to d3.data for each node
-	this.cell_texts[2] =
+	var col = 2
+	this.cell_texts[col++] =
 	    this.cmc_on_off == 'fail' ? 'N/A'
 	    : this.cmc_on_off == 'on' ? 'ON' : 'OFF';
-	this.cell_texts[3] = this.control_ping == 'on' ? 'PING' : '--';
-	this.cell_texts[4] = this.rewrite_release(this.os_release);
+	this.cell_texts[col++] = this.control_ping == 'on' ? 'PING' : '--';
+	this.cell_texts[col++] = this.rewrite_release(this.os_release);
+	this.cell_texts[col++] = nice_float(this.wlan0_rx_rate);
+	this.cell_texts[col++] = nice_float(this.wlan0_tx_rate);
+	this.cell_texts[col++] = nice_float(this.wlan1_rx_rate);
+	this.cell_texts[col++] = nice_float(this.wlan1_tx_rate);
 	//console.log("after update_from_news -> " + this.data);
     }
 
@@ -50,7 +55,6 @@ function Node (id) {
 	else
 	    return 'N/A';
     }
-
 }
 
 var get_node_id = function(node){return node.id;}
@@ -58,7 +62,7 @@ var get_node_data = function(node){return node.cell_texts;}
 var ident = function(d) { return d; };
 // rewriting info should happen in update_from_news
 var get_html = ident;
-
+var nice_float = function(f) {return Number(f).toLocaleString();}
 /******************************/
 function LiveTable() {
 
