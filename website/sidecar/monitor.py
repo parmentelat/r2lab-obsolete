@@ -69,6 +69,7 @@ def alarm_handler(signum, frame):
     raise AlarmDeep
 
 def check_output_timeout(command, timeout, **keywords):
+    original = signal.getsignal(signal.SIGALRM)
     signal.signal(signal.SIGALRM, alarm_handler)
     signal.alarm(timeout)
     try:
@@ -77,8 +78,11 @@ def check_output_timeout(command, timeout, **keywords):
         return check_output
     except AlarmDeep as e:
         raise Alarm("timeout after {timeout} seconds".format(timeout=timeout))
-
+    finally:
+        signal.signal(signal.SIGALRM, original)
+        
 def check_call_timeout(command, timeout, **keywords):
+    original = signal.getsignal(signal.SIGALRM)
     signal.signal(signal.SIGALRM, alarm_handler)
     signal.alarm(timeout)
     try:
@@ -87,7 +91,8 @@ def check_call_timeout(command, timeout, **keywords):
         return check_call
     except AlarmDeep as e:
         raise Alarm("timeout after {timeout} seconds".format(timeout=timeout))
-    
+    finally:
+        signal.signal(signal.SIGALRM, original)
 
 ##########
 def insert_or_refine(id, infos, override=None):
