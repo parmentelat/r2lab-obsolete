@@ -250,8 +250,8 @@ class Nodes(OrderedDict):
                 if line.startswith('#'):
                     continue
                 tokens = line.split()
-                if len(tokens) != 3:
-                    print("{}:{}: expecting 3 tokens - ignored".format(f, lno))
+                if len(tokens) != 5:
+                    print("{}:{}: expecting 5 tokens - ignored".format(f, lno))
                     continue
                 # get node number
                 try:
