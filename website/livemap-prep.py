@@ -10,6 +10,17 @@ raw_columns = [ (1,2,3,4,5),
                 (None, None, None, 36, 37),
 ]
 
+# raw_columns = [ ((37,36,None,None,None),
+#                 (35,34,33,32,31),
+#                 (30,29,28,27,26),
+#                 (25,24,None,23),
+#                 (22,21,20,19),
+#                 (18,17,None,16),
+#                 (15,1413,12,11),
+#                 (10,9,8,7,6),
+#                 (5,4,3,2,1),
+# ]
+
 def x (column): return 8-column
 def y(row): return row
 

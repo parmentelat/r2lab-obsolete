@@ -56,7 +56,7 @@ def load(nodes, version, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "omf6 load -t fit{} -i {} ".format(node, version) 
+        on_cmd_a = "omf6 load -t fit{} -i {} ".format(int(node), version) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -119,7 +119,7 @@ def reset(nodes, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "curl 192.168.1.{}/reset".format(node) 
+        on_cmd_a = "curl 192.168.1.{}/reset".format(int(node)) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -178,7 +178,7 @@ def answer(nodes, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "ping -c1 192.168.3.{}".format(node) 
+        on_cmd_a = "ping -c1 192.168.3.{}".format(int(node)) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -213,23 +213,24 @@ def answer(nodes, connection_info, show_results=True):
 
 def info(nodes, connection_info, show_results=True):
     """ Get the info from the operational system """
-    ec    = ExperimentController(exp_id="info")
-    
     nodes = format_nodes(nodes)
     nodes = check_node_name(nodes)
 
     node_appname = {}
     node_appid   = {}
-    apps         = []
-
+    results      = {}
     for node in nodes:        
+        ec    = ExperimentController(exp_id="info")
+
         by_node = ec.register_resource("linux::Node")
 
         ec.set(by_node, "hostname", 'fit'+str(node))
         ec.set(by_node, "username", 'root')
         ec.set(by_node, "identity", connection_info['identity'])
-        ec.set(by_node, "gateway", connection_info['gateway'])
-        ec.set(by_node, "gatewayUser", connection_info['gateway_username'])
+        if not "localhost" in connection_info['gateway']:
+            ec.set(by_node, "gateway", connection_info['gateway'])
+            ec.set(by_node, "gatewayUser", connection_info['gateway_username'])
+
         ec.set(by_node, "cleanExperiment", True)
         ec.set(by_node, "cleanProcesses", False)
         ec.set(by_node, "cleanProcessesAfter", False)
@@ -243,20 +244,17 @@ def info(nodes, connection_info, show_results=True):
         ec.register_connection(node_appname[node], by_node)
         # contains the app id given when register the app by EC
         node_appid.update({node_appname[node] : node})
-        apps.append(node_appname[node])
-
+        
         ec.deploy(by_node)
 
         ec.deploy(node_appname[node])
         ec.wait_finished(node_appname[node]) 
 
-    results = {}
-    for app in apps:
-        stdout    = remove_special_char(ec.trace(app, "stdout"))
-        exitcode  = remove_special_char(ec.trace(app, 'exitcode'))
-        results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
+        stdout    = remove_special_char(ec.trace(node_appname[node], "stdout"))
+        exitcode  = remove_special_char(ec.trace(node_appname[node], 'exitcode'))
+        results.update({ node_appid[node_appname[node]] : {'exit' : exitcode, 'stdout' : stdout}})
 
-    ec.shutdown()
+        ec.shutdown()
 
     if show_results:
         results = format_results(results, 'info', True)
@@ -287,7 +285,7 @@ def alive(nodes, connection_info, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "ping -c1 192.168.1.{}".format(node) 
+        on_cmd_a = "ping -c1 192.168.1.{}".format(int(node)) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -355,7 +353,7 @@ def multiple_action(nodes, connection_info, action, show_results=True):
     apps         = []
 
     for node in nodes:
-        on_cmd_a = "curl 192.168.1.{}/{}".format(node, action) 
+        on_cmd_a = "curl 192.168.1.{}/{}".format(int(node), action) 
         node_appname.update({node : 'app_{}'.format(node)}) 
         node_appname[node] = ec.register_resource("linux::Application")
         ec.set(node_appname[node], "command", on_cmd_a)
@@ -423,7 +421,7 @@ def check_node_name(nodes):
         if "fit" in node:
             new_nodes.append(number_node(node))
         else:
-            new_nodes.append(int(node))
+            new_nodes.append(node)
 
     return new_nodes
 
@@ -432,7 +430,7 @@ def number_node(alias):
     """ Returns the number from the node alias [fitXX] """
     node = alias.lower().replace('fit', '')
     
-    return int(node)
+    return node
 
 
 def valid_version(version):
@@ -478,7 +476,7 @@ def print_results(results):
     """ Print the results """
     print "+ + + + + + + + +"
     for key, value in results.iteritems():
-        print "node {:02}: {}".format(key, value)
+        print "node {:02}: {}".format(int(key), value)
     print "+ + + + + + + + +"
 
 
@@ -521,6 +519,31 @@ def error_presence(stdout):
         return False
 
 
+def save_in_json(results, file_name=None):
+    """ Save the result in a json file """
+    """ The format will be: """
+    """ {
+            "key1" : {"name1" : "value1", "name2" : "value2"}, 
+            "key2" : {"name1" : "value1", "name2" : "value2"}
+        } 
+    """
+
+    dir = os.getcwd() + "/results_nepi/"
+    ext = ".json"
+
+    if file_name is None:
+        file_name = 'results'+ext
+
+    try:
+        os.stat(dir)
+    except:
+        os.mkdir(dir)
+
+    file = open(dir+file_name+ext, "w")
+    file.write(json.dumps(results))
+    file.close()
+
+
 def save_in_file(results, file_name=None):
     """ Save the result in a json file """
     """ The format will be: """
@@ -544,12 +567,17 @@ def save_in_file(results, file_name=None):
     file = open(dir+file_name+ext, "w")
     file.write(file_name + " = '" + json.dumps(results) + "'")
     file.close()
+    save_in_json(results, file_name)
 
 
 def all_nodes():
     """Range of all nodes in faraday """
     
     nodes = range(1,38)
+    nodes = map(str, nodes)
+    for k, v in enumerate(nodes):
+        if int(v) < 10:
+            nodes[k] = v.rjust(2, '0')
     
     return nodes
 
@@ -563,6 +591,13 @@ def format_nodes(nodes):
         if not type(nodes) is list:
             if ',' in nodes:
                 nodes = nodes.split(',')
+            elif '-' in nodes:
+                nodes = nodes.strip("[]").split('-')
+                nodes = range(int(nodes[0]), int(nodes[1])+1)
+                nodes = map(str, nodes)
+                for k, v in enumerate(nodes):
+                    if int(v) < 10:
+                        nodes[k] = v.rjust(2, '0')
             else:
                 nodes = nodes.split()
 
