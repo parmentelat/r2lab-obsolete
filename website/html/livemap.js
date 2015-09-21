@@ -8,7 +8,7 @@ var signalling = 'r2lab-signalling';
 var sidecar_port_number = 8000;
 
 // fields that this widget knows about concerning each node
-// * available: missing, or 'ok' : node is expected to be usable; if 'off' a very visible red circle shows up
+// * available: missing, or 'ok' : node is expected to be usable; if 'ko' a very visible red circle shows up
 // * cmc_on_off: 'on' or 'off' - nodes that fail will be treated as 'ko', better use 'available' instead
 // * control_ping: 'on' or 'off'
 // * os_release: 'fail' means this could not be assessed, otherwise 'fedora*' and 'ubuntu*' will have corr. icon
@@ -176,8 +176,9 @@ var Node = function (node_spec) {
     // for further usage in animate_changes
     this.update_from_news = function(node_info) {
 	for (var prop in node_info)
-	    if (node_info[prop] != undefined)
-		this[prop] = node_info[prop];
+// if something is set as undefined in the incoming message it means we want to delete it
+//	    if (node_info[prop] != undefined)
+	    this[prop] = node_info[prop];
 	// prepare a 4-items data list for ticks
 	// the order is important
 	this.rxtx = [ this.wlan0_rx_rate, this.wlan0_tx_rate,
