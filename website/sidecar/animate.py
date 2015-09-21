@@ -42,6 +42,7 @@ field_possible_values = {
     'wlan0_tx_rate' : drange(0., 20., .6),
     'wlan1_rx_rate' : drange(0., 20., .6),
     'wlan1_tx_rate' : drange(0., 20., .6),
+    'available' : [ None, 'ok', 'ko'],
 }
 
 ####################    
@@ -58,6 +59,11 @@ def random_ids(max_nodes_impacted):
 
 # heuristics to avoid too inconsistent data
 def normalize_status(node_info):
+    # None means do not mention this key at all
+    none_keys = { k for k in node_info if node_info[k] is None }
+    for k in none_keys:
+        del node_info[k]
+    # avoid producing too inconsistent data
     if 'os_release' in node_info and node_info['os_release'] != 'fail':
         node_info.update({'cmc_on_off' : 'on',
                           'control_ping' : 'on',
@@ -79,7 +85,8 @@ def random_status(id, index=0):
     items_to_remove = index % len(field_possible_values)
     keys_to_remove = random.sample(field_possible_values.keys(), items_to_remove)
     for field in keys_to_remove:
-        del node_info[field]
+        if field in node_info:
+            del node_info[field]
     return node_info
     
 def main():

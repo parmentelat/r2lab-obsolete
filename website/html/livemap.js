@@ -7,6 +7,14 @@ var signalling = 'r2lab-signalling';
 // port number
 var sidecar_port_number = 8000;
 
+// fields that this widget knows about concerning each node
+// * available: missing, or 'ok' : node is expected to be usable; if 'off' a very visible red circle shows up
+// * cmc_on_off: 'on' or 'off' - nodes that fail will be treated as 'ko', better use 'available' instead
+// * control_ping: 'on' or 'off'
+// * os_release: 'fail' means this could not be assessed, otherwise 'fedora*' and 'ubuntu*' will have corr. icon
+// * wlan0_rx_rate: and similar with wlan1 and tx: bit rate in Mbps, expected to be in the [0, 20] range a priori
+
+
 ////////// originally output from livemap-prep.py 
 var node_specs = [
 { id: 1, i:8, j:0 },
@@ -176,10 +184,15 @@ var Node = function (node_spec) {
 		      this.wlan1_rx_rate, this.wlan1_tx_rate, ];
     }
 
+    this.is_available = function() {
+	return this.available != 'ko';
+    }
+
     this.is_alive = function() {
 	return this.cmc_on_off == 'on'
 	    && this.control_ping == 'on'
-	    && this.os_release != 'fail';
+	    && this.os_release != 'fail'
+	    && this.available != 'ko';
     }
 
     // shift label south-east a little
@@ -188,15 +201,24 @@ var Node = function (node_spec) {
 	return Math.max(5, 12-radius/2);
     }
     this.text_x = function() {
-	var radius = this.radius();
+	if ( ! this.is_available()) return this.x;
+	var radius = this.op_status_radius();
 	var delta = this.text_offset(radius);
 	return this.x + ((radius == 0) ? 0 : (radius + delta));
     }	    
     this.text_y = function() {
-	var radius = this.radius();
+	if ( ! this.is_available()) return this.y;
+	var radius = this.op_status_radius();
 	var delta = this.text_offset(radius);
 	return this.y + ((radius == 0) ? 0 : (radius + delta));
     }	    
+
+    
+    this.cst_radius_unavailable = 22;
+    this.cst_radius_ok = 18;
+    this.cst_radius_pinging = 12;
+    this.cst_radius_warming = 6;
+    this.cst_radius_ko = 0;
 
     ////////// node radius
     // this is how we convey most of the info
@@ -205,23 +227,19 @@ var Node = function (node_spec) {
     // when answers ping, still larger
     // when ssh : full size with OS badge
     // but animate.py does show that
-    this.radius = function() {
-	var node_radius_ok = 18,
-	    node_radius_pinging = 12,
-	    node_radius_warming = 6,
-	    node_radius_ko = 0;
+    this.op_status_radius = function() {
 	// completely off
 	if (this.cmc_on_off == 'off')
-	    return node_radius_ko;
+	    return this.cst_radius_ko;
 	// does not even ping
 	else if (this.control_ping == 'off')
-	    return node_radius_warming;
+	    return this.cst_radius_warming;
 	// pings but cannot get ssh
 	else if (this.os_release == 'fail')
-	    return node_radius_pinging;
+	    return this.cst_radius_pinging;
 	// ssh is answering
 	else
-	    return node_radius_ok;
+	    return this.cst_radius_ok;
     }
 
     // right now this is visible only for intermediate radius
@@ -231,23 +249,16 @@ var Node = function (node_spec) {
     }
 
     // luckily this is not rendered when a filter is at work
-    this.circle_color = function() {
-	var radius = this.radius();
-	return (radius == 12) ? '#71edb0' :
-	    (radius == 6) ? '#f7d8dd' : '#bbb';
-//	var fedora_color = '#05285e',
-//	    ubuntu_color = '#de4915',
-//	    unknown_color = '#ccc';
-//	if (this.os_release.indexOf('fedora') >= 0)
-//	    return fedora_color;
-//	else if (this.os_release.indexOf('ubuntu') >= 0)
-//	    return ubuntu_color;
-//	else return unknown_color;
+    this.op_status_color = function() {
+	var radius = this.op_status_radius();
+	return (radius == this.cst_radius_pinging) ? d3.rgb('#71edb0').darker() :
+	    (radius == this.cst_radius_warming) ? d3.rgb('#f7d8dd').darker() :
+	    '#bbb';
     }
 
     // showing an image (or not, if filter is undefined)
     // depending on the OS
-    this.circle_filter = function() {
+    this.op_status_filter = function() {
 	var filter_name;
 	// remember infos might be incomplete
 	if (this.os_release == undefined)
@@ -263,6 +274,14 @@ var Node = function (node_spec) {
 	return "url(#" + filter_name + ")";
     }
 
+    // a missing 'available' means the node is OK
+    this.available_display = function() {
+	if ((this.available == undefined)
+	    || (this.available == "ok"))
+	    return "none";
+	else
+	    return "on";
+    }
 }
 
 var ident = function(d) { return d; };
@@ -327,21 +346,20 @@ function R2Lab() {
     this.animate_changes = function() {
 	// the svg element is created by raphael's paper
 	var svg = d3.select('div#livemap_container svg');
-	var circles = svg.selectAll('circle')
+	var circles = svg.selectAll('circle.op-status')
 	    .data(this.nodes, get_node_id);
 	circles.enter()
 	    .append('circle')
-	    .attr('class', 'node-circle')
+	    .attr('class', 'op-status')
 	    .attr('cx', function(node){return node.x;})
 	    .attr('cy', function(node){return node.y;})
 	;
 	circles
 	    .transition()
 	    .duration(500)
-	    .attr('r', function(node){return node.radius();})
-	    .attr('stroke', function(node){return node.circle_color();})
-	    .attr('filter', function(node){return node.circle_filter();})
-	    .attr('opacity', .5)
+	    .attr('r', function(node){return node.op_status_radius();})
+	    .attr('fill', function(node){return node.op_status_color();})
+	    .attr('filter', function(node){return node.op_status_filter();})
 	;
 	var labels = svg.selectAll('text')
 	    .data(this.nodes, get_node_id);
@@ -360,6 +378,22 @@ function R2Lab() {
 	    .attr('y', function(node){return node.text_y();})
 	;
 
+	// how to display unavailable nodes
+	var availables = svg.selectAll('circle.available')
+	    .data(this.nodes, get_node_id);
+	availables.enter()
+	    .append('circle')
+	    .attr('class', 'available')
+	    .attr('cx', function(node){return node.x;})
+	    .attr('cy', function(node){return node.y;})
+	    .attr('r', function(node){return node.cst_radius_unavailable;})
+	;
+	availables
+	    .transition()
+	    .duration(1000)
+	    .attr('display', function(node){return node.available_display();})
+	;
+	
 /* turning off ticks for now
 	var ticks_groups = svg.selectAll('g.ticks')
 	    .data(this.nodes, get_node_id);
