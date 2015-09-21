@@ -9,6 +9,7 @@ import json
 import time
 
 from argparse import ArgumentParser
+from socketIO_client import SocketIO, LoggingNamespace
 
 #
 complete_filename = 'complete.json'
@@ -17,6 +18,7 @@ news_filename = 'news.json'
 # in seconds
 default_cycle = 1
 default_runs = 0
+default_socket_io_url = "ws://localhost:8000/"
 
 node_ids = range(1, 38)
 default_max_nodes_impacted = 10
@@ -102,9 +104,8 @@ def main():
                         help="Maximum number of nodes impacted by each cycle")
     parser.add_argument('-l', '--live', dest='live', action='store_true', default=False,
                         help="If set, only rx/tx data are animated")
-    parser.add_argument('-s', '--socket-io-url', action='store', default=None,
-                        help="""If set, sends status data to socketio instead of storing on file
-- use something like ws://localhost:8000/""")
+    parser.add_argument('-s', '--socket-io-url', action='store', default=default_socket_io_url,
+                        help="""Sends status data to this ws URL using socketio - use something like {}""".format(default_socket_io_url))
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
     args = parser.parse_args()
 
@@ -120,22 +121,20 @@ def main():
     if args.verbose:
         print("Using cycle {}s".format(cycle))
 
-    if args.socket_io_url:
-        from urllib.parse import urlparse
-        try:
-            hostname, port = urlparse(args.socket_io_url).netloc.split(':')
-            port = int(port)
-            if args.verbose:
-                print("Sending to sidecar at {hostname} on {port}".format(**locals()))
-        except:
-            print("Could not parse websocket URL {}".format(args.socket_io_url))
-            import traceback
-            traceback.print_exc()
-            exit(1)
+    from urllib.parse import urlparse
+    try:
+        hostname, port = urlparse(args.socket_io_url).netloc.split(':')
+        port = int(port)
+        if args.verbose:
+            print("Sending to sidecar at {hostname} on {port}".format(**locals()))
+    except:
+        print("Could not parse websocket URL {}".format(args.socket_io_url))
+        import traceback
+        traceback.print_exc()
+        exit(1)
         
-        from socketIO_client import SocketIO, LoggingNamespace
-        socketIO = SocketIO(hostname, port, LoggingNamespace)
-        def io_callback(*args, **kwds): print('on socketIO response', *args, **kwds)
+    socketIO = SocketIO(hostname, port, LoggingNamespace)
+    def io_callback(*args, **kwds): print('on socketIO response', *args, **kwds)
 
     counter = 0
     while True:
@@ -146,21 +145,14 @@ def main():
                   .format(counter, len(news_infos),
                           [ (info['id'], len(info)-1) for info in news_infos]))
         news_string = json.dumps(news_infos)
-        if args.socket_io_url:
-                socketIO.emit('r2lab-news', news_string, io_callback)
-                # what is that supposed to do ?
-                #socketIO.wait_for_callbacks(seconds=1)
-        else:
-            with open(news_filename, 'w') as f:
-                f.write(news_string)
+        socketIO.emit('r2lab-news', news_string, io_callback)
         counter += 1
         if args.runs and counter >= args.runs:
             break
         time.sleep(cycle)
 
-    if args.socket_io_url:
-        # xxx should clean up the socket io client
-        pass
+    # xxx should probably clean up the socket io client
+    pass
 
 if __name__ == '__main__':
     main()
