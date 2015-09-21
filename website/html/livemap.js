@@ -356,6 +356,7 @@ function R2Lab() {
 	    .attr('y', function(node){return node.text_y();})
 	;
 
+/* turning off ticks for now
 	var ticks_groups = svg.selectAll('g.ticks')
 	    .data(this.nodes, get_node_id);
 	ticks_groups.enter()
@@ -401,6 +402,7 @@ function R2Lab() {
 		      return "rotate(" + angle + ")" + " translate(0, 22)";})
 	;
 	;
+*/
     }
 
     // filters nice_float(for background)s
