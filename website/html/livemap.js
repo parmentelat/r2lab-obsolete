@@ -252,7 +252,7 @@ var Node = function (node_spec) {
 	// remember infos might be incomplete
 	if (this.os_release == undefined)
 	    return undefined;
-	elif (this.os_release.indexOf('other') >= 0)
+	else if (this.os_release.indexOf('other') >= 0)
 	    filter_name = 'other_logo';
 	else if (this.os_release.indexOf('fedora') >= 0)
 	    filter_name = 'fedora_logo';
