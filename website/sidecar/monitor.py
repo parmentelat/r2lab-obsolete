@@ -55,7 +55,7 @@ def display(*args, **keywords):
     print("livemap", *args, **keywords)
     sys.stderr.flush()
 
-def debug(*args, **keywords):
+def vdisplay(*args, **keywords):
     if verbose:
         display(*args, **keywords)
 
@@ -108,9 +108,9 @@ def insert_or_refine(id, infos, override=None):
             break
     if not node_info:
         node_info = {'id' : id,
-                    'cmc_on_off' : 'off',
-                    'control_ping' : 'off',
-                    'os_release' : 'fail',
+#                    'cmc_on_off' : 'off',
+#                    'control_ping' : 'off',
+#                    'os_release' : 'fail',
                 }
         infos.append(node_info)
     if override:
@@ -129,7 +129,7 @@ def pass1_on_off(node_ids, infos):
     """
     remaining_ids = []
     for id in node_ids:
-        debug("pass1 : {id} (CMC status via curl)".format(**locals()))
+        vdisplay("pass1 : {id} (CMC status via curl)".format(**locals()))
         reboot = hostname(id, "reboot")
         command = [ "curl", "--silent", "http://{reboot}/status".format(**locals()) ]
         try:
@@ -142,7 +142,7 @@ def pass1_on_off(node_ids, infos):
             else:
                 raise Exception("unexpected result on CMC status request " + result)
         except Exception as e:
-            debug(e)
+            vdisplay(e)
             insert_or_refine(id, infos, {'cmc_on_off' : 'fail'})
     return remaining_ids
 
@@ -160,7 +160,7 @@ def pass2_os_release(node_ids, infos):
     """
     remaining_ids = []
     for id in node_ids:
-        debug("pass2 : {id} (os_release via ssh)".format(**locals()))
+        vdisplay("pass2 : {id} (os_release via ssh)".format(**locals()))
         control = hostname(id)
         remote_command_1 = "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release"
         remote_command_2 = "gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
@@ -202,7 +202,7 @@ def pass3_control_ping(node_ids, infos):
     """
     remaining_ids = []
     for id in node_ids:
-        debug("pass3 : {id} (control_ping via ping)".format(**locals()))
+        vdisplay("pass3 : {id} (control_ping via ping)".format(**locals()))
         # -c 1 : one packet -- -t 1 : wait for 1 second max
         control = hostname(id)
         command = [ "ping", "-c", "1", "-t", "1", control ]
@@ -211,7 +211,7 @@ def pass3_control_ping(node_ids, infos):
                 check_call_timeout(command, timeout_ping, stdout=null, stderr=null)
             insert_or_refine(id, infos, {'control_ping' : 'on'})
         except Exception as e:
-            debug(e)
+            vdisplay(e)
             insert_or_refine(id, infos, {'control_ping' : 'off'})
     return remaining_ids
                     
@@ -244,10 +244,16 @@ def one_loop(nodes, socketio):
     infos = []
 
     remaining_ids = pass1_on_off(remaining_ids, infos)
+# might be a good idea to emit several times, but needs more testing
+#    socketio.emit('r2lab-news', json.dumps(infos), io_callback)
+#    display("pass1 done", infos)
     remaining_ids = pass2_os_release(remaining_ids, infos)
+#    socketio.emit('r2lab-news', json.dumps(infos), io_callback)
+#    display("pass2 done", infos)
     remaining_ids = pass3_control_ping(remaining_ids, infos)
-
     socketio.emit('r2lab-news', json.dumps(infos), io_callback)
+#    display("pass3 done", infos)
+
                 
     # should not happen
     if remaining_ids:
@@ -267,6 +273,16 @@ def one_loop(nodes, socketio):
     duration = datetime.now() - start
     print(" - total {} s {} ms".format(duration.seconds, int(duration.microseconds/1000)))
     print()
+
+####################
+def init_signals ():
+    def handler (signum, frame):
+        logger.log("Received signal {} - exiting".format(signum))
+        os._exit(1)
+    signal.signal(signal.SIGHUP, handler)
+    signal.signal(signal.SIGQUIT, handler)
+    signal.signal(signal.SIGINT, handler)
+    signal.signal(signal.SIGTERM, handler)
 
 ##########        
 def main():
@@ -297,5 +313,6 @@ def main():
     one_loop(args.nodes, socketio)
         
 if __name__ == '__main__':
+    init_signals()
     main()
     sys.exit(0)
