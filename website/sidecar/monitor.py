@@ -135,7 +135,7 @@ def pass1_on_off(node_ids, infos):
         try:
             result = check_output_timeout(command, timeout_curl, universal_newlines=True).strip()
             if result == 'off':
-                insert_or_refine(id, infos)
+                insert_or_refine(id, infos, {'cmc_on_off' : 'off'})
             elif result == 'on':
                 insert_or_refine(id, infos, {'cmc_on_off' : 'on'})
                 remaining_ids.append(id)
