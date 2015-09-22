@@ -16,50 +16,49 @@ var sidecar_port_number = 8000;
 
 
 ////////// originally output from livemap-prep.py 
-var node_specs = [
-{ id: 1, i:8, j:0 },
-{ id: 2, i:8, j:1 },
-{ id: 3, i:8, j:2 },
-{ id: 4, i:8, j:3 },
-{ id: 5, i:8, j:4 },
-{ id: 6, i:7, j:0 },
-{ id: 7, i:7, j:1 },
-{ id: 8, i:7, j:2 },
-{ id: 9, i:7, j:3 },
-{ id: 10, i:7, j:4 },
-{ id: 11, i:6, j:0 },
-{ id: 12, i:6, j:1 },
-{ id: 13, i:6, j:2 },
-{ id: 14, i:6, j:3 },
-{ id: 15, i:6, j:4 },
-{ id: 16, i:5, j:0 },
-{ id: 17, i:5, j:2 },
-{ id: 18, i:5, j:3 },
-{ id: 19, i:4, j:0 },
-{ id: 20, i:4, j:1 },
+node_specs=[
+{ id: 1, i:0, j:4 },
+{ id: 2, i:0, j:3 },
+{ id: 3, i:0, j:2 },
+{ id: 4, i:0, j:1 },
+{ id: 5, i:0, j:0 },
+{ id: 6, i:1, j:4 },
+{ id: 7, i:1, j:3 },
+{ id: 8, i:1, j:2 },
+{ id: 9, i:1, j:1 },
+{ id: 10, i:1, j:0 },
+{ id: 11, i:2, j:4 },
+{ id: 12, i:2, j:3 },
+{ id: 13, i:2, j:2 },
+{ id: 14, i:2, j:1 },
+{ id: 15, i:2, j:0 },
+{ id: 16, i:3, j:4 },
+{ id: 17, i:3, j:2 },
+{ id: 18, i:3, j:1 },
+{ id: 19, i:4, j:4 },
+{ id: 20, i:4, j:3 },
 { id: 21, i:4, j:2 },
-{ id: 22, i:4, j:3 },
-{ id: 23, i:3, j:0 },
-{ id: 24, i:3, j:2 },
-{ id: 25, i:3, j:3 },
-{ id: 26, i:2, j:0 },
-{ id: 27, i:2, j:1 },
-{ id: 28, i:2, j:2 },
-{ id: 29, i:2, j:3 },
-{ id: 30, i:2, j:4 },
-{ id: 31, i:1, j:0 },
-{ id: 32, i:1, j:1 },
-{ id: 33, i:1, j:2 },
-{ id: 34, i:1, j:3 },
-{ id: 35, i:1, j:4 },
-{ id: 36, i:0, j:3 },
-{ id: 37, i:0, j:4 },
+{ id: 22, i:4, j:1 },
+{ id: 23, i:5, j:4 },
+{ id: 24, i:5, j:2 },
+{ id: 25, i:5, j:1 },
+{ id: 26, i:6, j:4 },
+{ id: 27, i:6, j:3 },
+{ id: 28, i:6, j:2 },
+{ id: 29, i:6, j:1 },
+{ id: 30, i:6, j:0 },
+{ id: 31, i:7, j:4 },
+{ id: 32, i:7, j:3 },
+{ id: 33, i:7, j:2 },
+{ id: 34, i:7, j:1 },
+{ id: 35, i:7, j:0 },
+{ id: 36, i:8, j:1 },
+{ id: 37, i:8, j:0 },
 ];
-
-// the  two pillars - this is manual
+////////// the  two pillars - this is manual
 var pillar_specs = [
-{ id: 'left', i:3, j:1 },
-{ id: 'right', i:5, j:1 },
+{ id: 'left', i:3, j:3 },
+{ id: 'right', i:5, j:3 },
 ];
 
 //global - mostly for debugging and convenience
@@ -78,22 +77,10 @@ var steps_x = 8, steps_y = 4;
 
 //// static area 
 // walls and inside
-var walls_radius = 30, 
-    walls_style =
-    {
-        fill: 'fdfdfd',
-	//'90-#526c7a-#64a0c1'
-	//'90-bbc1d0-f0d0e4'
-        stroke: '#3b4449',
-        'stroke-width': 6,
-        'stroke-linejoin': 'round',
-	'stroke-miterlimit': 8
-    };
+var walls_radius = 30;
 
 // pillars - derived from the walls
-var pillar_radius = 16,
-    pillar_style = JSON.parse(JSON.stringify(walls_style));
-pillar_style['fill'] = '#101030';
+var pillar_radius = 16;
 
 //// nodes
 
@@ -130,30 +117,6 @@ function walls_path() {
     path += line_x(2*space_x+2*padding_x);
     path += "Z";
     return path;
-}
-
-//////////////////////////////
-// pillars are static and get created in a procedural fashion using raphael
-function Pillar(pillar_spec) {
-    this.id = pillar_spec['id'];
-    // i and j refer to a logical grid
-    this.i = pillar_spec['i'];
-    this.j = pillar_spec['j'];
-    var coords = grid_to_canvas(this.i, this.j);
-    this.x = coords[0];
-    this.y = coords[1];
-
-    this.display = function(paper) {
-	var pillar = paper.rect (this.x-pillar_radius, this.y-pillar_radius,
-			     2*pillar_radius, 2*pillar_radius);
-	pillar.attr(pillar_style);
-	var id = this.id;
-	pillar.click(function(){
-	    console.log("Clicked on pillar " + this.id + " - tmp for dbg, this does a manual refresh");
-	    the_r2lab.request_complete_from_sidecar();
-	});
-	return pillar;
-    }
 }
 
 //////////////////////////////
@@ -292,25 +255,57 @@ var get_node_id = function(node) {return node.id;}
 function R2Lab() {
     var canvas_x = room_x + 2 * margin_x;
     var canvas_y = room_y + 2 * margin_y;
-    var paper = new Raphael(document.getElementById('livemap_container'),
-			    canvas_x, canvas_y, margin_x, margin_y);
+    var svg =
+	d3.select('div#livemap_container')
+	.append('svg')
+	.attr('width', canvas_x)
+	.attr('height', canvas_y)
+    ;
+    // we insert a g to flip the walls upside down
+    // too lazy to rewrite this one
+    var g =
+	svg.append('g')
+	.attr('id', 'walls_and_pillars')
+	.attr('transform', 'translate(' + canvas_x + ',' + canvas_y + ')' + ' ' +  'rotate(180)')
+    ;
 
-    this.walls = paper.path(walls_path());
-    this.walls.attr(walls_style);
+    var walls = g.append('path')
+	.attr('d', walls_path())
+	.attr('class', 'walls')
+	.attr('stroke', '#3b4449')
+	.attr('stroke-width',  '6px')
+	.attr('stroke-linejoin', 'round')
+	.attr('stroke-miterlimit', 8)
+	.attr('fill', '#fdfdfd')
+    ;
 
-    this.pillars=[];
-    this.nb_pillars = pillar_specs.length;
-    for (var i=0; i < this.nb_pillars; i++) {
-	this.pillars[i] = new Pillar(pillar_specs[i]);
-	this.pillars[i].display(paper);
+    for (var i=0; i < pillar_specs.length; i++) {
+	// id, i, j
+	var spec = pillar_specs[i];
+	var coords = grid_to_canvas(spec.i, spec.j);
+	svg.append('rect')
+	    .attr('class', 'pillar')
+	    .attr('x', coords[0] - pillar_radius)
+	    .attr('y', coords[1] - pillar_radius)
+	    .attr('width', 2*pillar_radius)
+	    .attr('height', 2*pillar_radius)
+	    .attr('stroke', '#3b4449')
+	    .attr('stroke-width',  '6px')
+	    .attr('stroke-linejoin', 'round')
+	    .attr('stroke-miterlimit', 8)
+	    .attr('fill', '#101030')
+	;
+// could use this too which is convenient for debugging
+//pillar.click(function(){
+//	    console.log("Clicked on pillar " + this.id + " - tmp for dbg, this does a manual refresh");
+//	    the_r2lab.request_complete_from_sidecar();
+//	});
     }
 
-    this.node_specs = node_specs;
-    this.nb_nodes = node_specs.length;
     this.nodes = [];
 
     this.init_nodes = function () {
-	for (var i=0; i < this.nb_nodes; i++) { 
+	for (var i=0; i < node_specs.length; i++) { 
 	    this.nodes[i] = new Node(node_specs[i]);
 	}
     }

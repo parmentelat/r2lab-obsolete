@@ -1,3 +1,20 @@
+// somehow these styles on svg elements do not seem to trigger
+//.walls {
+//    'fill': '#fdfdfd';
+//}
+//rect.pillar {
+//    'fill', '#101030';
+//}
+// the intention for the common settings to path.walls and rect.walls
+//.common{
+//    'stroke': '#3b4449';
+//    'stroke-width':  6px;
+//    'stroke-linejoin': 'round';
+//    'stroke-miterlimit': 8;
+//}
+//
+
+// this is working
 circle.op-status {
     stroke: 0;
     opacity: .5;
