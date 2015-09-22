@@ -8,7 +8,7 @@ def io_callback(*args, **kwds):
     print('on socketIO response', *args, **kwds)
 
 hostname = 'r2lab.inria.fr'
-port = 8000
+port = 443
 
 print("Run this script with python -i")
 socketio = None

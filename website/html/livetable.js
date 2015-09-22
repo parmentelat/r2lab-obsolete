@@ -5,7 +5,7 @@ var channel = 'r2lab-news';
 // (2) this one is used for triggering a broadcast of the complete status
 var signalling = 'r2lab-signalling';
 // port number
-var sidecar_port_number = 8000;
+var sidecar_port_number = 443;
 
 
 //////////////////////////////

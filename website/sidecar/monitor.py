@@ -20,7 +20,7 @@ this is as optimized as we can think about it
 """
 
 default_nodes = range(1, 38)
-default_socket_io_url = "ws://r2lab.inria.fr:8000/"
+default_socket_io_url = "ws://r2lab.inria.fr:443/"
 
 from datetime import datetime
 import sys
@@ -308,7 +308,7 @@ def main():
         exit(1)
 
     # connect socketio
-    socketio = SocketIO(hostname, 8000, LoggingNamespace)
+    socketio = SocketIO(hostname, 443, LoggingNamespace)
 
     one_loop(args.nodes, socketio)
         

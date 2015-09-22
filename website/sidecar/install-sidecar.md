@@ -31,7 +31,7 @@ After what
      
     # cd /root/fitsophia/website/sidecar
     [root@r2lab sidecar]# node r2lab-sidecar.js
-    listening on *:8000	
+    listening on *:443	
     
 
 # install website on r2lab.inria.fr

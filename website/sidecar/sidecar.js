@@ -27,7 +27,7 @@ var filename_news = '/var/lib/sidecar/news.json';
 var filename_complete = '/var/lib/sidecar/complete.json';
 
 ////
-var port_number = 8000;
+var port_number = 443;
 
 // use -v to turn on
 var verbose_flag=false;
