@@ -340,7 +340,6 @@ function R2Lab() {
     }
 
     this.animate_changes = function() {
-	// the svg element is created by raphael's paper
 	var svg = d3.select('div#livemap_container svg');
 	var circles = svg.selectAll('circle.op-status')
 	    .data(this.nodes, get_node_id);
