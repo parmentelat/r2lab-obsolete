@@ -13,14 +13,15 @@ var nb_nodes = 37;
 
 // nodes are dynamic
 // their table row and cells get created through d3 enter mechanism
-var Node = function (id) {
+var TableNode = function (id) {
     this.id = id;
-    this.cell_texts = [id,  // id
-		 undefined, // avail
-		 undefined, // on/off
-		 undefined, // ping
-		 undefined // os_release
-		];
+    this.cell_texts = [
+	id,  // id
+	undefined, // avail
+	undefined, // on/off
+	undefined, // ping
+	undefined // os_release
+    ];
 		 
     // node_info is a dict coming through socket.io in JSON
     // simply copy the fieds present in this dict in the local object
@@ -32,7 +33,9 @@ var Node = function (id) {
 	// rewrite actual representation in cell_texts 
 	// pedestrian for now
 	// fill in this.cell_texts that is passed to d3.data for each node
-	var col = 2
+	var col = 1
+	this.cell_texts[col++] =
+	    (this.available == 'ko') ? 'Out of order' : 'Good to go';
 	this.cell_texts[col++] =
 	    this.cmc_on_off == 'fail' ? 'N/A'
 	    : this.cmc_on_off == 'on' ? 'ON' : 'OFF';
@@ -75,7 +78,7 @@ function LiveTable() {
     
     this.init_nodes = function () {
 	for (var i=0; i < nb_nodes; i++) { 
-	    this.nodes[i] = new Node(i+1);
+	    this.nodes[i] = new TableNode(i+1);
 	}
     }
 
@@ -105,7 +108,7 @@ function LiveTable() {
     this.handle_json_status = function(json) {
 	try {
 	    var nodes_info = JSON.parse(json);
-	    // first we write this data into the Node structures
+	    // first we write this data into the TableNode structures
 	    for (var i=0; i < nodes_info.length; i++) {
 		var node_info = nodes_info[i];
 		var id = node_info['id'];
@@ -115,7 +118,8 @@ function LiveTable() {
 	    this.animate_changes(nodes_info);
 	} catch(err) {
 	    if (json != "") {
-	    console.log("Could not apply news - ignored  - JSON=<<" + json + ">>");
+//	    console.log("Could not apply news - ignored  - JSON=<<" + json + ">>");
+	    console.log("Could not apply news - ignored  - JSON has " + json.length + " chars");
 	    console.log(err.stack);
 	    }
 	}
@@ -128,10 +132,10 @@ function LiveTable() {
 	if ( ! sidecar_hostname)
 	    sidecar_hostname = 'localhost';
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
-	console.log("Connecting to r2lab status sidecar server at " + url);
+	console.log("livetable is connecting to sidecar server at " + url);
 	this.sidecar_socket = io(url);
 	// what to do when receiving news from sidecar
-	var lab=this;
+	var lab = this;
 	this.sidecar_socket.on(channel, function(json){
             lab.handle_json_status(json);
 	});

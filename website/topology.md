@@ -24,8 +24,7 @@ Frequently a routine checks the availability of our resource/nodes platform. In 
 - The round O.S. brand informs that the node is turned on and running the referenced O.S..
 - The node is turned off when only the number is presented in the map.
 
-<iframe src="livemap.html"  scrolling="no" width="100%" height="460px" frameBorder="0"></iframe>
-<!-- <center> Fig. 1 - Resources status</center> -->
+<div id="livemap_container"></div>
 
 <h3>Status</h3>
 

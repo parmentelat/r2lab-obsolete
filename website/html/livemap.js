@@ -16,7 +16,7 @@ var sidecar_port_number = 443;
 
 
 ////////// originally output from livemap-prep.py 
-node_specs=[
+mapnode_specs = [
 { id: 1, i:0, j:4 },
 { id: 2, i:0, j:3 },
 { id: 3, i:0, j:2 },
@@ -122,7 +122,7 @@ function walls_path() {
 //////////////////////////////
 // nodes are dynamic
 // their visual rep. get created through d3 enter mechanism
-var Node = function (node_spec) {
+var MapNode = function (node_spec) {
     this.id = node_spec['id'];
     // i and j refer to a logical grid 
     this.i = node_spec['i'];
@@ -305,8 +305,8 @@ function R2Lab() {
     this.nodes = [];
 
     this.init_nodes = function () {
-	for (var i=0; i < node_specs.length; i++) { 
-	    this.nodes[i] = new Node(node_specs[i]);
+	for (var i=0; i < mapnode_specs.length; i++) { 
+	    this.nodes[i] = new MapNode(mapnode_specs[i]);
 	}
     }
 
@@ -315,6 +315,7 @@ function R2Lab() {
 	for (var i=0; i< this.nodes.length; i++)
 	    if (this.nodes[i].id == id)
 		return this.nodes[i];
+	console.log("ERROR: livemap: locate_node_by_id: id=" + id + " was not found");
     }
     
     this.handle_json_status = function(json) {
@@ -325,7 +326,7 @@ function R2Lab() {
 	}
 	try {
 	    var nodes_info = JSON.parse(json);
-	    // first we write this data into the Node structures
+	    // first we write this data into the MapNode structures
 	    for (var i=0; i < nodes_info.length; i++) {
 		var node_info = nodes_info[i];
 		var id = node_info['id'];
@@ -334,7 +335,8 @@ function R2Lab() {
 	    }
 	    this.animate_changes();
 	} catch(err) {
-	    console.log("Could not apply news - ignored  - JSON=<<" + json + ">>");
+//	    console.log("Could not apply news - ignored  - JSON=<<" + json + ">>");
+	    console.log("Could not apply news - ignored  - JSON has " + json.length + " chars");
 	    console.log(err.stack);
 	}
     }
@@ -443,7 +445,7 @@ function R2Lab() {
 //	console.log('decl. fil. ' + id_filename);
 	// create defs element if not yet present
 	if ( ! $('#livemap_container svg defs').length) {
-	    console.log("creating defs");
+//	    console.log("creating defs");
 	    d3.select('#livemap_container svg').append('defs');
 	}
 	// create filter in there
@@ -471,10 +473,10 @@ function R2Lab() {
 	if ( ! sidecar_hostname)
 	    sidecar_hostname = 'localhost';
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
-	console.log("Connecting to r2lab status sidecar server at " + url);
+	console.log("livemap is connecting to sidecar server at " + url);
 	this.sidecar_socket = io(url);
 	// what to do when receiving news from sidecar 
-	var lab=this;
+	var lab = this;
 	this.sidecar_socket.on(channel, function(json){
             lab.handle_json_status(json);
 	});
