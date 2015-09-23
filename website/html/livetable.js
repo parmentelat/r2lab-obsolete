@@ -8,6 +8,11 @@ var signalling = 'r2lab-signalling';
 var sidecar_port_number = 443;
 
 
+var fedora_badge = '<img src="fedora-logo.png">';
+var ubuntu_badge = '<img src="ubuntu-logo.png">';
+
+var show_rxtx_rates = false;
+
 //////////////////////////////
 var nb_nodes = 37;
 
@@ -15,59 +20,71 @@ var nb_nodes = 37;
 // their table row and cells get created through d3 enter mechanism
 var TableNode = function (id) {
     this.id = id;
-    this.cell_texts = [
-	id,  // id
+    this.cells_data = [
+	[ id, 'id' ] ,  // id
 	undefined, // avail
 	undefined, // on/off
 	undefined, // ping
 	undefined // os_release
     ];
 		 
-    // node_info is a dict coming through socket.io in JSON
-    // simply copy the fieds present in this dict in the local object
     this.update_from_news = function(node_info) {
-	// update fields like node.cmc_on_off
+	// node_info is a dict coming through socket.io in JSON
+	// simply copy the fieds present in this dict in the local object
 	for (var prop in node_info)
 	    if (node_info[prop] != undefined)
 		this[prop] = node_info[prop];
-	// rewrite actual representation in cell_texts 
-	// pedestrian for now
-	// fill in this.cell_texts that is passed to d3.data for each node
+	// then rewrite actual representation in cells_data
+	// that will contain a list of ( html_text, class )
+	// used by the d3 mechanism to update the <td> elements in the row
 	var col = 1
-	this.cell_texts[col++] =
-	    (this.available == 'ko') ? 'Out of order' : 'Good to go';
-	this.cell_texts[col++] =
-	    this.cmc_on_off == 'fail' ? 'N/A'
-	    : this.cmc_on_off == 'on' ? 'ON' : 'OFF';
-	this.cell_texts[col++] = this.control_ping == 'on' ? 'PING' : '--';
-	this.cell_texts[col++] = this.rewrite_release(this.os_release);
-	this.cell_texts[col++] = nice_float(this.wlan0_rx_rate);
-	this.cell_texts[col++] = nice_float(this.wlan0_tx_rate);
-	this.cell_texts[col++] = nice_float(this.wlan1_rx_rate);
-	this.cell_texts[col++] = nice_float(this.wlan1_tx_rate);
+	// available
+	this.cells_data[col++] =
+	    (this.available == 'ko') ?
+	    [ 'Out of order', 'ko' ] : [ 'Good to go', 'ok' ];
+	// 
+	this.cells_data[col++] =
+	    this.cmc_on_off == 'fail' ? [ 'N/A', 'ko' ]
+	    : this.cmc_on_off == 'on' ? [ 'ON', 'ok' ]
+	    : [ 'OFF', 'ko' ];
+	this.cells_data[col++] = this.control_ping == 'on'
+	    ? [ 'PING', 'ok' ]
+	    : [ '--', 'ko' ];
+	this.cells_data[col++] = this.release_cell(this.os_release);
+	// optional
+	if (show_rxtx_rates) {
+	    this.cells_data[col++] = float_cell(this.wlan0_rx_rate);
+	    this.cells_data[col++] = float_cell(this.wlan0_tx_rate);
+	    this.cells_data[col++] = float_cell(this.wlan1_rx_rate);
+	    this.cells_data[col++] = float_cell(this.wlan1_tx_rate);
+	}
 	//console.log("after update_from_news -> " + this.data);
     }
 
-    // quick and dirty
-    this.rewrite_release = function(os_release) {
+    this.release_cell = function(os_release) {
+	// use a single css class for now
+	var klass = 'os-release';
+	if (os_release == undefined)
+	    return [ "n/a", klass ];
 	var gr_msg = (os_release.search('gnuradio') >= 0) ? ' + GNURADIO' : '';
 	if (os_release.startsWith('fedora'))
-	    return 'Fedora' + gr_msg;
+	    return [ fedora_badge + gr_msg, klass ];
 	else if (os_release.startsWith('ubuntu'))
-	    return 'Ubuntu' + gr_msg;
+	    return [ ubuntu_badge + gr_msg, klass ];
 	else if (os_release == 'other')
-	    return 'Other (ssh OK)';
+	    return [ 'Other (ssh OK)', klass ];
 	else
-	    return 'N/A';
+	    return [ 'N/A', klass ];
     }
 }
 
 var ident = function(d) { return d; };
 var get_node_id = function(node){return node.id;}
-var get_node_data = function(node){return node.cell_texts;}
+var get_node_data = function(node){return node.cells_data;}
 // rewriting info should happen in update_from_news
-var get_html = ident;
-var nice_float = function(f) {return Number(f).toLocaleString();}
+var get_html = function(tuple) {return tuple[0];}
+var get_class = function(tuple) {return tuple[1];}
+var float_cell = function(f) {return [ Number(f).toLocaleString(), undefined ];}
 
 //////////////////////////////
 function LiveTable() {
@@ -99,8 +116,9 @@ function LiveTable() {
 	    .data(get_node_data);
 	cells.enter()
 	    .append('td');
-	////////// update existing ones
-	cells.html(get_html);
+	////////// update existing ones from cells_data
+	cells.html(get_html)
+	    .attr('class', get_class)
 	return;
     }
 

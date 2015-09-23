@@ -1,4 +1,17 @@
 
 #livetable_container thead th{
-    font-size: large;
+    font-size: x-large;
 }
+
+td.id {
+    background-color: #ccc;
+}
+
+td.ok {
+    background-color: #5cb85c;
+}
+
+td.ko {
+    background-color: #d9534f;
+}
+
