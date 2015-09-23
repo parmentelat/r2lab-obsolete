@@ -203,10 +203,9 @@ function parse_args() {
 	    verbose_flag=true;
 	// local dev (use json files in .)
 	if (val == "-l") {
-	    console.log("in " + filename_news);
 	    filename_news = path.basename(filename_news);
 	    filename_complete = path.basename(filename_complete);
-	    console.log("out " + filename_news);
+	    console.log("local mode : watching " + filename_news);
 	}
     });
     vdisplay("news file = " + filename_news,
@@ -241,9 +240,14 @@ function init_watcher() {
 
 // run http server
 function run_server() {
-    http.listen(port_number, function(){
-	display('listening on *:' + port_number);
-    });
+    try {
+	http.listen(port_number, function(){
+	    display('listening on *:' + port_number);
+	});
+    } catch (err) {
+	console.log("Could not run http server on port " + port_number);
+	console.run("Need to sudo ?");
+    }
 }
 
 function main() {
