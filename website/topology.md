@@ -182,7 +182,7 @@ The table with these queries are presented below.
       }
       else if (res.indexOf('ubuntu') >= 0){
 
-        table_content += '<td><img src="assets/img/ub.png" height="20" width="20">&nbsp;<font style="font-size:x-small;">'+res+'</font></td>';
+        table_content += 'data<td><img src="assets/img/ub.png" height="20" width="20">&nbsp;<font style="font-size:x-small;">'+res+'</font></td>';
       }
       else if (res.indexOf('fedora') >= 0){
 
@@ -200,3 +200,36 @@ The table with these queries are presented below.
   $("#t_body").append(table_content);
 
 </script>
+
+<hr />
+<table class="table table-condensed livetable">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Availability</th>
+      <th>On/Off</th>
+      <th>Ping</th>
+      <th>O.S.</th>
+    </tr>
+  </thead>
+  <!-- hook for livetable.js -->
+  <tbody id="livetable_container">
+    <tr>
+      <td><span class="badge label-default">01</span></td>
+      <td class="ok"></td>
+      <td class="on"></td>
+      <td class="ping_ok"></td>
+      <td class="os"><img src="assets/img/ub.png" height="20" width="20"><br>ubuntu 14.10</td>
+    </tr>
+    <tr>
+      <td><span class="badge label-default">02</span></td>
+      <td class="ko"></td>
+      <td class="off"></td>
+      <td class="ping_ko"></td>
+      <td class="os"><img src="assets/img/fd.png" height="20" width="20"><br>fedora 21</td>
+    </tr>
+  </tbody>
+</table>
+
+
+</html>
