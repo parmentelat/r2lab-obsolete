@@ -277,7 +277,7 @@ def one_loop(nodes, socketio):
 ####################
 def init_signals ():
     def handler (signum, frame):
-        logger.log("Received signal {} - exiting".format(signum))
+        display("Received signal {} - exiting".format(signum))
         os._exit(1)
     signal.signal(signal.SIGHUP, handler)
     signal.signal(signal.SIGQUIT, handler)
