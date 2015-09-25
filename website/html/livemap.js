@@ -265,13 +265,13 @@ function R2Lab() {
     // too lazy to rewrite this one
     var g =
 	svg.append('g')
-	.attr('id', 'walls_and_pillars')
+	.attr('id', 'walls_upside_down')
 	.attr('transform', 'translate(' + canvas_x + ',' + canvas_y + ')' + ' ' +  'rotate(180)')
     ;
 
     var walls = g.append('path')
 	.attr('d', walls_path())
-	.attr('class', 'walls')
+	.attr('id', 'walls')
 	.attr('stroke', '#3b4449')
 	.attr('stroke-width',  '6px')
 	.attr('stroke-linejoin', 'round')
@@ -284,6 +284,7 @@ function R2Lab() {
 	var spec = pillar_specs[i];
 	var coords = grid_to_canvas(spec.i, spec.j);
 	svg.append('rect')
+	    .attr('id', 'pillar-' + spec.id)
 	    .attr('class', 'pillar')
 	    .attr('x', coords[0] - pillar_radius)
 	    .attr('y', coords[1] - pillar_radius)
@@ -294,12 +295,16 @@ function R2Lab() {
 	    .attr('stroke-linejoin', 'round')
 	    .attr('stroke-miterlimit', 8)
 	    .attr('fill', '#101030')
+	// convenience for debugging
+	    .on('click',
+                // a closure to avoid being linked to the same 'spec' value in both cases
+		function(spec){
+		    return function() {
+			console.log("Clicked on pillar " + spec.id + " - tmp for dbg, this does a manual refresh");
+			the_r2lab.request_complete_from_sidecar();
+		    }
+		}(spec))
 	;
-// could use this too which is convenient for debugging
-//pillar.click(function(){
-//	    console.log("Clicked on pillar " + this.id + " - tmp for dbg, this does a manual refresh");
-//	    the_r2lab.request_complete_from_sidecar();
-//	});
     }
 
     this.nodes = [];
