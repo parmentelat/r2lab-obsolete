@@ -58,7 +58,6 @@ tab: index
   <footer class="footer footer-collapse">
     <div class="container">
       Interested in more? <a href="events.html">Follow the last <strong>news</strong> » </a>
-      <p class="text-muted">Copyright © R2Lab INRIA - <a href="http://www.inria.fr/sophia" target="_blank">About us</a></p>
     </div>
   </footer>
 
