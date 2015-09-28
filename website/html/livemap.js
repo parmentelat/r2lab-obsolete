@@ -228,11 +228,11 @@ var MapNode = function (node_spec) {
 	if (this.os_release == undefined)
 	    return undefined;
 	else if (this.os_release.indexOf('other') >= 0)
-	    filter_name = 'other_logo';
+	    filter_name = 'other-logo';
 	else if (this.os_release.indexOf('fedora') >= 0)
-	    filter_name = 'fedora_logo';
+	    filter_name = 'fedora-logo';
 	else if (this.os_release.indexOf('ubuntu') >= 0)
-	    filter_name = 'ubuntu_logo';
+	    filter_name = 'ubuntu-logo';
 	else 
 	    return undefined;
 	return "url(#" + filter_name + ")";
@@ -466,9 +466,9 @@ function R2Lab() {
 	    .attr("xlink:href", id_filename + ".png");
     }
 
-    this.declare_image_filter('fedora_logo');
-    this.declare_image_filter('ubuntu_logo');
-    this.declare_image_filter('other_logo');
+    this.declare_image_filter('fedora-logo');
+    this.declare_image_filter('ubuntu-logo');
+    this.declare_image_filter('other-logo');
 
     ////////// socket.io business
     this.init_sidecar_socket_io = function() {

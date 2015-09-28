@@ -10,7 +10,10 @@ var sidecar_port_number = 443;
 
 var fedora_badge = '<img src="fedora-logo.png">';
 var ubuntu_badge = '<img src="ubuntu-logo.png">';
+var gnuradio_badge = '<img src="gnuradio-logo.png">';
+var other_badge = '<img src="other-logo.png">';
 
+// turning this back on requires adding back headers in the table columns
 var show_rxtx_rates = false;
 
 //////////////////////////////
@@ -21,7 +24,7 @@ var nb_nodes = 37;
 var TableNode = function (id) {
     this.id = id;
     this.cells_data = [
-	[ id, 'id' ] ,  // id
+	[ id, 'badge label-default' ] ,  // id
 	undefined, // avail
 	undefined, // on/off
 	undefined, // ping
@@ -63,16 +66,16 @@ var TableNode = function (id) {
 
     this.release_cell = function(os_release) {
 	// use a single css class for now
-	var klass = 'os-release';
+	var klass = 'os';
 	if (os_release == undefined)
 	    return [ "n/a", klass ];
-	var gr_msg = (os_release.search('gnuradio') >= 0) ? ' + GNURADIO' : '';
+	var gr_badge = (os_release.search('gnuradio') >= 0) ? gnuradio_badge : '';
 	if (os_release.startsWith('fedora'))
-	    return [ fedora_badge + gr_msg, klass ];
+	    return [ fedora_badge + gr_badge + os_release, klass ];
 	else if (os_release.startsWith('ubuntu'))
-	    return [ ubuntu_badge + gr_msg, klass ];
+	    return [ ubuntu_badge + gr_badge + os_release, klass ];
 	else if (os_release == 'other')
-	    return [ 'Other (ssh OK)', klass ];
+	    return [ other_badge + ' (ssh OK)', klass ];
 	else
 	    return [ 'N/A', klass ];
     }

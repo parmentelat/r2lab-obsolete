@@ -77,3 +77,6 @@
     vertical-align:middle;
 }
 
+.livetable td.os>img {
+    height : 20px;
+}
