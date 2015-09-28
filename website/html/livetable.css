@@ -9,17 +9,17 @@
 }
 
 .livetable thead th{
-    font-size: 14px;
+    font-size: 30px;
     font-style: bold;
     text-align:center;
 }
 
 
 .livetable td {
-	font-size: 22px;
-	font-family: FontAwesome;
-	color: grey;
-	text-align:center;
+    font-size: 20px;
+    font-family: FontAwesome;
+    color: grey;
+    text-align:center;
 }
 
 
@@ -72,10 +72,11 @@
 
 
 .livetable td.os {
-    font-size: x-small;
-    font-color: #000;
-    vertical-align:middle;
+    font-size:		20px;
+    font-color:		#000;
+    vertical-align:	middle;
 }
+
 
 .livetable td.os>img {
     height : 20px;

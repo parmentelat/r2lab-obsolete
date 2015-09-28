@@ -71,9 +71,9 @@ var TableNode = function (id) {
 	    return [ "n/a", klass ];
 	var gr_badge = (os_release.search('gnuradio') >= 0) ? gnuradio_badge : '';
 	if (os_release.startsWith('fedora'))
-	    return [ fedora_badge + gr_badge + os_release, klass ];
+	    return [ fedora_badge + ' ' + os_release + ' ' + gr_badge, klass ];
 	else if (os_release.startsWith('ubuntu'))
-	    return [ ubuntu_badge + gr_badge + os_release, klass ];
+	    return [ ubuntu_badge + ' ' + os_release + ' ' + gr_badge, klass ];
 	else if (os_release == 'other')
 	    return [ other_badge + ' (ssh OK)', klass ];
 	else
