@@ -28,7 +28,7 @@ tab: overview
 <div class="row">
   <div class="col-md-3">
     <br>
-    <img src="assets/img/node_back.jpg">
+    <img src="assets/img/node_interfaces.jpg">
   </div>
   
   <div class="col-md-7"> 

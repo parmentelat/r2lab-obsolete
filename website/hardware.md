@@ -56,7 +56,7 @@ full control and granted access<br>
   </p>
   
   <p>
-  The resources/nodes keep **three wired interfaces** (fig 2, <font color="green">green</font>, <font color="red">red</font> and <font color="blue">blue</font> cables) which are designed and implements the main following components as well.
+  The resources/nodes keep **three wired interfaces**, which are designed and implements the main following components as well.
   </p>
   **CM card**:<br>
   A small web server run in a Chassis Manager Card (CM card) to control and monitor the nodes. The CM card answer HTTP requests to expose on/off actions, status and others like: 
@@ -91,12 +91,12 @@ full control and granted access<br>
   </div>
   <div class="col-md-3">
     <br>
-    <img src="assets/img/icarus.png" width="300px">
+    <img src="assets/img/icarus6i.png" width="300px">
     <center>Fig. 1 - Resource/Node Icarus</center>
     <br>
     <br>
     <br>
-    <img src="assets/img/node_back.jpg" width="300px">
-    <center>Fig. 2 - Resource back wired details</center>
+    <img src="assets/img/node_interfaces_2.jpg" width="300px">
+    <center>Fig. 2 - Resource/Node Icarus</center>
   </div>
 </div>

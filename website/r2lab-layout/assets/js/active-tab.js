@@ -23,13 +23,13 @@
     /* register a function to fire at load-time */
     $(function() {
 	/* select all <li> elts that have a 'tab' attribute */
-	$("li[tab]").map(function() {
+	$("a[tab]").map(function() {
 	    /* convert into a jquery obj */
 	    var $this = $(this);
 	    /* if criteria are met */
 	    if (( "tab-" + $this.attr('tab')) == this.id)
 		/* set as active */
-		$this.addClass('active');
+		$this.addClass('current');
 	})
     })
 })(jQuery);

@@ -1,18 +1,19 @@
-<!-- for now we don't have a means to declare css and js requirements
-     in the .md, so we put everything here -->
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>{{title}}</title>
-      <link rel="icon" type="image/png" href="{{asset 'img/r2lab-icon.png'}}"/>
-      <!---------------------------------------->
-      <!-- bootstrap for the overall layout -->
+    <title>{{title}}</title>
+    <link rel="icon" type="image/png" href="{{asset 'img/r2lab-icon.png'}}"/>
+    <!---------------------------------------->
+    <!-- bootstrap for the overall layout -->
     <link type="text/css" rel="stylesheet" href="{{asset 'css/bootstrap.min.css'}}"/>
       <!-- not sure what this is used for -->
-    <link type="text/css" rel="stylesheet" href="{{asset 'css/pilcrow.css'}}"/>
-      <!-- not sure what this is used for -->
     <link type="text/css" rel="stylesheet" href="{{asset 'css/hljs-github.min.css'}}"/>
+      <!-- must donwload -->
+    <link rel="stylesheet" type="text/css" media="screen" href="https://www.fit-equipex.fr/static/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="https://www.fit-equipex.fr/static/css/index.css" />
+
+    <link type="text/css" rel="stylesheet" href="{{asset 'css/page.css'}}"/>
     <!---------------------------------------->
    <!-- d3 for livetable/livemap-->
     <script src="assets/js/d3.min.js"></script>
@@ -29,76 +30,109 @@
     <link type="text/css" rel="stylesheet" href="livetable.css"/>
     <script type="text/javascript" src="livetable.js"></script>
     <!-- extra space for navbar-fixed-top -->
-    <style type="text/css">
-      body { padding-top: 70px; }
-    </style>
-  </head>
+</head>
 <body>
-
-  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle"
-		data-toggle="collapse"
-		data-target="#bs-example-navbar-collapse-1">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="index.html">
-          <img alt="logo" style="height:18px;" src="{{asset 'img/r2lab-logo.png'}}" />
-        </a>
-      </div>
-
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li id="tab-overview"  tab="{{tab}}"><a href="overview.html">Overview</a></li>
-          <li class="dropdown" id="tab-platform" tab="{{tab}}">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Platform<b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li><a href="topology.html">Topology</a></li>
-              <li><a href="hardware.html">Hardware</a></li>
-              <li><a href="tools.html">Tools</a></li>
-            </ul>
-          </li>
-          <li class="dropdown" id="tab-guides" tab="{{tab}}">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Guides<b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li><a href="tuto-01-registration.html">Registration</a></li>
-              <li><a href="tuto-02-michelle.html">SSH access</a></li>
-            </ul>
-          </li>
-          <li id="tab-events" tab="{{tab}}"><a href="events.html">Events</a></li>
-          <li id="tab-infos" tab="{{tab}}"><a href="infos.html">Latest Infos</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-          <li>
-            <a href="http://portal.onelab.eu" target="_blank">
-              <img src="{{asset 'img/onelab-logo.png'}}" style="height:18px;"> FIT Portal
-            </a>
-          </li>
-        </ul>
-      </div>
+<div class="header">
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-sm-3 col-md-3 logo">
+      <a href="index.html"><img class="img-responsive" src="{{asset 'img/r2lab_logo.svg'}}" alt="OneLab - Future Internet Testbeds" /></a>
     </div>
-  </nav>
-
-  <div class="jumbotron" style="background:url({{asset 'img/back.jpg'}})no-repeat; background-size:100%; height:310px ;">
-  </div>
-
-  <div class="container">
-    <div class="alert alert-info text-center" role="alert">keep posted about the last news, infos and incidents in R2lab platform. Check it out our <a href="infos.html">info blog</a></div>
-  </div>
-
-  <div class="container">
-    <div class="page-header">
-      <h1>{{title}} </h1>
+    <div class="col-xs-12 col-sm-7 col-md-6 navigation">
+      <ul>
+        <li><a id="tab-overview" tab="{{tab}}" class="sites" href="overview.html">Overview</a></li>
+        <li><a id="tab-topology" tab="{{tab}}" class="sites" href="topology.html">LiveMap</a></li>
+        <li ><a id="tab-platform" tab="{{tab}}" class="sites" href="hardware.html">Hardware</a></li>
+        <li><a id="tab-guides" tab="{{tab}}" class="sites" href="tuto-02-michelle.html">Access</a></li>
+        <li><a id="tab-events" tab="{{tab}}" class="sites" href="events.html">Events</a></li>
+      </ul>
     </div>
-    {{~> content}}
+    <div class="col-xs-12 col-sm-2 col-md-3 secondary">
+      <ul>
+        <li>
+          <a class="button" target="_blank" href="http://portal.onelab.eu">Access the portal</a>
+        </li>
+      </ul>
+    </div>
   </div>
+</div>
+</div><div class="container-fluid personal">
+  <div class="row" style="height:400px;">
+      <div class="col-md-4 col-sm-7 col-md-offset-2 slogan">
+      <h2>
+        R2Lab anechoic chamber,
+      </h2>
+      <h3>
+        a heterogeneous wireless testbed!
+      </h3>
+    </div>
+    
+    <div class="col-lg-3 col-md-4 col-sm-5 col-md-offset-1 login-column">
+      <div class="login-header">
+        FIT platforms are part of <br />the OneLab Experimental Facility
+      </div>
+      <div class="login-form">
+        <div class="onelab-form">
+          <a href="http://onelab.eu"><img class="img-responsive" src="https://www.fit-equipex.fr/static/images/onelab-small.png" alt="OneLab" /></a>
+          <div class="onelab-tagline">
+            Access FIT platforms with your <br /> OneLab account information
+          </div>
+        </div>
+        <form action="http://portal.onelab.eu/login/" method="post" role="form">
+        <div class="form-group">
+            <input class="input-md" type="email" name="username" placeholder="Enter Email / Username">
+          </div>
+          <div class="form-group">
+            <input type="password" name="password" placeholder="Password">
+        </div>
+        <div class="login-submit">
+          <input type="submit" class="btn btn-onelab" value="Sign In" />
+          <span class="lost-password">&nbsp;&nbsp;&nbsp;<a href="/portal/pass_reset/">Can't access your account?</a></span>
+        </div>
+        <div class="login-signup">
+          You don't have an account yet? 
+          <br /><a href="/register">Sign Up!</a>
+        </div>
+        <div class="login-submit">
+          <br>
+          <span class="lost-password"><a href="tuto-01-registration.html">Need help? Look the registration guide.</a></span>
+        </div>
+        </form>
+    </div>
+    </div>
+  </div>
+</div>
+<br>
+<br>
+<div class="container">
+  <div class="alert alert-info text-center" role="alert">keep posted about the last news, infos and incidents in R2lab platform. Check it out our <a href="infos.html">info blog</a></div>
+</div>
 
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-  <script type="text/javascript" src="{{asset '/js/bootstrap.min.js'}}"></script>
+<div class="container">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1 fit">
+      <h2><span class="blue bold">{{title}}</span></h2>
+      <p class="subtitle">
+       
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <p>
+      {{~> content}}
+      </p>
+    </div>
+  </div>
+  <br>
+  <br>
+</div><div class="footer">
+  <div class="container">
+    <div class="col-md-12">
+        <span>Copyright &copy; <a href="http://www.inria.fr/sophia" target="_blank">INRIA Sophia Antipolis</a>, on behalf of the OneLab consortium</span>
 
+    </div>
+  </div>
+</div>
 </body>
 </html>
