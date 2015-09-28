@@ -1,5 +1,5 @@
 title: Topology
-tab: platform
+tab: topology
 ---
 
 R2Lab testbed project offers a hight quality anechoic room for your experiments. Following are the details of the anechoic room.
