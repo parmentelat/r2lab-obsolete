@@ -1,5 +1,5 @@
 title: SSH access
-tab: guides
+tab: tutorial
 ---
 
 ###Pre-requisite

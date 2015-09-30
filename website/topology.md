@@ -19,7 +19,7 @@ The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal)
 
 ### Livemap
 
-Frequently a routine checks the availability of our resource/nodes platform. In order to allow real time and multiple information concerning R2lab platform, our live map keep the users posted about the state of each resource/node concerning technical infos, incidents and operational details.<br>
+Frequently a routine checks the availability of our nodes platform. In order to allow real time and multiple information concerning R2lab platform, our live map keep the users posted about the state of each node concerning technical infos, incidents and operational details.<br>
 - The red/green round informs if the node responds or not a ping at the experiment interface.
 - The round O.S. brand informs that the node is turned on and running the referenced O.S..
 - The node is turned off when only the number is presented in the map.

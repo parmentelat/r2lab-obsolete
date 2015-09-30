@@ -1,5 +1,5 @@
 title: Registration Tutorial
-tab: guides
+tab: tutorial
 ---
 
 ### Entry point
