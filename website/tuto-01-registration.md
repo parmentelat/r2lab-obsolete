@@ -108,7 +108,7 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 				<br>
 				<center>
 				![dashboard](assets/img/schedule_details.png)<br>
-				Fig. 4 - Booking a resource/node
+				Fig. 4 - Booking a node
 				</center>
       </div>
     </div>
@@ -117,13 +117,13 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
     <div class="panel-heading" role="tab" id="headingThree">
       <h4 class="panel-title">
         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          Access your resources/nodes
+          Access your nodes
         </a>
       </h4>
     </div>
     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
       <div class="panel-body">
-        Once the schedule has finished you can reach your resources. In order to do it, the gateway is reacheble by ssh connection.
+        Once the schedule has finished you can reach your node. In order to do it, the gateway is reacheble by ssh connection.
         <br>
         <br>
         
@@ -157,7 +157,7 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 		    	</p>
       	</h6>
 
-      	[See more](tuto-02-michelle.html) how to manipulate the resources/nodes.
+      	[See more](tuto-02-michelle.html) how to manipulate the nodes.
       	</p>
       
       	<b>3 - Troubleshooting</b>

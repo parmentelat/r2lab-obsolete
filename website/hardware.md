@@ -42,7 +42,7 @@ full control and granted access<br>
   </span>
   &nbsp; Our anechoic chamber is equipped with powerful nodes which allows to run high-level OS Linux. It &nbsp; enables to run many applications and advanced simulations.
 
-  The resources/nodes also contains **six USRP devices** distributed in a such way to cover as much area as possible of the wireless testbed. The device details are listed below.
+  The nodes also contains **six USRP devices** distributed in a such way to cover as much area as possible of the wireless testbed. The device details are listed below.
   <br>
   <br>
   **The [Nitos](http://nitlab.inf.uth.gr/NITlab/) X50 nodes are:**
@@ -56,7 +56,7 @@ full control and granted access<br>
   </p>
   
   <p>
-  The resources/nodes keep **three wired interfaces**, which are designed and implements the main following components as well.
+  The nodes keep **three wired interfaces**, which are designed and implements the main following components as well.
   </p>
   **CM card**:<br>
   A small web server run in a Chassis Manager Card (CM card) to control and monitor the nodes. The CM card answer HTTP requests to expose on/off actions, status and others like: 
@@ -69,7 +69,7 @@ full control and granted access<br>
   <!-- - External environmental conditions monitoring (temperature, humidity, light intensity)<br>
   - Internal node temperature monitoring<br> -->
   <br> 
-  The CM card interface is available at: 192.168.**1**.<font color="red">**xx**</font>, where <font color="red">**xx**</font> are the resource/node number.
+  The CM card interface is available at: 192.168.**1**.<font color="red">**xx**</font>, where <font color="red">**xx**</font> are the node number.
   <br>
   <br>
 

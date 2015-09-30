@@ -24,7 +24,7 @@ tab: overview
 </div>
 
 <br>
-### The resources/nodes
+### The nodes
 <div class="row">
   <div class="col-md-3">
     <br>
