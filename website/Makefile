@@ -1,5 +1,5 @@
 ########## contents
-ALL_MDS = index.md overview.md tuto-*md topology.md hardware.md tools.md blog.md
+ALL_MDS = index.md overview.md tuto-*md tutorial.md topology.md hardware.md tools.md blog.md
 
 ALL_MEDIAS = *.png
 ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
