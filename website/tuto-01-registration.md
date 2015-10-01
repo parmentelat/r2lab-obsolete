@@ -157,7 +157,7 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 		    	</p>
       	</h6>
 
-      	[See more](tuto-02-michelle.html) how to manipulate the nodes.
+      	[See more](tuto-02-michelle.html#main) how to manipulate the nodes.
       	</p>
       
       	<b>3 - Troubleshooting</b>

@@ -4,7 +4,7 @@ tab: tutorial
 
 ###Pre-requisite
 
-[Obtain a slice account on R2LAB (faraday)](tuto-01-registration.html)
+[Obtain a slice account on R2LAB (faraday)](tuto-01-registration.html#main)
 
 
 ###Direct ssh access to the node
