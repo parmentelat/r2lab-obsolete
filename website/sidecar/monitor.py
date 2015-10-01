@@ -2,7 +2,7 @@
 
 """
 given a set of nodes on the command line - either numbers or complete hostnames
-we compute a news feed for livemap
+we compute a news feed for sidecar
 
 this is as optimized as we can think about it
 * first step on CMC status - all nodes reported as off will
@@ -19,17 +19,20 @@ this is as optimized as we can think about it
   * get { 'cmc_on_off' : 'on', 'control_ping' : 'on' or 'off'}
 """
 
+default_cycle = 3.
 default_nodes = range(1, 38)
 default_socket_io_url = "ws://r2lab.inria.fr:443/"
 
 from datetime import datetime
 import sys
+import os
 import re
 import subprocess
 import json
 import signal
-from urllib.parse import urlparse
+import time
 
+from urllib.parse import urlparse
 from argparse import ArgumentParser
 
 from socketIO_client import SocketIO, LoggingNamespace
@@ -52,7 +55,7 @@ timeout_ping = 1
 ########## helper
 def display(*args, **keywords):
     keywords['file'] = sys.stderr
-    print("livemap", *args, **keywords)
+    print("monitor", *args, **keywords)
     sys.stderr.flush()
 
 def vdisplay(*args, **keywords):
@@ -124,7 +127,7 @@ def pass1_on_off(node_ids, infos):
     the ones that are OFF - or where status fails 
     are kept out of the next pass
     
-    performs insertions in infos 
+    performs insertions/updates in infos 
     returns the list of nodes that still need to be probed
     """
     remaining_ids = []
@@ -217,33 +220,16 @@ def pass3_control_ping(node_ids, infos):
                     
 
 ##########
-arg_matcher = re.compile('[^0-9]*(?P<id>\d+)')
-def normalize(cli_arg):
-    if isinstance(cli_arg, int):
-        id = cli_arg
-    else:
-        match = arg_matcher.match(cli_arg)
-        if match:
-            id = match.group('id')
-        else:
-            display("discarded malformed argument {cli_arg}".format(**locals()), file=sys.stderr)
-            return None
-    return int(id)
-
 def io_callback(*args, **kwds):
     print('on socketIO response', *args, **kwds)
 
-def one_loop(nodes, socketio):
+def one_loop(node_ids, infos, socketio):
     start = datetime.now()
-    ### elaborate global focus
-    node_ids = [ normalize(x) for x in nodes ]
-    node_ids = [ x for x in node_ids if x]
-
     ### init    
     remaining_ids = node_ids
-    infos = []
 
     remaining_ids = pass1_on_off(remaining_ids, infos)
+    # emit the nodes that have failed
 # might be a good idea to emit several times, but needs more testing
 #    socketio.emit('r2lab-news', json.dumps(infos), io_callback)
 #    display("pass1 done", infos)
@@ -274,7 +260,33 @@ def one_loop(nodes, socketio):
     print(" - total {} s {} ms".format(duration.seconds, int(duration.microseconds/1000)))
     print()
 
-####################
+##########
+arg_matcher = re.compile('[^0-9]*(?P<id>\d+)')
+def normalize(cli_arg):
+    if isinstance(cli_arg, int):
+        id = cli_arg
+    else:
+        match = arg_matcher.match(cli_arg)
+        if match:
+            id = match.group('id')
+        else:
+            display("discarded malformed argument {cli_arg}".format(**locals()), file=sys.stderr)
+            return None
+    return int(id)
+
+def mainloop(nodes, socketio, cycle):
+    ### elaborate global focus
+    node_ids = [ normalize(x) for x in nodes ]
+    node_ids = [ x for x in node_ids if x]
+
+    # create a single global list of results that we keep
+    # between runs 
+    infos = []
+    while True:
+        one_loop(node_ids, infos, socketio)
+        time.sleep(cycle)
+
+##########
 def init_signals ():
     def handler (signum, frame):
         display("Received signal {} - exiting".format(signum))
@@ -284,14 +296,15 @@ def init_signals ():
     signal.signal(signal.SIGINT, handler)
     signal.signal(signal.SIGTERM, handler)
 
-##########        
 def main():
     parser = ArgumentParser()
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
-#    parser.add_argument("-o", "--output", action='store', default=None,
-#                        help="Supersedes the -s option; use -o - for stdout")
+    parser.add_argument("-c", "--cycle", action='store', default=default_cycle,
+                        type=float,
+                        help="Set delay in seconds to be waited between 2 runs - default = {}".
+                        format(default_cycle))
     parser.add_argument("-s", "--socket-io-url", action='store', default=default_socket_io_url,
-                        help="""If specified, writes output through socket.io and not to a file
+                        help="""url of sidecar server for notifying results 
 - default={}""".format(default_socket_io_url))
     parser.add_argument("nodes", nargs='*')
     args = parser.parse_args()
@@ -310,7 +323,7 @@ def main():
     # connect socketio
     socketio = SocketIO(hostname, 443, LoggingNamespace)
 
-    one_loop(args.nodes, socketio)
+    mainloop(args.nodes, socketio, args.cycle)
         
 if __name__ == '__main__':
     init_signals()
