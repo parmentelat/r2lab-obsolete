@@ -142,7 +142,7 @@ def pass1_on_off(node_ids, infos):
     
     remaining_ids = set()
     for id in node_ids:
-        vdisplay("pass1 : {id} (CMC status via curl)".format(**locals()))
+#        vdisplay("pass1 : {id} (CMC status via curl)".format(**locals()))
         reboot = hostname(id, "reboot")
         command = [ "curl", "--silent", "http://{reboot}/status".format(**locals()) ]
         try:
@@ -177,7 +177,7 @@ def pass2_os_release(node_ids, infos):
     }
     remaining_ids = set()
     for id in node_ids:
-        vdisplay("pass2 : {id} (os_release via ssh)".format(**locals()))
+#        vdisplay("pass2 : {id} (os_release via ssh)".format(**locals()))
         control = hostname(id)
         remote_command_1 = "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release"
         remote_command_2 = "gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
@@ -226,7 +226,7 @@ def pass3_control_ping(node_ids, infos):
     # nothing to pad here, it's the last attribute
     remaining_ids = set()
     for id in node_ids:
-        vdisplay("pass3 : {id} (control_ping via ping)".format(**locals()))
+#        vdisplay("pass3 : {id} (control_ping via ping)".format(**locals()))
         # -c 1 : one packet -- -t 1 : wait for 1 second max
         control = hostname(id)
         command = [ "ping", "-c", "1", "-t", "1", control ]
@@ -254,7 +254,8 @@ def one_loop(all_ids, infos, socketio):
     infos1 = [ info for info in infos if info['id'] in pass1_ids ]
     if infos1:
         socketio.emit('r2lab-news', json.dumps(infos1), io_callback)
-    vdisplay("pass1 done, emitted ", infos1)
+    vdisplay("pass1 done, emitted (or not) ", infos1)
+    assert(len(infos1) == len(pass1_ids))
 
     focus_ids = remaining_ids
     remaining_ids = pass2_os_release(focus_ids, infos)
@@ -262,7 +263,8 @@ def one_loop(all_ids, infos, socketio):
     infos2 = [ info for info in infos if info['id'] in pass2_ids ]
     if infos2:
         socketio.emit('r2lab-news', json.dumps(infos2), io_callback)
-    vdisplay("pass2 done, emitted ", infos2)
+    vdisplay("pass2 done, emitted (or not) ", infos2)
+    assert(len(infos2) == len(pass2_ids))
 
     focus_ids = remaining_ids
     remaining_ids = pass3_control_ping(focus_ids, infos)
@@ -270,7 +272,8 @@ def one_loop(all_ids, infos, socketio):
     infos3 = [ info for info in infos if info['id'] in pass3_ids ]
     if infos3:
         socketio.emit('r3lab-news', json.dumps(infos3), io_callback)
-    vdisplay("pass3 done, emitted ", infos3)
+    vdisplay("pass3 done, emitted (or not) ", infos3)
+    assert(len(infos3) == len(pass3_ids))
 
     # should not happen
     if remaining_ids:
@@ -287,8 +290,13 @@ def one_loop(all_ids, infos, socketio):
         else:
             return '.'
     one_liner = "".join([one_char_summary(info) for info in infos])
+    summary = "{} + {} + {} = {}".format(
+        len(infos1), len(infos2), len(infos3),
+        len(infos1) + len(infos2) + len(infos3))
     duration = datetime.now() - start
-    display("{} - {} s {} ms".format(one_liner, duration.seconds, int(duration.microseconds/1000)))
+    display("{} - {} - {} s {} ms".format(
+        one_liner, summary,
+        duration.seconds, int(duration.microseconds/1000)))
 
 ##########
 arg_matcher = re.compile('[^0-9]*(?P<id>\d+)')
