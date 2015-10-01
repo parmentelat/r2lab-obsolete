@@ -53,11 +53,15 @@ timeout_ssh = 1
 # here again should be amply enough
 timeout_ping = 1
 
+# global
+output_file = sys.stdout
+
 ########## helper
 def display(*args, **keywords):
-    keywords['file'] = sys.stderr
-    print("monitor", *args, **keywords)
-    sys.stderr.flush()
+    timestamp = time.strftime("%m/%d %H:%M:%S", time.localtime())
+    keywords['file'] = output_file
+    print("{} monitor".format(timestamp), *args, **keywords)
+    output_file.flush()
 
 def vdisplay(*args, **keywords):
     if verbose:
@@ -238,7 +242,7 @@ def pass3_control_ping(node_ids, infos):
 
 ##########
 def io_callback(*args, **kwds):
-    print('on socketIO response', *args, **kwds)
+    display('on socketIO response', *args, **kwds)
 
 def one_loop(all_ids, infos, socketio):
     start = datetime.now()
@@ -267,7 +271,7 @@ def one_loop(all_ids, infos, socketio):
 
     # should not happen
     if remaining_ids:
-        display("OOPS - unexpected remaining nodes = ", remaining_ids, file=sys.stderr)
+        display("OOPS - unexpected remaining nodes = ", remaining_ids)
     
     # print one-line status
     def one_char_summary(info):
@@ -281,7 +285,7 @@ def one_loop(all_ids, infos, socketio):
             return '.'
     one_liner = "".join([one_char_summary(info) for info in infos])
     duration = datetime.now() - start
-    print("{} - {} s {} ms".format(one_liner, duration.seconds, int(duration.microseconds/1000)))
+    display("{} - {} s {} ms".format(one_liner, duration.seconds, int(duration.microseconds/1000)))
 
 ##########
 arg_matcher = re.compile('[^0-9]*(?P<id>\d+)')
@@ -293,11 +297,12 @@ def normalize(cli_arg):
         if match:
             id = match.group('id')
         else:
-            display("discarded malformed argument {cli_arg}".format(**locals()), file=sys.stderr)
+            display("discarded malformed argument {cli_arg}".format(**locals()))
             return None
     return int(id)
 
 def mainloop(nodes, socketio, cycle, runs):
+    display("entering mainloop")
     ### elaborate global focus
     all_ids = { normalize(x) for x in nodes }
     all_ids = frozenset([ x for x in all_ids if x ])
@@ -318,6 +323,8 @@ def mainloop(nodes, socketio, cycle, runs):
 def init_signals ():
     def handler (signum, frame):
         display("Received signal {} - exiting".format(signum))
+        if output_file != sys.stdout:
+            output_file.close()
         os._exit(1)
     signal.signal(signal.SIGHUP, handler)
     signal.signal(signal.SIGQUIT, handler)
@@ -337,10 +344,18 @@ def main():
     parser.add_argument("-s", "--socket-io-url", action='store', default=default_socket_io_url,
                         help="""url of sidecar server for notifying results 
 - default={}""".format(default_socket_io_url))
+    parser.add_argument("-o", "--output", action='store', default=None,
+                        help="Specify filename for logs (will be open in append mode)")
     parser.add_argument("nodes", nargs='*')
     args = parser.parse_args()
+
+    # deal with options and args
     global verbose
     verbose = args.verbose
+    if args.output:
+        global output_file
+        vdisplay("Opening {} in append mode".format(args.output))
+        output_file = open(args.output, "a")
     if not args.nodes:
         args.nodes = default_nodes
 

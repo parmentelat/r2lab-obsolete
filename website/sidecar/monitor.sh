@@ -13,10 +13,6 @@ CODEDIR=$(dirname $0)
 
 LOCAL_LOG=/var/log/monitor.log
 
-function display() {
-    echo $(date '+%m/%d %H:%M:%S') "$@"
-}
-
 function locate_pid() {
     key=$1; shift
     pids=$(pgrep -f $key)
@@ -26,15 +22,15 @@ function locate_pid() {
 function start() {
     # nodes can be specified on the command line, defaults to all nodes
 
-    echo Using $CODEDIR/monitor.py
+#    echo Using $CODEDIR/monitor.py
     # options
-    delay=3
+    cycle=3
     verbose=
 
-    while getopts ":d:" opt; do
+    while getopts ":c:" opt; do
 	case $opt in
-	    d)
-		delay=$OPTARG;;
+	    c)
+		cycle=$OPTARG;;
 	    v)
 		verbose=-v ;;
 	esac
@@ -43,13 +39,7 @@ function start() {
 
     cd $CODEDIR
 
-    while true; do
-	display probing
-	./monitor.py $verbose "$@"
-	# no need to push anymore
-	display sleep $delay s
-	sleep $delay
-    done >> $LOCAL_LOG 2>&1 &
+    ./monitor.py $verbose -c $cycle "$@" -o $LOCAL_LOG &
 }
 
 function stop() {
