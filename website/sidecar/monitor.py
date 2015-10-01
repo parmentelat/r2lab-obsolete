@@ -19,8 +19,9 @@ this is as optimized as we can think about it
   * get { 'cmc_on_off' : 'on', 'control_ping' : 'on' or 'off'}
 """
 
-default_cycle = 3.
-default_nodes = range(1, 38)
+default_runs = 0                # run forever
+default_cycle = 3.              # wait for 3s between runs
+default_nodes = range(1, 38)    # focus on nodes 1-37
 default_socket_io_url = "ws://r2lab.inria.fr:443/"
 
 from datetime import datetime
@@ -246,19 +247,18 @@ def one_loop(node_ids, infos, socketio):
         display("OOPS - unexpected remaining nodes = ", remaining_ids, file=sys.stderr)
     
     # print one-line status
-    for info in infos:
+    def one_char_summary(info):
         if 'os_release' in info and info['os_release'] != 'fail':
-            char = '^'
+            return '^'
         elif 'control_ping' in info and info['control_ping'] != 'off':
-            char = 'O'
+            return 'O'
         elif 'cmc_on_off' in info and info['cmc_on_off'] == 'on':
-            char = 'o'
+            return 'o'
         else:
-            char = '.'
-        print(char, end='')
+            return '.'
+    one_liner = "".join([one_char_summary(info) for info in infos])
     duration = datetime.now() - start
-    print(" - total {} s {} ms".format(duration.seconds, int(duration.microseconds/1000)))
-    print()
+    print("{} - {} s {} ms".format(one_liner, duration.seconds, int(duration.microseconds/1000)))
 
 ##########
 arg_matcher = re.compile('[^0-9]*(?P<id>\d+)')
@@ -274,7 +274,7 @@ def normalize(cli_arg):
             return None
     return int(id)
 
-def mainloop(nodes, socketio, cycle):
+def mainloop(nodes, socketio, cycle, runs):
     ### elaborate global focus
     node_ids = [ normalize(x) for x in nodes ]
     node_ids = [ x for x in node_ids if x]
@@ -282,8 +282,13 @@ def mainloop(nodes, socketio, cycle):
     # create a single global list of results that we keep
     # between runs 
     infos = []
+    counter = 0
     while True:
         one_loop(node_ids, infos, socketio)
+        counter += 1
+        if runs and counter >= runs:
+            display("bailing out after {} runs".format(runs))
+            break
         time.sleep(cycle)
 
 ##########
@@ -303,6 +308,9 @@ def main():
                         type=float,
                         help="Set delay in seconds to be waited between 2 runs - default = {}".
                         format(default_cycle))
+    parser.add_argument('-r', '--runs', dest='runs', default=default_runs,
+                        type=int,
+                        help="How many runs (default={}; 0 means forever)".format(default_runs))
     parser.add_argument("-s", "--socket-io-url", action='store', default=default_socket_io_url,
                         help="""url of sidecar server for notifying results 
 - default={}""".format(default_socket_io_url))
@@ -323,7 +331,7 @@ def main():
     # connect socketio
     socketio = SocketIO(hostname, 443, LoggingNamespace)
 
-    mainloop(args.nodes, socketio, args.cycle)
+    mainloop(args.nodes, socketio, args.cycle, args.runs)
         
 if __name__ == '__main__':
     init_signals()
