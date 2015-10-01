@@ -82,10 +82,10 @@ var walls_radius = 30;
 // pillars - derived from the walls
 var pillar_radius = 16;
 
-//// nodes
+var debug = true;
 
 
-////////////////////////////////////////
+//////////////////////////////////////// nodes
 // the overall room size
 var room_x = steps_x*space_x + 2*padding_x, room_y = steps_y*space_y + 2*padding_y;
 
@@ -324,13 +324,18 @@ function R2Lab() {
     }
     
     this.handle_json_status = function(json) {
-	// xxx somehow we get nois in the mix
+	// xxx somehow we get noise in the mix
 	if (json == "") {
 	    console.log("Bloops..");
 	    return;
 	}
 	try {
 	    var nodes_info = JSON.parse(json);
+	    if (debug) {
+		console.log("*** DBG Received info about " + nodes_info.length + " nodes");
+		console.log(nodes_info);
+		console.log("*** DBG end");
+	    }
 	    // first we write this data into the MapNode structures
 	    for (var i=0; i < nodes_info.length; i++) {
 		var node_info = nodes_info[i];
@@ -340,9 +345,9 @@ function R2Lab() {
 	    }
 	    this.animate_changes();
 	} catch(err) {
-//	    console.log("Could not apply news - ignored  - JSON=<<" + json + ">>");
-	    console.log("Could not apply news - ignored  - JSON has " + json.length + " chars");
+	    console.log("*** Could not apply news - ignored  - JSON has " + json.length + " chars");
 	    console.log(err.stack);
+	    console.log("***");
 	}
     }
 
@@ -447,10 +452,8 @@ function R2Lab() {
 
     // filters nice_float(for background)s
     this.declare_image_filter = function (id_filename) {
-//	console.log('decl. fil. ' + id_filename);
 	// create defs element if not yet present
 	if ( ! $('#livemap_container svg defs').length) {
-//	    console.log("creating defs");
 	    d3.select('#livemap_container svg').append('defs');
 	}
 	// create filter in there
@@ -478,7 +481,7 @@ function R2Lab() {
 	if ( ! sidecar_hostname)
 	    sidecar_hostname = 'localhost';
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
-	console.log("livemap is connecting to sidecar server at " + url);
+	if (debug) console.log("livemap is connecting to sidecar server at " + url);
 	this.sidecar_socket = io(url);
 	// what to do when receiving news from sidecar 
 	var lab = this;
