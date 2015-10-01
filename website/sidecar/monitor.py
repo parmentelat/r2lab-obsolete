@@ -252,21 +252,24 @@ def one_loop(all_ids, infos, socketio):
     remaining_ids = pass1_on_off(focus_ids, infos)
     pass1_ids = focus_ids - remaining_ids
     infos1 = [ info for info in infos if info['id'] in pass1_ids ]
-    socketio.emit('r2lab-news', json.dumps(infos1), io_callback)
+    if infos1:
+        socketio.emit('r2lab-news', json.dumps(infos1), io_callback)
     vdisplay("pass1 done, emitted ", infos1)
 
     focus_ids = remaining_ids
     remaining_ids = pass2_os_release(focus_ids, infos)
     pass2_ids = focus_ids - remaining_ids
     infos2 = [ info for info in infos if info['id'] in pass2_ids ]
-    socketio.emit('r2lab-news', json.dumps(infos2), io_callback)
+    if infos2:
+        socketio.emit('r2lab-news', json.dumps(infos2), io_callback)
     vdisplay("pass2 done, emitted ", infos2)
 
     focus_ids = remaining_ids
     remaining_ids = pass3_control_ping(focus_ids, infos)
     pass3_ids = focus_ids - remaining_ids
     infos3 = [ info for info in infos if info['id'] in pass3_ids ]
-    socketio.emit('r3lab-news', json.dumps(infos3), io_callback)
+    if infos3:
+        socketio.emit('r3lab-news', json.dumps(infos3), io_callback)
     vdisplay("pass3 done, emitted ", infos3)
 
     # should not happen
