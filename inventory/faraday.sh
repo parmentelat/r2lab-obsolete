@@ -674,3 +674,9 @@ ADMIN=onelab.inria.r2lab.admin
 
 alias admin-account="su - $ADMIN"
 doc-admin admin-account alias
+
+alias monitor-log="tail -f /var/log/monitor.log"
+doc-admin monitor-log alias
+
+alias sidecar-log="tail -f /var/log/sidecar.log"
+doc-admin sidecar-log alias
