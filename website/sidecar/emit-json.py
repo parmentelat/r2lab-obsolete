@@ -18,8 +18,10 @@ def i(hostname=hostname, port=port):
     socketio = SocketIO(hostname, port, LoggingNamespace)
 
 i()
-print("""soketio connected to {}:{}".format(hostname, port)
-Run `i(hostname, port)` to create another connection""")
+print("""---
+soketio connected to {}:{}""".format(hostname, port))
+print("""---
+Run i('localhost', 443) e.g. to create another connection""")
 
 
 def e(infos):
@@ -28,11 +30,11 @@ def e(infos):
         infos = [infos]
     socketio.emit('r2lab-news', json.dumps(infos), io_callback)
 
-print("Run e({'id':4, 'available': None}) to send a message")
+print("Run e({'id':4, 'cmc_on_off': 'on'}) to send a message")
 
 def a(id, info):
     info['id'] = id
     e(info)
     
-print("Run a(4, {'available': None}) to send a message to a node")
+print("Run a(4, {'cmc_on_off': 'off'}) to send a message about a specific node")
 

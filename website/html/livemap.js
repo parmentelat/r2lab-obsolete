@@ -193,10 +193,10 @@ var MapNode = function (node_spec) {
     // but animate.py does show that
     this.op_status_radius = function() {
 	// completely off
-	if (this.cmc_on_off == 'off')
+	if (this.cmc_on_off != 'on')
 	    return this.cst_radius_ko;
 	// does not even ping
-	else if (this.control_ping == 'off')
+	else if (this.control_ping != 'on')
 	    return this.cst_radius_warming;
 	// pings but cannot get ssh
 	else if (this.os_release == 'fail')
