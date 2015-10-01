@@ -99,7 +99,7 @@ def check_call_timeout(command, timeout, **keywords):
         signal.signal(signal.SIGALRM, original)
 
 ##########
-def insert_or_refine(id, infos, override=None):
+def insert_or_refine(id, infos, *overrides):
     """
     locate an info in infos with that id (or create one)
     then update it with override if provided
@@ -111,13 +111,9 @@ def insert_or_refine(id, infos, override=None):
             node_info = scan
             break
     if not node_info:
-        node_info = {'id' : id,
-#                    'cmc_on_off' : 'off',
-#                    'control_ping' : 'off',
-#                    'os_release' : 'fail',
-                }
+        node_info = {'id' : id}
         infos.append(node_info)
-    if override:
+    for override in overrides:
         node_info.update(override)
     return infos
 
@@ -131,7 +127,16 @@ def pass1_on_off(node_ids, infos):
     performs insertions/updates in infos 
     returns the list of nodes that still need to be probed
     """
-    remaining_ids = []
+
+    # the nodes that fail here will be emitted right away
+    # so we need to have the following fields reset in this case
+    # general pattern here is to pad infos that are not in remaining_ids
+    padding_dict = {
+        'control_ping' : 'off',
+        'os_release' : 'fail',
+    }
+    
+    remaining_ids = set()
     for id in node_ids:
         vdisplay("pass1 : {id} (CMC status via curl)".format(**locals()))
         reboot = hostname(id, "reboot")
@@ -139,15 +144,16 @@ def pass1_on_off(node_ids, infos):
         try:
             result = check_output_timeout(command, timeout_curl, universal_newlines=True).strip()
             if result == 'off':
-                insert_or_refine(id, infos, {'cmc_on_off' : 'off'})
+                # fill in all fields so we can emit these
+                insert_or_refine(id, infos, {'cmc_on_off' : 'off'}, padding_dict)
             elif result == 'on':
                 insert_or_refine(id, infos, {'cmc_on_off' : 'on'})
-                remaining_ids.append(id)
+                remaining_ids.add(id)
             else:
                 raise Exception("unexpected result on CMC status request " + result)
         except Exception as e:
             vdisplay(e)
-            insert_or_refine(id, infos, {'cmc_on_off' : 'fail'})
+            insert_or_refine(id, infos, {'cmc_on_off' : 'fail'}, padding_dict)
     return remaining_ids
 
 
@@ -162,7 +168,10 @@ def pass2_os_release(node_ids, infos):
 
     same mechanism as pass1 in terms of side-effects and return value
     """
-    remaining_ids = []
+    padding_dict = {
+        'control_ping' : 'on'
+    }
+    remaining_ids = set()
     for id in node_ids:
         vdisplay("pass2 : {id} (os_release via ssh)".format(**locals()))
         control = hostname(id)
@@ -176,25 +185,31 @@ def pass2_os_release(node_ids, infos):
         ]
         try:
             output = check_output_timeout(ssh_command, timeout_ssh, universal_newlines=True)
-            # there should be 2 lines in general
-            line1, line2 = output.strip().split("\n")
-            # line1
-            os_release = None
-            match = ubuntu_matcher.match(line1)
-            if match:
-                version = match.group('ubuntu_version')
-                os_release = "ubuntu-{version}".format(**locals())
-            match = fedora_matcher.match(line1)
-            if match:
-                version = match.group('fedora_version')
-                os_release = "fedora-{version}".format(**locals())
-            if not os_release:
-                os_release = 'other'
-            # xxx ignore gnuradio for now
-            insert_or_refine(id, infos, {'os_release' : os_release, 'control_ping' : 'on'})
+            try:
+                # there should be 2 lines in general
+                # except for 'other' OSes
+                line1, line2 = output.strip().split("\n")
+                ### line1
+                os_release = None
+                match = ubuntu_matcher.match(line1)
+                if match:
+                    version = match.group('ubuntu_version')
+                    os_release = "ubuntu-{version}".format(**locals())
+                match = fedora_matcher.match(line1)
+                if match:
+                    version = match.group('fedora_version')
+                    os_release = "fedora-{version}".format(**locals())
+                if not os_release:
+                    os_release = 'other'
+                ### line2
+                # xxx ignore gnuradio for now
+                pass
+                insert_or_refine(id, infos, {'os_release' : os_release}, padding_dict)
+            except:
+                insert_or_refine(id, infos, {'os_release' : 'other'}, padding_dict)
         except:
             insert_or_refine(id, infos, {'os_release' : 'fail'})
-            remaining_ids.append(id)
+            remaining_ids.add(id)
     return remaining_ids
 
 def pass3_control_ping(node_ids, infos):
@@ -204,7 +219,8 @@ def pass3_control_ping(node_ids, infos):
 
     same mechanism as pass1 in terms of side-effects and return value
     """
-    remaining_ids = []
+    # nothing to pad here, it's the last attribute
+    remaining_ids = set()
     for id in node_ids:
         vdisplay("pass3 : {id} (control_ping via ping)".format(**locals()))
         # -c 1 : one packet -- -t 1 : wait for 1 second max
@@ -224,24 +240,31 @@ def pass3_control_ping(node_ids, infos):
 def io_callback(*args, **kwds):
     print('on socketIO response', *args, **kwds)
 
-def one_loop(node_ids, infos, socketio):
+def one_loop(all_ids, infos, socketio):
     start = datetime.now()
     ### init    
-    remaining_ids = node_ids
 
-    remaining_ids = pass1_on_off(remaining_ids, infos)
-    # emit the nodes that have failed
-# might be a good idea to emit several times, but needs more testing
-#    socketio.emit('r2lab-news', json.dumps(infos), io_callback)
-#    display("pass1 done", infos)
-    remaining_ids = pass2_os_release(remaining_ids, infos)
-#    socketio.emit('r2lab-news', json.dumps(infos), io_callback)
-#    display("pass2 done", infos)
-    remaining_ids = pass3_control_ping(remaining_ids, infos)
-    socketio.emit('r2lab-news', json.dumps(infos), io_callback)
-#    display("pass3 done", infos)
+    focus_ids = all_ids
+    remaining_ids = pass1_on_off(focus_ids, infos)
+    pass1_ids = focus_ids - remaining_ids
+    infos1 = [ info for info in infos if info['id'] in pass1_ids ]
+    socketio.emit('r2lab-news', json.dumps(infos1), io_callback)
+    vdisplay("pass1 done, emitted ", infos1)
 
-                
+    focus_ids = remaining_ids
+    remaining_ids = pass2_os_release(focus_ids, infos)
+    pass2_ids = focus_ids - remaining_ids
+    infos2 = [ info for info in infos if info['id'] in pass2_ids ]
+    socketio.emit('r2lab-news', json.dumps(infos2), io_callback)
+    vdisplay("pass2 done, emitted ", infos2)
+
+    focus_ids = remaining_ids
+    remaining_ids = pass3_control_ping(focus_ids, infos)
+    pass3_ids = focus_ids - remaining_ids
+    infos3 = [ info for info in infos if info['id'] in pass3_ids ]
+    socketio.emit('r3lab-news', json.dumps(infos3), io_callback)
+    vdisplay("pass3 done, emitted ", infos3)
+
     # should not happen
     if remaining_ids:
         display("OOPS - unexpected remaining nodes = ", remaining_ids, file=sys.stderr)
@@ -276,15 +299,15 @@ def normalize(cli_arg):
 
 def mainloop(nodes, socketio, cycle, runs):
     ### elaborate global focus
-    node_ids = [ normalize(x) for x in nodes ]
-    node_ids = [ x for x in node_ids if x]
+    all_ids = { normalize(x) for x in nodes }
+    all_ids = frozenset([ x for x in all_ids if x ])
 
     # create a single global list of results that we keep
     # between runs 
     infos = []
     counter = 0
     while True:
-        one_loop(node_ids, infos, socketio)
+        one_loop(all_ids, infos, socketio)
         counter += 1
         if runs and counter >= runs:
             display("bailing out after {} runs".format(runs))
