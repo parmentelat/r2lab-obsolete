@@ -11,7 +11,7 @@ function action() {
     case $verb in
 	start)
 	    cd $CODEDIR
-	    nohup node sidecar.js > $LOG 2>&1 &
+	    nohup node sidecar.js "$@" >> $LOG 2>&1 &
 	    echo started
 	    ;;
 	stop)

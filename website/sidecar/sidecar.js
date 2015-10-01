@@ -35,7 +35,7 @@ var verbose_flag=false;
 // always display
 function display(args){
     for (var i in arguments) {
-       console.log(new Date() + " " + arguments[i]);
+       console.log(new Date() + " sidecar " + arguments[i]);
     }
 }
 // display only if in verbose mode
@@ -76,7 +76,6 @@ io.on('connection', function(socket){
     // so we can send JSON messages manually (e.g. using a chat app)
     socket.on(channel_news, function(news_string){
 	update_complete_file_from_news(news_string);
-	vdisplay("Forwarding on channel " + channel_news + ":" + news_string);
 	io.emit(channel_news, news_string);
     });
     // this is more crucial, this is how complete status gets transmitted initially 
@@ -182,6 +181,7 @@ function update_complete_file_from_news(news_string){
 	var complete_infos = sync_read_file_as_infos(filename_complete);
 	// convert string into infos
 	var news_infos = JSON.parse(news_string);
+	vdisplay("updating complete file with " + news_infos.length + " news infos");
 	// merge both
 	complete_infos = merge_news_into_complete(complete_infos, news_infos);
 //	vdisplay("merged news : " + JSON.stringify(news_infos));
