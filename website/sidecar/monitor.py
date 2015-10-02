@@ -324,9 +324,6 @@ def one_loop(all_ids, infos, socketio):
     display("{} - {} - {} s {} ms".format(
         one_liner, summary,
         duration.seconds, int(duration.microseconds/1000)))
-#    vdisplay("infos1 = {}".format(infos1))
-#    vdisplay("infos2 = {}".format(infos2))
-#    vdisplay("infos3 = {}".format(infos3))
 
 ##########
 arg_matcher = re.compile('[^0-9]*(?P<id>\d+)')
