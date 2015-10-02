@@ -332,7 +332,7 @@ function R2Lab() {
 	try {
 	    var nodes_info = JSON.parse(json);
 	    if (debug) {
-		console.log("*** DBG Received info about " + nodes_info.length + " nodes");
+		console.log("*** " + new Date() + " DBG Received info about " + nodes_info.length + " nodes");
 		console.log(nodes_info);
 		console.log("*** DBG end");
 	    }
