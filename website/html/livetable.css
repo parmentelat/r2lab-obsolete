@@ -8,7 +8,7 @@
   font-style: normal;
 }
 
-.livetable thead th{
+.livetable thead th, .livetable tfoot th {
     font-size: 30px;
     font-style: bold;
     text-align:center;

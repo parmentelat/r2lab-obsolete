@@ -52,9 +52,18 @@ The table with these queries are presented below.
       <th>O.S.</th>
     </tr>
   </thead>
-  <!-- hook for livetable.js -->
-  <tbody id="livetable_container">
-  </tbody>
+  <!-- begin hook for livetable.js -->
+  <tbody id="livetable_container" />
+  <!-- end hook for livetable.js -->
+  <tfoot>
+    <tr>
+      <th></th>
+      <th>Availability</th>
+      <th>On/Off</th>
+      <th>Ping</th>
+      <th>O.S.</th>
+    </tr>
+  </tfoot>
 </table>
 
 
