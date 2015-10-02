@@ -96,7 +96,7 @@ full control and granted access<br>
     <br>
     <br>
     <br>
-    <img src="assets/img/node_interfaces_2.jpg" width="300px">
+    <img src="assets/img/node_interface_2.jpg" width="300px">
     <center>Fig. 2 - Resource/Node Icarus</center>
   </div>
 </div>
