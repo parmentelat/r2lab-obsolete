@@ -186,17 +186,20 @@ def pass2_os_release(node_ids, infos):
     for id in node_ids:
 #        vdisplay("pass2 : {id} (os_release via ssh)".format(**locals()))
         control = hostname(id)
-        remote_command_1 = "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release"
-        remote_command_2 = "echo -n GNURADIO: ; gnuradio-config-info --version"
+        remote_commands = [
+            "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release",
+            "echo -n GNURADIO: ; gnuradio-config-info --version",
+            "head /sys/class/net/wlan?/statistics/[rt]x_bytes",
+            ]
         ssh_command = [
             "ssh",
             "-q",
             "root@{control}".format(**locals()),
-            remote_command_1 + ";" + remote_command_2
+            ";".join(remote_commands)
         ]
         try:
             answer = check_output_timeout(ssh_command, timeout_ssh, universal_newlines=True)
-            print('pass1 got global answer', answer)
+#            print('pass1 got global answer', answer)
             try:
                 flavour = "other"
                 extension = ""
