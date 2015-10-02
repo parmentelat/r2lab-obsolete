@@ -111,7 +111,7 @@ def check_call_timeout(command, timeout, **keywords):
 def insert_or_refine(id, infos, *overrides):
     """
     locate an info in infos with that id (or create one)
-    then update it with override if provided
+    then update it with any override(s) if provided
     returns infos
     """
     node_info = None
@@ -308,14 +308,14 @@ def one_loop(all_ids, infos, socketio):
     
     # print one-line status
     def one_char_summary(info):
-        if 'os_release' in info and info['os_release'] != 'fail':
+        if 'cmc_on_off' in info and info['cmc_on_off'] != 'on':
+            return '.'
+        elif 'os_release' in info and info['os_release'] != 'fail':
             return '^'
         elif 'control_ping' in info and info['control_ping'] != 'off':
             return 'O'
-        elif 'cmc_on_off' in info and info['cmc_on_off'] == 'on':
-            return 'o'
         else:
-            return '.'
+            return 'o'
     one_liner = "".join([one_char_summary(info) for info in infos])
     summary = "{} + {} + {} = {}".format(
         len(infos1), len(infos2), len(infos3),
