@@ -244,6 +244,9 @@ function init_watcher() {
 
 // run http server
 function run_server() {
+    process.on('SIGINT', function(){ display("Received SIGINT - exiting"); process.exit(1);});
+    process.on('SIGTERM', function(){ display("Received SIGTERM - exiting"); process.exit(1);});
+
     try {
 	http.listen(port_number, function(){
 	    display('listening on *:' + port_number);
