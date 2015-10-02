@@ -130,6 +130,8 @@ function sync_save_infos_in_file(filename, infos){
     
 // merge news info into complete infos; return new complete
 function merge_news_into_complete(complete_infos, news_infos){
+    vdisplay("ENTERING merge with complete = " + complete_infos);
+    vdisplay("ENTERING merge with news = " + news_infos);
     for (var nav=0; nav < news_infos.length; nav++) {
 	var node_info = news_infos[nav];
 	var id = node_info.id;
@@ -151,6 +153,7 @@ function merge_news_into_complete(complete_infos, news_infos){
 	if (! found)
 	    complete_infos.push(node_info);
     }
+    vdisplay("EXITING merge with complete = " + complete_infos);
     return complete_infos;
 }
 		
@@ -197,12 +200,13 @@ function update_complete_file_from_news(news_string){
 function parse_args() {
     // very rough parsing of command line args - to set verbosity
     var argv = process.argv.slice(2);
-    argv.forEach(function (val, index, array) {
+    argv.forEach(function (arg, index, array) {
+	console.log("scanning arg " + arg);
 	// verbose
-	if (val == "-v")
+	if (arg == "-v")
 	    verbose_flag=true;
 	// local dev (use json files in .)
-	if (val == "-l") {
+	if (arg == "-l") {
 	    filename_news = path.basename(filename_news);
 	    filename_complete = path.basename(filename_complete);
 	    console.log("local mode : watching " + filename_news);
