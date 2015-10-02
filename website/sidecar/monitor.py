@@ -271,7 +271,7 @@ def one_loop(all_ids, infos, socketio):
     pass3_ids = focus_ids - remaining_ids
     infos3 = [ info for info in infos if info['id'] in pass3_ids ]
     if infos3:
-        socketio.emit('r3lab-news', json.dumps(infos3), io_callback)
+        socketio.emit('r2lab-news', json.dumps(infos3), io_callback)
     vdisplay("pass3 done, emitted (or not) ", infos3)
     assert(len(infos3) == len(pass3_ids))
 
