@@ -17,4 +17,4 @@ git reset --hard HEAD >> $LOG
 
 $command.sh stop >> $LOG
 sleep 1
-$command start >> $LOG
+$command.sh start >> $LOG
