@@ -142,7 +142,8 @@ def pass1_on_off(node_ids, infos):
     # general pattern here is to pad infos that are not in remaining_ids
     padding_dict = {
         'control_ping' : 'off',
-        'os_release' : 'fail',
+# don't overwrite os_release so that livetable can show it
+#        'os_release' : 'fail',
     }
     
     remaining_ids = set()
@@ -217,7 +218,8 @@ def pass2_os_release(node_ids, infos):
             except:
                 insert_or_refine(id, infos, {'os_release' : 'other'}, padding_dict)
         except:
-            insert_or_refine(id, infos, {'os_release' : 'fail'})
+# don't overwrite os_release so that livetable can show it
+#            insert_or_refine(id, infos, {'os_release' : 'fail'})
             remaining_ids.add(id)
     return remaining_ids
 

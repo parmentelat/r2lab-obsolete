@@ -40,7 +40,7 @@ Complementary to the live map above, this status table present an alternative fo
 - The <b>ping</b> column: 
 	Reports that the node answers a single ping at the experiment interface.
 - The <b>O.S</b> column:
-	Reports that the node responds a ssh connection sending back the operational system release.
+	Reports that O.S. that was last seen on that node.
 <br />
 
 
