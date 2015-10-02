@@ -1,18 +1,20 @@
 #!/bin/bash
 
-cd /root/fitsophia
-git reset --hard HEAD
-./auto-update.sh
-
 case $(hostname) in
     faraday*)
-	command=monitor.sh;;
+	command=monitor;;
     r2lab*)
-	command=sidecar.sh;;
+	command=sidecar;;
     *)
 	echo Unknown host $(hostname); exit 1;;
 esac
 
-$command stop
+LOG=/var/log/$command.log
+
+cd /root/fitsophia
+git reset --hard HEAD >> $LOG
+./auto-update.sh
+
+$command.sh stop >> $LOG
 sleep 1
-$command start
+$command start >> $LOG
