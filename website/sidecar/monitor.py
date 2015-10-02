@@ -171,6 +171,8 @@ def pass1_on_off(node_ids, infos):
 ubuntu_matcher = re.compile("DISTRIB_RELEASE=(?P<ubuntu_version>[0-9.]+)")
 fedora_matcher = re.compile("Fedora release (?P<fedora_version>\d+)")
 gnuradio_matcher = re.compile("\AGNURADIO:(?P<gnuradio_version>[0-9\.]+)\Z")
+rxtx_matcher = re.compile("==> /sys/class/net/(?P<device>wlan[0-9])/statistics/(?P<rxtx>[rt]x)_bytes <==")
+number_matcher = re.compile("\A[0-9]+\Z")
 
 def pass2_os_release(node_ids, infos):
     """
@@ -188,7 +190,7 @@ def pass2_os_release(node_ids, infos):
         control = hostname(id)
         remote_commands = [
             "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release",
-            "echo -n GNURADIO: ; gnuradio-config-info --version",
+            "echo -n GNURADIO: ; gnuradio-config-info --version 2> /dev/null || echo none",
             "head /sys/class/net/wlan?/statistics/[rt]x_bytes",
             ]
         ssh_command = [
@@ -199,10 +201,12 @@ def pass2_os_release(node_ids, infos):
         ]
         try:
             answer = check_output_timeout(ssh_command, timeout_ssh, universal_newlines=True)
-#            print('pass1 got global answer', answer)
+#            print('pass2 got global answer', answer)
             try:
                 flavour = "other"
                 extension = ""
+                rxtx_dict = {}
+                rxtx_key = None
                 for line in answer.strip().split("\n"):
                     match = ubuntu_matcher.match(line)
                     if match:
@@ -216,7 +220,20 @@ def pass2_os_release(node_ids, infos):
                     if match:
                         version = match.group('gnuradio_version')
                         extension += "-gnuradio-{version}".format(**locals())
+                    match = rxtx_matcher.match(line)
+                    if match:
+                        rxtx_key = "{device}_{rxtx}_rate".format(**match.groupdict())
+                    match = number_matcher.match(line)
+                    if match and rxtx_key:
+                        rxtx_dict[rxtx_key] = int(line)
+                    
                 os_release = flavour + extension
+                # this looks OK; next step will be
+                # * memorize over time, together with time of acquisition
+                # * to do differences,
+                # * compute rates
+                # probably put gains in the mix ?
+                # display("pass2 got rxtx_dict = {}".format(rxtx_dict))
                 insert_or_refine(id, infos, {'os_release' : os_release}, padding_dict)
             except:
                 insert_or_refine(id, infos, {'os_release' : 'other'}, padding_dict)
