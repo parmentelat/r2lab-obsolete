@@ -170,6 +170,7 @@ def pass1_on_off(node_ids, infos):
 ##########
 ubuntu_matcher = re.compile("DISTRIB_RELEASE=(?P<ubuntu_version>[0-9.]+)")
 fedora_matcher = re.compile("Fedora release (?P<fedora_version>\d+)")
+gnuradio_matcher = re.compile("\AGNURADIO:(?P<gnuradio_version>[0-9\.]+)\Z")
 
 def pass2_os_release(node_ids, infos):
     """
@@ -186,7 +187,7 @@ def pass2_os_release(node_ids, infos):
 #        vdisplay("pass2 : {id} (os_release via ssh)".format(**locals()))
         control = hostname(id)
         remote_command_1 = "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release"
-        remote_command_2 = "gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
+        remote_command_2 = "echo -n GNURADIO: ; gnuradio-config-info --version"
         ssh_command = [
             "ssh",
             "-q",
@@ -194,26 +195,25 @@ def pass2_os_release(node_ids, infos):
             remote_command_1 + ";" + remote_command_2
         ]
         try:
-            output = check_output_timeout(ssh_command, timeout_ssh, universal_newlines=True)
+            answer = check_output_timeout(ssh_command, timeout_ssh, universal_newlines=True)
+            print('pass1 got global answer', answer)
             try:
-                # there should be 2 lines in general
-                # except for 'other' OSes
-                line1, line2 = output.strip().split("\n")
-                ### line1
-                os_release = None
-                match = ubuntu_matcher.match(line1)
-                if match:
-                    version = match.group('ubuntu_version')
-                    os_release = "ubuntu-{version}".format(**locals())
-                match = fedora_matcher.match(line1)
-                if match:
-                    version = match.group('fedora_version')
-                    os_release = "fedora-{version}".format(**locals())
-                if not os_release:
-                    os_release = 'other'
-                ### line2
-                # xxx ignore gnuradio for now
-                pass
+                flavour = "other"
+                extension = ""
+                for line in answer.strip().split("\n"):
+                    match = ubuntu_matcher.match(line)
+                    if match:
+                        version = match.group('ubuntu_version')
+                        flavour = "ubuntu-{version}".format(**locals())
+                    match = fedora_matcher.match(line)
+                    if match:
+                        version = match.group('fedora_version')
+                        flavour = "fedora-{version}".format(**locals())
+                    match = gnuradio_matcher.match(line)
+                    if match:
+                        version = match.group('gnuradio_version')
+                        extension += "-gnuradio-{version}".format(**locals())
+                os_release = flavour + extension
                 insert_or_refine(id, infos, {'os_release' : os_release}, padding_dict)
             except:
                 insert_or_refine(id, infos, {'os_release' : 'other'}, padding_dict)
