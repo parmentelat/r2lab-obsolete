@@ -224,8 +224,11 @@ var MapNode = function (node_spec) {
     // depending on the OS
     this.op_status_filter = function() {
 	var filter_name;
+	// only set a filter with full-fledged nodes
+	if (this.op_status_radius() != this.cst_radius_ok)
+	    return undefined;
 	// remember infos might be incomplete
-	if (this.os_release == undefined)
+	else if (this.os_release == undefined)
 	    return undefined;
 	else if (this.os_release.indexOf('other') >= 0)
 	    filter_name = 'other-logo';
