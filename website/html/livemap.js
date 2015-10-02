@@ -82,7 +82,7 @@ var walls_radius = 30;
 // pillars - derived from the walls
 var pillar_radius = 16;
 
-var debug = true;
+var debug = false;
 
 
 //////////////////////////////////////// nodes
