@@ -38,6 +38,11 @@ from argparse import ArgumentParser
 
 from socketIO_client import SocketIO, LoggingNamespace
 
+# the channel to use when talking to the sidecar server
+channel_news = 'r2lab-news'
+# this one is not used here but 
+channel_signalling = 'r2lab-signalling'
+
 def hostname(node_id, prefix="fit"):
     return "{prefix}{node_id:02d}".format(**locals())
 
@@ -253,7 +258,7 @@ def one_loop(all_ids, infos, socketio):
     pass1_ids = focus_ids - remaining_ids
     infos1 = [ info for info in infos if info['id'] in pass1_ids ]
     if infos1:
-        socketio.emit('r2lab-news', json.dumps(infos1), io_callback)
+        socketio.emit(channel_news, json.dumps(infos1), io_callback)
     vdisplay("pass1 done, emitted (or not) ", infos1)
     assert(len(infos1) == len(pass1_ids))
 
@@ -262,7 +267,7 @@ def one_loop(all_ids, infos, socketio):
     pass2_ids = focus_ids - remaining_ids
     infos2 = [ info for info in infos if info['id'] in pass2_ids ]
     if infos2:
-        socketio.emit('r2lab-news', json.dumps(infos2), io_callback)
+        socketio.emit(channel_news, json.dumps(infos2), io_callback)
     vdisplay("pass2 done, emitted (or not) ", infos2)
     assert(len(infos2) == len(pass2_ids))
 
@@ -271,7 +276,7 @@ def one_loop(all_ids, infos, socketio):
     pass3_ids = focus_ids - remaining_ids
     infos3 = [ info for info in infos if info['id'] in pass3_ids ]
     if infos3:
-        socketio.emit('r2lab-news', json.dumps(infos3), io_callback)
+        socketio.emit(channel_news, json.dumps(infos3), io_callback)
     vdisplay("pass3 done, emitted (or not) ", infos3)
     assert(len(infos3) == len(pass3_ids))
 
