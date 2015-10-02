@@ -7,10 +7,6 @@ import time
 from argparse import ArgumentParser
 from socketIO_client import SocketIO, LoggingNamespace
 
-#
-complete_filename = 'complete.json'
-news_filename = 'news.json'
-
 # in seconds
 default_cycle = 1
 default_runs = 0
@@ -44,13 +40,6 @@ field_possible_values = {
 }
 
 ####################    
-def init_status(verbose):
-    complete = [ random_status(id) for id in node_ids ]
-    with open(complete_filename, 'w') as f:
-        if verbose:
-            print('Creating', complete_filename)
-        f.write(json.dumps(complete))
-
 def random_ids(max_nodes_impacted):
     how_many = random.randint(1, max_nodes_impacted)
     return [ random.choice(node_ids) for i in range(how_many)]
@@ -107,8 +96,6 @@ def main():
 
     cycle = args.cycle
 
-    init_status(args.verbose)
-    
     if args.live:
         to_remove = [ k for k in field_possible_values if 'rx' not in k and 'tx' not in k]
         for k in to_remove:
