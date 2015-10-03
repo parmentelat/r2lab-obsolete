@@ -1,5 +1,5 @@
 ########## contents
-ALL_MDS = index.md overview.md tuto-*md tutorial.md topology.md hardware.md tools.md blog.md
+ALL_MDS = index.md overview.md tuto-*md tutorial.md status.md hardware.md tools.md blog.md
 
 ALL_MEDIAS = *.png
 ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
@@ -8,11 +8,11 @@ ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
 ########## default target
 all: preview-local
 
-preview_and_nepiall: prepare index meta nepi_all topology convert resources
-full_and_nepiall: prepare index meta nepi_all topology convert resources publish
+preview_and_nepiall: prepare index meta nepi_all convert resources
+full_and_nepiall: prepare index meta nepi_all convert resources publish
 
-preview: prepare index meta topology convert resources
-full: prepare index meta topology convert resources publish
+preview: prepare index meta convert resources
+full: prepare index meta convert resources publish
 
 .PHONY: all preview full prepare index meta convert publish 
 
@@ -78,10 +78,10 @@ nepi_info:
 
 ################################
 
-# compile topology informatios  by Nepi check
-topology:
+# compile status informations  by Nepi check
+status:
 	@[ -d markdown ] || mkdir markdown
-	./topology.py
+	./status.py
 
 convert: 
 	generate-md --layout $(LAYOUT) --input markdown --output html
