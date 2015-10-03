@@ -1,83 +1,38 @@
-/* FONT PATH
- * -------------------------- */
-@font-face {
-  font-family: 'FontAwesome';
-  src: url('../html/assets/fonts/fontawesome-webfont.eot?v=4.4.0');
-  src: url('../html/assets/fonts/fontawesome-webfont.eot?#iefix&v=4.4.0') format('embedded-opentype'), url('../html/assets/fonts/fontawesome-webfont.woff2?v=4.4.0') format('woff2'), url('../html/assets/fonts/fontawesome-webfont.woff?v=4.4.0') format('woff'), url('../html/assets/fonts/fontawesome-webfont.ttf?v=4.4.0') format('truetype'), url('../html/assets/fonts/fontawesome-webfont.svg?v=4.4.0#fontawesomeregular') format('svg');
-  font-weight: normal;
-  font-style: normal;
+#livetable_container th, #livetable_container td {
+    text-align: center;
 }
 
+/* headers */
 #livetable_container th {
     font-size: x-large;
     font-style: bold;
-    text-align:center;
 }
 
-
-#livetable_container td {
+/* body - except for the id column */
+#livetable_container td:not(.badge) {
 /*    font-size: 20px; */
     font-family: FontAwesome;
     color: grey;
-    text-align:center;
 }
 
 
 #livetable_container td.ok {
     color: green;
 }
-.ok:before {
-    content: "\f1e6";
-}
-
-
 #livetable_container td.ko {
     color: #ababab;
 }
-.ko:before {
-    content: "\f1e6";
-}
-
-
-#livetable_container td.on {
-    color: green;
-}
-.on:before {
-    content: "\f011";
-}
-
-
-#livetable_container td.off {
-    color: #ababab;
-}
-.off:before {
-    content: "\f011";
-}
-
-
-#livetable_container td.ping_ok {
-    color: green;
-}
-.ping_ok:before {
-    content: "\f00c";
-}
-
-
-#livetable_container td.ping_ko {
+#livetable_container td.error {
     color: red;
 }
-.ping_ko:before {
-    content: "\f127";
-}
-
 
 #livetable_container td.os {
-    font-size:		20px;
-    font-color:		#000;
+/*    font-size:		20px;*/
+    color:		#000;
     vertical-align:	middle;
 }
 
 
-#livetable_container td.os>img {
+#livetable_container td.os img {
     height : 20px;
 }

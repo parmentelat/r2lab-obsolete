@@ -138,10 +138,13 @@ var MapNode = function (node_spec) {
     // simply copy the fieds present in this dict in the local object
     // for further usage in animate_changes
     this.update_from_news = function(node_info) {
+	var modified = false;
 	for (var prop in node_info)
-// if something is set as undefined in the incoming message it means we want to delete it
-//	    if (node_info[prop] != undefined)
-	    this[prop] = node_info[prop];
+	    if (node_info[prop] != this[prop]) {
+		this[prop] = node_info[prop];
+		modified = true;
+	    }
+	if (! modified) return;
 	// prepare a 4-items data list for ticks
 	// the order is important
 	this.rxtx = [ this.wlan0_rx_rate, this.wlan0_tx_rate,

@@ -16,6 +16,17 @@ var other_badge = '<img src="other-logo.png">';
 // turning this back on requires adding back headers in the table columns
 var show_rxtx_rates = false;
 
+
+// quick'n dirty helper to create <span> tags inside the <td>
+// d3 should allow us to do that more nicely but I could not figure it out yet
+function span_html(text, klass) {
+    var res = "<span";
+    if (klass) res += " class='" + klass + "'";
+    res += '>';
+    res += text;
+    res += "</span>";
+    return res;
+}
 //////////////////////////////
 var nb_nodes = 37;
 
@@ -24,19 +35,25 @@ var nb_nodes = 37;
 var TableNode = function (id) {
     this.id = id;
     this.cells_data = [
-	[ id, 'badge label-default' ] ,  // id
-	undefined, // avail
-	undefined, // on/off
-	undefined, // ping
-	undefined // os_release
+	[ span_html(id, 'badge'), '' ],  // id
+	undefined,			// avail
+	undefined,			// on/off
+	undefined,			// ping
+	undefined			// os_release
     ];
 		 
+    // node_info is a dict coming through socket.io in JSON
+    // simply copy the fieds present in this dict in the local object
+    // for further usage in animate_changes
+    // don't bother if no change is detected
     this.update_from_news = function(node_info) {
-	// node_info is a dict coming through socket.io in JSON
-	// simply copy the fieds present in this dict in the local object
+	var modified = false;
 	for (var prop in node_info)
-	    if (node_info[prop] != undefined)
+	    if (node_info[prop] != this[prop]) {
 		this[prop] = node_info[prop];
+		modified = true;
+	    }
+	if (! modified) return;
 	// then rewrite actual representation in cells_data
 	// that will contain a list of ( html_text, class )
 	// used by the d3 mechanism to update the <td> elements in the row
@@ -44,15 +61,15 @@ var TableNode = function (id) {
 	// available
 	this.cells_data[col++] =
 	    (this.available == 'ko') ?
-	    [ 'Out of order', 'ko' ] : [ 'Good to go', 'ok' ];
+	    [ 'Out of order', 'error' ] : [ 'Good to go', 'ok' ];
 	// 
 	this.cells_data[col++] =
-	    this.cmc_on_off == 'fail' ? [ 'N/A', 'ko' ]
-	    : this.cmc_on_off == 'on' ? [ 'ON', 'ok' ]
-	    : [ 'OFF', 'ko' ];
-	this.cells_data[col++] = this.control_ping == 'on'
-	    ? [ 'PING', 'ok' ]
-	    : [ '--', 'ko' ];
+	    this.cmc_on_off == 'fail' ? [ 'N/A', 'error' ]
+	    : this.cmc_on_off == 'on' ? [ span_html('', 'fa fa-toggle-on'), 'ok' ]
+	    : [ span_html('', 'fa fa-toggle-off'), 'ko' ];
+	this.cells_data[col++] =
+	    this.control_ping == 'on' ? [ span_html('', 'fa fa-link'), 'ok' ]
+	    : [ span_html('', 'fa fa-unlink'), 'ko' ];
 	this.cells_data[col++] = this.release_cell(this.os_release);
 	// optional
 	if (show_rxtx_rates) {
