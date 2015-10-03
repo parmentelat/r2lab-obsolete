@@ -62,7 +62,7 @@ var pillar_specs = [
 ];
 
 //global - mostly for debugging and convenience
-var the_r2lab;
+var the_livemap;
 
 //////////////////// configuration
 // the space around the walls in the canvas
@@ -255,7 +255,7 @@ var ident = function(d) { return d; };
 var get_node_id = function(node) {return node.id;}
 
 //////////////////////////////
-function R2Lab() {
+function LiveMap() {
     var canvas_x = room_x + 2 * margin_x;
     var canvas_y = room_y + 2 * margin_y;
     var svg =
@@ -304,13 +304,18 @@ function R2Lab() {
 		function(spec){
 		    return function() {
 			console.log("Clicked on pillar " + spec.id + " - tmp for dbg, this does a manual refresh");
-			the_r2lab.request_complete_from_sidecar();
+			the_livemap.request_complete_from_sidecar();
 		    }
 		}(spec))
 	;
     }
 
     this.nodes = [];
+
+    this.init = function() {
+	this.init_nodes();
+	this.init_sidecar_socket_io();
+    }
 
     this.init_nodes = function () {
 	for (var i=0; i < mapnode_specs.length; i++) { 
@@ -505,7 +510,6 @@ function R2Lab() {
 
 // autoload
 $(function() {
-    the_r2lab = new R2Lab();
-    the_r2lab.init_nodes();
-    the_r2lab.init_sidecar_socket_io();
+    the_livemap = new LiveMap();
+    the_livemap.init();
 })
