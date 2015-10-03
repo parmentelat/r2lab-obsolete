@@ -8,22 +8,22 @@
   font-style: normal;
 }
 
-.livetable thead th, .livetable tfoot th {
-    font-size: 30px;
+#livetable_container th {
+    font-size: x-large;
     font-style: bold;
     text-align:center;
 }
 
 
-.livetable td {
-    font-size: 20px;
+#livetable_container td {
+/*    font-size: 20px; */
     font-family: FontAwesome;
     color: grey;
     text-align:center;
 }
 
 
-.livetable td.ok {
+#livetable_container td.ok {
     color: green;
 }
 .ok:before {
@@ -31,7 +31,7 @@
 }
 
 
-.livetable td.ko {
+#livetable_container td.ko {
     color: #ababab;
 }
 .ko:before {
@@ -39,7 +39,7 @@
 }
 
 
-.livetable td.on {
+#livetable_container td.on {
     color: green;
 }
 .on:before {
@@ -47,7 +47,7 @@
 }
 
 
-.livetable td.off {
+#livetable_container td.off {
     color: #ababab;
 }
 .off:before {
@@ -55,7 +55,7 @@
 }
 
 
-.livetable td.ping_ok {
+#livetable_container td.ping_ok {
     color: green;
 }
 .ping_ok:before {
@@ -63,7 +63,7 @@
 }
 
 
-.livetable td.ping_ko {
+#livetable_container td.ping_ko {
     color: red;
 }
 .ping_ko:before {
@@ -71,13 +71,13 @@
 }
 
 
-.livetable td.os {
+#livetable_container td.os {
     font-size:		20px;
     font-color:		#000;
     vertical-align:	middle;
 }
 
 
-.livetable td.os>img {
+#livetable_container td.os>img {
     height : 20px;
 }

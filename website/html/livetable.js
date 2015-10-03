@@ -92,10 +92,29 @@ var float_cell = function(f) {return [ Number(f).toLocaleString(), undefined ];}
 //////////////////////////////
 function LiveTable() {
 
-    // not even sure this makes sense
-    this.tbody = $("tbody#livetable_container");
     this.nodes = [];
     
+    this.init = function() {
+	this.init_dom();
+	this.init_nodes();
+	this.init_sidecar_socket_io();
+    }
+
+    this.init_dom = function () {
+	var containers = d3.selectAll('#livetable_container');
+	var head = containers.append('thead').attr('class', 'livetable_header');
+	var body = containers.append('tbody').attr('class', 'livetable_body');
+	var foot = containers.append('tfoot').attr('class', 'livetable_header');
+
+	var header_rows = d3.selectAll('.livetable_header').append('tr');
+	header_rows.append('th').html('#');
+	header_rows.append('th').html('Availability');
+	header_rows.append('th').html('On/Off');
+	header_rows.append('th').html('Ping');
+	header_rows.append('th').html('Last O.S.');
+	
+    }
+
     this.init_nodes = function () {
 	for (var i=0; i < nb_nodes; i++) { 
 	    this.nodes[i] = new TableNode(i+1);
@@ -107,7 +126,7 @@ function LiveTable() {
     }
     
     this.animate_changes = function(nodes_info) {
-	var tbody = d3.select("tbody#livetable_container");
+	var tbody = d3.select("tbody.livetable_body");
 	// row update selection
 	var rows = tbody.selectAll('tr')
 	    .data(this.nodes, get_node_id);
@@ -128,15 +147,16 @@ function LiveTable() {
     ////////// socket.io business
     this.handle_json_status = function(json) {
 	try {
-	    var nodes_info = JSON.parse(json);
+	    var node_infos = JSON.parse(json);
+//	    console.log("handle_json_status - incoming " + node_infos.length + " node infos");
 	    // first we write this data into the TableNode structures
-	    for (var i=0; i < nodes_info.length; i++) {
-		var node_info = nodes_info[i];
+	    for (var i=0; i < node_infos.length; i++) {
+		var node_info = node_infos[i];
 		var id = node_info['id'];
 		var node = this.locate_node_by_id(id);
 		node.update_from_news(node_info);
 	    }
-	    this.animate_changes(nodes_info);
+	    this.animate_changes(node_infos);
 	} catch(err) {
 	    if (json != "") {
 //	    console.log("Could not apply news - ignored  - JSON=<<" + json + ">>");
@@ -174,7 +194,7 @@ function LiveTable() {
 
 // autoload
 $(function() {
+    // name it for debugging from the console
     the_livetable = new LiveTable();
-    the_livetable.init_nodes();
-    the_livetable.init_sidecar_socket_io();
+    the_livetable.init();
 })

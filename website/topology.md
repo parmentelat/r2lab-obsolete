@@ -44,29 +44,8 @@ Complementary to the live map above, this status table present an alternative fo
 <br />
 
 
-<table class="table table-condensed livetable">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Availability</th>
-      <th>On/Off</th>
-      <th>Ping</th>
-      <th>O.S.</th>
-    </tr>
-  </thead>
-  <!-- begin hook for livetable.js -->
-  <tbody id="livetable_container" />
-  <!-- end hook for livetable.js -->
-  <tfoot>
-    <tr>
-      <th></th>
-      <th>Availability</th>
-      <th>On/Off</th>
-      <th>Ping</th>
-      <th>O.S.</th>
-    </tr>
-  </tfoot>
-</table>
+<table class="table table-condensed" id='livetable_container'> </table>
+
 <br />
 
 ***
