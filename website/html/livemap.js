@@ -477,7 +477,7 @@ function LiveMap() {
 	    .attr("height", "100%")
 	;
         filter.append("feImage")
-	    .attr("xlink:href", id_filename + ".png");
+	    .attr("xlink:href", "assets/img/" + id_filename + ".png");
     }
 
     this.declare_image_filter('fedora-logo');
