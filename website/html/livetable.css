@@ -36,3 +36,10 @@
 #livetable_container td.os img {
     height : 20px;
 }
+
+#livetable_container th.rxtx {
+    font-size: medium;
+}
+#livetable_container td.rxtx {
+    font-size: small;
+}

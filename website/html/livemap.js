@@ -14,6 +14,8 @@ var sidecar_port_number = 443;
 // * os_release: 'fail' means this could not be assessed, otherwise 'fedora*' and 'ubuntu*' will have corr. icon
 // * wlan0_rx_rate: and similar with wlan1 and tx: bit rate in Mbps, expected to be in the [0, 20] range a priori
 
+// ready to fly as soon as the data comes in from monitor
+var livemap_show_rxtx_rates = false;
 
 ////////// originally output from livemap-prep.py 
 mapnode_specs = [
@@ -412,53 +414,53 @@ function LiveMap() {
 	    .attr('display', function(node){return node.available_display();})
 	;
 	
-/* turning off ticks for now
-	var ticks_groups = svg.selectAll('g.ticks')
-	    .data(this.nodes, get_node_id);
-	ticks_groups.enter()
-	    .append('g')
-	    .attr("transform",
-		  function(node){ return "translate(" + node.x + "," + node.y + ")";})
-	    .attr('class', 'ticks')
-	;
-	ticks_groups
-	    .attr('display', function(node) {
-		return node.is_alive() ? "on" : "none";
-	    })
-	;
-	var ticks = ticks_groups.selectAll('rect')
-	    .data(function(node){return node.rxtx;});
-	ticks.enter()
-	    .append('rect')
-	    .attr('class', function(d, i) {return 'rxtx' + i;})
-	    .attr('width',3)
-	    .attr('x', function(node){return node.x;})
-	    .attr('y', function(node){return node.y;})
-	    .attr('stroke', '#bbb')
-	    .attr('fill', '#fff')
-	;
-	var alpha = 70;
-	ticks
-	    .transition()
-	    .duration(100)
-	// this might be undefined, but should still work 
-	    .attr('height', ident)
-	// each rxtx tick is included in a <g> already at the right position
-	// we set a rotate angle to get the desired effect
-	// + a translation that puts the tick off the center
-	// compute angle
-	// 0 : 90-alpha
-	// 1 : 90+alpha
-	// 2 & 3 : 0 & 1 + 180 resp.
-	    .attr('transform',
-		  function(data, i){
-		      var even = i%2 ? 1 : -1;
-		      var half_rounds = Math.floor(i/2);
-		      var angle = (90+even*(90-alpha)) + half_rounds*180;
-		      return "rotate(" + angle + ")" + " translate(0, 22)";})
-	;
-	;
-*/
+	if (livemap_show_rxtx_rates) {
+	    var ticks_groups = svg.selectAll('g.ticks')
+		.data(this.nodes, get_node_id);
+	    ticks_groups.enter()
+		.append('g')
+		.attr("transform",
+		      function(node){ return "translate(" + node.x + "," + node.y + ")";})
+		.attr('class', 'ticks')
+	    ;
+	    ticks_groups
+		.attr('display', function(node) {
+		    return node.is_alive() ? "on" : "none";
+		})
+	    ;
+	    var ticks = ticks_groups.selectAll('rect')
+		.data(function(node){return node.rxtx;});
+	    ticks.enter()
+		.append('rect')
+		.attr('class', function(d, i) {return 'rxtx' + i;})
+		.attr('width',3)
+		.attr('x', function(node){return node.x;})
+		.attr('y', function(node){return node.y;})
+		.attr('stroke', '#bbb')
+		.attr('fill', '#fff')
+	    ;
+	    // the angle for the ticks
+	    var alpha = 70;
+	    ticks
+		.transition()
+		.duration(100)
+	    // this might be undefined, but should still work 
+		.attr('height', ident)
+	    // each rxtx tick is included in a <g> already at the right position
+	    // we set a rotate angle to get the desired effect
+	    // + a translation that puts the tick off the center
+	    // compute angle
+	    // 0 : 90-alpha
+	    // 1 : 90+alpha
+	    // 2 & 3 : 0 & 1 + 180 resp.
+		.attr('transform',
+		      function(data, i){
+			  var even = i%2 ? 1 : -1;
+			  var half_rounds = Math.floor(i/2);
+			  var angle = (90+even*(90-alpha)) + half_rounds*180;
+			  return "rotate(" + angle + ")" + " translate(0, 22)";})
+	    ;
+	} /* livemap_show_rxtx_rates */
     }
 
     // filters nice_float(for background)s

@@ -13,8 +13,8 @@ var ubuntu_badge = '<img src="ubuntu-logo.png">';
 var gnuradio_badge = '<img src="gnuradio-logo.png">';
 var other_badge = '<img src="other-logo.png">';
 
-// turning this back on requires adding back headers in the table columns
-var show_rxtx_rates = false;
+// ready to fly as soon as the data comes in from monitor
+var livetable_show_rxtx_rates = false;
 
 
 // quick'n dirty helper to create <span> tags inside the <td>
@@ -72,7 +72,7 @@ var TableNode = function (id) {
 	    : [ span_html('', 'fa fa-unlink'), 'ko' ];
 	this.cells_data[col++] = this.release_cell(this.os_release);
 	// optional
-	if (show_rxtx_rates) {
+	if (livetable_show_rxtx_rates) {
 	    this.cells_data[col++] = float_cell(this.wlan0_rx_rate);
 	    this.cells_data[col++] = float_cell(this.wlan0_tx_rate);
 	    this.cells_data[col++] = float_cell(this.wlan1_rx_rate);
@@ -104,7 +104,7 @@ var get_node_data = function(node){return node.cells_data;}
 // rewriting info should happen in update_from_news
 var get_html = function(tuple) {return tuple[0];}
 var get_class = function(tuple) {return tuple[1];}
-var float_cell = function(f) {return [ Number(f).toLocaleString(), undefined ];}
+var float_cell = function(f) {return [ Number(f).toLocaleString(), 'rxtx' ];}
 
 //////////////////////////////
 function LiveTable() {
@@ -129,6 +129,12 @@ function LiveTable() {
 	header_rows.append('th').html('On/Off');
 	header_rows.append('th').html('Ping');
 	header_rows.append('th').html('Last O.S.');
+	if (livetable_show_rxtx_rates) {
+	    header_rows.append('th').html('wlan0-rx').attr('class','rxtx');
+	    header_rows.append('th').html('wlan0-tx').attr('class','rxtx');
+	    header_rows.append('th').html('wlan1-rx').attr('class','rxtx');
+	    header_rows.append('th').html('wlan1-tx').attr('class','rxtx');
+	}
 	
     }
 
