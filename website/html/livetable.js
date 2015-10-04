@@ -8,10 +8,10 @@ var signalling = 'r2lab-signalling';
 var sidecar_port_number = 443;
 
 
-var fedora_badge = '<img src="fedora-logo.png">';
-var ubuntu_badge = '<img src="ubuntu-logo.png">';
-var gnuradio_badge = '<img src="gnuradio-logo.png">';
-var other_badge = '<img src="other-logo.png">';
+var fedora_badge = '<img src="/assets/img/fedora-logo.png">';
+var ubuntu_badge = '<img src="/assets/img/ubuntu-logo.png">';
+var gnuradio_badge = '<img src="/assets/img/gnuradio-logo.png">';
+var other_badge = '<img src="/assets/img/other-logo.png">';
 
 // ready to fly as soon as the data comes in from monitor
 var livetable_show_rxtx_rates = false;
