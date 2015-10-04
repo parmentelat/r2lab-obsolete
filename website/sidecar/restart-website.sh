@@ -28,6 +28,7 @@ $command.sh stop >> $LOG 2>&1
 sleep 1
 $command.sh start >> $LOG 2>&1
 
+
 if [ -n "$run_publish" ]; then
-    make -C website publish-local >> $LOG 2>&1
+    make -C $GIT_REPO/website preview publish-local >> $LOG 2>&1
 fi
