@@ -108,17 +108,23 @@ def check_call_timeout(command, timeout, **keywords):
         signal.signal(signal.SIGALRM, original)
 
 ##########
+# we try to keep global 'infos' ready to be emitted
+# so, no dict..
+def locate_id(id, infos):
+    node_info = None
+    for scan in infos:
+        if scan['id'] == id:
+            node_info = scan
+            break
+    return node_info
+
 def insert_or_refine(id, infos, *overrides):
     """
     locate an info in infos with that id (or create one)
     then update it with any override(s) if provided
     returns infos
     """
-    node_info = None
-    for scan in infos:
-        if scan['id'] == id:
-            node_info = scan
-            break
+    node_info = locate_id(id, infos)
     if not node_info:
         node_info = {'id' : id}
         infos.append(node_info)
@@ -126,8 +132,16 @@ def insert_or_refine(id, infos, *overrides):
         node_info.update(override)
     return infos
 
+def cleanup_wlan_infos(id, infos):
+    node_info = locate_id(id, infos)
+    if not node_info:
+        return
+    keys = { k for k in node_info if k.startswith('wlan')}
+    for k in keys:
+        del node_info[k]
+        
 ##########
-def pass1_on_off(node_ids, infos):
+def pass1_on_off(node_ids, infos, history):
     """
     check for CMC status
     the ones that are OFF - or where status fails 
@@ -174,7 +188,7 @@ gnuradio_matcher = re.compile("\AGNURADIO:(?P<gnuradio_version>[0-9\.]+)\Z")
 rxtx_matcher = re.compile("==> /sys/class/net/(?P<device>wlan[0-9])/statistics/(?P<rxtx>[rt]x)_bytes <==")
 number_matcher = re.compile("\A[0-9]+\Z")
 
-def pass2_os_release(node_ids, infos):
+def pass2_os_release(node_ids, infos, history, report_wlan):
     """
     check for an os_release 
     the ones that do answer are kept out of the next passes
@@ -191,8 +205,11 @@ def pass2_os_release(node_ids, infos):
         remote_commands = [
             "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release",
             "echo -n GNURADIO: ; gnuradio-config-info --version 2> /dev/null || echo none",
-            "head /sys/class/net/wlan?/statistics/[rt]x_bytes",
             ]
+        if report_wlan:
+            remote_commands.append(
+                "head /sys/class/net/wlan?/statistics/[rt]x_bytes"                
+            )
         ssh_command = [
             "ssh",
             "-q",
@@ -201,7 +218,7 @@ def pass2_os_release(node_ids, infos):
         ]
         try:
             answer = check_output_timeout(ssh_command, timeout_ssh, universal_newlines=True)
-#            print('pass2 got global answer', answer)
+            cleanup_wlan_infos(id, infos)
             try:
                 flavour = "other"
                 extension = ""
@@ -212,30 +229,50 @@ def pass2_os_release(node_ids, infos):
                     if match:
                         version = match.group('ubuntu_version')
                         flavour = "ubuntu-{version}".format(**locals())
+                        continue
                     match = fedora_matcher.match(line)
                     if match:
                         version = match.group('fedora_version')
                         flavour = "fedora-{version}".format(**locals())
+                        continue
                     match = gnuradio_matcher.match(line)
                     if match:
                         version = match.group('gnuradio_version')
                         extension += "-gnuradio-{version}".format(**locals())
+                        continue
                     match = rxtx_matcher.match(line)
                     if match:
-                        rxtx_key = "{device}_{rxtx}_rate".format(**match.groupdict())
+                        # use a tuple as the hash
+                        rxtx_key = (match.group('device'), match.group('rxtx'))
+                        continue
                     match = number_matcher.match(line)
                     if match and rxtx_key:
                         rxtx_dict[rxtx_key] = int(line)
+                        continue
+                    rxtx_key = None
                     
                 os_release = flavour + extension
-                # this looks OK; next step will be
-                # * memorize over time, together with time of acquisition
-                # * to do differences,
-                # * compute rates
-                # probably put gains in the mix ?
-                # display("pass2 got rxtx_dict = {}".format(rxtx_dict))
-                insert_or_refine(id, infos, {'os_release' : os_release}, padding_dict)
+                # now that we have the counters we need to translate this into rate
+                # for that purpose we use local clock; small imprecision should not impact overall result
+                now = time.time()
+                wlan_info_dict = {}
+                for rxtx_key, bytes in rxtx_dict.items():
+                    device, rxtx = rxtx_key
+                    display("collected {bytes} for device {device} in {rxtx}".format(**locals()))
+                    # do we have something on this measurement ?
+                    if rxtx_key in history:
+                        previous_bytes, previous_time = history[rxtx_key]
+                        info_key = "{device}_{rxtx}_rate".format(**locals())
+                        new_rate = (bytes-previous_bytes)/(now-previous_time)
+                        wlan_info_dict[info_key] = new_rate
+                    # store this measurement for next run
+                    history[rxtx_key] = (bytes, now)
+                # xxx would make sense to clean up history for measurements that
+                # we were not able to collect at this cycle
+                insert_or_refine(id, infos, {'os_release' : os_release}, padding_dict, wlan_info_dict)
             except:
+                import traceback
+                traceback.print_exc()
                 insert_or_refine(id, infos, {'os_release' : 'other'}, padding_dict)
         except:
 # don't overwrite os_release so that livetable can show it
@@ -243,7 +280,7 @@ def pass2_os_release(node_ids, infos):
             remaining_ids.add(id)
     return remaining_ids
 
-def pass3_control_ping(node_ids, infos):
+def pass3_control_ping(node_ids, infos, history):
     """
     check for control_ping 
     the ones that do answer are kept out of the next passes (should be empty)
@@ -271,12 +308,12 @@ def pass3_control_ping(node_ids, infos):
 def io_callback(*args, **kwds):
     display('on socketIO response', *args, **kwds)
 
-def one_loop(all_ids, infos, socketio):
+def one_loop(all_ids, socketio, infos, history, report_wlan):
     start = datetime.now()
     ### init    
 
     focus_ids = all_ids
-    remaining_ids = pass1_on_off(focus_ids, infos)
+    remaining_ids = pass1_on_off(focus_ids, infos, history)
     pass1_ids = focus_ids - remaining_ids
     infos1 = [ info for info in infos if info['id'] in pass1_ids ]
     if infos1:
@@ -285,7 +322,7 @@ def one_loop(all_ids, infos, socketio):
     assert(len(infos1) == len(pass1_ids))
 
     focus_ids = remaining_ids
-    remaining_ids = pass2_os_release(focus_ids, infos)
+    remaining_ids = pass2_os_release(focus_ids, infos, history, report_wlan)
     pass2_ids = focus_ids - remaining_ids
     infos2 = [ info for info in infos if info['id'] in pass2_ids ]
     if infos2:
@@ -294,7 +331,7 @@ def one_loop(all_ids, infos, socketio):
     assert(len(infos2) == len(pass2_ids))
 
     focus_ids = remaining_ids
-    remaining_ids = pass3_control_ping(focus_ids, infos)
+    remaining_ids = pass3_control_ping(focus_ids, infos, history)
     pass3_ids = focus_ids - remaining_ids
     infos3 = [ info for info in infos if info['id'] in pass3_ids ]
     if infos3:
@@ -339,7 +376,9 @@ def normalize(cli_arg):
             return None
     return int(id)
 
-def mainloop(nodes, socketio, cycle, runs):
+def mainloop(nodes, socketio, args):
+    cycle = args.cycle
+    runs = args.runs
     display("entering mainloop")
     ### elaborate global focus
     all_ids = { normalize(x) for x in nodes }
@@ -348,9 +387,13 @@ def mainloop(nodes, socketio, cycle, runs):
     # create a single global list of results that we keep
     # between runs 
     infos = []
+    # this is about keeping of what happened in the past so e can
+    # compute stuff like rates based on successive measurements
+    # of bytes
+    history = {}
     counter = 0
     while True:
-        one_loop(all_ids, infos, socketio)
+        one_loop(all_ids, socketio, infos, history, args.report_wlan)
         counter += 1
         if runs and counter >= runs:
             display("bailing out after {} runs".format(runs))
@@ -383,7 +426,9 @@ def main():
                         help="""url of sidecar server for notifying results 
 - default={}""".format(default_socket_io_url))
     parser.add_argument("-o", "--output", action='store', default=None,
-                        help="Specify filename for logs (will be open in append mode)")
+                        help="Specify filename for logs (will be opened in append mode)")
+    parser.add_argument("-w", "--no-wlan", dest='report_wlan', action='store_false', default=True,
+                        help="Disable generation of wlan?_[rt]x_rate")
     parser.add_argument("nodes", nargs='*')
     args = parser.parse_args()
 
@@ -407,7 +452,7 @@ def main():
     # connect socketio
     socketio = SocketIO(hostname, 443, LoggingNamespace)
 
-    mainloop(args.nodes, socketio, args.cycle, args.runs)
+    mainloop(args.nodes, socketio, args)
         
 if __name__ == '__main__':
     init_signals()
