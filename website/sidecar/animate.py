@@ -24,6 +24,7 @@ def drange(start, stop, step):
         r += step
     return result
 
+rates_range = drange(0., 20. * 10**6, 6. * 10**5)
 ######## valid values for initializing
 field_possible_values = {
     'cmc_on_off' : [ 'on', 'off', 'fail' ],
@@ -32,10 +33,10 @@ field_possible_values = {
                      'fedora-21-gnuradio',
                      'other',
                      'fail' ],
-    'wlan0_rx_rate' : drange(0., 20., .6),
-    'wlan0_tx_rate' : drange(0., 20., .6),
-    'wlan1_rx_rate' : drange(0., 20., .6),
-    'wlan1_tx_rate' : drange(0., 20., .6),
+    'wlan0_rx_rate' : rates_range,
+    'wlan0_tx_rate' : rates_range,
+    'wlan1_rx_rate' : rates_range,
+    'wlan1_tx_rate' : rates_range,
     'available' : [ None, 'ok', 'ko'],
 }
 

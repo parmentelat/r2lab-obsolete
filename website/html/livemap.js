@@ -84,8 +84,16 @@ var walls_radius = 30;
 // pillars - derived from the walls
 var pillar_radius = 16;
 
-var debug = false;
+// scale used for rxtx ticks
+// hard-coded for now; assuming max is around 20 Mbps
+// and visual max should be around 20 pixels
+var rxtx_scale = d3.scale.linear()
+    .domain([0, 20000000])
+    .range([0,20]);
 
+
+//
+var debug = false;
 
 //////////////////////////////////////// nodes
 // the overall room size
@@ -256,7 +264,7 @@ var MapNode = function (node_spec) {
     }
 }
 
-var ident = function(d) { return d; };
+var rxtx_height = function(d) { return rxtx_scale(d); };
 var get_node_id = function(node) {return node.id;}
 
 //////////////////////////////
@@ -433,7 +441,7 @@ function LiveMap() {
 	    ticks.enter()
 		.append('rect')
 		.attr('class', function(d, i) {return 'rxtx' + i;})
-		.attr('width',3)
+		.attr('width', 3)
 		.attr('x', function(node){return node.x;})
 		.attr('y', function(node){return node.y;})
 		.attr('stroke', '#bbb')
@@ -445,7 +453,7 @@ function LiveMap() {
 		.transition()
 		.duration(100)
 	    // this might be undefined, but should still work 
-		.attr('height', ident)
+		.attr('height', rxtx_height)
 	    // each rxtx tick is included in a <g> already at the right position
 	    // we set a rotate angle to get the desired effect
 	    // + a translation that puts the tick off the center

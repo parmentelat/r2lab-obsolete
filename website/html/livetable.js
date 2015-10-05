@@ -105,11 +105,26 @@ var TableNode = function (id) {
 	    return [ 'N/A', klass ];
     }
 
+    // raw data is bits/s
     this.rxtx_cell = function(value) {
 	var klass = 'rxtx';
 	if ((value == undefined) || (! this.is_alive()))
 	    return ["-", klass] ;
-	return [ Number(value).toLocaleString(), klass ];
+	// we need to format this into kbps, Mbps, etc..
+	var raw = Number(value);
+	var number, unit;
+	if (raw/1000 < 1.) {
+	    number = raw;
+	    unit = "bps";
+	} else if ((raw/1000000) < 1.) {
+	    number = raw/1000;
+	    unit = "kbps";
+	} else {
+	    number = raw/1000000;
+	    unit = "Mbps";
+	}
+	var nice = number.toLocaleString() + " " + unit;
+	return [ nice, klass ];
     }
 
 }

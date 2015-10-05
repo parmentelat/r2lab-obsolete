@@ -263,7 +263,7 @@ def pass2_os_release(node_ids, infos, history, report_wlan):
                     if rxtx_key in history:
                         previous_bytes, previous_time = history[rxtx_key]
                         info_key = "{device}_{rxtx}_rate".format(**locals())
-                        new_rate = (bytes-previous_bytes)/(now-previous_time)
+                        new_rate = 8*(bytes-previous_bytes)/(now-previous_time)
                         wlan_info_dict[info_key] = new_rate
                     # store this measurement for next run
                     history[rxtx_key] = (bytes, now)
@@ -428,7 +428,7 @@ def main():
     parser.add_argument("-o", "--output", action='store', default=None,
                         help="Specify filename for logs (will be opened in append mode)")
     parser.add_argument("-w", "--no-wlan", dest='report_wlan', action='store_false', default=True,
-                        help="Disable generation of wlan?_[rt]x_rate")
+                        help="Disable generation of wlan?_[rt]x_rate - unit here is bits/s")
     parser.add_argument("nodes", nargs='*')
     args = parser.parse_args()
 
