@@ -129,6 +129,15 @@ function walls_path() {
     return path;
 }
 
+function walls_style(selection) {
+    selection
+	.attr('stroke', '#3b4449')
+	.attr('stroke-width',  '6px')
+	.attr('stroke-linejoin', 'round')
+	.attr('stroke-miterlimit', 8)
+    ;
+}
+
 //////////////////////////////
 // nodes are dynamic
 // their visual rep. get created through d3 enter mechanism
@@ -288,11 +297,8 @@ function LiveMap() {
     var walls = g.append('path')
 	.attr('d', walls_path())
 	.attr('id', 'walls')
-	.attr('stroke', '#3b4449')
-	.attr('stroke-width',  '6px')
-	.attr('stroke-linejoin', 'round')
-	.attr('stroke-miterlimit', 8)
 	.attr('fill', '#fdfdfd')
+	.call(walls_style)
     ;
 
     for (var i=0; i < pillar_specs.length; i++) {
@@ -306,11 +312,8 @@ function LiveMap() {
 	    .attr('y', coords[1] - pillar_radius)
 	    .attr('width', 2*pillar_radius)
 	    .attr('height', 2*pillar_radius)
-	    .attr('stroke', '#3b4449')
-	    .attr('stroke-width',  '6px')
-	    .attr('stroke-linejoin', 'round')
-	    .attr('stroke-miterlimit', 8)
 	    .attr('fill', '#101030')
+	    .call(walls_style)
 	// convenience for debugging
 	    .on('click',
                 // a closure to avoid being linked to the same 'spec' value in both cases
