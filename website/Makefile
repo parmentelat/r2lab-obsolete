@@ -2,6 +2,7 @@
 ALL_MDS = index.md overview.md tuto-*md tutorial.md status.md hardware.md tools.md blog.md
 
 ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
+ALL_PLUGINS = plugins/*.{js,css,html}
 
 ########## default target
 all: preview
@@ -51,6 +52,7 @@ convert:
 
 resources:
 	rsync -av $(ALL_PYTHONS) html/
+	rsync -av $(ALL_PLUGINS) html/plugins
 
 publish:
 	rsync -av --delete html/ $(PUBLISH_RSYNC)

@@ -27,9 +27,9 @@ For accurate dimensions of the room, please see the [static blueprint
 at the bottom of this page](#accurate-layout).
 
 <div id="livemap_container"></div>
-<script type="text/javascript" src="livemap.js"></script>
+<script type="text/javascript" src="plugins/livemap.js"></script>
 <script>livemap_show_rxtx_rates = true;</script>
-<style type="text/css"> @import url("livemap.css"); </style>
+<style type="text/css"> @import url("plugins/livemap.css"); </style>
 
 ***
 
@@ -48,9 +48,9 @@ Complementary to the live map above, this status table present an alternative fo
 
 
 <table class="table table-condensed" id='livetable_container'> </table>
-<script type="text/javascript" src="livetable.js"></script>
+<script type="text/javascript" src="plugins/livetable.js"></script>
 <script>livetable_show_rxtx_rates = true;</script>
-<style type="text/css"> @import url("livetable.css"); </style>
+<style type="text/css"> @import url("plugins/livetable.css"); </style>
 
 <br />
 
