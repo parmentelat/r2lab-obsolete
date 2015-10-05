@@ -193,8 +193,8 @@ function LiveTable() {
     this.focus_nodes_alive = function() {
 	for (var i in this.nodes) {
 	    var node=this.nodes[i];
-	    if (!node.is_alive())
-		node.set_display('none');
+	    var display = node.is_alive() ? 'on' : 'none';
+	    node.set_display(display);
 	}
     }
 
