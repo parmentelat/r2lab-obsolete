@@ -42,6 +42,13 @@ var TableNode = function (id) {
 	undefined			// os_release
     ];
 		 
+    this.is_alive = function() {
+	return this.cmc_on_off == 'on'
+	    && this.control_ping == 'on'
+	    && this.os_release != 'fail'
+	    && this.available != 'ko';
+    }
+
     // node_info is a dict coming through socket.io in JSON
     // simply copy the fieds present in this dict in the local object
     // for further usage in animate_changes
@@ -73,10 +80,11 @@ var TableNode = function (id) {
 	this.cells_data[col++] = this.release_cell(this.os_release);
 	// optional
 	if (livetable_show_rxtx_rates) {
-	    this.cells_data[col++] = float_cell(this.wlan0_rx_rate);
-	    this.cells_data[col++] = float_cell(this.wlan0_tx_rate);
-	    this.cells_data[col++] = float_cell(this.wlan1_rx_rate);
-	    this.cells_data[col++] = float_cell(this.wlan1_tx_rate);
+	    var alive = this.is_alive();
+	    this.cells_data[col++] = this.rxtx_cell(this.wlan0_rx_rate);
+	    this.cells_data[col++] = this.rxtx_cell(this.wlan0_tx_rate);
+	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_rx_rate);
+	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_tx_rate);
 	}
 	//console.log("after update_from_news -> " + this.data);
     }
@@ -96,6 +104,14 @@ var TableNode = function (id) {
 	else
 	    return [ 'N/A', klass ];
     }
+
+    this.rxtx_cell = function(value) {
+	var klass = 'rxtx';
+	if ((value == undefined) || (! this.is_alive()))
+	    return ["-", klass] ;
+	return [ Number(value).toLocaleString(), klass ];
+    }
+
 }
 
 var ident = function(d) { return d; };
@@ -104,8 +120,6 @@ var get_node_data = function(node){return node.cells_data;}
 // rewriting info should happen in update_from_news
 var get_html = function(tuple) {return tuple[0];}
 var get_class = function(tuple) {return tuple[1];}
-var float_cell = function(f) {return [ Number(f).toLocaleString(), 'rxtx' ];}
-
 //////////////////////////////
 function LiveTable() {
 
