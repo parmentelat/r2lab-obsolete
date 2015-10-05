@@ -265,7 +265,10 @@ def pass2_os_release(node_ids, infos, history, report_wlan):
                         info_key = "{device}_{rxtx}_rate".format(**locals())
                         new_rate = 8*(bytes-previous_bytes)/(now-previous_time)
                         wlan_info_dict[info_key] = new_rate
-                        vdisplay("computed " + new_rate + " for key " + info_key);
+                        vdisplay("computed {} bps for key {} "
+                                 "- bytes = {}, pr = {}, now = {}, pr = {}"
+                                 .format(new_rate, info_key,
+                                         bytes, previous_bytes, now, previous_time));
                     # store this measurement for next run
                     history[rxtx_key] = (bytes, now)
                 # xxx would make sense to clean up history for measurements that
