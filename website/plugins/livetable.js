@@ -129,7 +129,7 @@ var TableNode = function (id) {
 
     this.set_display = function(display) {
 	var selector = '#livetable_container #row'+this.id;
-	d3.select(selector).style('display', display);
+	display ? $(selector).show() : $(selector).hide();
     }
 
 }
@@ -160,15 +160,16 @@ function LiveTable() {
 
 	var self = this;
 	var header_rows = d3.selectAll('.livetable_header').append('tr');
-	header_rows.append('th').html('#');
+	header_rows.append('th').html('#')
+	    .on('click', function(){self.toggle_view_mode();})
 	header_rows.append('th').html('Availability')
-	    .on('click', function(){self.focus_nodes_alive();})
+	    .on('click', function(){self.toggle_view_mode();})
 	;
 	header_rows.append('th').html('On/Off')
-	    .on('click', function(){self.focus_nodes_alive();})
+	    .on('click', function(){self.toggle_view_mode();})
 	;
 	header_rows.append('th').html('Ping')
-	    .on('click', function(){self.focus_nodes_alive();})
+	    .on('click', function(){self.toggle_view_mode();})
 	;
 	header_rows.append('th').html('Last O.S.');
 	if (livetable_show_rxtx_rates) {
@@ -190,10 +191,16 @@ function LiveTable() {
 	return this.nodes[id-1];
     }
     
-    this.focus_nodes_alive = function() {
+    /* mode is either 'all' or 'alive' */
+    this.view_mode = 'all';
+    this.toggle_view_mode = function () {
+	this.view_mode = (this.view_mode == 'all') ? 'alive' : 'all';
+	this.display_nodes(this.view_mode);
+    }
+    this.display_nodes = function(mode) {
 	for (var i in this.nodes) {
 	    var node=this.nodes[i];
-	    var display = node.is_alive() ? 'on' : 'none';
+	    var display = (mode=='all') ? true : (node.is_alive());
 	    node.set_display(display);
 	}
     }
