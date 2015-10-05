@@ -127,6 +127,11 @@ var TableNode = function (id) {
 	return [ nice, klass ];
     }
 
+    this.set_display = function(display) {
+	var selector = '#livetable_container #row'+this.id;
+	d3.select(selector).style('display', display);
+    }
+
 }
 
 var ident = function(d) { return d; };
@@ -135,6 +140,7 @@ var get_node_data = function(node){return node.cells_data;}
 // rewriting info should happen in update_from_news
 var get_html = function(tuple) {return tuple[0];}
 var get_class = function(tuple) {return tuple[1];}
+
 //////////////////////////////
 function LiveTable() {
 
@@ -152,11 +158,18 @@ function LiveTable() {
 	var body = containers.append('tbody').attr('class', 'livetable_body');
 	var foot = containers.append('tfoot').attr('class', 'livetable_header');
 
+	var self = this;
 	var header_rows = d3.selectAll('.livetable_header').append('tr');
 	header_rows.append('th').html('#');
-	header_rows.append('th').html('Availability');
-	header_rows.append('th').html('On/Off');
-	header_rows.append('th').html('Ping');
+	header_rows.append('th').html('Availability')
+	    .on('click', function(){self.focus_nodes_alive();})
+	;
+	header_rows.append('th').html('On/Off')
+	    .on('click', function(){self.focus_nodes_alive();})
+	;
+	header_rows.append('th').html('Ping')
+	    .on('click', function(){self.focus_nodes_alive();})
+	;
 	header_rows.append('th').html('Last O.S.');
 	if (livetable_show_rxtx_rates) {
 	    header_rows.append('th').html('wlan0-rx').attr('class','rxtx');
@@ -177,6 +190,14 @@ function LiveTable() {
 	return this.nodes[id-1];
     }
     
+    this.focus_nodes_alive = function() {
+	for (var i in this.nodes) {
+	    var node=this.nodes[i];
+	    if (!node.is_alive())
+		node.set_display('none');
+	}
+    }
+
     this.animate_changes = function(nodes_info) {
 	var tbody = d3.select("tbody.livetable_body");
 	// row update selection
@@ -184,12 +205,27 @@ function LiveTable() {
 	    .data(this.nodes, get_node_id);
 	////////// create rows as needed
 	rows.enter()
-	    .append('tr');
+	    .append('tr')
+	    .attr('id', function(node){ return 'row'+node.id;})
+	;
 	// this is a nested selection like in http://bost.ocks.org/mike/nest/
 	var cells = rows.selectAll('td')
 	    .data(get_node_data);
+	// in this context d is the 'datum' attached to a <td> which
+	// however this will be the DOM element
 	cells.enter()
-	    .append('td');
+	    .append('td')
+	// attach a click event on the first column only
+	    .each(function(d, i) {
+		if (i==0) {
+		    // I'm using DOM/jquery here because the datum d here
+		    //  is a tuple (html,class) so this is useless
+		    $(this).click(function() {
+			$(this).parent().attr('style', 'display:none');
+		    })
+		}
+	    })
+	;
 	////////// update existing ones from cells_data
 	cells.html(get_html)
 	    .attr('class', get_class)
