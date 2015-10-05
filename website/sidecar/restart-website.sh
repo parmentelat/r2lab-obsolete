@@ -30,5 +30,5 @@ $command.sh start >> $LOG 2>&1
 
 
 if [ -n "$run_publish" ]; then
-    make -C $GIT_REPO/website preview publish-local >> $LOG 2>&1
+    make -C $GIT_REPO/website install >> $LOG 2>&1
 fi

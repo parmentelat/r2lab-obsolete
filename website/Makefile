@@ -7,13 +7,16 @@ ALL_PLUGINS = plugins/*.{js,css,html}
 ########## default target
 all: preview
 
-preview_and_nepiall: prepare index meta nepi_all convert resources
-full_and_nepiall: prepare index meta nepi_all convert resources publish
-
 preview: prepare index meta convert resources
-full: prepare index meta convert resources publish
+# this is what is invoked by restart-website.sh that is crontab'ed
+install: preview publish
 
-.PHONY: all preview full prepare index meta convert publish 
+.PHONY: all preview publish install prepare index meta convert resources 
+
+preview_and_nepiall: prepare index meta nepi_all convert resources
+install_and_nepiall: preview_and_nepiall publish
+
+.PHONY: preview_and_nepiall install_and_nepiall
 
 ########## global vars
 PUBLISH_HOST = root@r2lab.inria.fr
@@ -54,11 +57,12 @@ resources:
 	rsync -av $(ALL_PYTHONS) html/
 	rsync -av $(ALL_PLUGINS) html/plugins
 
+# default is ti publish locally as this runs right from r2lab.inria.fr
 publish:
-	rsync -av --delete html/ $(PUBLISH_RSYNC)
-
-publish-local:
 	rsync -av --delete html/ $(PUBLISH_PATH)/
+
+publish-remote:
+	rsync -av --delete html/ $(PUBLISH_RSYNC)
 
 debug:
 	echo ALL_MDS=$(ALL_MDS)
