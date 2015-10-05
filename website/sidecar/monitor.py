@@ -258,7 +258,7 @@ def pass2_os_release(node_ids, infos, history, report_wlan):
                 wlan_info_dict = {}
                 for rxtx_key, bytes in rxtx_dict.items():
                     device, rxtx = rxtx_key
-                    display("collected {bytes} for device {device} in {rxtx}".format(**locals()))
+                    vdisplay("collected {bytes} for device {device} in {rxtx}".format(**locals()))
                     # do we have something on this measurement ?
                     if rxtx_key in history:
                         previous_bytes, previous_time = history[rxtx_key]
