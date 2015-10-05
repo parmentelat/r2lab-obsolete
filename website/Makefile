@@ -1,12 +1,10 @@
 ########## contents
 ALL_MDS = index.md overview.md tuto-*md tutorial.md status.md hardware.md tools.md blog.md
 
-ALL_MEDIAS = *.png
 ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
 
-
 ########## default target
-all: preview-local
+all: preview
 
 preview_and_nepiall: prepare index meta nepi_all convert resources
 full_and_nepiall: prepare index meta nepi_all convert resources publish
@@ -40,6 +38,37 @@ index:
 meta:
 	@[ -d markdown ] || mkdir markdown
 	./meta.py
+
+################################
+
+# compile status informations  by Nepi check
+status:
+	@[ -d markdown ] || mkdir markdown
+	./status.py
+
+convert: 
+	generate-md --layout $(LAYOUT) --input markdown --output html
+
+resources:
+	rsync -av $(ALL_PYTHONS) html/
+
+publish:
+	rsync -av --delete html/ $(PUBLISH_RSYNC)
+
+publish-local:
+	rsync -av --delete html/ $(PUBLISH_PATH)/
+
+debug:
+	echo ALL_MDS=$(ALL_MDS)
+
+clean:
+	rm -rf markdown html
+
+############################## 
+# NOTE - older targets in '-local' are no longer needed
+# see also AA-local-markdown.md 
+
+
 
 ##############################
 # Nodes functions
@@ -75,41 +104,4 @@ nepi_status:
 # check the status of the nodes
 nepi_info:
 	python node_helper.py -A info -N all -U root -i ~/.ssh/id_rsa.pub -g faraday.inria.fr -u mario|| (echo "command fail $$?"; exit 1)
-
-################################
-
-# compile status informations  by Nepi check
-status:
-	@[ -d markdown ] || mkdir markdown
-	./status.py
-
-convert: 
-	generate-md --layout $(LAYOUT) --input markdown --output html
-
-resources:
-	rsync -av $(ALL_PYTHONS) $(ALL_MEDIAS) html/
-
-publish:
-	rsync -av --delete html/ $(PUBLISH_RSYNC)
-
-publish-local:
-	rsync -av --delete html/ $(PUBLISH_PATH)/
-
-debug:
-	echo ALL_MDS=$(ALL_MDS)
-
-clean:
-	rm -rf markdown html
-
-############################## 
-# see also AA-local-markdown.md
-# for using our own brew of markdown-styles until this gets merged upstream
-convert-local:
-	NODE_PATH=$HOME/git/markdown-styles/lib:/usr/local//lib/node_modules/markdown-styles/node_modules \
-	../../markdown-styles/bin/generate-md --layout ./r2lab-layout --input markdown --output html
-
-preview-local: prepare index meta convert-local resources
-full-local: prepare index meta convert-local resources publish
-
-.PHONY: convert-local preview-local full-local
 

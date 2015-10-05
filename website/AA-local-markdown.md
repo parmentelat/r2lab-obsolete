@@ -1,3 +1,8 @@
+# OBSOLETE
+
+This file is now obsolete, as the change in question has made it
+upstream as part of markdown-styles v3.0.0
+
 # How to use our own `markdown-styles`
 
 We have proposed a patch to upstream's `markdown-styles` so that `meta.json` can be used to implement cascading scope of metavariables based on the input source filenames
