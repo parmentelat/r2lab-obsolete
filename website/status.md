@@ -2,22 +2,22 @@ title: Status
 tab: status
 ---
 
-R2Lab testbed project offers a high quality anechoic room for your experiments. Following are the details of the anechoic room.
+R2lab testbed project offers a high quality anechoic room for your experiments. Following are the details of the anechoic room.
 
 ### Overall status (livemap)
 
 Frequently a routine checks the availability of our nodes platform. In
-order to allow real time and multiple information concerning R2lab
+order to allow real time and multiple information concerning the R2lab
 platform, our live map keeps users posted about the state of each
 node concerning technical infos, incidents and operational details:
 
 * A round O.S. icon informs that the node is turned on, running the
   referenced O.S. and reachable through ssh.
-* The node is turned off when only the number is presented in the map.
+* The node is turned off only when the node id is presented in the map.
 * Smaller bullets indicate intermediate / temporary status
-  * a small gray bullet means the node is turned ON but does not answer ping
+  * a small gray bullet means the node is turned ON but does not answer to ping
   (usually this means the node is turning on or off)
-  * a slightly larger and green bullet means the nodes answers pings but cannot be
+  * a slightly larger and green bullet means the node answers to ping but cannot be
   reached through ssh yet (usually this means an image is being
   burned).
 * Finally, if a node is hidden behind a large red circle, it means it
@@ -35,7 +35,7 @@ at the bottom of this page](#accurate-layout).
 
 ### Detailed status (livetable)
 
-Complementary to the live map above, this status table present an alternative format the queries results.
+Complementary to the live map above, this status table presents an alternative forma results.
 - The <b>availability</b> column: 
 	Reports that the node are controllable or not. In fail case the node could be physically powered off or in maintenance.
 - The <b>on/off</b> column:
@@ -43,7 +43,7 @@ Complementary to the live map above, this status table present an alternative fo
 - The <b>ping</b> column: 
 	Reports that the node answers a single ping at the experiment interface.
 - The <b>O.S</b> column:
-	Reports that O.S. that was last seen on that node.
+	Reports that current O.S. that was last seen on that node.
 <br />
 
 
@@ -60,7 +60,7 @@ Complementary to the live map above, this status table present an alternative fo
 
 Below is the ground plan layout of the anechoic room which provides thirty-seven wireless nodes distributed in a **≈ 90m<sup>2</sup>** room.
 
-The nodes are arranged in grid with ≈1.0m (vertical) and ≈1.15m (horizontal) of distance between them, except by the nodes 12, 16, 17, 20 and 23, 24, 27 which are the nodes surrounding the columns room.
+The nodes are arranged in a grid with ≈1.0m (vertical) and ≈1.15m (horizontal) of distance between them, except for the nodes 12, 16, 17, 20 and 23, 24, 27 which are the nodes surrounding the two columns of the room.
 
 <left>
 	<img src="assets/img/status.png" style="width:950px; height:592px;"/><br>
