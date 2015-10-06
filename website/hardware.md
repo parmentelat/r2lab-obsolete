@@ -2,7 +2,7 @@ title: Hardware
 tab: platform
 ---
 
-**Thirty-seven** nodes are available in R2Lab to provide a modern testbed infra structure. The nodes are distributed in grid layout and are customizable which allow great variety of tests and simulations.
+**Thirty-seven** nodes are available in R2lab to provide a modern testbed infra structure. The nodes are distributed in a grid layout and are customizable, allowing great variety of experimentation scenarios.
 
 <h2 class="text-center" style="color:green;" >
 full control and granted access<br>
@@ -30,7 +30,7 @@ full control and granted access<br>
   		<i style="font-size:2em;" class="pull-left glyphicon glyphicon-cog" aria-hidden="true"></i>
  		</span>
 
-		&nbsp; R2Lab offers a connection to the testbed infrastructure trough a gateway access which allow the researchers control each reserved node.
+		&nbsp; R2lab offers a connection to the testbed infrastructure through a gateway access which allows the researchers to control each reserved node.
   </div>
 </div>
 <br>
@@ -40,23 +40,23 @@ full control and granted access<br>
     <h3>Node details</h3>
     <i style="font-size:2em;" class="pull-left glyphicon glyphicon-signal" aria-hidden="true"></i>
   </span>
-  &nbsp; Our anechoic chamber is equipped with powerful nodes which allows to run high-level OS Linux. It &nbsp; enables to run many applications and advanced simulations.
+  &nbsp; Our anechoic chamber is equipped with powerful nodes which allows to run high-level OS Linux. It &nbsp; enables to run many applications and advanced experimentations.
 
-  The nodes also contains **six USRP devices** distributed in a such way to cover as much area as possible of the wireless testbed. The device details are listed below.
+  Part of the nodes will be connected to **USRP** software radio devices. Details of the devices are provided below.
   <br>
   <br>
   **The [Nitos](http://nitlab.inf.uth.gr/NITlab/) X50 nodes are:**
   <p>
-**2 Wireless Interfaces** Atheros 802.11 a/b/g and Atheros  802.11 a/b/g/n (MIMO);  **CPU** Intel Core i7-2600 processor; 
+  **2 Wireless Interfaces** Atheros 802.11 a/b/g and Atheros  802.11 a/b/g/n (MIMO);  **CPU** Intel Core i7-2600 processor; 
   **RAM** kingston 4GB HYPERX BLU DDR3; 8M **Cache**, at 3.40GHz.
   </p>
-  **Our USRP X10 device are:**
+  **Future USRP nodes:**
   <p>
-  **USRP** Xilinx Spartan 3A-DSP 3400; **FPGA** 100 MS/s duas ADC, 400 MS/s duas DAC; **Gigabit Ethernet** connectivity.
+  [**USRP** N210](http://www.ettus.com/product/details/UN210-KIT), [**USRP** B210](http://www.ettus.com/product/details/UB210-KIT), **USRP**2 and **USRP**1.
   </p>
   
   <p>
-  The nodes keep **three wired interfaces**, which are designed and implements the main following components as well.
+  The [Nitos](http://nitlab.inf.uth.gr/NITlab/) nodes embed **three wired interfaces**, which are used for:
   </p>
   **CM card**:<br>
   A small web server run in a Chassis Manager Card (CM card) to control and monitor the nodes. The CM card answer HTTP requests to expose on/off actions, status and others like: 
@@ -77,12 +77,12 @@ full control and granted access<br>
   The experiment interface offers wired connectivity between nodes and
   to the infrastructure; this is entirely dedicated to experimenters -
   and is not turned on by default, but can easily be enabled from the
-  node using DHCP, in which case it becomes available at: 192.168.**2**.<font color="green">**xx**</font>.
+  node using DHCP, in which case it becomes available at: 192.168.**2**.<font color="green">**xx**</font>. This interface will not be available in case the Nitos node is attached to a **USRP**2 or **N210** device.
   
   <br>
   <br>
   **Control interface( OMF)**:<br>
-  OMF is a Testbed Control, Measurement and Management Framework. Was developed for wireless testbed platforms and had being extended to support features and facilities for testbed's control, measurement, and management.
+  OMF is a Testbed Control, Measurement and Management Framework. It was developed for wireless testbed platforms and had being extended to support features and facilities for testbed's control, measurement, and management.
   The CI OMF interface is available at: 192.168.**3**.<font color="blue">**xx**</font>.
   
   <br>

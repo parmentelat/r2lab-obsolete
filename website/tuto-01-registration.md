@@ -162,7 +162,10 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
       
       	<b>3 - Troubleshooting</b>
 				<p>
-      	<p>If you have the <code>Permission denied (publickey).</code> error, check if you correctly pasted your public key on the OneLab portal.
+      	<p>If you have the <code>Permission denied (publickey).</code> error, check if you correctly pasted your public key on the OneLab portal. Also ensure that the ssh-agent is enabled and add your key to it, by:
+      	<p>
+        	<pre class="hljs"><code>$ ssh-add ~/.ssh/id_rsa</span></code></pre>
+        </p>
       	Alternatively, restart the tutorial registration from the beginning.</p>
 
       </div>
