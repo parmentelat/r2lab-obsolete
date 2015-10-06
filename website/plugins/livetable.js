@@ -159,7 +159,9 @@ function LiveTable() {
 	var foot = containers.append('tfoot').attr('class', 'livetable_header');
 
 	var self = this;
-	var header_rows = d3.selectAll('.livetable_header').append('tr');
+	var header_rows = d3.selectAll('.livetable_header').append('tr')
+	    .attr('class', 'all')
+	;
 	header_rows.append('th').html('#')
 	    .on('click', function(){self.toggle_view_mode();})
 	header_rows.append('th').html('Availability')
@@ -196,6 +198,7 @@ function LiveTable() {
     this.toggle_view_mode = function () {
 	this.view_mode = (this.view_mode == 'all') ? 'alive' : 'all';
 	this.display_nodes(this.view_mode);
+	$(".livetable_header tr").toggleClass('all');
     }
     this.display_nodes = function(mode) {
 	for (var i in this.nodes) {

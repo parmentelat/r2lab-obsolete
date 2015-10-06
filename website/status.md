@@ -1,4 +1,4 @@
-title: Status
+title: R2Lab Status
 tab: status
 ---
 
@@ -11,13 +11,13 @@ order to allow real time and multiple information concerning the R2lab
 platform, our live map keeps users posted about the state of each
 node concerning technical infos, incidents and operational details:
 
-* A round O.S. icon informs that the node is turned on, running the
+* A round shape with a O.S. icon (fedora or ubuntu) informs that the node is turned on, running the
   referenced O.S. and reachable through ssh.
-* The node is turned off only when the node id is presented in the map.
+* If only a number appears, this node is turned off.
 * Smaller bullets indicate intermediate / temporary status
   * a small gray bullet means the node is turned ON but does not answer to ping
-  (usually this means the node is turning on or off)
-  * a slightly larger and green bullet means the node answers to ping but cannot be
+  (usually this means the node is being turned on or off)
+  * a slightly larger and green-ish bullet means the node answers to ping but cannot be
   reached through ssh yet (usually this means an image is being
   burned).
 * Finally, if a node is hidden behind a large red circle, it means it
@@ -35,17 +35,23 @@ at the bottom of this page](#accurate-layout).
 
 ### Detailed status (livetable)
 
-Complementary to the live map above, this status table presents an alternative forma results.
-- The <b>availability</b> column: 
-	Reports that the node are controllable or not. In fail case the node could be physically powered off or in maintenance.
-- The <b>on/off</b> column:
-	Reports that the node is ready to be used or not.
-- The <b>ping</b> column: 
-	Reports that the node answers a single ping at the experiment interface.
-- The <b>O.S</b> column:
-	Reports that current O.S. that was last seen on that node.
-<br />
+Complementary to the live map above, this status table presents the same status information in an alternative format.
 
+* The <b>availability</b> column: 
+  Reports whether the node is usable or not. If not, this means you should not try to use that node for your experiment, as it may be physically powered off, or otherwise erratically.
+* The <b>on/off</b> column:
+	Reports if the node is currently turned on or off.
+* The <b>ping</b> column: 
+	Reports that the node answers a single ping at the experiment interface.
+* The <b>O.S</b> column:
+	Reports the nature of the O.S. that was last seen on that node.
+
+Also please note that 
+
+ * Clicking anywhere in the header will focus on the nodes that are currently up; a second click returns to full mode.
+ * Clicking a node badge will take it off the list
+
+<br />
 
 <table class="table table-condensed" id='livetable_container'> </table>
 <script type="text/javascript" src="plugins/livetable.js"></script>

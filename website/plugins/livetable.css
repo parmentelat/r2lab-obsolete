@@ -43,3 +43,11 @@
 #livetable_container td.rxtx {
     font-size: small;
 }
+
+.livetable_header tr.all {
+    background-color: #ccc;
+}
+
+.livetable_header tr:not(.all) {
+    background-color: #aca;
+}
