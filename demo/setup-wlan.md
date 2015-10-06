@@ -5,6 +5,10 @@
   * `10.0.0.<id>/24`  for `wlan01` and of course
   * `10.0.1.<id>/24` when using `wlan1`
 
+# To add on images
+
+* fedora : `yum install -y nc`
+
 # setup
 
 ## prerequisites
