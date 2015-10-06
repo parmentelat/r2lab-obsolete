@@ -38,17 +38,17 @@ at the bottom of this page](#accurate-layout).
 Complementary to the live map above, this status table presents the same status information in an alternative format.
 
 * The <b>availability</b> column: 
-  Reports whether the node is usable or not. If not, this means you should not try to use that node for your experiment, as it may be physically powered off, or otherwise erratically.
+  tells you whether the node is usable or not. If not, this means you should not try to use that node for your experiment, as it may be physically powered off, or otherwise behave erratically.
 * The <b>on/off</b> column:
-	Reports if the node is currently turned on or off.
+  reports if the node is currently turned on or off.
 * The <b>ping</b> column: 
-	Reports that the node answers a single ping at the experiment interface.
+  does the node answers a single ping at the wired network interface.
 * The <b>O.S</b> column:
-	Reports the nature of the O.S. that was last seen on that node.
+  the nature of the O.S. that was last seen on that node.
 
 Also please note that 
 
- * Clicking anywhere in the header will focus on the nodes that are currently up; a second click returns to full mode.
+	 * Clicking anywhere in the header will focus on the nodes that are currently up; a second click returns to full mode.
  * Clicking a node badge will take it off the list
 
 <br />
