@@ -263,7 +263,7 @@ def pass2_os_release(node_ids, infos, history, report_wlan):
                     if rxtx_key in history:
                         previous_bytes, previous_time = history[rxtx_key]
                         info_key = "{device}_{rxtx}_rate".format(**locals())
-                        new_rate = 8*(bytes-previous_bytes)/(now-previous_time)
+                        new_rate = 8.*(bytes - previous_bytes) / (now - previous_time)
                         wlan_info_dict[info_key] = new_rate
                         vdisplay("computed {} bps for key {} "
                                  "- bytes = {}, pr = {}, now = {}, pr = {}"
@@ -351,12 +351,12 @@ def one_loop(all_ids, socketio, infos, history, report_wlan):
     def one_char_summary(info):
         if 'cmc_on_off' in info and info['cmc_on_off'] != 'on':
             return '.'
-        elif 'os_release' in info and info['os_release'] != 'fail':
-            return '^'
-        elif 'control_ping' in info and info['control_ping'] != 'off':
-            return 'O'
-        else:
+        elif 'control_ping' in info and info['control_ping'] != 'on':
             return 'o'
+        elif 'os_release' in info and info['os_release'] == 'fail':
+            return '0'
+        else:
+            return '^'
     one_liner = "".join([one_char_summary(info) for info in infos])
     summary = "{} + {} + {} = {}".format(
         len(infos1), len(infos2), len(infos3),
