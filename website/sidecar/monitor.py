@@ -28,15 +28,21 @@ from datetime import datetime
 import sys
 import os
 import re
-import subprocess
 import json
 import signal
 import time
+import socket
 
 from urllib.parse import urlparse
 from argparse import ArgumentParser
 
+import subprocess
+import paramiko
+
 from socketIO_client import SocketIO, LoggingNamespace
+
+# our local patch for paramiko & no authentication
+from sshclient_noauth import SSHClient_noauth
 
 # the channel to use when talking to the sidecar server
 channel_news = 'r2lab-news'
@@ -54,7 +60,8 @@ timeout_curl = 1
 # ssh should fail in 3s in normal conditions
 # seeing ssh hang in some pathological situations is the reason
 # for these timeouts in the first place
-timeout_ssh = 1
+timeout_ssh_tcp    = 0.8
+timeout_ssh_banner = 0.7
 # here again should be amply enough
 timeout_ping = 1
 
@@ -75,23 +82,22 @@ def vdisplay(*args, **keywords):
 ##########
 # a convenience function that adds a timeout to subprocess.check_output
 # stolen in http://stackoverflow.com/questions/1191374/subprocess-with-timeout
-class AlarmDeep(Exception): pass
 class Alarm(Exception): pass
 
 def alarm_handler(signum, frame):
-    raise AlarmDeep
+    raise Alarm
 
 def check_output_timeout(command, timeout, **keywords):
     original = signal.getsignal(signal.SIGALRM)
+    beg = time.time()
+#    vdisplay("check_output_timeout : arming {}".format(timeout))
+    signal.setitimer(signal.ITIMER_REAL, timeout)
     signal.signal(signal.SIGALRM, alarm_handler)
-    signal.alarm(timeout)
     try:
-        check_output = subprocess.check_output(command, **keywords)
-        signal.alarm(0)
-        return check_output
-    except AlarmDeep as e:
-        raise Alarm("timeout after {timeout} seconds".format(timeout=timeout))
+        return subprocess.check_output(command, **keywords)
     finally:
+#        vdisplay("check_output disarming after {} s".format(time.time()-beg))
+        signal.setitimer(signal.ITIMER_REAL, 0.)
         signal.signal(signal.SIGALRM, original)
         
 def check_call_timeout(command, timeout, **keywords):
@@ -99,12 +105,9 @@ def check_call_timeout(command, timeout, **keywords):
     signal.signal(signal.SIGALRM, alarm_handler)
     signal.alarm(timeout)
     try:
-        check_call = subprocess.check_call(command, **keywords)
-        signal.alarm(0)
-        return check_call
-    except AlarmDeep as e:
-        raise Alarm("timeout after {timeout} seconds".format(timeout=timeout))
+        return subprocess.check_call(command, **keywords)
     finally:
+        signal.setitimer(signal.ITIMER_REAL, 0.)
         signal.signal(signal.SIGALRM, original)
 
 ##########
@@ -132,13 +135,14 @@ def insert_or_refine(id, infos, *overrides):
         node_info.update(override)
     return infos
 
+# reset to 0. instead of removing
 def cleanup_wlan_infos(id, infos):
     node_info = locate_id(id, infos)
     if not node_info:
         return
-    keys = { k for k in node_info if k.startswith('wlan')}
-    for k in keys:
-        del node_info[k]
+    for k in node_info:
+        if k.startswith('wlan'):
+            node_info[k] = 0.
         
 ##########
 def pass1_on_off(node_ids, infos, history):
@@ -176,7 +180,7 @@ def pass1_on_off(node_ids, infos, history):
             else:
                 raise Exception("unexpected result on CMC status request " + result)
         except Exception as e:
-            vdisplay(e)
+            vdisplay('node={id}'.format(id=id), e)
             insert_or_refine(id, infos, {'cmc_on_off' : 'fail'}, padding_dict)
     return remaining_ids
 
@@ -210,21 +214,23 @@ def pass2_os_release(node_ids, infos, history, report_wlan):
             remote_commands.append(
                 "head /sys/class/net/wlan?/statistics/[rt]x_bytes"                
             )
-        ssh_command = [
-            "ssh",
-            "-q",
-            "root@{control}".format(**locals()),
-            ";".join(remote_commands)
-        ]
+        remote_command = ";".join(remote_commands)
+        vdisplay('node={id}'.format(id=id), remote_command)
+
         try:
-            answer = check_output_timeout(ssh_command, timeout_ssh, universal_newlines=True)
+            ssh = SSHClient_noauth()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh.connect(control, username='root',
+                        timeout=timeout_ssh_tcp, banner_timeout=timeout_ssh_banner)
+            stdin, stdout, stderr = ssh.exec_command(remote_command)
             cleanup_wlan_infos(id, infos)
             try:
                 flavour = "other"
                 extension = ""
                 rxtx_dict = {}
                 rxtx_key = None
-                for line in answer.strip().split("\n"):
+                for line in stdout:
+                    line = line.strip("\n")
                     match = ubuntu_matcher.match(line)
                     if match:
                         version = match.group('ubuntu_version')
@@ -258,27 +264,31 @@ def pass2_os_release(node_ids, infos, history, report_wlan):
                 wlan_info_dict = {}
                 for rxtx_key, bytes in rxtx_dict.items():
                     device, rxtx = rxtx_key
-                    vdisplay("collected {bytes} for device {device} in {rxtx}".format(**locals()))
+#                    vdisplay("node={id} collected {bytes} for device {device} in {rxtx}".format(**locals()))
                     # do we have something on this measurement ?
                     if rxtx_key in history:
                         previous_bytes, previous_time = history[rxtx_key]
                         info_key = "{device}_{rxtx}_rate".format(**locals())
                         new_rate = 8.*(bytes - previous_bytes) / (now - previous_time)
                         wlan_info_dict[info_key] = new_rate
-                        vdisplay("computed {} bps for key {} "
+                        vdisplay("node={} computed {} bps for key {} "
                                  "- bytes = {}, pr = {}, now = {}, pr = {}"
-                                 .format(new_rate, info_key,
+                                 .format(id, new_rate, info_key,
                                          bytes, previous_bytes, now, previous_time));
                     # store this measurement for next run
                     history[rxtx_key] = (bytes, now)
                 # xxx would make sense to clean up history for measurements that
                 # we were not able to collect at this cycle
                 insert_or_refine(id, infos, {'os_release' : os_release}, padding_dict, wlan_info_dict)
-            except:
-                import traceback
-                traceback.print_exc()
+            except Exception as e:
+#                import traceback
+#                traceback.print_exc()
                 insert_or_refine(id, infos, {'os_release' : 'other'}, padding_dict)
-        except:
+        except socket.timeout:
+            display("node={id} - ssh timed out".format(id=id))
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
 # don't overwrite os_release so that livetable can show it
 #            insert_or_refine(id, infos, {'os_release' : 'fail'})
             remaining_ids.add(id)
@@ -303,7 +313,7 @@ def pass3_control_ping(node_ids, infos, history):
                 check_call_timeout(command, timeout_ping, stdout=null, stderr=null)
             insert_or_refine(id, infos, {'control_ping' : 'on'})
         except Exception as e:
-            vdisplay(e)
+            vdisplay('node={id}'.format(id=id), e)
             insert_or_refine(id, infos, {'control_ping' : 'off'})
     return remaining_ids
                     
