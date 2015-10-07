@@ -161,18 +161,12 @@ function LiveTable() {
 	var self = this;
 	var header_rows = d3.selectAll('.livetable_header').append('tr')
 	    .attr('class', 'all')
-	;
-	header_rows.append('th').html('#')
-	    .on('click', function(){self.toggle_view_mode();})
-	header_rows.append('th').html('Availability')
 	    .on('click', function(){self.toggle_view_mode();})
 	;
-	header_rows.append('th').html('On/Off')
-	    .on('click', function(){self.toggle_view_mode();})
-	;
-	header_rows.append('th').html('Ping')
-	    .on('click', function(){self.toggle_view_mode();})
-	;
+	header_rows.append('th').html('#');
+	header_rows.append('th').html('Availability');
+	header_rows.append('th').html('On/Off');
+	header_rows.append('th').html('Ping');
 	header_rows.append('th').html('Last O.S.');
 	if (livetable_show_rxtx_rates) {
 	    header_rows.append('th').html('wlan0-rx').attr('class','rxtx');
