@@ -27,8 +27,8 @@ The experiment below uses netcat Linux program. Basiclly, netcat is a service fo
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 #
-# Author: Alina Quereilhac &lt;alina.quereilhac@inria.fr&gt;
-#         Maksym Gabielkov &lt;maksym.gabielkovc@inria.fr&gt;
+# 	 Author: Alina Quereilhac &lt;alina.quereilhac@inria.fr&gt;
+#         	 Maksym Gabielkov &lt;maksym.gabielkovc@inria.fr&gt;
 #
 #
 # This is a script used to simulate a sender-receiver file between two nodes A and B from
