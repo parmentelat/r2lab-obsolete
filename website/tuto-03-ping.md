@@ -5,7 +5,8 @@ tab: tutorial
 Below is a very simple experiment sends 3 pings to r2lab.inria.fr server from one linux::Node.
 The expected result is prints the output of the ping command.
 
-<pre><code class="language-python">
+<pre data-src="prism.js" class="  language-javascript">
+<code class="language-python background-black">
 
 #!/usr/bin/env python
 #
@@ -95,5 +96,5 @@ print ec.trace(application, "stdout")
 # destroy the controller
 ec.shutdown()
 
-</code></pre>
-
+</code>
+</pre>
