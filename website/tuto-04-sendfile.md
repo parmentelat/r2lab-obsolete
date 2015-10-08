@@ -2,9 +2,9 @@ title: NEPI - Send file
 tab: tutorial
 ---
 
-The experiment below uses netcat Linux program to execute a file transfer between two Linux hosts.
-Basiclly, netcat is a service for reading from and writing to network connections using TCP or UDP.
-In this example, one side netcat "listen" in a specific port for traffic and, by the other side, send files to this port.
+The experiment below transfer one file from one node to another one using nepi tool. In one side the experiment starts a server "listening" in a specific port (1234) and, at the other side, the script send a file to the listener one.
+
+The experiment below uses netcat Linux program. Basiclly, netcat is a service for reading from and writing to network connections using TCP or UDP.
 
 <pre><code class="language-python">
 
@@ -64,6 +64,7 @@ parser.add_argument("-i", "--ssh-key", dest="ssh_key",
 
 args = parser.parse_args()
 
+# receive the arguments from command line
 nodes       = args.nodes.split(',')
 username    = args.username
 gateway     = args.gateway
@@ -74,8 +75,10 @@ name_nodeA = nodes[0]
 name_nodeB = nodes[1]
 apps  = []
 
+# create the experiment controller
 ec = ExperimentController(exp_id="NC")
 
+# create the node A listener
 nodeA = ec.register_resource("linux::Node")
 ec.set(nodeA, "username", username)
 ec.set(nodeA, "hostname", name_nodeA)
@@ -84,6 +87,7 @@ ec.set(nodeA, "gateway", gateway)
 ec.set(nodeA, "gatewayUser", gateway_username)
 ec.set(nodeA, "cleanExperiment", True)
 
+# create the node B sender
 nodeB = ec.register_resource("linux::Node")
 ec.set(nodeB, "username", username)
 ec.set(nodeB, "hostname", name_nodeA)
@@ -92,11 +96,13 @@ ec.set(nodeB, "gateway", gateway)
 ec.set(nodeB, "gatewayUser", gateway_username)
 ec.set(nodeB, "cleanExperiment", True)
 
+# files path and port number
 file_from   = '/home/file1.txt'
 file_to     = '/home/file1.txt'
 receiver    = name_nodeA
 port        = 1234
 
+# create the application to listen in node A at port 1234
 receiver_cmd = "nc -dl {} > {}".format(port, file_to)
 receiver_app = ec.register_resource("linux::Application")
 ec.set(receiver_app, "depends", "netcat")
@@ -104,6 +110,7 @@ ec.set(receiver_app, "command", receiver_cmd)
 ec.register_connection(receiver_app, nodeA)
 apps.append(receiver_app)
 
+# create the application in node B to send the file to node A at port 1234
 sender_cmd = "cat {} | nc {} {} ".format(file_from, receiver, port)
 sender_app = ec.register_resource("linux::Application")
 ec.set(sender_app, "depends", "netcat")
@@ -111,14 +118,20 @@ ec.set(sender_app, "command", sender_cmd)
 ec.register_connection(sender_app, nodeB)
 apps.append(sender_app)
 
+# defining that the node B can send only after node A is listening
 ec.register_condition(sender_app, ResourceAction.START, receiver_app, ResourceState.STARTED) 
 
+# deploy the experiment
 ec.deploy([nodeA, nodeB, receiver_app, sender_app])
+
+# wait for the experiment exit
 ec.wait_finished(apps)
 
+# recover and print the results
 for app in apps:
     print ec.trace(app, "stdout")
 
+# destroy the controller
 ec.shutdown()
 
 

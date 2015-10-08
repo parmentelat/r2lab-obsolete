@@ -83,13 +83,13 @@ ec.set(application, "command", command)
 #connect the application to the node
 ec.register_connection(application, node)
 
-# deploy the code
+# deploy the experiment
 ec.deploy()
 
-# wait for the application exit
+# wait for the experiment exit
 ec.wait_finished(application)
 
-# recover the result
+# recover and print the result
 print ec.trace(application, "stdout")
 
 # destroy the controller
