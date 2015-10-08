@@ -5,8 +5,8 @@ tab: tutorial
 Below is a very simple experiment sends 3 pings to r2lab.inria.fr server from one linux::Node.
 The expected result is prints the output of the ping command.
 
-<pre data-src="prism.js" class="  language-javascript">
-<code class="language-python background-black">
+<pre data-src="prism.js" class="language-javascript">
+<code class="language-python">
 
 #!/usr/bin/env python
 #
@@ -24,10 +24,10 @@ The expected result is prints the output of the ping command.
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 #
-# Author: Alina Quereilhac <alina.quereilhac@inria.fr>
-#         Maksym Gabielkov <maksym.gabielkovc@inria.fr>
+# Author: Alina Quereilhac &lt;alina.quereilhac@inria.fr&gt;
+#         Maksym Gabielkov &lt;maksym.gabielkovc@inria.fr&gt;
 #
 #
 # This is a script used to simulate a sender-receiver file between two nodes A and B from
@@ -36,7 +36,7 @@ The expected result is prints the output of the ping command.
 #
 # Example of how to run this experiment (replace with your information):
 #
-# python ping.py -a <hostname> -u <username> -i ~/.ssh/id_rsa
+# python ping.py -a &lt;hostname&gt; -u &lt;username&gt; -i ~/.ssh/id_rsa
 #
 #
 from nepi.execution.ec import ExperimentController
@@ -46,7 +46,7 @@ from nepi.util.sshfuncs import logger
 import logging
 from argparse import ArgumentParser
 
-usage = ("usage: %prog -a <hostname> -u <username> -i <ssh-key>")
+usage = ("usage: %prog -a &lt;hostname&gt; -u &lt;username&gt; -i &lt;ssh-key&gt;")
 
 parser = ArgumentParser(usage = usage)
 parser.add_argument("-a", "--hostname", dest="hostname", 

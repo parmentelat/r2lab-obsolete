@@ -6,8 +6,8 @@ The experiment below transfer one file from one node to another one using nepi t
 
 The experiment below uses netcat Linux program. Basiclly, netcat is a service for reading from and writing to network connections using TCP or UDP.
 
-<pre data-src="prism.js" class="  language-javascript">
-<code class="language-python background-black">
+<pre data-src="prism.js" class="language-javascript">
+<code class="language-python">
 
 #!/usr/bin/env python
 #
@@ -25,10 +25,10 @@ The experiment below uses netcat Linux program. Basiclly, netcat is a service fo
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 #
-# Author: Alina Quereilhac <alina.quereilhac@inria.fr>
-#         Maksym Gabielkov <maksym.gabielkovc@inria.fr>
+# Author: Alina Quereilhac &lt;alina.quereilhac@inria.fr&gt;
+#         Maksym Gabielkov &lt;maksym.gabielkovc@inria.fr&gt;
 #
 #
 # This is a script used to simulate a sender-receiver file between two nodes A and B from
@@ -37,8 +37,8 @@ The experiment below uses netcat Linux program. Basiclly, netcat is a service fo
 #
 # Example of how to run this experiment (replace with your information):
 #
-# $ cd <path-to-nepi>/examples/linux [where the script has been copied]
-# python sender_receiver.py -N <nodeA,nodeB> -U <host_username> -i <ssh-key> -g <gateway> -u <gateway_username>
+# $ cd &lt;path-to-nepi&gt;/examples/linux [where the script has been copied]
+# python sender_receiver.py -N &lt;nodeA,nodeB&gt; -U &lt;host_username&gt; -i &lt;ssh-key&gt; -g &lt;gateway&gt; -u &lt;gateway_username&gt;
 #
 #
 from nepi.execution.ec import ExperimentController
@@ -48,7 +48,7 @@ from nepi.util.sshfuncs import logger
 import logging
 from argparse import ArgumentParser
 
-usage = ("usage: %prog -N <node-A-and-Node-B> -U <node-username> -i <ssh-key> -g <gateway> -u <slicename>")
+usage = ("usage: %prog -N &lt;node-A-and-Node-B&gt; -U &lt;node-username&gt; -i &lt;ssh-key&gt; -g &lt;gateway&gt; -u &lt;slicename&gt;")
 
 parser = ArgumentParser(usage = usage)
 parser.add_argument("-N", "--nodes", dest="nodes", 

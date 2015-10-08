@@ -115,11 +115,11 @@ Note : It is also possible to run this command directly without making a nodes s
         $ load-gr-u1504
 * Another image
 
-        $ load-image <myImage>
+        $ load-image &lt;myImage&gt;
         
 **6 - Run an ssh command on all selected nodes**
 
-        $ map <mycommand>
+        $ map &lt;mycommand&gt;
         
 **7 - Find other short commands**
 
