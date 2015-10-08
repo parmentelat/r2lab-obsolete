@@ -2,6 +2,9 @@ title: NEPI - Ping
 tab: tutorial
 ---
 
+Below is a very simple experiment sends 3 pings to r2lab.inria.fr server from one linux::Node.
+The expected result is prints the output of the ping command.
+
 <pre><code class="language-python">
 
 #!/usr/bin/env python
@@ -33,6 +36,7 @@ tab: tutorial
 # Example of how to run this experiment (replace with your information):
 #
 # python ping.py -a <hostname> -u <username> -i ~/.ssh/id_rsa
+#
 #
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
