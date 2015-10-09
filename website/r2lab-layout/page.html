@@ -32,6 +32,8 @@
     <!-- color text in python codes -->
     <script type="text/javascript" src="{{asset 'js/prism-default.js'}}"></script>
     <link href="{{asset 'css/prism-default.css'}}" rel="stylesheet" />
+    <!-- random background images -->
+    <script type="text/javascript" src="{{asset 'js/randomImage.js'}}"></script>
 </head>
 <body>
 <div class="header">
@@ -58,11 +60,11 @@
     </div>
   </div>
 </div>
-</div><div class="container-fluid personal">
+</div><div class="container-fluid personal" id="background">
   <div class="row" style="height:400px;">
       <div class="col-md-4 col-sm-7 col-md-offset-2 slogan">
       <h2>
-        R2lab anechoic chamber,
+        <div>R2lab anechoic chamber,
       </h2>
       <h3>
         a heterogeneous wireless testbed
@@ -136,5 +138,6 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">placeImage();</script>
 </body>
 </html>
