@@ -7,9 +7,7 @@ The expected result is prints the output of the ping command.
 
 Download the <a href="codes_examples/ping.py" download target="_blank">ping</a> code
 
-<pre data-src="prism.js" class="language-javascript line-numbers">
-<code class="language-python">
-#!/usr/bin/env python
+<pre data-src="prism.js" class="language-javascript line-numbers"><code class="language-python">#!/usr/bin/env python
 # Example of how to run this experiment (replace with your information):
 #
 # python ping.py -a &lt;hostname&gt; -u &lt;username&gt; -i ~/.ssh/id_rsa

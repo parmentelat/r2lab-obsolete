@@ -8,9 +8,7 @@ The experiment below uses netcat Linux program. Basiclly, netcat is a service fo
 
 Download the <a href="codes_examples/send_file.py" download target="_blank">send file</a> code
 
-<pre data-src="prism.js" class="language-javascript line-numbers">
-<code class="language-python">
-#!/usr/bin/env python
+<pre data-src="prism.js" class="language-javascript line-numbers"><code class="language-python">#!/usr/bin/env python
 # Example of how to run this experiment (replace with your information):
 #
 # $ cd &lt;path-to-nepi&gt;/examples/linux [where the script has been copied]
