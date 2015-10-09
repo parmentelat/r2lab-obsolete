@@ -3,15 +3,16 @@ ALL_MDS = index.md overview.md tuto-*md tutorial.md status.md hardware.md tools.
 
 ALL_PYTHONS = ../nepi_scripts/r2lab_testbed*.py
 ALL_PLUGINS = plugins/*.{js,css,html}
+ALL_CODES = codes_examples/*.py
 
 ########## default target
 all: preview
 
-preview: prepare index meta convert resources
+preview: prepare index meta convert resources codes_examples
 # this is what is invoked by restart-website.sh that is crontab'ed
 install: preview publish
 
-.PHONY: all preview publish install prepare index meta convert resources 
+.PHONY: all preview publish install prepare index meta convert resources codes_examples
 
 preview_and_nepiall: prepare index meta nepi_all convert resources
 install_and_nepiall: preview_and_nepiall publish
@@ -49,6 +50,10 @@ meta:
 status:
 	@[ -d markdown ] || mkdir markdown
 	./status.py
+
+# export the codes at codes_examples folder
+codes_examples:
+	rsync -av $(ALL_CODES) html/codes_examples
 
 convert: 
 	generate-md --layout $(LAYOUT) --input markdown --output html

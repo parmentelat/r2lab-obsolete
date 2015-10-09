@@ -1,19 +1,33 @@
-title: NEPI - Ping
-tab: tutorial
----
-
-Below is a very simple experiment sends 3 pings to r2lab.inria.fr server from one linux::Node.
-The expected result is prints the output of the ping command.
-
-Download the <a href="codes_examples/ping.py" download target="_blank">ping</a> code
-
-<pre data-src="prism.js" class="language-javascript">
-<code class="language-python">
-
 #!/usr/bin/env python
+#
+#
+#    NEPI, a framework to manage network experiments
+#    Copyright (C) 2015 INRIA
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License version 2 as
+#    published by the Free Software Foundation;
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#      Author: Alina Quereilhac <alina.quereilhac@inria.fr>
+#            Maksym Gabielkov <maksym.gabielkovc@inria.fr>
+#
+#
+# This is a script used to simulate a sender-receiver file between two nodes A and B from
+# INRIA testbed (R2Lab) before running a OMF experiment using Nitos nodes.
+# For simplicity, the file should be already present in the node A (sender) and it call  file1.txt
+#
 # Example of how to run this experiment (replace with your information):
 #
-# python ping.py -a &lt;hostname&gt; -u &lt;username&gt; -i ~/.ssh/id_rsa
+# python ping.py -a <hostname> -u <username> -i ~/.ssh/id_rsa
+#
 #
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
@@ -22,11 +36,11 @@ from nepi.util.sshfuncs import logger
 import logging
 from argparse import ArgumentParser
 
-usage = ("usage: %prog -a &lt;hostname&gt; -u &lt;username&gt; -i &lt;ssh-key&gt;")
+usage = ("usage: %prog -a <hostname> -u <username> -i <ssh-key>")
 
 parser = ArgumentParser(usage = usage)
 parser.add_argument("-a", "--hostname", dest="hostname", 
-			 help="Remote host")
+             help="Remote host")
 parser.add_argument("-u", "--username", dest="username", 
        help="SSH username to connect the host", default="username" )
 parser.add_argument("-i", "--ssh-key", dest="ssh_key", 
@@ -71,6 +85,3 @@ print ec.trace(application, "stdout")
 
 # destroy the controller
 ec.shutdown()
-
-</code>
-</pre>

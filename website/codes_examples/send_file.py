@@ -1,21 +1,34 @@
-title: NEPI - Send file
-tab: tutorial
----
-
-The experiment below transfer one file from one node to another one using nepi tool. In one side the experiment starts a server "listening" in a specific port (1234) and, at the other side, the script send a file to the listener one.
-
-The experiment below uses netcat Linux program. Basiclly, netcat is a service for reading from and writing to network connections using TCP or UDP.
-
-Download the <a href="codes_examples/send_file.py" download target="_blank">ping</a> code
-
-<pre data-src="prism.js" class="language-javascript">
-<code class="language-python">
-
 #!/usr/bin/env python
+#
+#
+#    NEPI, a framework to manage network experiments
+#    Copyright (C) 2015 INRIA
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License version 2 as
+#    published by the Free Software Foundation;
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#      Author: Alina Quereilhac <alina.quereilhac@inria.fr>
+#              Maksym Gabielkov <maksym.gabielkovc@inria.fr>
+#
+#
+# This is a script used to simulate a sender-receiver file between two nodes A and B from
+# INRIA testbed (R2Lab) before running a OMF experiment using Nitos nodes.
+# For simplicity, the file should be already present in the node A (sender) and it call file1.txt
+#
 # Example of how to run this experiment (replace with your information):
 #
-# $ cd &lt;path-to-nepi&gt;/examples/linux [where the script has been copied]
-# python sender_receiver.py -N &lt;nodeA,nodeB&gt; -U &lt;host_username&gt; -i &lt;ssh-key&gt; -g &lt;gateway&gt; -u &lt;gateway_username&gt;
+# $ cd <path-to-nepi>/examples/linux [where the script has been copied]
+# python sender_receiver.py -N <nodeA,nodeB> -U <host_username> -i <ssh-key> -g <gateway> -u <gateway_username>
+#
 #
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
@@ -24,7 +37,7 @@ from nepi.util.sshfuncs import logger
 import logging
 from argparse import ArgumentParser
 
-usage = ("usage: %prog -N &lt;node-A-and-Node-B&gt; -U &lt;node-username&gt; -i &lt;ssh-key&gt; -g &lt;gateway&gt; -u &lt;slicename&gt;")
+usage = ("usage: %prog -N <node-A-and-Node-B> -U <node-username> -i <ssh-key> -g <gateway> -u <slicename>")
 
 parser = ArgumentParser(usage = usage)
 parser.add_argument("-N", "--nodes", dest="nodes", 
@@ -109,6 +122,3 @@ for app in apps:
 
 # destroy the controller
 ec.shutdown()
-
-</code>
-</pre>
