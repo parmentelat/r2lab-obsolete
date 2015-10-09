@@ -1,7 +1,7 @@
 
 (function($) {
 
-	// returns a random images from a given list 
+	// returns a random image from a given image list already placed in assets/img folder 
   getOneImage = function(imagesList, path) {
   	path = path || 'assets/img/';	
   	idx  = Math.round(Math.random() * (imagesList.length - 1));
