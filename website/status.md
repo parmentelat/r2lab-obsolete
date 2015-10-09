@@ -48,7 +48,7 @@ Complementary to the live map above, this status table presents the same status 
 
 Also please note that 
 
-	 * Clicking anywhere in the header will focus on the nodes that are currently up; a second click returns to full mode.
+ * Clicking anywhere in the header will focus on the nodes that are currently up; a second click returns to full mode.
  * Clicking a node badge will take it off the list
 
 <br />
