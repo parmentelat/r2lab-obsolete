@@ -6,11 +6,10 @@ The experiment below transfer one file from one node to another one using nepi t
 
 The experiment below uses netcat Linux program. Basiclly, netcat is a service for reading from and writing to network connections using TCP or UDP.
 
-Download the <a href="codes_examples/send_file.py" download target="_blank">ping</a> code
+Download the <a href="codes_examples/send_file.py" download target="_blank">send file</a> code
 
-<pre data-src="prism.js" class="language-javascript">
+<pre data-src="prism.js" class="language-javascript line-numbers">
 <code class="language-python">
-
 #!/usr/bin/env python
 # Example of how to run this experiment (replace with your information):
 #
@@ -109,6 +108,5 @@ for app in apps:
 
 # destroy the controller
 ec.shutdown()
-
 </code>
 </pre>
