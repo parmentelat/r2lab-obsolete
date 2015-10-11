@@ -11,7 +11,8 @@ var sidecar_port_number = 443;
 // * available: missing, or 'ok' : node is expected to be usable; if 'ko' a very visible red circle shows up
 // * cmc_on_off: 'on' or 'off' - nodes that fail will be treated as 'ko', better use 'available' instead
 // * control_ping: 'on' or 'off'
-// * os_release: 'fail' means this could not be assessed, otherwise 'fedora*' and 'ubuntu*' will have corr. icon
+// * control_ssh: 'on' or 'off'
+// * os_release: fedora* ubuntu* with/without gnuradio, .... or 'other' 
 // * wlan0_rx_rate: and similar with wlan1 and tx: bit rate in Mbps, expected to be in the [0, 20] range a priori
 
 // ready to fly as soon as the data comes in from monitor
@@ -177,7 +178,7 @@ var MapNode = function (node_spec) {
     this.is_alive = function() {
 	return this.cmc_on_off == 'on'
 	    && this.control_ping == 'on'
-	    && this.os_release != 'fail'
+	    && this.control_ssh != 'off'
 	    && this.available != 'ko';
     }
 
@@ -221,7 +222,7 @@ var MapNode = function (node_spec) {
 	else if (this.control_ping != 'on')
 	    return this.cst_radius_warming;
 	// pings but cannot get ssh
-	else if (this.os_release == 'fail')
+	else if (this.control_ssh != 'on')
 	    return this.cst_radius_pinging;
 	// ssh is answering
 	else
@@ -247,7 +248,7 @@ var MapNode = function (node_spec) {
     this.op_status_filter = function() {
 	var filter_name;
 	// only set a filter with full-fledged nodes
-	if (this.op_status_radius() != this.cst_radius_ok)
+	if (! this.is_alive())
 	    return undefined;
 	// remember infos might be incomplete
 	else if (this.os_release == undefined)
@@ -490,7 +491,7 @@ function LiveMap() {
 	    .attr("height", "100%")
 	;
         filter.append("feImage")
-	    .attr("xlink:href", "assets/img/" + id_filename + ".png");
+	    .attr("xlink:href", "../assets/img/" + id_filename + ".png");
     }
 
     this.declare_image_filter('fedora-logo');

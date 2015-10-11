@@ -29,15 +29,16 @@ rates_range = drange(0., 20. * 10**6, 6. * 10**5)
 field_possible_values = {
     'cmc_on_off' : [ 'on', 'off', 'fail' ],
     'control_ping' : [ 'on', 'off' ],
+    'control_ssh' : ['on', 'off'],
     'os_release' : [ 'fedora-21', 'ubuntu-15.04',
                      'fedora-21-gnuradio',
                      'other',
-                     'fail' ],
+                     ],
     'wlan0_rx_rate' : rates_range,
     'wlan0_tx_rate' : rates_range,
     'wlan1_rx_rate' : rates_range,
     'wlan1_tx_rate' : rates_range,
-    'available' : [ None, 'ok', 'ko'],
+    'available' : [ None, 'ko'] + 3*['ok'],
 }
 
 ####################    
@@ -52,7 +53,7 @@ def normalize_status(node_info):
     for k in none_keys:
         del node_info[k]
     # avoid producing too inconsistent data
-    if 'os_release' in node_info and node_info['os_release'] != 'fail':
+    if 'control_ssh' in node_info and node_info['control_ssh'] != 'off':
         node_info.update({'cmc_on_off' : 'on',
                           'control_ping' : 'on',
                       })
@@ -128,6 +129,7 @@ def main():
             print("{} -- on {} nodes (id, len(fields)) : {}"
                   .format(counter, len(news_infos),
                           [ (info['id'], len(info)-1) for info in news_infos]))
+            print(news_infos[0])
         news_string = json.dumps(news_infos)
         socketIO.emit('r2lab-news', news_string, io_callback)
         counter += 1

@@ -57,9 +57,7 @@ verbose = None
 ########## timeouts (floats are probably OK but I have not tried)
 # this should amply enough
 timeout_curl = 1
-# ssh should fail in 3s in normal conditions
-# seeing ssh hang in some pathological situations is the reason
-# for these timeouts in the first place
+# cool thing with paramiko is the ability to give 2 separate timeouts
 timeout_ssh_tcp    = 0.8
 timeout_ssh_banner = 0.7
 # here again should be amply enough
@@ -148,7 +146,7 @@ def cleanup_wlan_infos(id, infos):
 def pass1_on_off(node_ids, infos, history):
     """
     check for CMC status
-    the ones that are OFF - or where status fails 
+    the ones that are OFF - or where http://<cmc>/status fails 
     are kept out of the next pass
     
     performs insertions/updates in infos 
@@ -160,8 +158,8 @@ def pass1_on_off(node_ids, infos, history):
     # general pattern here is to pad infos that are not in remaining_ids
     padding_dict = {
         'control_ping' : 'off',
-# don't overwrite os_release so that livetable can show it
-#        'os_release' : 'fail',
+        'control_ssh' : 'off',
+    # don't overwrite os_release though
     }
     
     remaining_ids = set()
@@ -286,11 +284,12 @@ def pass2_os_release(node_ids, infos, history, report_wlan):
                 insert_or_refine(id, infos, {'os_release' : 'other'}, padding_dict)
         except socket.timeout:
             display("node={id} - ssh timed out".format(id=id))
+            insert_or_refine(id, infos, {'control_ssh' : 'off'})
         except Exception as e:
             import traceback
             traceback.print_exc()
-# don't overwrite os_release so that livetable can show it
-#            insert_or_refine(id, infos, {'os_release' : 'fail'})
+            # don't overwrite os_release
+            insert_or_refine(id, infos, {'control_ssh' : 'off'})
             remaining_ids.add(id)
     return remaining_ids
 
@@ -363,8 +362,12 @@ def one_loop(all_ids, socketio, infos, history, report_wlan):
             return '.'
         elif 'control_ping' in info and info['control_ping'] != 'on':
             return 'o'
-        elif 'os_release' in info and info['os_release'] == 'fail':
+        elif 'control_ssh' in info and info['control_ssh'] != 'on':
             return '0'
+        elif 'os_release' in info and 'fedora' in info['os_release']:
+            return 'F'
+        elif 'os_release' in info and 'ubuntu' in info['os_release']:
+            return 'U'
         else:
             return '^'
     one_liner = "".join([one_char_summary(info) for info in infos])
@@ -453,6 +456,8 @@ def main():
         global output_file
         vdisplay("Opening {} in append mode".format(args.output))
         output_file = open(args.output, "a")
+        sys.stdout = output_file
+        sys.stderr = output_file
     if not args.nodes:
         args.nodes = default_nodes
 

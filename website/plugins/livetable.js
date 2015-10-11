@@ -35,17 +35,18 @@ var nb_nodes = 37;
 var TableNode = function (id) {
     this.id = id;
     this.cells_data = [
-	[ span_html(id, 'badge'), '' ],  // id
+	[ span_html(id, 'badge'), '' ],  // id 
 	undefined,			// avail
 	undefined,			// on/off
 	undefined,			// ping
+	undefined,			// ssh
 	undefined			// os_release
     ];
 		 
     this.is_alive = function() {
 	return this.cmc_on_off == 'on'
 	    && this.control_ping == 'on'
-	    && this.os_release != 'fail'
+	    && this.control_ssh == 'on'
 	    && this.available != 'ko';
     }
 
@@ -77,6 +78,9 @@ var TableNode = function (id) {
 	this.cells_data[col++] =
 	    this.control_ping == 'on' ? [ span_html('', 'fa fa-link'), 'ok' ]
 	    : [ span_html('', 'fa fa-unlink'), 'ko' ];
+	this.cells_data[col++] =
+	    this.control_ssh == 'on' ? [ span_html('', 'fa fa-circle'), 'ok' ]
+	    : [ span_html('', 'fa fa-circle-o'), 'ko' ];
 	this.cells_data[col++] = this.release_cell(this.os_release);
 	// optional
 	if (livetable_show_rxtx_rates) {
@@ -167,6 +171,7 @@ function LiveTable() {
 	header_rows.append('th').html('Availability');
 	header_rows.append('th').html('On/Off');
 	header_rows.append('th').html('Ping');
+	header_rows.append('th').html('Ssh');
 	header_rows.append('th').html('Last O.S.');
 	if (livetable_show_rxtx_rates) {
 	    header_rows.append('th').html('wlan0-rx').attr('class','rxtx');
