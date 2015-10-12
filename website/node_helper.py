@@ -80,6 +80,9 @@ elif "reset" == action:
 elif "load-u1410" == action:
     # load image in each node from the list
     result = load(nodes, 'ubuntu-14.10.ndz', connection_info)
+elif "load_group-u1410" == action:
+    # load image in a group of nodes in parallel
+    result = load_group(nodes, 'ubuntu-14.10.ndz', connection_info)
 elif "load-u1504" == action:
     # load image in each node from the list
     result = load(nodes, 'ubuntu-15.04.ndz', connection_info)

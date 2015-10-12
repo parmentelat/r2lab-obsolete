@@ -35,6 +35,103 @@ import re
 import json
 
 
+def load_group(nodes, version, connection_info, show_results=True):
+    """ Load a new image to the nodes from the list """
+    valid_version(version)
+    ec    = ExperimentController(exp_id="load_group-{}".format(version))
+    
+    # nodes = format_nodes(nodes)
+    # nodes = check_node_name(nodes)
+
+    gw_node = ec.register_resource("linux::Node")
+    ec.set(gw_node, "hostname", connection_info['gateway'])
+    ec.set(gw_node, "username", connection_info['gateway_username'])
+    ec.set(gw_node, "identity", connection_info['identity'])
+    ec.set(gw_node, "cleanExperiment", True)
+    ec.set(gw_node, "cleanProcesses", False)
+    ec.set(gw_node, "cleanProcessesAfter", False)
+
+    cmd = "omf6 load -t {} -i {} ".format(nodes, version) 
+    app = ec.register_resource("linux::Application")
+    ec.set(app, "command", cmd)
+    ec.register_connection(app, gw_node)
+
+    ec.deploy(gw_node)
+
+    print "-- loading image at nodes {}".format(nodes)
+    ec.deploy(app)
+    ec.wait_finished(app)
+        
+    stdout    = remove_special_char(ec.trace(app, "stdout"))
+    exitcode  = remove_special_char(ec.trace(app, 'exitcode'))
+    
+    ec.shutdown()
+    
+    if error_presence(stdout):            
+        exitcode  = 1
+        print "Error in load group."
+        print stdout
+    elif '0' in exitcode:
+        pass
+    
+    ans = check_node_vertion(nodes, connection_info, False)
+            
+    return ans
+
+
+def check_node_vertion(nodes, connection_info, show_results=True):
+    """ Get the info from the operational system """
+    nodes = format_nodes(nodes)
+    nodes = check_node_name(nodes)
+
+    node_appname = {}
+    node_appid   = {}
+    results      = {}
+    for node in nodes:        
+        ec    = ExperimentController(exp_id="info")
+
+        by_node = ec.register_resource("linux::Node")
+
+        ec.set(by_node, "hostname", 'fit'+str(node))
+        ec.set(by_node, "username", 'root')
+        ec.set(by_node, "identity", connection_info['identity'])
+        if not "localhost" in connection_info['gateway']:
+            ec.set(by_node, "gateway", connection_info['gateway'])
+            ec.set(by_node, "gatewayUser", connection_info['gateway_username'])
+
+        ec.set(by_node, "cleanExperiment", True)
+        ec.set(by_node, "cleanProcesses", False)
+        ec.set(by_node, "cleanProcessesAfter", False)
+
+
+        on_cmd_a = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
+        #on_cmd_a = "nodes {}; releases".format(node)
+        node_appname.update({node : 'app_{}'.format(node)}) 
+        node_appname[node] = ec.register_resource("linux::Application")
+        ec.set(node_appname[node], "command", on_cmd_a)
+        ec.register_connection(node_appname[node], by_node)
+        # contains the app id given when register the app by EC
+        node_appid.update({node_appname[node] : node})
+        
+        ec.deploy(by_node)
+
+        ec.deploy(node_appname[node])
+        ec.wait_finished(node_appname[node]) 
+
+        stdout    = remove_special_char(ec.trace(node_appname[node], "stdout"))
+        exitcode  = remove_special_char(ec.trace(node_appname[node], 'exitcode'))
+        results.update({ node_appid[node_appname[node]] : {'exit' : exitcode, 'stdout' : stdout}})
+
+        ec.shutdown()
+
+    if show_results:
+        results = format_results(results, 'info', True)
+        print_results(results)
+
+    
+    return results
+
+
 def load(nodes, version, connection_info, show_results=True):
     """ Load a new image to the nodes from the list """
     valid_version(version)
@@ -86,7 +183,6 @@ def load(nodes, version, connection_info, show_results=True):
             exitcode  = 1
             results.update({ node_appid[app] : {'exit' : exitcode, 'stdout' : stdout}})
         elif '0' in results[key_node]['exit']:
-            # implement thread for improvements and check in parallel
             ans = check_if_node_answer(key_node, connection_info, 3, 15)
             results.update(ans)
 
