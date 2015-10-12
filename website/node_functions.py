@@ -67,19 +67,35 @@ def load_group(nodes, version, connection_info, show_results=True):
     
     ec.shutdown()
     
+    results = {}
+    formated_results = {}     
     if error_presence(stdout):            
         exitcode  = 1
-        print "Error in load group."
+        print "*** Error in load group. ***"
         print stdout
     elif '0' in exitcode:
-        pass
+        print "Waiting for a while to check the version"
+        wait_and_update_progress_bar(10)
     
-    ans = check_node_vertion(nodes, connection_info, False)
-            
-    return ans
+        results = check_node_version(nodes, connection_info, False)
+        
+        if results:
+            for key in sorted(results):
+                if named_version(version) in results[key]['stdout']:
+                    new_result = 'ok'
+                else:
+                    new_result = 'fail'
+
+                formated_results.update({ key : {'load' : new_result, 'current_os' : results[key]['stdout']}})
+                
+
+    # save_in_file(formated_results, 'group_load') 
+
+    # return formated_results
+    print formated_results
 
 
-def check_node_vertion(nodes, connection_info, show_results=True):
+def check_node_version(nodes, connection_info, show_results=True):
     """ Get the info from the operational system """
     nodes = format_nodes(nodes)
     nodes = check_node_name(nodes)
@@ -253,6 +269,7 @@ def reset(nodes, connection_info, show_results=True):
     save_in_file(results, 'reset_results')
 
     return results
+
 
 def answer(nodes, connection_info, show_results=True):
     """ Check if a node answer a ping command in control interface """
@@ -480,6 +497,13 @@ def multiple_action(nodes, connection_info, action, show_results=True):
     return results
 
 
+def named_version(version):
+    """ Return a explicit name version """
+    explicit_version = version.replace("-", " ").replace(".ndz", "")
+    
+    return explicit_version
+
+
 def remove_special_char(str):
     """ Remove special caracters from a string """
     if str is not None:
@@ -537,6 +561,7 @@ def valid_version(version):
         return False
     else:
         return version
+
 
 def format_results(results, action, stdout=False):
     """ Format the results in a summary way """
