@@ -294,7 +294,9 @@ def pass2_os_release(node_ids, infos, history, report_wlan):
         except socket.timeout:
             display("node={id} - ssh timed out".format(id=id))
             insert_or_refine(id, infos, {'control_ssh' : 'off'})
-            over_with_ids.add(id)
+        except ConnectionRefusedError as e:
+            display("node={id} - connection refused".format(id=id))
+            insert_or_refine(id, infos, {'control_ssh' : 'off'})
         except Exception as e:
             import traceback
             traceback.print_exc()
