@@ -159,10 +159,14 @@ def pass1_on_off(node_ids, infos, history):
     padding_dict = {
         'control_ping' : 'off',
         'control_ssh' : 'off',
-    # don't overwrite os_release though
+        # don't overwrite os_release though
     }
     
-    remaining_ids = set()
+    # the set of nodes for which the whole process ends here
+    # we use this logic instead of maintaining remaining_ids
+    # because using padding_dict and marking nodes as done 
+    # go together and makes code more consistent
+    over_with_ids = set()
     for id in node_ids:
 #        vdisplay("pass1 : {id} (CMC status via curl)".format(**locals()))
         reboot = hostname(id, "reboot")
@@ -172,15 +176,16 @@ def pass1_on_off(node_ids, infos, history):
             if result == 'off':
                 # fill in all fields so we can emit these
                 insert_or_refine(id, infos, {'cmc_on_off' : 'off'}, padding_dict)
+                over_with_ids.add(id)
             elif result == 'on':
                 insert_or_refine(id, infos, {'cmc_on_off' : 'on'})
-                remaining_ids.add(id)
             else:
                 raise Exception("unexpected result on CMC status request " + result)
         except Exception as e:
             vdisplay('node={id}'.format(id=id), e)
             insert_or_refine(id, infos, {'cmc_on_off' : 'fail'}, padding_dict)
-    return remaining_ids
+            over_with_ids.add(id)
+    return node_ids - over_with_ids
 
 
 ##########
@@ -198,9 +203,11 @@ def pass2_os_release(node_ids, infos, history, report_wlan):
     same mechanism as pass1 in terms of side-effects and return value
     """
     padding_dict = {
-        'control_ping' : 'on'
+        'control_ping' : 'on',
+        'control_ssh' : 'on',
     }
-    remaining_ids = set()
+
+    over_with_ids = set()
     for id in node_ids:
 #        vdisplay("pass2 : {id} (os_release via ssh)".format(**locals()))
         control = hostname(id)
@@ -278,20 +285,22 @@ def pass2_os_release(node_ids, infos, history, report_wlan):
                 # xxx would make sense to clean up history for measurements that
                 # we were not able to collect at this cycle
                 insert_or_refine(id, infos, {'os_release' : os_release}, padding_dict, wlan_info_dict)
+                over_with_ids.add(id)
             except Exception as e:
 #                import traceback
 #                traceback.print_exc()
                 insert_or_refine(id, infos, {'os_release' : 'other'}, padding_dict)
+                over_with_ids.add(id)
         except socket.timeout:
             display("node={id} - ssh timed out".format(id=id))
             insert_or_refine(id, infos, {'control_ssh' : 'off'})
+            over_with_ids.add(id)
         except Exception as e:
             import traceback
             traceback.print_exc()
             # don't overwrite os_release
             insert_or_refine(id, infos, {'control_ssh' : 'off'})
-            remaining_ids.add(id)
-    return remaining_ids
+    return node_ids - over_with_ids
 
 def pass3_control_ping(node_ids, infos, history):
     """
@@ -301,7 +310,7 @@ def pass3_control_ping(node_ids, infos, history):
     same mechanism as pass1 in terms of side-effects and return value
     """
     # nothing to pad here, it's the last attribute
-    remaining_ids = set()
+    over_with_ids = set()
     for id in node_ids:
 #        vdisplay("pass3 : {id} (control_ping via ping)".format(**locals()))
         # -c 1 : one packet -- -t 1 : wait for 1 second max
@@ -311,10 +320,12 @@ def pass3_control_ping(node_ids, infos, history):
             with open('/dev/null', 'w') as null:
                 check_call_timeout(command, timeout_ping, stdout=null, stderr=null)
             insert_or_refine(id, infos, {'control_ping' : 'on'})
+            over_with_ids.add(id)
         except Exception as e:
             vdisplay('node={id}'.format(id=id), e)
+            over_with_ids.add(id)
             insert_or_refine(id, infos, {'control_ping' : 'off'})
-    return remaining_ids
+    return node_ids - over_with_ids
                     
 
 ##########
