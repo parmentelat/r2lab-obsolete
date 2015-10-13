@@ -295,7 +295,7 @@ function list-images {
 doc-alt list-images "List available images"    
 
 alias load-ubuntu=load-u1504
-alias load-fedora=load-f21
+alias load-fedora=load-f22
 alias load-gnuradio=load-gr-u1410
 
 doc-nodes load-ubuntu "upload latest ubuntu image on all nodes"
