@@ -34,7 +34,7 @@
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
-from node_functions import *
+from node_functions import load_group, load, reset, answer, info, alive, status, on, off
 from argparse import ArgumentParser
 
 
@@ -86,9 +86,15 @@ elif "load_group-u1410" == action:
 elif "load-u1504" == action:
     # load image in each node from the list
     result = load(nodes, 'ubuntu-15.04.ndz', connection_info)
+elif "load_group-u1504" == action:
+    # load image in each node from the list
+    result = load_group(nodes, 'ubuntu-15.04.ndz', connection_info)
 elif "load-f21" == action:
     # load image in each node from the list
     result = load(nodes, 'fedora-21.ndz', connection_info)
+elif "load_group-f21" == action:
+    # load image in each node from the list
+    result = load_group(nodes, 'fedora-21.ndz', connection_info)
 elif "alive" == action or "cmc-on-off" == action:
     # check if each node from the list anwer a ping in the CM card
     result = alive(nodes, connection_info)
