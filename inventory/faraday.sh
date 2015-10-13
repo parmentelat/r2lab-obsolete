@@ -270,6 +270,10 @@ function load-f21 ()   { load-image fedora-21.ndz "$@" ; }
 _images="$_images fedora-21.ndz"
 doc-nodes load-f21 "Load image based on fedora21"
 
+function load-f22 ()   { load-image fedora-22.ndz "$@" ; }
+_images="$_images fedora-22.ndz"
+doc-nodes load-f22 "Load image based on fedora22"
+
 
 function load-gr-u1410 () { load-image gnuradio-ubuntu-14.10.ndz "$@" ; }
 _images="$_images gnuradio-ubuntu-14.10.ndz"
