@@ -33,7 +33,9 @@
     <script type="text/javascript" src="{{asset 'js/prism-default.js'}}"></script>
     <link href="{{asset 'css/prism-default.css'}}" rel="stylesheet" />
     <!-- random background images -->
-    <script type="text/javascript" src="{{asset 'js/randomImage.js'}}"></script>
+    <script type="text/javascript" src="{{asset 'js/random_image.js'}}"></script>
+    <!-- present or not one lab login form -->
+    <script type="text/javascript" src="{{asset 'js/onelab_login.js'}}"></script>
 </head>
 <body>
 <div class="header">
@@ -44,11 +46,11 @@
     </div>
     <div class="col-xs-12 col-sm-7 col-md-7 navigation">
       <ul>
-        <li><a id="tab-overview" tab="{{tab}}" class="sites" href="overview.html#main">Overview</a></li>
-        <li><a id="tab-status" tab="{{tab}}" class="sites" href="status.html#main">Status</a></li>
-        <li ><a id="tab-platform" tab="{{tab}}" class="sites" href="hardware.html#main">Hardware</a></li>
-        <li><a id="tab-blog" tab="{{tab}}" class="sites" href="blog.html#main">Infos</a></li>
-        <li><a id="tab-tutorial" tab="{{tab}}" class="sites" href="tutorial.html#main">Tutorials</a></li>
+        <li><a id="tab-overview" tab="{{tab}}" class="sites" href="overview.html">Overview</a></li>
+        <li><a id="tab-status" tab="{{tab}}" class="sites" href="status.html">Status</a></li>
+        <li ><a id="tab-platform" tab="{{tab}}" class="sites" href="hardware.html">Hardware</a></li>
+        <li><a id="tab-blog" tab="{{tab}}" class="sites" href="blog.html">Infos</a></li>
+        <li><a id="tab-tutorial" tab="{{tab}}" class="sites" href="tutorial.html">Tutorials</a></li>
       </ul>
     </div>
     <div class="col-xs-12 col-sm-2 col-md-3 secondary">
@@ -60,11 +62,12 @@
     </div>
   </div>
 </div>
-</div><div class="container-fluid personal" id="background">
-  <div class="row" style="height:400px;">
-      <div class="col-md-4 col-sm-7 col-md-offset-2 slogan">
+</div>
+<div class="container-fluid personal" id="background">
+  <div class="row" style="height:400px;" id="onelab_login">
+    <div class="col-md-4 col-sm-7 col-md-offset-2 slogan">
       <h2>
-        <div>R2lab anechoic chamber,
+        R2lab anechoic chamber,
       </h2>
       <h3>
         a heterogeneous wireless testbed
@@ -84,33 +87,33 @@
           </div>
         </div>
         <form action="http://portal.onelab.eu/login/" method="post" role="form">
-        <div class="form-group">
+          <div class="form-group">
             <input class="input-md" type="email" name="username" placeholder="Enter Email / Username">
           </div>
           <div class="form-group">
-            <input type="password" name="password" placeholder="Password">
-        </div>
-        <div class="login-submit">
-          <input type="submit" class="btn btn-onelab" value="Sign In" />
-          <span class="lost-password">&nbsp;&nbsp;&nbsp;<a href="/portal/pass_reset/">Can't access your account?</a></span>
-        </div>
-        <div class="login-signup">
-          You don't have an account yet? 
-          <br /><a href="https://portal.onelab.eu/register" target="_blank">Sign Up!</a>
-        </div>
-        <div class="login-submit">
-          <br>
-          <span class="lost-password"><a href="tuto-01-registration.html#main">Need help? Look the registration guide.</a></span>
-        </div>
+              <input type="password" name="password" placeholder="Password">
+          </div>
+          <div class="login-submit">
+            <input type="submit" class="btn btn-onelab" value="Sign In" />
+            <span class="lost-password">&nbsp;&nbsp;&nbsp;<a href="/portal/pass_reset/">Can't access your account?</a></span>
+          </div>
+          <div class="login-signup">
+            You don't have an account yet? 
+            <br /><a href="https://portal.onelab.eu/register" target="_blank">Sign Up!</a>
+          </div>
+          <div class="login-submit">
+            <br>
+            <span class="lost-password"><a href="tuto-01-registration.html">Need help? Look the registration guide.</a></span>
+          </div>
         </form>
-    </div>
+      </div>
     </div>
   </div>
 </div>
 <br>
 <br>
 <div class="container">
-  <div class="alert alert-info text-center" role="alert">keep posted about the last news, infos and incidents in R2lab platform. Check it out our <a href="blog.html#main">info blog</a></div>
+  <div class="alert alert-info text-center" role="alert">keep posted about the last news, infos and incidents in R2lab platform. Check it out our <a href="blog.html">info blog</a></div>
 </div>
 <div class="container">
   <div class="row">
@@ -138,6 +141,7 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">present_onelab_login_form();</script>
 <script type="text/javascript">placeImage();</script>
 </body>
 </html>
