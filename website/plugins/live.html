@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>R2Lab Standalone LiveTable</title>
+    <title>R2Lab Live Status</title>
     <link rel="icon" type="image/png" href="../assets/img/r2lab-icon.png"/>
     <link type="text/css" rel="stylesheet" href="../assets/css/bootstrap.min.css"/>
     <!-- third-party stuff -->
@@ -10,8 +10,13 @@
     <script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <table class="table table-condensed"
-	   id="livetable_container" />
+    <!-- livemap -->
+    <div id="livemap_container"></div>
+    <script type="text/javascript" src="../plugins/livemap.js"></script>
+    <script>livemap_show_rxtx_rates = true;</script>
+    <style type="text/css"> @import url("../plugins/livemap.css"); </style>
+    <!-- livetable -->
+    <table class="table table-condensed" id="livetable_container" />
     <script type="text/javascript" src="livetable.js"></script>
     <script>livetable_show_rxtx_rates = true;</script>
     <style type="text/css"> @import url("../plugins/livetable.css");</style>
