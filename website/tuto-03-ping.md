@@ -2,6 +2,8 @@ title: NEPI - Ping
 tab: tutorial
 ---
 
+<script type="text/javascript">loadMenu();</script>
+
 Below is a very simple experiment sends 3 pings to r2lab.inria.fr server from one linux::Node.
 The expected result is prints the output of the ping command.
 

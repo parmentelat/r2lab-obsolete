@@ -2,6 +2,8 @@ title: NEPI - Send file
 tab: tutorial
 ---
 
+<script type="text/javascript">loadMenu();</script>
+
 The experiment below transfer one file from one node to another one using nepi tool. In one side the experiment starts a server "listening" in a specific port (1234) and, at the other side, the script send a file to the listener one.
 
 The experiment below uses netcat Linux program. Basiclly, netcat is a service for reading from and writing to network connections using TCP or UDP.

@@ -2,6 +2,8 @@ title: Registration Tutorial
 tab: tutorial
 ---
 
+<script type="text/javascript">loadMenu();</script>
+
 ### Entry point
 The official OneLab portal is located at [http://portal.onelab.eu](http://portal.onelab.eu).
 

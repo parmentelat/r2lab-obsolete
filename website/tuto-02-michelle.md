@@ -2,6 +2,8 @@ title: SSH access
 tab: tutorial
 ---
 
+<script type="text/javascript">loadMenu();</script>
+
 ###Pre-requisite
 
 [Obtain a slice account on R2LAB (faraday)](tuto-01-registration.html#main)
