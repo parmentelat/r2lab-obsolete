@@ -5,11 +5,11 @@
   present_onelab_login_form = function(imagesList, path) {
 
     // pages where the login form will appear
-    present_login_only_at_page = ['', 'overview', 'index']
+    present_login_only_at_page = ['overview', 'index']
 
     var file = getBaseName($(location).attr('href'));
-    
-    if ($.inArray(file, present_login_only_at_page) < 0) {
+
+    if ($.inArray(file, present_login_only_at_page) < 0 && file != '') {
       $( "#onelab_login" ).remove();
     }
 
