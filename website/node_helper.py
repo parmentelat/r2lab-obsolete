@@ -34,7 +34,7 @@
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
-from node_functions import load_group, load, reset, answer, info, alive, status, on, off
+from node_functions import save_trace_in_node, load_group, load, reset, answer, info, alive, status, on, off
 from argparse import ArgumentParser
 
 
@@ -68,6 +68,8 @@ connection_info = { 'nodes':nodes, 'username':username, 'gateway':gateway, 'gate
 if "status" == action or "st" == action:
     # check status of each node from the list
     result = status(nodes, connection_info)
+if "save_trace" == action:
+    result = save_trace_in_node(nodes, connection_info)
 elif "on" == action:
     # turn on each node from the list
     result = on(nodes, connection_info)

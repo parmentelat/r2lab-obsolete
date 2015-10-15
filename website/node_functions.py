@@ -29,6 +29,7 @@ from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 import os
 from nepi.util.sshfuncs import logger
+from datetime import datetime
 import time
 import sys
 import re
@@ -37,11 +38,12 @@ import json
 
 def load_group(nodes, version, connection_info, show_results=True):
     """ Load a new image to the nodes from the list """
+    
     valid_version(version)
     ec    = ExperimentController(exp_id="load_group-{}".format(version))
     
-    # nodes = format_nodes(nodes)
-    # nodes = check_node_name(nodes)
+    nodes = format_nodes(nodes)
+    nodes = check_node_name(nodes)
 
     gw_node = ec.register_resource("linux::Node")
     ec.set(gw_node, "hostname", connection_info['gateway'])
@@ -51,48 +53,203 @@ def load_group(nodes, version, connection_info, show_results=True):
     ec.set(gw_node, "cleanProcesses", False)
     ec.set(gw_node, "cleanProcessesAfter", False)
 
-    cmd = "omf6 load -t {} -i {} ".format(nodes, version) 
+    # cmd = "omf6 load -t {} -i {} ".format(nodes, version) 
+    cmd = "ping -c1 nepi.inria.fr" 
     app = ec.register_resource("linux::Application")
     ec.set(app, "command", cmd)
     ec.register_connection(app, gw_node)
 
     ec.deploy(gw_node)
 
-    print "-- loading image at nodes {}".format(nodes)
+    print "-- INFO: loading image at nodes {}".format(nodes)
     ec.deploy(app)
     ec.wait_finished(app)
         
     stdout    = remove_special_char(ec.trace(app, "stdout"))
     exitcode  = remove_special_char(ec.trace(app, 'exitcode'))
-    
-    ec.shutdown()
-    
-    results = {}
-    formated_results = {}     
-    if error_presence(stdout):            
-        exitcode  = 1
-        print "*** Error in load group. ***"
+
+    if error_presence_at(stdout,exitcode):        
+        print "** ERROR: load group not executed. **"
         print stdout
-    elif '0' in exitcode:
-        print "Waiting for a while to check the version"
-        wait_and_update_progress_bar(10)
-    
-        results = check_node_version(nodes, connection_info, False)
-        
-        if results:
-            for key in sorted(results):
-                if named_version(version) in results[key]['stdout']:
-                    new_result = 'ok'
-                else:
-                    new_result = 'fail'
+    else:
+        list_of_nodes = []
+        print "-- INFO: waiting for load image at nodes {}".format(nodes)
+        wait_and_update_progress_bar(5)
 
-                formated_results.update({ key : {'load' : new_result, 'current_os' : results[key]['stdout']}})
+        for node in nodes:
+            print "-- INFO: trying save trace in {}".format(node)       
+            
+            results = save_trace_in_node(node, connection_info, False)
+            stdout    = results[node]['stdout']
+            exitcode  = results[node]['exit']
+
+            if not error_presence_at(stdout,exitcode):
+                print "-- INFO: trace saved in {}".format(node)
+                list_of_nodes.append(node)
+            else:
+                print "-- INFO: trying again for {}".format(node)
+                on(node, connection_info, False)
+                wait_and_update_progress_bar(15)
+                reset(node, connection_info, False)
+                wait_and_update_progress_bar(20)
+
+                results = save_trace_in_node(node, connection_info, False)
                 
+                stdout    = results[node]['stdout']
+                exitcode  = results[node]['exit']
 
-    # save_in_file(formated_results, 'group_load') 
+                if not error_presence_at(stdout,exitcode):
+                    print "-- INFO: trace saved in {}".format(node)
+                    list_of_nodes.append(node)
+                else:
+                    print "** ERROR: problem in {}".format(node)
 
-    # return formated_results
-    print formated_results
+        
+
+        check_list_of_nodes = []
+        if len(list_of_nodes) > 0:
+            print "-- INFO: reseting nodes {}".format(list_of_nodes)
+            cmd = "omf6 tell -t {} -a reset".format(','.join(name_node(list_of_nodes)))
+            reset = ec.register_resource("linux::Application")
+            ec.set(reset, "command", cmd)
+            ec.register_connection(reset, gw_node)
+
+            ec.deploy(reset)
+            ec.wait_finished(reset)
+            
+            ec.shutdown()
+
+            print "-- INFO: waiting nodes come back from reset for nodes {}".format(nodes)
+            wait_and_update_progress_bar(30)
+
+            
+            for node in list_of_nodes:
+                print "-- INFO: checking trace in {}".format(node)       
+                
+                results = check_trace_in_node(node, connection_info, False)
+                stdout    = results[node]['stdout']
+                
+                now = datetime.now().strftime('%Y-%m-%d')
+
+                if "ko" in stdout:
+                    print "** ERROR: no day trace found in node {}".format(node)
+                    check_list_of_nodes.append(node)
+                else:
+                    if now in stdout:
+                        print "** SUCCESS: day trace found in node {}".format(node)
+                    else:
+                        print "** ERROR: no day trace found in node {}".format(node)
+                        check_list_of_nodes.append(node)
+                
+    print "-- INFO: Problem nodes:"
+    print list( set(nodes) - set(list_of_nodes) ) + check_list_of_nodes
+
+    print "-- INFO: Success nodes:"
+    print  list( set(nodes) - set(check_list_of_nodes ))
+
+
+def check_trace_in_node(nodes, connection_info, show_results=True):
+    """ Save file trace in each node """
+
+    nodes = format_nodes(nodes)
+    nodes = check_node_name(nodes)
+
+    node_appname = {}
+    node_appid   = {}
+    results      = {}
+    for node in nodes:        
+        ec    = ExperimentController(exp_id="trace")
+
+        by_node = ec.register_resource("linux::Node")
+
+        ec.set(by_node, "hostname", 'fit'+str(node))
+        ec.set(by_node, "username", 'root')
+        ec.set(by_node, "identity", connection_info['identity'])
+        if not "localhost" in connection_info['gateway']:
+            ec.set(by_node, "gateway", connection_info['gateway'])
+            ec.set(by_node, "gatewayUser", connection_info['gateway_username'])
+
+        ec.set(by_node, "cleanExperiment", True)
+        ec.set(by_node, "cleanProcesses", False)
+        ec.set(by_node, "cleanProcessesAfter", False)
+
+
+        on_cmd_a = 'cat /home/trace.txt || echo "ko"'
+        node_appname.update({node : 'app_{}'.format(node)}) 
+        node_appname[node] = ec.register_resource("linux::Application")
+        ec.set(node_appname[node], "command", on_cmd_a)
+        ec.register_connection(node_appname[node], by_node)
+        node_appid.update({node_appname[node] : node})
+        
+        ec.deploy(by_node)
+
+        ec.deploy(node_appname[node])
+        ec.wait_finished(node_appname[node]) 
+
+        stdout    = remove_special_char(ec.trace(node_appname[node], "stdout"))
+        exitcode  = remove_special_char(ec.trace(node_appname[node], 'exitcode'))
+        results.update({ node_appid[node_appname[node]] : {'exit' : exitcode, 'stdout' : stdout}})
+
+        ec.shutdown()
+
+    if show_results:
+        results = format_results(results, 'check_trace', True)
+        print_results(results)
+
+    
+    return results
+
+
+def save_trace_in_node(nodes, connection_info, show_results=True):
+    """ Save file trace in each node """
+
+    nodes = format_nodes(nodes)
+    nodes = check_node_name(nodes)
+
+    node_appname = {}
+    node_appid   = {}
+    results      = {}
+    for node in nodes:        
+        ec    = ExperimentController(exp_id="trace")
+
+        by_node = ec.register_resource("linux::Node")
+
+        ec.set(by_node, "hostname", 'fit'+str(node))
+        ec.set(by_node, "username", 'root')
+        ec.set(by_node, "identity", connection_info['identity'])
+        if not "localhost" in connection_info['gateway']:
+            ec.set(by_node, "gateway", connection_info['gateway'])
+            ec.set(by_node, "gatewayUser", connection_info['gateway_username'])
+
+        ec.set(by_node, "cleanExperiment", True)
+        ec.set(by_node, "cleanProcesses", False)
+        ec.set(by_node, "cleanProcessesAfter", False)
+
+
+        on_cmd_a = 'date +"%Y-%m-%d" > /home/trace.txt'
+        node_appname.update({node : 'app_{}'.format(node)}) 
+        node_appname[node] = ec.register_resource("linux::Application")
+        ec.set(node_appname[node], "command", on_cmd_a)
+        ec.register_connection(node_appname[node], by_node)
+        node_appid.update({node_appname[node] : node})
+        
+        ec.deploy(by_node)
+
+        ec.deploy(node_appname[node])
+        ec.wait_finished(node_appname[node]) 
+
+        stdout    = remove_special_char(ec.trace(node_appname[node], "stdout"))
+        exitcode  = remove_special_char(ec.trace(node_appname[node], 'exitcode'))
+        results.update({ node_appid[node_appname[node]] : {'exit' : exitcode, 'stdout' : stdout}})
+
+        ec.shutdown()
+
+    if show_results:
+        results = format_results(results, 'trace', True)
+        print_results(results)
+
+    
+    return results
 
 
 def check_node_version(nodes, connection_info, show_results=True):
@@ -507,7 +664,7 @@ def named_version(version):
 def remove_special_char(str):
     """ Remove special caracters from a string """
     if str is not None:
-        new_str = str.replace('\n', '').replace('\r', '').replace('\"', '').lower()
+        new_str = str.replace('\n', ' ').replace('\r', ' ').replace('\"', ' ').lower()
         #new_str = re.sub('[^A-Za-z0-9]+', ' ', str)
     else:
         new_str = ''
@@ -553,6 +710,19 @@ def number_node(alias):
     return node
 
 
+def name_node(nodes):
+    """ Returns the name from the node alias [fitXX] """
+    
+    if type(nodes) is list:
+        ans = []
+        for node in nodes:
+            ans.append('fit'+node)
+    else:
+        ans = 'fit'+nodes
+    
+    return ans
+
+
 def valid_version(version):
     """ Check if the version to load """
     versions = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz']
@@ -575,12 +745,11 @@ def format_results(results, action, stdout=False):
                 new_result = 'fail'
             elif error_presence(results[key]['stdout']):
                 new_result = 'fail'
+            elif (not error_presence(results[key]['stdout'])) and int(results[key]['exit']) == 0:
+                new_result = 'ok'
             else:
                 if stdout:
-                    if results[key]['stdout'] == 'already on':
-                        new_result = 'ok'
-                    else:
-                        new_result = results[key]['stdout']
+                    new_result = results[key]['stdout']
                 else:
                     new_result = action
 
@@ -602,12 +771,12 @@ def print_results(results):
 
 
 def check_if_node_answer(node, connection_info, times=2, wait_for=10):
-    """ Wait for a while and to try a ping by 'answer' method """
+    """ Wait for a while to try a ping by 'answer' method """
     results = {}
     turn = 0
     for n in range(times):
         turn += 1
-        print "-- attempt #{} for node {}".format(n+1, node)
+        print "-- INFO: attempt #{} for node {}".format(n+1, node)
                 
         ans = answer([node], connection_info, False)
         if '0' in ans[node]['exit']:
@@ -615,7 +784,7 @@ def check_if_node_answer(node, connection_info, times=2, wait_for=10):
             break
         else:
             if times > turn:
-                print "-- waiting for a while for new attempt"
+                print "-- INFO: waiting for a while for new attempt"
                 wait_and_update_progress_bar(wait_for)
 
     return results
@@ -635,6 +804,19 @@ def error_presence(stdout):
     err_words = ['error', 'errors', 'fail']
 
     if set(err_words).intersection(stdout.split()):
+        return True
+    else:
+        return False
+
+
+def error_presence_at(stdout, exitcode):
+    """ Check error mentions in output or 1 in exit code """
+    err_words = ['error', 'errors', 'fail']
+
+    if exitcode is '':
+        exitcode = 1
+
+    if set(err_words).intersection(stdout.split()) or int(exitcode) > 0:
         return True
     else:
         return False
