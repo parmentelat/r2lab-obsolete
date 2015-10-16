@@ -52,7 +52,108 @@ def main(args):
         print "-- INFO: nodes turned on"
 
 
+    #=========================================
+    # CHECK THE CURRENT OS ===================
+    print "-- INFO: check OS version for each node"
+    wait_and_update_progress_bar(10)
+    all_nodes = to_str(nodes)
+    bug_node   = []
+    old_os = {}
+    results    = {}
     
+    for node in all_nodes:
+        host = name_node(node)
+        user = 'root'
+        # cmd = "ls"
+        # result = execute(cmd, key=node)
+        cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
+        result = execute(cmd, host_name=host, key=node)
+        results.update(result)
+
+        if error_presence(result):
+            # UPDATE NODES WHERE SOME BUG IS PRESENT
+            bug_node.append(node)
+        else:
+            os = name_os(result[node]['stdout'])
+            old_os.update( {node : {'os' : os}} )
+
+    
+    #=========================================
+    # LOAD THE NEW OS ON NODES ===============
+    print "-- INFO: execute load on nodes"
+    all_nodes = name_node(nodes)
+    all_nodes = stringfy_list(all_nodes)
+    new_version = which_version(version)
+    real_version = named_version(new_version)
+    cmd = "ls  ".format(all_nodes, real_version)
+    #cmd = "omf6 load -t {} -i {} ".format(all_nodes, real_version) 
+    results = execute(cmd)
+
+    if error_presence(results):
+        print "** ERROR: load not executed"
+        exit()
+    else:
+        print "-- INFO: nodes loaded"
+
+
+    #=========================================
+    # CHECK AGAIN THE OS =====================
+    print "-- INFO: check OS version for each node"
+    wait_and_update_progress_bar(10)
+    all_nodes = to_str(nodes)
+    bug_node   = []
+    new_os     = {}
+    results    = {}
+    
+    for node in all_nodes:
+        host = name_node(node)
+        user = 'root'
+        # cmd = "ls"
+        # result = execute(cmd, key=node)
+        cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
+        result = execute(cmd, host_name=host, key=node)
+        results.update(result)
+
+        if error_presence(result):
+            # UPDATE NODES WHERE SOME BUG IS PRESENT
+            bug_node.append(node)
+        else:
+            os = name_os(result[node]['stdout'])
+            new_os.update( {node : {'os' : os}} )
+
+
+    #=========================================
+    # VERIFY IF CHANGED THE OS ===============
+    loaded_nodes = {}
+    for os in old_os:
+        go = True
+
+        try: 
+            new_os[os]['os']
+        except: 
+            loaded_nodes.update( { os : {'old_os' : 'not found', 'new_os' : 'not found', 'changed' : 'no'}} )
+            go = False
+
+        if go: 
+            if old_os[os]['os'] != new_os[os]['os']:
+                loaded_nodes.update( { os : {'old_os' : old_os[os]['os'], 'new_os' : new_os[os]['os'], 'changed' : 'ok'}} )
+            else:
+                loaded_nodes.update( { os : {'old_os' : old_os[os]['os'], 'new_os' : new_os[os]['os'], 'changed' : 'no'}} )
+
+
+    print "** ERROR: nodes with some problem"
+    print bug_node
+
+    print " "
+    print "-- INFO: summary of reset routine"
+    
+    for node in loaded_nodes:
+        print "node: {} ".format(node)
+        print "old:  {} ".format(loaded_nodes[node]['old_os'])
+        print "new:  {} ".format(loaded_nodes[node]['new_os'])
+        print "ok?:  {} ".format(loaded_nodes[node]['changed'])
+        print "--"
+
     print "-- INFO: end of main"
 
 
