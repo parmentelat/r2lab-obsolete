@@ -161,7 +161,7 @@ def main(args):
     #=========================================
     # CHECK ZUMBIE NODES =====================
     print "-- INFO: check for zumbie nodes"
-    # wait_and_update_progress_bar(30)
+    wait_and_update_progress_bar(30)
     all_nodes   = to_str(nodes)
     zumbie_nodes= []
     results     = {}
