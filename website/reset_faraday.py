@@ -27,9 +27,9 @@ args = parser.parse_args()
 def main(args):
     """ Treat nodes format and follows """
 
-    VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21']
-    VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21']
-    VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz']
+    VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21',          'f-22']
+    VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21',     'fedora 22']
+    VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz']
 
     nodes    = args.nodes
     nodes    = format_nodes(nodes)
