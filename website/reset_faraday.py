@@ -30,7 +30,6 @@ def main(args):
     nodes    = args.nodes
     nodes    = format_nodes(nodes)
 
-
     #=========================================
     # TURN ON ALL NODES ======================
     print "-- INFO: turn on nodes"
@@ -192,10 +191,10 @@ def main(args):
 
     print "-- INFO: summary of reset routine"
     for node in loaded_nodes:
-        print "node: {} ".format(node)
-        print "old:  {} ".format(loaded_nodes[node]['old_os'])
-        print "new:  {} ".format(loaded_nodes[node]['new_os'])
-        print "ok?:  {} ".format(loaded_nodes[node]['changed'])
+        print "node: #{} ".format(node)
+        print "old:   {} ".format(loaded_nodes[node]['old_os'])
+        print "new:   {} ".format(loaded_nodes[node]['new_os'])
+        print "ok?:   {} ".format(loaded_nodes[node]['changed'])
         print "--"
     print " "
 
@@ -406,12 +405,18 @@ def number_node(nodes):
 
 def name_node(nodes):
     """ Returns the name from the node alias [fitXX] """
-    
+
     if type(nodes) is list:
         ans = []
         for node in nodes:
+            if int(node) < 10:
+                node = str(node).rjust(2, '0')
+            
             ans.append('fit'+str(node))
     else:
+        if int(nodes) < 10:
+            nodes = str(nodes).rjust(2, '0')
+       
         ans = 'fit'+str(nodes)
     
     return ans
