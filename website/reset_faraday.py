@@ -20,8 +20,6 @@ import json
 parser = ArgumentParser()
 parser.add_argument("-N", "--nodes", dest="nodes", 
        help="Comma separated list of nodes")
-parser.add_argument("-V", "--versions", dest="version", 
-       help="Version of O.S.")
 
 args = parser.parse_args()
 
@@ -30,10 +28,7 @@ def main(args):
     """ Treat nodes format and follows """
 
     nodes    = args.nodes
-    version  = args.version    
     nodes    = format_nodes(nodes)
-
-    valid_version(version)
 
 
     #=========================================
@@ -41,13 +36,11 @@ def main(args):
     print "-- INFO: turn on nodes"
     all_nodes = name_node(nodes)
     all_nodes = stringfy_list(all_nodes)
-    cmd = "ls"
-    #cmd = "omf6 tell -t {} -a on".format(all_nodes)
+    cmd = "omf6 tell -t {} -a on".format(all_nodes)
     results = execute(cmd)
 
     if error_presence(results):
         print "** ERROR: turn on not executed"
-        exit()
     else:
         print "-- INFO: nodes turned on"
 
@@ -55,7 +48,7 @@ def main(args):
     #=========================================
     # CHECK THE CURRENT OS ===================
     print "-- INFO: check OS version for each node"
-    wait_and_update_progress_bar(10)
+    wait_and_update_progress_bar(30)
     all_nodes = to_str(nodes)
     bug_node   = []
     old_os = {}
@@ -64,8 +57,6 @@ def main(args):
     for node in all_nodes:
         host = name_node(node)
         user = 'root'
-        # cmd = "ls"
-        # result = execute(cmd, key=node)
         cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
         result = execute(cmd, host_name=host, key=node)
         results.update(result)
@@ -76,40 +67,51 @@ def main(args):
         else:
             os = name_os(result[node]['stdout'])
             old_os.update( {node : {'os' : os}} )
-
     
+  
     #=========================================
     # LOAD THE NEW OS ON NODES ===============
     print "-- INFO: execute load on nodes"
-    all_nodes = name_node(nodes)
-    all_nodes = stringfy_list(all_nodes)
-    new_version = which_version(version)
-    real_version = named_version(new_version)
-    cmd = "ls  ".format(all_nodes, real_version)
-    #cmd = "omf6 load -t {} -i {} ".format(all_nodes, real_version) 
-    results = execute(cmd)
+    versions_names = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21']
+    grouped_os_list = build_grouped_os_list(old_os)
+    
+    for k, v in grouped_os_list.iteritems():
+        os         = k
+        list_nodes = v
 
-    if error_presence(results):
-        print "** ERROR: load not executed"
-        exit()
-    else:
-        print "-- INFO: nodes loaded"
+        if os in versions_names:
+            all_nodes = name_node(list_nodes)
+            all_nodes = stringfy_list(all_nodes)
+
+            new_version = which_version(os)
+            real_version = named_version(new_version)
+
+            cmd = "omf6 load -t {} -i {} ".format(all_nodes, real_version) 
+            results = execute(cmd)
+
+            if error_presence(results):
+                print "** ERROR: load not executed"
+            else:
+                print "-- INFO: nodes loaded"
+
+        # IN CASE OF RETURN A unknown OS NAME
+        else:
+            for node in list_nodes:
+                # UPDATE NODES WHERE SOME BUG IS PRESENT
+                bug_node.append(node)
 
 
     #=========================================
     # CHECK AGAIN THE OS =====================
     print "-- INFO: check OS version for each node"
-    wait_and_update_progress_bar(10)
+    wait_and_update_progress_bar(30)
     all_nodes = to_str(nodes)
-    bug_node   = []
     new_os     = {}
     results    = {}
     
     for node in all_nodes:
         host = name_node(node)
         user = 'root'
-        # cmd = "ls"
-        # result = execute(cmd, key=node)
         cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
         result = execute(cmd, host_name=host, key=node)
         results.update(result)
@@ -120,6 +122,7 @@ def main(args):
         else:
             os = name_os(result[node]['stdout'])
             new_os.update( {node : {'os' : os}} )
+
 
 
     #=========================================
@@ -141,29 +144,84 @@ def main(args):
                 loaded_nodes.update( { os : {'old_os' : old_os[os]['os'], 'new_os' : new_os[os]['os'], 'changed' : 'no'}} )
 
 
+    #=========================================
+    # TURN OFF ALL NODES ======================
+    print "-- INFO: turn off nodes"
+    all_nodes = name_node(nodes)
+    all_nodes = stringfy_list(all_nodes)
+    cmd = "omf6 tell -t {} -a off".format(all_nodes)
+    results = execute(cmd)
+
+    if error_presence(results):
+        print "** ERROR: turn off not executed"
+    else:
+        print "-- INFO: nodes turned off"
+
+
+    #=========================================
+    # CHECK ZUMBIE NODES =====================
+    print "-- INFO: check for zumbie nodes"
+    # wait_and_update_progress_bar(30)
+    all_nodes   = to_str(nodes)
+    zumbie_nodes= []
+    results     = {}
+    
+    for node in all_nodes:
+        cmd = "curl 192.168.1.{}/status;".format(node)
+        result = execute(cmd, key=node)
+        results.update(result)
+
+        if error_presence(result):
+            # UPDATE NODES WHERE SOME BUG IS PRESENT
+            bug_node.append(node)
+        else:
+            status = remove_special_char(result[node]['stdout']).strip()
+            if status.lower() not in ['already off', 'off']:
+                zumbie_nodes.append(node)
+
+    
+    #=========================================
+    # RESULTS  ===============================
+    print "** WARNING: possible zumbie nodes"
+    print zumbie_nodes
+    print " "
+
     print "** ERROR: nodes with some problem"
     print bug_node
-
     print " "
+
     print "-- INFO: summary of reset routine"
-    
     for node in loaded_nodes:
         print "node: {} ".format(node)
         print "old:  {} ".format(loaded_nodes[node]['old_os'])
         print "new:  {} ".format(loaded_nodes[node]['new_os'])
         print "ok?:  {} ".format(loaded_nodes[node]['changed'])
         print "--"
+    print " "
 
     print "-- INFO: end of main"
 
 
 
 
+def build_grouped_os_list(list):
+    """ Process the old_os dict and returns the O.S. gruped by node """
+    """ INPUT  -> {'12': {'os': 'fedora 21'}, '11': {'os': 'fedora 21'}, '10': {'os': 'ubuntu 14.04'}} """
+    """ OUTPUT -> {'ubuntu 14.04': ['10'], 'fedora 21': ['11, 12']} """
+    grouped_os_list = {}
+    
+    for k, v in list.iteritems():
+        grouped_os_list.setdefault(v['os'], []).append(k)
+
+    return grouped_os_list
+
+
+
 
 def which_version(version):
     """ Return the version to install """
-    versions_alias = ['u-1410', 'u-1504', 'f-21']
-    versions_names = ['ubuntu 14.04', 'ubuntu 15.10', 'fedora 21']
+    versions_alias = ['u-1410',             'u-1504',           'f-21']
+    versions_names = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21']
     
     new_version_idx = 0
 
@@ -177,7 +235,7 @@ def which_version(version):
     else:
         new_version_idx = old_version_idx + 1
     
-    return named_version(versions_names[new_version_idx])
+    return versions_names[new_version_idx]
 
 
 
@@ -196,9 +254,11 @@ def valid_version(version):
 
 def named_version(version):
     """ Return a explicit name version """
-    versions_alias = ['u-1410', 'u-1504', 'f-21']
-    versions_names = ['ubuntu 14.04', 'ubuntu 15.10', 'fedora 21']
-    versions  = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz']
+    version = version.lower()
+
+    versions_alias = ['u-1410',             'u-1504',           'f-21']
+    versions_names = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21']
+    versions       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz']
 
     if version in versions_alias:
         explicit_version = versions[versions_alias.index(version)]
@@ -301,7 +361,7 @@ def stringfy_list(list):
 
 def name_os(os):
     """ Format the O.S. names """
-    versions_names = ['ubuntu 14.04', 'ubuntu 15.10', 'fedora 21']
+    versions_names = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21']
     
     os = os.strip()
 
