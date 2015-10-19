@@ -27,6 +27,10 @@ args = parser.parse_args()
 def main(args):
     """ Treat nodes format and follows """
 
+    VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21']
+    VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21']
+    VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz']
+
     nodes    = args.nodes
     nodes    = format_nodes(nodes)
 
@@ -71,7 +75,7 @@ def main(args):
     #=========================================
     # LOAD THE NEW OS ON NODES ===============
     print "-- INFO: execute load on nodes"
-    versions_names = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21']
+    versions_names = VERSIONS_NAMES
     grouped_os_list = build_grouped_os_list(old_os)
     
     for k, v in grouped_os_list.iteritems():
@@ -219,8 +223,8 @@ def build_grouped_os_list(list):
 
 def which_version(version):
     """ Return the version to install """
-    versions_alias = ['u-1410',             'u-1504',           'f-21']
-    versions_names = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21']
+    versions_alias = VERSIONS_ALIAS
+    versions_names = VERSIONS_NAMES
     
     new_version_idx = 0
 
@@ -241,7 +245,7 @@ def which_version(version):
 
 def valid_version(version):
     """ Check if the version to load """
-    versions_alias = ['u-1410', 'u-1504', 'f-21']
+    versions_alias = VERSIONS_ALIAS
     if version not in versions_alias:
         raise Exception("invalid version, must be {}".format(versions_alias))
         return False
@@ -255,9 +259,9 @@ def named_version(version):
     """ Return a explicit name version """
     version = version.lower()
 
-    versions_alias = ['u-1410',             'u-1504',           'f-21']
-    versions_names = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21']
-    versions       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz']
+    versions_alias = VERSIONS_ALIAS
+    versions_names = VERSIONS_NAMES
+    versions       = VERSIONS
 
     if version in versions_alias:
         explicit_version = versions[versions_alias.index(version)]
@@ -360,7 +364,7 @@ def stringfy_list(list):
 
 def name_os(os):
     """ Format the O.S. names """
-    versions_names = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21']
+    versions_names = VERSIONS_NAMES
     
     os = os.strip()
 
