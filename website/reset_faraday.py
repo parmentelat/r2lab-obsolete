@@ -27,18 +27,33 @@ VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21',          'f-
 VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21',     'fedora 22']
 VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz']
 
+
+
+
 def main(args):
     """ Treat nodes format and follows """
 
     nodes    = args.nodes
     nodes    = format_nodes(nodes)
+    all_nodes = name_node(nodes)
+    
 
     #=========================================
     # TURN ON ALL NODES ======================
     print "-- INFO: turn on nodes"
     all_nodes = name_node(nodes)
-    all_nodes = stringfy_list(all_nodes)
-    cmd = "omf6 tell -t {} -a on".format(all_nodes)
+
+    #------------------------------------------
+    # Uncomment the two lines below to use OMF format "on" command
+    #all_nodes = stringfy_list(all_nodes)
+    #cmd = "omf6 tell -t {} -a on".format(all_nodes)    
+    
+    # OR
+
+    #------------------------------------------ 
+    # Uncomment the line below to use CURL format "on" command
+    cmd = command_in_curl(all_nodes, 'on')
+    
     results = execute(cmd)
 
     if error_presence(results):
@@ -150,8 +165,18 @@ def main(args):
     # TURN OFF ALL NODES ======================
     print "-- INFO: turn off nodes"
     all_nodes = name_node(nodes)
-    all_nodes = stringfy_list(all_nodes)
-    cmd = "omf6 tell -t {} -a off".format(all_nodes)
+
+    #------------------------------------------
+    # Uncomment the two lines below to use OMF format "on" command
+    #all_nodes = stringfy_list(all_nodes)
+    # cmd = "omf6 tell -t {} -a off".format(all_nodes)
+    
+    # OR
+    
+    #------------------------------------------ 
+    # Uncomment the line below to use CURL format "on" command
+    cmd = command_in_curl(all_nodes, 'off')
+    
     results = execute(cmd)
 
     if error_presence(results):
@@ -169,6 +194,7 @@ def main(args):
     results     = {}
     
     for node in all_nodes:
+        wait_and_update_progress_bar(2)
         cmd = "curl 192.168.1.{}/status;".format(node)
         result = execute(cmd, key=node)
         results.update(result)
@@ -185,11 +211,11 @@ def main(args):
     #=========================================
     # RESULTS  ===============================
     print "** WARNING: possible zumbie nodes"
-    print zumbie_nodes
+    print list(set(zumbie_nodes))
     print " "
 
     print "** ERROR: nodes with some problem"
-    print bug_node
+    print list(set(bug_node))
     print " "
 
     print "-- INFO: summary of reset routine"
@@ -202,6 +228,19 @@ def main(args):
     print " "
 
     print "-- INFO: end of main"
+
+
+
+
+def command_in_curl(nodes, action='status'):
+    """ Transform the command to execute in CURL format """
+    
+    nodes = number_node(nodes)
+
+    in_curl = map(lambda x:'curl 192.168.1.'+str(x)+'/'+action, nodes)
+    in_curl = '; '.join(in_curl)
+
+    return in_curl
 
 
 
