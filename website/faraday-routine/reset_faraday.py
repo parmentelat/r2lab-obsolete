@@ -16,10 +16,13 @@ import time
 import sys
 import re
 import json
+from parallel import Parallel
 
 parser = ArgumentParser()
 parser.add_argument("-N", "--nodes", dest="nodes", 
        help="Comma separated list of nodes")
+parser.add_argument("-V", "--version", default=None, dest="version", 
+       help="O.S version to load")
 
 args = parser.parse_args()
 
@@ -31,12 +34,16 @@ VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fe
 
 
 def main(args):
-    """ Treat nodes format and follows """
+    """ Execute the load for all nodes in Faraday. """
 
     nodes    = args.nodes
+    version  = args.version
+
+    if not None is version:
+        valid_version(version)
+
     nodes    = format_nodes(nodes)
     all_nodes = name_node(nodes)
-    
 
     #=========================================
     # TURN ON ALL NODES ======================
@@ -81,6 +88,7 @@ def main(args):
         if error_presence(result):
             # UPDATE NODES WHERE SOME BUG IS PRESENT
             bug_node.append(node)
+            old_os.update( {node : {'os' : 'unknown'}} )
         else:
             os = name_os(result[node]['stdout'])
             old_os.update( {node : {'os' : os}} )
@@ -89,33 +97,70 @@ def main(args):
     #=========================================
     # LOAD THE NEW OS ON NODES ===============
     print "-- INFO: execute load on nodes"
+    results    = {}
     versions_names = VERSIONS_NAMES
     grouped_os_list = build_grouped_os_list(old_os)
-    
+    cmd = ''    
+    do_execute = False
+
     for k, v in grouped_os_list.iteritems():
+        do_execute = True
         os         = k
         list_nodes = v
 
-        if os in versions_names:
+        if os in versions_names or os == 'unknown':
             all_nodes = name_node(list_nodes)
             all_nodes = stringfy_list(all_nodes)
 
             new_version = which_version(os)
             real_version = named_version(new_version)
 
-            cmd = "omf6 load -t {} -i {} ".format(all_nodes, real_version) 
-            results = execute(cmd)
+            if not None is version:
+                real_version = named_version(version)
 
-            if error_presence(results):
-                print "** ERROR: load not executed"
-            else:
-                print "-- INFO: nodes loaded"
+            cmd = cmd + "omf6 load -t {} -i {}; ".format(all_nodes, real_version)
 
         # IN CASE OF RETURN A unknown OS NAME
         else:
             for node in list_nodes:
                 # UPDATE NODES WHERE SOME BUG IS PRESENT
+                old_os.update( {node : {'os' : 'not found'}} )
                 bug_node.append(node)
+
+    
+    if do_execute:
+
+        #-------------------------------------
+        # CONTROL BY THE MONITORING Thread
+        omf_load = Parallel(cmd)
+        omf_load.start()
+
+        check_number_times = 10    # Let's check n times before kiil the thread
+        delay_before_kill  = 50  # Timeout for each check
+
+        for i in range(check_number_times+1):
+            print "-- INFO: monitoring check #{}".format(i)
+            
+            wait_and_update_progress_bar(delay_before_kill)
+
+            if omf_load.alive():
+                if i == check_number_times:
+                    omf_load.stop()
+                    print "** ERROR: oops! timeout reached!"
+                    results = { 'node' : {'exitcode' : '1', 'stdout' : 'error'}}
+                    break
+                else:
+                    print "-- WARNING: let's wait more ... {}/{}".format(i,check_number_times)
+            else:
+                print "-- INFO: leaving before timeout "
+                results = omf_load.output
+                break
+        #-------------------------------------
+        
+        if error_presence(results):
+            print "** ERROR: one or more node were not loaded correctly"
+        else:
+            print "-- INFO: nodes were loaded"
 
 
     #=========================================
@@ -135,11 +180,11 @@ def main(args):
 
         if error_presence(result):
             # UPDATE NODES WHERE SOME BUG IS PRESENT
+            old_os.update( {node : {'os' : 'unknown'}} )
             bug_node.append(node)
         else:
             os = name_os(result[node]['stdout'])
             new_os.update( {node : {'os' : os}} )
-
 
 
     #=========================================
@@ -154,13 +199,26 @@ def main(args):
             loaded_nodes.update( { os : {'old_os' : 'not found', 'new_os' : 'not found', 'changed' : 'no'}} )
             go = False
 
-        if go: 
-            if old_os[os]['os'] != new_os[os]['os']:
-                loaded_nodes.update( { os : {'old_os' : old_os[os]['os'], 'new_os' : new_os[os]['os'], 'changed' : 'ok'}} )
-            else:
-                loaded_nodes.update( { os : {'old_os' : old_os[os]['os'], 'new_os' : new_os[os]['os'], 'changed' : 'no'}} )
+        if go:
+            oldos = old_os[os]['os']
+            newos = new_os[os]['os']
 
+            if None is version:
+                if oldos != newos:
+                    bug_node.remove(os)
+                    isok = 'yes'
+                else:
+                    isok = 'no'
+            else: # A VERSION WAS GIVEN  
+                if named_version(newos) == named_version(version):
+                    bug_node.remove(os)
+                    isok = 'yes'
+                else:
+                    isok = 'no'
 
+            loaded_nodes.update( { os : {'old_os' : oldos, 'new_os' : newos, 'changed' : isok}} )
+
+   
     #=========================================
     # TURN OFF ALL NODES ======================
     print "-- INFO: turn off nodes"

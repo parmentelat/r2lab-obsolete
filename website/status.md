@@ -1,4 +1,4 @@
-title: R2Lab Status
+title: R2lab Status
 tab: status
 ---
 
