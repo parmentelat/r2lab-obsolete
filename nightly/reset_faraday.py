@@ -29,6 +29,7 @@ args = parser.parse_args()
 VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21',          'f-22']
 VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21',     'fedora 22']
 VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz']
+RESTART_ALL    = "service omf-sfa stop; stop ntrc; service dnsmasq stop; service dnsmasq start; start ntrc; service omf-sfa start; "
 
 
 
@@ -44,6 +45,11 @@ def main(args):
 
     nodes    = format_nodes(nodes)
     all_nodes = name_node(nodes)
+
+    # =========================================
+    # RESTARTING  SERVICES (temporary) ========
+    print "-- INFO: Restarting services"
+    print execute(RESTART_ALL)
 
     #=========================================
     # TURN ON ALL NODES ======================
@@ -135,7 +141,7 @@ def main(args):
         omf_load = Parallel(cmd)
         omf_load.start()
 
-        check_number_times = 10    # Let's check n times before kiil the thread
+        check_number_times = 3   # Let's check n times before kiil the thread
         delay_before_kill  = 50  # Timeout for each check
 
         for i in range(check_number_times+1):
@@ -150,7 +156,7 @@ def main(args):
                     results = { 'node' : {'exitcode' : '1', 'stdout' : 'error'}}
                     break
                 else:
-                    print "-- WARNING: let's wait more ... {}/{}".format(i,check_number_times)
+                    print "-- WARNING: let's wait more ... {}/{}".format(i+1,check_number_times)
             else:
                 print "-- INFO: leaving before timeout "
                 results = omf_load.output
@@ -205,13 +211,13 @@ def main(args):
 
             if None is version:
                 if oldos != newos:
-                    bug_node.remove(os)
+                    if os in bug_node: bug_node.remove(os)
                     isok = 'yes'
                 else:
                     isok = 'no'
             else: # A VERSION WAS GIVEN  
                 if named_version(newos) == named_version(version):
-                    bug_node.remove(os)
+                    if os in bug_node: bug_node.remove(os)
                     isok = 'yes'
                 else:
                     isok = 'no'
@@ -244,7 +250,7 @@ def main(args):
 
 
     #=========================================
-    # CHECK ZUMBIE NODES =====================
+    # CHECK ZUMBIE (not turn off) NODES =====================
     print "-- INFO: check for zumbie nodes"
     wait_and_update_progress_bar(30)
     all_nodes   = to_str(nodes)
@@ -287,6 +293,10 @@ def main(args):
 
     print "-- INFO: end of main"
 
+    # =========================================
+    # RESTARTING  SERVICES (temporary) ========
+    print "-- INFO: Restarting services"
+    print execute(RESTART_ALL)
 
 
 
