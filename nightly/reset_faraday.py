@@ -141,8 +141,8 @@ def main(args):
         omf_load = Parallel(cmd)
         omf_load.start()
 
-        check_number_times = 20   # Let's check n times before kiil the thread
-        delay_before_kill  = 50  # Timeout for each check
+        check_number_times = 25   # Let's check n times before kiil the thread
+        delay_before_kill  = 60  # Timeout for each check
 
         for i in range(check_number_times+1):
             print "-- INFO: monitoring check #{}".format(i)
@@ -196,33 +196,33 @@ def main(args):
     #=========================================
     # VERIFY IF CHANGED THE OS ===============
     loaded_nodes = {}
-    for os in old_os:
+    for node in old_os:
         go = True
 
         try: 
-            new_os[os]['os']
+            new_os[node]['os']
         except: 
-            loaded_nodes.update( { os : {'old_os' : 'not found', 'new_os' : 'not found', 'changed' : 'no'}} )
+            loaded_nodes.update( { node : {'old_os' : 'not found', 'new_os' : 'not found', 'changed' : 'no'}} )
             go = False
 
         if go:
-            oldos = old_os[os]['os']
-            newos = new_os[os]['os']
+            oldos = old_os[node]['os']
+            newos = new_os[node]['os']
 
             if None is version:
                 if oldos != newos:
-                    if os in bug_node: bug_node.remove(os)
+                    if node in bug_node: bug_node.remove(node)
                     isok = 'yes'
                 else:
                     isok = 'no'
             else: # A VERSION WAS GIVEN  
                 if named_version(newos) == named_version(version):
-                    if os in bug_node: bug_node.remove(os)
+                    if node in bug_node: bug_node.remove(node)
                     isok = 'yes'
                 else:
                     isok = 'no'
 
-            loaded_nodes.update( { os : {'old_os' : oldos, 'new_os' : newos, 'changed' : isok}} )
+            loaded_nodes.update( { node : {'old_os' : oldos, 'new_os' : newos, 'changed' : isok}} )
 
    
     #=========================================
@@ -283,13 +283,14 @@ def main(args):
     print " "
 
     print "-- INFO: summary of reset routine"
-    for node in loaded_nodes:
-        print "node: #{} ".format(node)
-        print "old:   {} ".format(loaded_nodes[node]['old_os'])
-        print "new:   {} ".format(loaded_nodes[node]['new_os'])
-        print "ok?:   {} ".format(loaded_nodes[node]['changed'])
+    for key, value in sorted(loaded_nodes.iteritems()):
+        print "node: #{} ".format(key)
+        print "old:   {} ".format(value['old_os'])
+        print "new:   {} ".format(value['new_os'])
+        print "ok?:   {} ".format(value['changed'])
         print "--"
     print " "
+
 
     print "-- INFO: end of main"
 
