@@ -109,67 +109,79 @@ def main(args):
     results    = {}
     versions_names = VERSIONS_NAMES
     grouped_os_list = build_grouped_os_list(old_os)
-    cmd = ''    
+    cmds= []    
     do_execute = False
+    executions = 5
 
-    for k, v in grouped_os_list.iteritems():
+    # in case of have the version specified in the command line - do it for all
+    if not None is version:
         do_execute = True
-        os         = k
-        list_nodes = v
-
-        if os in versions_names or os == 'unknown':
-            all_nodes = name_node(list_nodes)
+        
+        splited_group = split(nodes, executions)
+        for sub_list_nodes in splited_group:
+            all_nodes = name_node(sub_list_nodes)
             all_nodes = stringfy_list(all_nodes)
+            real_version = named_version(version)
+            
+            cmds.append("omf6 load -t {} -i {}; ".format(all_nodes, real_version))
+    else:
+        for k, v in grouped_os_list.iteritems():
+            do_execute = True
+            os         = k
+            list_nodes = v
 
-            new_version = which_version(os)
-            real_version = named_version(new_version)
+            if os in versions_names or os == 'unknown':
+                splited_group = split(list_nodes, executions)
+                for sub_list_nodes in splited_group:
+                    all_nodes = name_node(sub_list_nodes)
+                    all_nodes = stringfy_list(all_nodes)            
+                    new_version = which_version(os)
+                    real_version = named_version(new_version)
 
-            if not None is version:
-                real_version = named_version(version)
+                    cmds.append("omf6 load -t {} -i {}; ".format(all_nodes, real_version))
 
-            cmd = cmd + "omf6 load -t {} -i {}; ".format(all_nodes, real_version)
+            # IN CASE OF RETURN A unknown OS NAME
+            else:
+                for node in list_nodes:
+                    # UPDATE NODES WHERE SOME BUG IS PRESENT
+                    old_os.update( {node : {'os' : 'not found'}} )
+                    bug_node.append(node)
 
-        # IN CASE OF RETURN A unknown OS NAME
-        else:
-            for node in list_nodes:
-                # UPDATE NODES WHERE SOME BUG IS PRESENT
-                old_os.update( {node : {'os' : 'not found'}} )
-                bug_node.append(node)
-
-    
     if do_execute:
 
-        #-------------------------------------
-        # CONTROL BY THE MONITORING Thread
-        omf_load = Parallel(cmd)
-        omf_load.start()
-
-        check_number_times = 25  # Let's check n times before kiil the thread
-        delay_before_kill  = 60  # Timeout for each check
-
-        for i in range(check_number_times+1):
-            print "-- INFO: monitoring check #{}".format(i)
+        for cmd in cmds:
+            #-------------------------------------
+            # CONTROL BY THE MONITORING Thread
             
-            wait_and_update_progress_bar(delay_before_kill)
+            omf_load = Parallel(cmd)
+            omf_load.start()
 
-            if omf_load.alive():
-                if i == check_number_times:
-                    omf_load.stop()
-                    print "** ERROR: oops! timeout reached!"
-                    results = { 'node' : {'exitcode' : '1', 'stdout' : 'error'}}
-                    break
+            check_number_times = 5  # Let's check n times before kiil the thread
+            delay_before_kill  = 60  # Timeout for each check
+
+            for i in range(check_number_times+1):
+                print "-- INFO: monitoring check #{}".format(i)
+                
+                wait_and_update_progress_bar(delay_before_kill)
+
+                if omf_load.alive():
+                    if i == check_number_times:
+                        omf_load.stop()
+                        print "** ERROR: oops! timeout reached!"
+                        results = { 'node' : {'exitcode' : '1', 'stdout' : 'error'}}
+                        break
+                    else:
+                        print "-- WARNING: let's wait more ... {}/{}".format(i+1,check_number_times)
                 else:
-                    print "-- WARNING: let's wait more ... {}/{}".format(i+1,check_number_times)
+                    print "-- INFO: leaving before timeout "
+                    results = omf_load.output
+                    break
+            #-------------------------------------
+            
+            if error_presence(results):
+                print "** ERROR: one or more node were not loaded correctly"
             else:
-                print "-- INFO: leaving before timeout "
-                results = omf_load.output
-                break
-        #-------------------------------------
-        
-        if error_presence(results):
-            print "** ERROR: one or more node were not loaded correctly"
-        else:
-            print "-- INFO: nodes were loaded"
+                print "-- INFO: nodes were loaded"
 
 
     #=========================================
@@ -278,11 +290,11 @@ def main(args):
     #=========================================
     # RESULTS  ===============================
     print "** WARNING: possible zumbie nodes"
-    print list(set(zumbie_nodes))
+    print list(set(zumbie_nodes)).sort()
     print " "
 
     print "** ERROR: nodes with some problem"
-    print list(set(bug_node))
+    print list(set(bug_node)).sort()
     print " "
 
     print "-- INFO: summary of reset routine"
@@ -323,7 +335,7 @@ def command_in_curl(nodes, action='status'):
 def build_grouped_os_list(list):
     """ Process the old_os dict and returns the O.S. gruped by node """
     """ INPUT  -> {'12': {'os': 'fedora 21'}, '11': {'os': 'fedora 21'}, '10': {'os': 'ubuntu 14.04'}} """
-    """ OUTPUT -> {'ubuntu 14.04': ['10'], 'fedora 21': ['11, 12']} """
+    """ OUTPUT -> {'ubuntu 14.04': ['10'], 'fedora 21': ['11', '12']} """
     grouped_os_list = {}
     
     for k, v in list.iteritems():
@@ -592,6 +604,22 @@ def save_in_json(results, file_name=None):
     file = open(dir+file_name+ext, "w")
     file.write(json.dumps(results))
     file.close()
+
+
+
+
+def split(array, size):
+    """ split one array in n (size) other parts """
+
+    splited_arrays = []
+
+    while len(array) > size:
+        pice = array[:size]
+        splited_arrays.append(pice)
+        array = array[size:]
+    splited_arrays.append(array)
+
+    return splited_arrays
 
 
 
