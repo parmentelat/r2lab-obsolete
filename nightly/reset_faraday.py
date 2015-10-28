@@ -17,6 +17,7 @@ import sys
 import re
 import json
 from parallel import Parallel
+from datetime import datetime
 
 parser = ArgumentParser()
 parser.add_argument("-N", "--nodes", dest="nodes", 
@@ -48,8 +49,10 @@ def main(args):
 
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
+    print "-- INFO: {}".format(now())
     print "-- INFO: Restarting services"
-    print execute(RESTART_ALL)
+    execute(RESTART_ALL)
+    
 
     #=========================================
     # TURN ON ALL NODES ======================
@@ -141,7 +144,7 @@ def main(args):
         omf_load = Parallel(cmd)
         omf_load.start()
 
-        check_number_times = 25   # Let's check n times before kiil the thread
+        check_number_times = 25  # Let's check n times before kiil the thread
         delay_before_kill  = 60  # Timeout for each check
 
         for i in range(check_number_times+1):
@@ -291,13 +294,16 @@ def main(args):
         print "--"
     print " "
 
+    save_in_json(loaded_nodes, 'reset_faraday')
 
     print "-- INFO: end of main"
 
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
     print "-- INFO: Restarting services"
-    print execute(RESTART_ALL)
+    print "-- INFO: {}".format(now())
+    execute(RESTART_ALL)
+
 
 
 
@@ -565,6 +571,34 @@ def format_nodes(nodes):
                 nodes = nodes.split()
 
     return nodes
+
+
+
+
+def save_in_json(results, file_name=None):
+    """ Save the result in a json file """
+    
+    dir = os.getcwd() + "/"
+    ext = ".json"
+
+    if file_name is None:
+        file_name = 'result_reset_faraday'+ext
+
+    try:
+        os.stat(dir)
+    except:
+        os.mkdir(dir)
+
+    file = open(dir+file_name+ext, "w")
+    file.write(json.dumps(results))
+    file.close()
+
+
+
+
+def now():
+    """ Time now """
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
 
