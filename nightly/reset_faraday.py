@@ -290,11 +290,11 @@ def main(args):
     #=========================================
     # RESULTS  ===============================
     print "** WARNING: possible zumbie nodes"
-    print list(set(zumbie_nodes)).sort()
+    print list(set(zumbie_nodes))
     print " "
 
-    print "** ERROR: nodes with some problem"
-    print list(set(bug_node)).sort()
+    print "** ERROR: possible problem nodes"
+    print list(set(bug_node))
     print " "
 
     print "-- INFO: summary of reset routine"
