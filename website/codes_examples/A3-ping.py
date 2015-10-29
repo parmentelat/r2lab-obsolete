@@ -21,15 +21,15 @@ user02 = 'root'
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="A3-ping")
 
-# creating the gateway node
-gateway = ec.register_resource("linux::Node")
-ec.set(gateway, "username", user_gateway)
-ec.set(gateway, "hostname", host_gateway)
-ec.set(gateway, "identity", user_identity)
-ec.set(gateway, "cleanExperiment", True)
-ec.set(gateway, "cleanProcesses", True)
-# deploying the gateway node
-ec.deploy(gateway)
+# # creating the gateway node
+# gateway = ec.register_resource("linux::Node")
+# ec.set(gateway, "username", user_gateway)
+# ec.set(gateway, "hostname", host_gateway)
+# ec.set(gateway, "identity", user_identity)
+# ec.set(gateway, "cleanExperiment", True)
+# ec.set(gateway, "cleanProcesses", True)
+# # deploying the gateway node
+# ec.deploy(gateway)
 
 # creating the fit01 node
 fit01 = ec.register_resource("linux::Node")

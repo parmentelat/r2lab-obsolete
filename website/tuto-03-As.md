@@ -167,7 +167,7 @@ ec.shutdown()
       Download the <a href="codes_examples/A3-ping.py" download target="_blank">A3 experiment</a> code
     </center>
  
-  <pre data-src="prism.js" data-line-edit-line="22,76-82,86" data-line-inlcude-line="18,19,47-58,60-66,68-74" class="line-numbers"><code class="language-python">
+  <pre data-src="prism.js" data-line-remove-line="24-32"  data-line-edit-line="22,76-82,86" data-line-inlcude-line="18,19,47-58,60-66,68-74" class="line-numbers"><code class="language-python">
 #!/usr/bin/env python
 
 # including nepi library and other required packages
@@ -191,15 +191,15 @@ user02 = 'root'
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="A3-ping")
 
-# creating the gateway node
-gateway = ec.register_resource("linux::Node")
-ec.set(gateway, "username", user_gateway)
-ec.set(gateway, "hostname", host_gateway)
-ec.set(gateway, "identity", user_identity)
-ec.set(gateway, "cleanExperiment", True)
-ec.set(gateway, "cleanProcesses", True)
-# deploying the gateway node
-ec.deploy(gateway)
+# # creating the gateway node
+# gateway = ec.register_resource("linux::Node")
+# ec.set(gateway, "username", user_gateway)
+# ec.set(gateway, "hostname", host_gateway)
+# ec.set(gateway, "identity", user_identity)
+# ec.set(gateway, "cleanExperiment", True)
+# ec.set(gateway, "cleanProcesses", True)
+# # deploying the gateway node
+# ec.deploy(gateway)
 
 # creating the fit01 node
 fit01 = ec.register_resource("linux::Node")
@@ -268,7 +268,7 @@ ec.shutdown()
       Download the <a href="codes_examples/A4-ping.py" download target="_blank">A4 experiment</a> code
     </center>
  
-  <pre data-src="prism.js" data-line-remove-line="71,88" data-line-edit-line="31,103,105,119,120" data-line-inlcude-line="21-28,72-80,89-97,111-117,123-125" class="line-numbers"><code class="language-python">
+  <pre data-src="prism.js" data-line-remove-line="61,78" data-line-edit-line="31,93,95,109,110" data-line-inlcude-line="21-28,62-70,79-87,101-107,113-115" class="line-numbers"><code class="language-python">
 #!/usr/bin/env python
 
 # including nepi library and other required packages
@@ -300,16 +300,6 @@ wifi_ip_fit02  = '172.16.1.2'
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="A4-ping")
-
-# creating the gateway node
-gateway = ec.register_resource("linux::Node")
-ec.set(gateway, "username", user_gateway)
-ec.set(gateway, "hostname", host_gateway)
-ec.set(gateway, "identity", user_identity)
-ec.set(gateway, "cleanExperiment", True)
-ec.set(gateway, "cleanProcesses", True)
-# deploying the gateway node
-ec.deploy(gateway)
 
 # creating the fit01 node
 fit01 = ec.register_resource("linux::Node")
