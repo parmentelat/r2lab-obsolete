@@ -268,7 +268,7 @@ ec.shutdown()
       Download the <a href="codes_examples/A4-ping.py" download target="_blank">A4 experiment</a> code
     </center>
  
-  <pre data-src="prism.js" data-line-remove-line="62,70" data-line-edit-line="" data-line-inlcude-line="" class="line-numbers"><code class="language-python">
+  <pre data-src="prism.js" data-line-remove-line="71,88" data-line-edit-line="31,103,105,119,120" data-line-inlcude-line="21-28,72-80,89-97,111-117,123-125" class="line-numbers"><code class="language-python">
 #!/usr/bin/env python
 
 # including nepi library and other required packages
@@ -289,8 +289,17 @@ user01 = 'root'
 host02 = 'fit02'
 user02 = 'root'
 
+wifi_interface = 'wlan0' 
+wifi_channel   = '4'
+wifi_name      = 'ad-hoc'
+wifi_key       = '1234567890'
+
+wifi_net_mask  = '/24'
+wifi_ip_fit01  = '172.16.1.1'
+wifi_ip_fit02  = '172.16.1.2'
+
 # creating a new ExperimentController (EC) to manage the experiment
-ec = ExperimentController(exp_id="A3-ping")
+ec = ExperimentController(exp_id="A4-ping")
 
 # creating the gateway node
 gateway = ec.register_resource("linux::Node")
@@ -330,7 +339,16 @@ ec.deploy(fit02)
 
 # application to setup data interface on fit01 node
 app_fit01 = ec.register_resource("linux::Application")
-cmd = 'sudo ip link set dev data down; sudo dhclient data;'
+#cmd = 'sudo ip link set dev data down; sudo dhclient data;'
+# configuring the ad-hoc for node fit01
+cmd  = "ip addr flush dev {}; ".format(wifi_interface)
+cmd += "sudo ip link set {} down; ".format(wifi_interface)
+cmd += "sudo iwconfig {} mode ad-hoc; ".format(wifi_interface)
+cmd += "sudo iwconfig {} channel {}; ".format(wifi_interface, wifi_channel)
+cmd += "sudo iwconfig {} essid '{}'; ".format(wifi_interface, wifi_name)
+cmd += "sudo iwconfig {} key {}; ".format(wifi_interface, wifi_key)
+cmd += "sudo ip link set {} up; ".format(wifi_interface)
+cmd += "sudo ip addr add {}{} dev {}; ".format(wifi_ip_fit01, wifi_net_mask, wifi_interface)
 ec.set(app_fit01, "command", cmd)
 ec.register_connection(app_fit01, fit01)
 ec.deploy(app_fit01)
@@ -338,23 +356,44 @@ ec.wait_finished(app_fit01)
 
 # application to setup data interface on fit02 node
 app_fit02 = ec.register_resource("linux::Application")
-cmd = 'sudo ip link set dev data down; sudo dhclient data;'
+#cmd = 'sudo ip link set dev data down; sudo dhclient data;'
+# configuring the ad-hoc for node fit01
+cmd  = "ip addr flush dev {}; ".format(wifi_interface)
+cmd += "sudo ip link set {} down; ".format(wifi_interface)
+cmd += "sudo iwconfig {} mode ad-hoc; ".format(wifi_interface)
+cmd += "sudo iwconfig {} channel {}; ".format(wifi_interface, wifi_channel)
+cmd += "sudo iwconfig {} essid '{}'; ".format(wifi_interface, wifi_name)
+cmd += "sudo iwconfig {} key {}; ".format(wifi_interface, wifi_key)
+cmd += "sudo ip link set {} up; ".format(wifi_interface)
+cmd += "sudo ip addr add {}{} dev {}; ".format(wifi_ip_fit02, wifi_net_mask, wifi_interface)
 ec.set(app_fit02, "command", cmd)
 ec.register_connection(app_fit02, fit02)
 ec.deploy(app_fit02)
 ec.wait_finished(app_fit02)
 
-# creating an application to ping the experiment inteface of fit02 from the fit01
+# ping fit02 inteface from fit01
 app_ping_from_fit01_to_fit02 = ec.register_resource("linux::Application")
-cmd = 'ping -c1 192.168.02.02; '
+cmd = 'ping -c5 -I {} {}'.format(wifi_interface, wifi_ip_fit02)
 ec.set(app_ping_from_fit01_to_fit02, "command", cmd)
 ec.register_connection(app_ping_from_fit01_to_fit02, fit01)
 ec.deploy(app_ping_from_fit01_to_fit02)
 ec.wait_finished(app_ping_from_fit01_to_fit02)
 
-# recovering the results
-print "\n--- INFO: output:"
+# ping fit01 inteface from fit02
+app_ping_from_fit02_to_fit01 = ec.register_resource("linux::Application")
+cmd = 'ping -c5 -I {} {}'.format(wifi_interface, wifi_ip_fit01)
+ec.set(app_ping_from_fit02_to_fit01, "command", cmd)
+ec.register_connection(app_ping_from_fit02_to_fit01, fit02)
+ec.deploy(app_ping_from_fit02_to_fit01)
+ec.wait_finished(app_ping_from_fit02_to_fit01)
+
+# recovering the results of fit01
+print "\n--- INFO: output fit01:"
 print ec.trace(app_ping_from_fit01_to_fit02, "stdout")
+
+# recovering the results fit02
+print "\n--- INFO: output fit02:"
+print ec.trace(app_ping_from_fit02_to_fit01, "stdout")
 
 # shutting down the experiment
 ec.shutdown()
