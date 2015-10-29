@@ -5,6 +5,8 @@ tab: tutorial
 
 Below we present a couple of experiments as a second level of learning. In these cases, both examples focus experiments which exchange files using [NEPI](http://nepi.inria.fr/Install/WebHome) network tool and R2lab simulation testbed.
 From one experiment to other we highlight the modifications, insert and delete actions by different colors to improve the user experience learning.
+Note that in these examples, differently from the previous experiments (A1-A4), we introduced two skills of NEPI. You will use **dependent** and **condition** NEPI instructions. Respectively lines **84/91** and **96**.
+The dependent condition will install for us NC (netcat) tool prerequisites and the condition instruction will ensure that the **fit01** node will send the file only after **fit02** is done and listening on it.
 
 <br>
 
@@ -21,7 +23,7 @@ From one experiment to other we highlight the modifications, insert and delete a
 
 <div role="tabpanel" class="tab-pane fade active in" id="B1" aria-labelledby="home-tab">
   <br/>
-  The experiment below uses two nodes. From your computer you will create **fit01** and the **fit02** nodes. From **fit01** node you will send a file to **fit02** node both using the wired **control interface**.
+  The experiment below uses four nodes. From your computer you will create **fit01** and the **fit02** nodes. From **fit01** node you will send a file to **fit02** node both using the wired **control interface**.
 
   <center>
     <!-- ![a1](assets/img/B1.png)<br> -->
@@ -35,14 +37,14 @@ Code B1 soon
   </div>
   <div role="tabpanel" class="tab-pane fade" id="B2" aria-labelledby="profile-tab">
     <br/>
-    The experiment below uses two nodes. From your computer you will create **fit01** and the **fit02** nodes. From **fit01** node you will send a file to **fit02** node both using the **wireless interface** wlan0.
+    The experiment below uses four nodes. From your computer you will create **fit01** and the **fit02** nodes. From **fit01** node you will send a file to **fit02** node both using the **wireless interface** wlan0.
     
     <center>
       <!-- ![a1](assets/img/B2.png)<br> -->
       Download the <a href="codes_examples/B2-ping.py" download target="_blank">B2 experiment</a> code
     </center>
  
-  <pre data-src="prism.js" data-line-edit-line="" data-line-inlcude-line="" class="line-numbers"><code class="language-python">
+  <pre data-src="prism.js" data-line-edit-line="84,91,96" data-line-edit-line="" data-line-inlcude-line="" class="line-numbers"><code class="language-python">
 Code B2 soon
   </code></pre>
   </div>
