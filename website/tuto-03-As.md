@@ -28,7 +28,7 @@ From one experiment to other we highlight the modifications, insert and delete a
 
 <div role="tabpanel" class="tab-pane fade active in" id="A1" aria-labelledby="home-tab">
   <br/>
-  The experiment below uses only one node. From your computer, you will create and connect the **gateway** (faraday.inria.fr) node. From the **gateway** you will ping **google server** and recovery the answer of it.
+  The experiment below uses only one node. From your computer, you will create and connect the **gateway** (faraday.inria.fr) node. From the **gateway** node you will ping **google server** and recovery the answer of it.
 
   <center>
     ![a1](assets/img/A1.png)<br>
@@ -160,7 +160,7 @@ ec.shutdown()
   </div>
   <div role="tabpanel" class="tab-pane fade" id="A3" aria-labelledby="profile-tab">
     <br/>
-    The experiment below uses two nodes. From your computer you will create the **fit01** and the **fit02** nodes. Once connected at **fit01**, trough the gateway node, you will configure at both nodes the **experiment interface** (data) to proceed the experiment. Once configured you will ping the **experiment interface** at **fit02** from **fit01**.
+    The experiment below uses two nodes. From your computer you will create the **fit01** and the **fit02** nodes. Once connected at **fit01**, trough the gateway node, you will configure at both nodes the wired **experiment interface** (data) using DHCP. Once configured the interface, you will ping the **experiment interface** at **fit02** from **fit01**.
     
     <center>
       ![a1](assets/img/A3.png)<br>
@@ -261,7 +261,7 @@ ec.shutdown()
   </div>
   <div role="tabpanel" class="tab-pane fade" id="A4" aria-labelledby="profile-tab">
     <br/>
-    The experiment below uses two nodes. From your computer you will create the **fit01** and the **fit02** nodes. Once connected at **fit01**, trough the gateway node, you will configure at both nodes the **experiment interface** (data) to proceed the experiment. Once configured you will ping the **experiment interface** at **fit02** from **fit01**.
+    The experiment below uses two nodes and update the previous experiment A3. From your computer you will create the same **fit01** and the **fit02** nodes. Once connected at **fit01**, trough the gateway node, you will configure an AD-HOC network in both nodes ** wireless interface ** (wlan0). Once configured the interface, you will ping **fit01** and **fit02** each other using the **wireless interface**.
     
     <center>
       ![a1](assets/img/A4.png)<br>
