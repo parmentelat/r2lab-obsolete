@@ -5,7 +5,10 @@ tab: tutorial
 
 Below we present a couple of experiments as a second level of learning. In these cases, both examples focus experiments which exchange files using [NEPI](http://nepi.inria.fr/Install/WebHome) network tool and R2lab simulation testbed.
 From one experiment to other we highlight the modifications, insert and delete actions by different colors to improve the user experience learning.
-Note that in these examples, differently from the previous experiments (A1-A4), we introduced two skills of NEPI. You will use **dependent** and **condition** NEPI instructions. Respectively lines **84/91** and **96**.
+Note that in these examples, differently from the previous experiments (A1-A4), we introduced two skills of NEPI. 
+
+You will use **dependent** and **condition** NEPI instructions. Respectively lines **80/87** and **98/101/104/107**, highlighted in the code.
+
 The dependent condition will install for us NC (netcat) tool prerequisites and the condition instruction will ensure that the **fit01** node will send the file only after **fit02** is done and listening on it.
 
 <br>
@@ -26,12 +29,12 @@ The dependent condition will install for us NC (netcat) tool prerequisites and t
   The experiment below uses four nodes. From your computer you will create **fit01** and the **fit02** nodes. From **fit01** node you will send a file to **fit02** node both using the wired **control interface**.
 
   <center>
-    <!-- ![a1](assets/img/B1.png)<br> -->
-    Download the <a href="codes_examples/B1-ping.py" download target="_blank">B1 experiment</a> code
+    ![a1](assets/img/B1.png)<br>
+    Download the <a href="codes_examples/B1-send-file.py" download target="_blank">B1 experiment</a> code
   </center>
   
 
-  <pre data-src="prism.js" class="line-numbers"><code class="language-python">
+  <pre data-src="prism.js"  data-line="80,87,98,101,104,107" class="line-numbers"><code class="language-python">
 #!/usr/bin/env python
 
 # including nepi library and other required packages
@@ -42,9 +45,9 @@ import os
 
 # setting up the default host, onelab user and shh key credential
 host_gateway  = 'faraday.inria.fr'
-user_gateway  = '<your_onelab_user>'
-user_identity = '~/.ssh/<your_public_ssh_key>'
-gateway_dir 	= '/home/<your_onelab_user>/'
+user_gateway  = '[your_onelab_user]'
+user_identity = '~/.ssh/[your_public_ssh_key]'
+gateway_dir 	= '/home/[your_onelab_user]/'
 
 # setting up the credentials for the nodes 
 host01 = 'fit01'
@@ -56,8 +59,8 @@ user02 = 'root'
 host02_dir = '/home/'
 port 	 =  1234
 
-local_file = '<some_file.txt>'
-local_dir  = '<some_file_path>'
+local_file = '[some_file.txt]'
+local_dir  = '[some_file_path]'
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="B1-send-file")

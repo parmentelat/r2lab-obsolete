@@ -47,8 +47,8 @@ import os
 
 # setting up the default host, onelab user and shh key credential
 host  = 'faraday.inria.fr'
-user  = '<your_onelab_user>'
-key   = '~/.ssh/<your_public_ssh_key>'
+user  = '[your_onelab_user]'
+key   = '~/.ssh/[your_public_ssh_key]'
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="A1-ping")
@@ -105,8 +105,8 @@ import os
 
 # setting up the default host, onelab user and shh key credential
 host_gateway  = 'faraday.inria.fr'
-user_gateway  = '<your_onelab_user>'
-user_identity = '~/.ssh/<your_public_ssh_key>'
+user_gateway  = '[your_onelab_user]'
+user_identity = '~/.ssh/[your_public_ssh_key]'
 
 # setting up the credentials for one fit01 node 
 host01 = 'fit01'
@@ -178,8 +178,8 @@ import os
 
 # setting up the default host, onelab user and shh key credential
 host_gateway  = 'faraday.inria.fr'
-user_gateway  = '<your_onelab_user>'
-user_identity = '~/.ssh/<your_public_ssh_key>'
+user_gateway  = '[your_onelab_user]'
+user_identity = '~/.ssh/[your_public_ssh_key]'
 
 # setting up the credentials for the nodes 
 host01 = 'fit01'
@@ -279,8 +279,8 @@ import os
 
 # setting up the default host, onelab user and shh key credential
 host_gateway  = 'faraday.inria.fr'
-user_gateway  = '<your_onelab_user>'
-user_identity = '~/.ssh/<your_public_ssh_key>'
+user_gateway  = '[your_onelab_user]'
+user_identity = '~/.ssh/[your_public_ssh_key]'
 
 # setting up the credentials for the nodes 
 host01 = 'fit01'
