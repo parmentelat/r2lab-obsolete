@@ -8,9 +8,9 @@ import os
 
 # setting up the default host, onelab user and shh key credential
 host_gateway  = 'faraday.inria.fr'
-user_gateway  = 'mario'
-user_identity = '~/.ssh/id_rsa'
-gateway_dir = '/home/mario/'
+user_gateway  = '<your_onelab_user>'
+user_identity = '~/.ssh/<your_public_ssh_key>'
+gateway_dir 	= '/home/<your_onelab_user>/'
 
 # setting up the credentials for the nodes 
 host01 = 'fit01'
@@ -19,21 +19,20 @@ host01_dir = '/home/'
 
 host02 = 'fit02'
 user02 = 'root'
-port 	 =  1236
 host02_dir = '/home/'
+port 	 =  1234
 
-file      = 'file.txt'
-local_dir = '/Users/nano/'
+local_file = '<some_file.txt>'
+local_dir  = '<some_file_path>'
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="B1-send-file")
 
 # creating local
 local = ec.register_resource("linux::Node")
-ec.set(local, "hostname", 'localhost')
+ec.set(local, "hostname", "localhost")
 ec.set(local, "cleanExperiment", True)
 ec.set(local, "cleanProcesses", True)
-ec.deploy(local)
 
 # creating the gateway node
 gateway = ec.register_resource("linux::Node")
@@ -42,7 +41,6 @@ ec.set(gateway, "hostname", host_gateway)
 ec.set(gateway, "identity", user_identity)
 ec.set(gateway, "cleanExperiment", True)
 ec.set(gateway, "cleanProcesses", True)
-ec.deploy(gateway)
 
 # creating the fit01 node
 fit01 = ec.register_resource("linux::Node")
@@ -53,7 +51,6 @@ ec.set(fit01, "gatewayUser", user_gateway)
 ec.set(fit01, "identity", user_identity)
 ec.set(fit01, "cleanExperiment", True)
 ec.set(fit01, "cleanProcesses", True)
-ec.deploy(fit01)
 
 # creating the fit02 node 
 fit02 = ec.register_resource("linux::Node")
@@ -64,53 +61,60 @@ ec.set(fit02, "gatewayUser", user_gateway)
 ec.set(fit02, "identity", user_identity)
 ec.set(fit02, "cleanExperiment", True)
 ec.set(fit02, "cleanProcesses", True)
-ec.deploy(fit02)
 
 # application to copy file from local to gateway
 app_local = ec.register_resource("linux::Application")
-cmd  = 'scp {}{} {}@{}:{}{}; '.format(local_dir, file, user_gateway, host_gateway, gateway_dir, file)
+cmd  = 'scp {}{} {}@{}:{}{}; '.format(local_dir, local_file, user_gateway, host_gateway, gateway_dir, local_file)
 ec.set(app_local, "command", cmd)
 ec.register_connection(app_local, local)
 
-# application to copy file to fit01 from gateway
+# application to copy file to fit02 from gateway
 app_gateway = ec.register_resource("linux::Application")
-cmd  = 'scp {}{} {}@{}:{}{}; '.format(gateway_dir, file, user01, host01, host01_dir, file)
+cmd  = 'scp {}{} {}@{}:{}{}; '.format(gateway_dir, local_file, user02, host02, host02_dir, local_file)
 ec.set(app_gateway, "command", cmd)
 ec.register_connection(app_gateway, gateway)
 
-# fit01 node will send the file to fit 02 node
+# fit01 will receive the file from fit02, then we start listening in the port
 app_fit01 = ec.register_resource("linux::Application")
-cmd = 'nc {} {} < {}{}'.format(host01, port, host01_dir, file)
+cmd = 'nc -dl {} > {}{}'.format(port, host01_dir, local_file)
 ec.set(app_fit01, "depends", "netcat")
 ec.set(app_fit01, "command", cmd)
 ec.register_connection(app_fit01, fit01)
 
-# fit02 node will rexeive the file from fit 01 node
+# fit02 will send the file to fit01 
 app_fit02 = ec.register_resource("linux::Application")
-cmd = 'nc -dl {} > {}{}'.format(port, host02_dir, file)
+cmd = 'nc {} {} < {}{}'.format(host01, port, host02_dir, local_file)
 ec.set(app_fit02, "depends", "netcat")
 ec.set(app_fit02, "command", cmd)
 ec.register_connection(app_fit02, fit02)
 
-# defining that the node gateway can copy the file to fit01 only after the file is copied to it from local
-ec.register_condition(app_gateway, ResourceAction.START, app_local, ResourceState.STARTED) 
+# fit02 will list the dir after all process 
+app_fit02_ls = ec.register_resource("linux::Application")
+cmd = 'ls -la {}'.format(host02_dir)
+ec.set(app_fit02_ls, "command", cmd)
+ec.register_connection(app_fit02_ls, fit02)
 
-# defining that the node gateway can copy the file to fit01 only after the file is copied to it from local
-ec.register_condition(app_fit01, ResourceAction.START, app_gateway, ResourceState.STARTED) 
+# defining that the node gateway can copy the file to fit02 only after the file is copied to it from local
+ec.register_condition(app_gateway, ResourceAction.START, app_local, ResourceState.STOPPED) 
 
-# defining that the node fit01 can send only after node fit02 is listening
-ec.register_condition(app_fit01, ResourceAction.START, app_fit02, ResourceState.STARTED) 
+# defining that the node ftt02 can send the file to fit01 only after the file is copied to it from gateway
+ec.register_condition(app_fit02, ResourceAction.START, app_gateway, ResourceState.STOPPED) 
 
-ec.deploy([app_local, app_gateway, app_fit01, app_fit02])
-ec.wait_finished([app_local, app_gateway, app_fit01, app_fit02])
+# defining that the node fit02 can send only after node fit01 is listening
+ec.register_condition(app_fit02, ResourceAction.START, app_fit01, ResourceState.STARTED)
+
+# defining that the node fit02 can send only after node fit01 is listening
+ec.register_condition(app_fit02_ls, ResourceAction.START, app_fit02, ResourceState.STOPPED) 
+
+# deploy all applications
+ec.deploy([local, gateway, fit01, fit02, app_local, app_gateway, app_fit01, app_fit02, app_fit02_ls])
+
+#wait ls application to recovery the results and present after
+ec.wait_finished(app_fit02_ls)
 
 # recovering the results
-print "\n--- INFO: output fit01:"
-print ec.trace(app_fit01, "stdout")
-print " "
-print "\n--- INFO: output fit02:"
-print ec.trace(app_fit02, "stdout")
+print "\n--- INFO: listing directory on fit02:"
+print ec.trace(app_fit02_ls, "stdout")
 
 # shutting down the experiment
 ec.shutdown()
-

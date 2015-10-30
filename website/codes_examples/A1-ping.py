@@ -8,8 +8,8 @@ import os
 
 # setting up the default host, onelab user and shh key credential
 host  = 'faraday.inria.fr'
-user  = 'onelab.inria.mario.tutorial'
-key   = '~/.ssh/id_rsa'
+user  = '<your_onelab_user>'
+key   = '~/.ssh/<your_public_ssh_key>'
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="A1-ping")

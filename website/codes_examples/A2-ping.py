@@ -8,8 +8,8 @@ import os
 
 # setting up the default host, onelab user and shh key credential
 host_gateway  = 'faraday.inria.fr'
-user_gateway  = 'onelab.inria.mario.tutorial'
-user_identity = '~/.ssh/id_rsa'
+user_gateway  = '<your_onelab_user>'
+user_identity = '~/.ssh/<your_public_ssh_key>'
 
 # setting up the credentials for one fit01 node 
 host01 = 'fit01'
