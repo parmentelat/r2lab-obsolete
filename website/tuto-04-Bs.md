@@ -26,7 +26,7 @@ The dependent condition will install for us NC (netcat) tool prerequisites and t
 
 <div role="tabpanel" class="tab-pane fade active in" id="B1" aria-labelledby="home-tab">
   <br/>
-  The experiment below uses four nodes. From your computer you will create **fit01** and the **fit02** nodes. From **fit01** node you will send a file to **fit02** node both using the wired **control interface**.
+  The experiment below uses four nodes. From your computer you will create **local**, **gateway**, **fit01** and **fit02** nodes. From **local** you will copy "file.txt" to the **gateway** node, which in turn will copy the same file to **fit02** node. Both copy file will use "scp command". Once the file is present in **fit02** node, you will start NC (netcat) at **fit01** to listen in port 1234. After **fit01** starts listening in 1234 port, **fit02** node will transmit the file also using NC. The transmission from **fit02** to **fit01** use the wired **control interface**.
 
   <center>
     ![a1](assets/img/B1.png)<br>
@@ -47,7 +47,7 @@ import os
 host_gateway  = 'faraday.inria.fr'
 user_gateway  = '[your_onelab_user]'
 user_identity = '~/.ssh/[your_public_ssh_key]'
-gateway_dir 	= '/home/[your_onelab_user]/'
+gateway_dir   = '/home/[your_onelab_user]/'
 
 # setting up the credentials for the nodes 
 host01 = 'fit01'
@@ -57,7 +57,7 @@ host01_dir = '/home/'
 host02 = 'fit02'
 user02 = 'root'
 host02_dir = '/home/'
-port 	 =  1234
+port   = 1234
 
 local_file = '[some_file.txt]'
 local_dir  = '[some_file_path]'
@@ -159,7 +159,7 @@ ec.shutdown()
   </div>
   <div role="tabpanel" class="tab-pane fade" id="B2" aria-labelledby="profile-tab">
     <br/>
-    The experiment below uses four nodes. From your computer you will create **fit01** and the **fit02** nodes. From **fit01** node you will send a file to **fit02** node both using the **wireless interface** wlan0.
+    The experiment below are the same as the previous (B1), however here, to send the file from **fit02** to **fit01**, you will use the wireless interface instead the wired one.
     
     <center>
       <!-- ![a1](assets/img/B2.png)<br> -->

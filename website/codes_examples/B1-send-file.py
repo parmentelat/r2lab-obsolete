@@ -20,7 +20,7 @@ host01_dir = '/home/'
 host02 = 'fit02'
 user02 = 'root'
 host02_dir = '/home/'
-port 	 =  1234
+port   = 1234
 
 local_file = '[some_file.txt]'
 local_dir  = '[some_file_path]'
