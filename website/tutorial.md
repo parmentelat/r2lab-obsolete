@@ -27,11 +27,12 @@ tab: tutorial
 			<br>
 
 			<h3>Examples of experimentations scenarios:</h3>
-				<p> - <a href="tuto-03-ping.html">NEPI: ping example</a></p>
-				<p><h6>A simple example to deploy ping with <a href="tools.html"><span class="blue">NEPI</span></a> network tool.</h6></p>
-				<p> - <a href="tuto-04-sendfile.html">NEPI: send file</a></p>
-				<p><h6>A file exchange between two nodes using <a href="tools.html"><span class="blue">NEPI</span></a> network tool.</h6></p>	
-			
+				<p> - <a href="tuto-03-As.html">NEPI: ping examples</a></p>
+				<p><h6>A couple of examples to get start with <a href="tools.html"><span class="blue">NEPI</span></a> network tool.</h6></p>
+				<p> - <a href="tuto-04-Bs.html">NEPI: file exchange</a></p>
+				<p><h6>A file exchange between two nodes using <a href="tools.html"><span class="blue">NEPI</span></a> network tool thougth wired and wireless interfaces.</h6></p>
+				<p> - <a href="tuto-05-Cs.html">NEPI: load image</a></p>
+				<p><h6>An experiment to load fresh distros to the nodes using <a href="tools.html"><span class="blue">NEPI</span></a> network tool.</h6></p>
 		</div>
 	</div>
 </div>
