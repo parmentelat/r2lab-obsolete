@@ -30,7 +30,7 @@ args = parser.parse_args()
 VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21',          'f-22']
 VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21',     'fedora 22']
 VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz']
-RESTART_ALL    = "service omf-sfa stop; stop ntrc; service dnsmasq stop; service dnsmasq start; start ntrc; service omf-sfa start; "
+#RESTART_ALL    = "service omf-sfa stop; stop ntrc; service dnsmasq stop; service dnsmasq start; start ntrc; service omf-sfa start; "
 
 
 
@@ -49,9 +49,9 @@ def main(args):
 
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
-    print "-- INFO: {}".format(now())
-    print "-- INFO: Restarting services"
-    execute(RESTART_ALL)
+    # print "-- INFO: {}".format(now())
+    # print "-- INFO: Restarting services"
+    # execute(RESTART_ALL)
     
 
     #=========================================
@@ -312,9 +312,9 @@ def main(args):
 
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
-    print "-- INFO: Restarting services"
-    print "-- INFO: {}".format(now())
-    execute(RESTART_ALL)
+    # print "-- INFO: Restarting services"
+    # print "-- INFO: {}".format(now())
+    # execute(RESTART_ALL)
 
 
 
