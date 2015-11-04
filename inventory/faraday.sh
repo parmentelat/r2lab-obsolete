@@ -602,6 +602,7 @@ function chmod-private-key () {
 doc-alt chmod-private-key "\n\t\tChmod private key so that ssh won't complain anymore"
 
 ##########
+# there is alsos a crontab-oriented proper shell-script to do this in ./restart-all.sh
 function restart-all () {
     ### stop
     echo Stopping omf-sfa
