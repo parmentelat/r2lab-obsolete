@@ -111,7 +111,7 @@ def main(args):
     grouped_os_list = build_grouped_os_list(old_os)
     cmds= []    
     do_execute = False
-    executions = 5
+    executions = 10
 
     # in case of have the version specified in the command line - do it for all
     if not None is version:
@@ -156,7 +156,7 @@ def main(args):
             omf_load = Parallel(cmd)
             omf_load.start()
 
-            check_number_times = 3  # Let's check n times before kiil the thread (normally using groups of 5 in executions)
+            check_number_times = 5  # Let's check n times before kiil the thread (normally using groups of 5 in executions)
             delay_before_kill  = 60  # Timeout for each check
 
             for i in range(check_number_times+1):
