@@ -11,11 +11,15 @@ function restart-all () {
     service omf-sfa stop
     echo Stopping ntrc
     stop ntrc
+    echo Stopping openfire
+    service openfire stop
     echo Stopping dnsmasq
     service dnsmasq stop
     ### start
     echo Starting dnsmasq
     service dnsmasq start
+    echo Starting openfire
+    service openfire start
     echo Starting ntrc
     start ntrc
     echo Starting omf-sfa
@@ -23,5 +27,10 @@ function restart-all () {
     echo "Exiting $COMMAND on" $(date)
 }
 
-
-restart-all >> $output
+if [[ -n "$@" ]]; then
+    # if called with any argument, we show output on the terminal
+    restart-all
+else
+    # otherwise (for cron) this gets logged
+    restart-all >> $output
+fi

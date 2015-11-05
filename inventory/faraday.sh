@@ -602,24 +602,15 @@ function chmod-private-key () {
 doc-alt chmod-private-key "\n\t\tChmod private key so that ssh won't complain anymore"
 
 ##########
-# there is alsos a crontab-oriented proper shell-script to do this in ./restart-all.sh
+# we had to create a crontab-oriented proper shell-script to do this in ./restart-all.sh
+# to avoid code duplication we call that script here
+# a trick to retrieve our own path:
+MY_PATH="${BASH_SOURCE[@]}"
+LOCAL_DIR=$(dirname $MY_PATH)
 function restart-all () {
-    ### stop
-    echo Stopping omf-sfa
-    service omf-sfa stop
-    echo Stopping ntrc
-    stop ntrc
-    echo Stopping dnsmasq
-    service dnsmasq stop
-    ### start
-    echo Starting dnsmasq
-    service dnsmasq start
-    echo Starting ntrc
-    start ntrc
-    echo Starting omf-sfa
-    service omf-sfa start
+    $LOCAL_DIR/restart-all.sh interactive
 }
-doc-admin restart-all "Restart all 3 services omf-sfa, ntrc and dnsmasq"
+doc-admin restart-all "Restart all 4 services omf-sfa, ntrc, openfire and dnsmasq"
 
 alias images="cd /var/lib/omf-images-6/"
 doc-admin images alias
