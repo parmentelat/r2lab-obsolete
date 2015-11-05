@@ -3,8 +3,12 @@ tab: tutorial
 ---
 <script type="text/javascript">loadMenu();</script>
 
-Below we present a couple of experiments as a second level of learning. In these cases, both examples focus experiments which exchange files using [NEPI](http://nepi.inria.fr/Install/WebHome) network tool and R2lab simulation testbed.
-From one experiment to other we highlight the modifications, insert and delete actions by different colors to improve the user experience learning.
+Below are a couple of experiments as a second level of learning [NEPI](http://nepi.inria.fr/Install/WebHome) network tool and R2lab simulation testbed.
+
+The experiments were made with an increment level from **B1** to **B2** to allow better subject understanding. Feel free to skip to the level that fits your knowledge.
+
+From one experiment to other, like git style, we highlight the modifications, insert and delete actions by different colors to improve the user experience learning. In most of the experiments cases a picture explaining the scenario are presented to help the experiment comprehension.
+
 Note that in these examples, differently from the previous experiments (A1-A4), we introduced two skills of NEPI. 
 
 You will use **dependent** and **condition** NEPI instructions. Respectively lines **80/87** and **98/101/104/107**, highlighted in the code at **B1** experiment.
@@ -26,7 +30,11 @@ The dependent condition will install for us NC (netcat) tool prerequisites and t
 
 <div role="tabpanel" class="tab-pane fade active in" id="B1" aria-labelledby="home-tab">
   <br/>
-  The experiment below uses four nodes. From your computer you will create **local**, **gateway**, **fit01** and **fit02** nodes. From **local** you will copy "file.txt" to the **gateway** node, which in turn will copy the same file to **fit02** node. Both copy file will use "scp command". Once the file is present in **fit02** node, you will start NC (netcat) at **fit01** to listen in port 1234. After **fit01** starts listening in 1234 port, **fit02** node will transmit the file also using NC. The transmission from **fit02** to **fit01** use the wired **control interface**.
+  The experiment below uses four nodes. From your computer you will create and deploy **local**, **gateway**, **fit01** and **fit02** nodes. 
+  <br><br>
+  From **local** you will copy "file.txt" to R2lab **gateway** node, which in turn will copy the same file to **fit02** node. Both copy file will use "scp command".
+  <br><br>
+  Once the file is present in **fit02** node, you will start NC (netcat) at **fit01** to listen in port 1234. After **fit01** starts listening in 1234 port, **fit02** node will transmit the file also using NC. The transmission from **fit02** to **fit01** use the wired **control interface**.
 
   <center>
     ![a1](assets/img/B1.png)<br>

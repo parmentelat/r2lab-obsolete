@@ -5,7 +5,7 @@ tab: tutorial
 
 Below we present an experiment which will conduct a load image usgin [NEPI](http://nepi.inria.fr/Install/WebHome) network tool at R2lab simulation testbed. 
 
-You will be able load and control as root user the most common Linux distros. We provide **Ubuntu 14.10/15.04 and Fedora 21/22**.
+You will be able load and control the most common Linux distros at R2lab testbed as root user. We provide **Ubuntu 14.10/15.04** and **Fedora 21/22** for all users.
 
 <br>
 
@@ -19,7 +19,9 @@ You will be able load and control as root user the most common Linux distros. We
 
 <div role="tabpanel" class="tab-pane fade active in" id="C1" aria-labelledby="home-tab">
   <br/>
-  The experiment below uses three nodes. From your computer you will create **gateway** and **fit01** nodes. From **local** you will connect the **gateway** node, and launch the code to load a fresh distro at **fit01** node. Once the image is loaded at the **fit01** node you will check if the version corresponds as expected.
+  From your computer you will create and deploy **gateway** and **fit01** nodes. Once in R2lab **gateway** node you launch the code to load a fresh distro at **fit01** node. 
+  <br><br>
+  At the end, you will create also an application at the **fit01** node to check if the version corresponds as expected.
 
   <center>
     ![a1](assets/img/C1.png)<br>

@@ -30,7 +30,9 @@ From one experiment to other, like git style, we highlight the modifications, in
 
 <div role="tabpanel" class="tab-pane fade active in" id="A1" aria-labelledby="home-tab">
   <br/>
-  The experiment below uses only one node. From your computer, you will create and connect the **gateway** (faraday.inria.fr) node. From the **gateway** node you will ping **google server** and recovery the answer of it.
+  In this experiment example, from your computer, you will create and deploy an application to connect R2lab **gateway** (faraday.inria.fr) node.
+  <br><br>
+  Once there, from the **gateway** node, you will ping **google server** and recovery the answer of it.
 
   <center>
     ![a1](assets/img/A1.png)<br>
@@ -89,7 +91,9 @@ ec.shutdown()
   </div>
   <div role="tabpanel" class="tab-pane fade" id="A2" aria-labelledby="profile-tab">
     <br/>
-    The experiment below uses two nodes. From your computer, you will create the **gateway** (faraday.inria.fr) node and the **fit01** node. Once connected in the **gateway** node , you will ping **fit01** node at the **control interface** and recovery the answer of it.
+    In this experiment example, from your computer, you will create and deploy two applications nodes. The first one to connect R2lab **gateway** (faraday.inria.fr) node and, from there, reach **fit01** node. 
+    <br><br>
+    Once connected at the R2lab **gateway** node, you will ping **fit01** node at the **control interface** of it. At the and you will recovery the answer of the experiment.
     
     <center>
       ![a1](assets/img/A2.png)<br>
@@ -162,7 +166,9 @@ ec.shutdown()
   </div>
   <div role="tabpanel" class="tab-pane fade" id="A3" aria-labelledby="profile-tab">
     <br/>
-    The experiment below uses two nodes. From your computer you will create the **fit01** and the **fit02** nodes. Once connected at **fit01**, trough the gateway node, you will configure at both nodes the wired **experiment interface** (data) using DHCP. Once configured the interface, you will ping the **experiment interface** at **fit02** from **fit01**.
+    The experiment below uses two nodes. From your computer you will create and deploy **fit01** and **fit02** nodes. You will configure in both nodes the wired **experiment interface** (data) using DHCP.
+    <br><br>
+    Once configured the interface in both nodes, you will be able to ping the **experiment interface** at **fit02** from **fit01**.
     
     <center>
       ![a1](assets/img/A3.png)<br>
@@ -263,7 +269,9 @@ ec.shutdown()
   </div>
   <div role="tabpanel" class="tab-pane fade" id="A4" aria-labelledby="profile-tab">
     <br/>
-    The experiment below uses two nodes and update the previous experiment A3. From your computer you will create the same **fit01** and the **fit02** nodes. Once connected at **fit01**, trough the gateway node, you will configure an AD-HOC network in both nodes ** wireless interface ** (wlan0). Once configured the interface, you will ping **fit01** and **fit02** each other using the **wireless interface**.
+    The experiment below uses two nodes and update the previous experiment A3. From your computer you will create the same **fit01** and the **fit02** nodes. However, now, you will configure an AD-HOC network in both nodes ** wireless interface ** (wlan0).
+    <br><br>
+    Once configured the interface, you will ping **fit01** and **fit02** each other using the **wireless interface**.
     
     <center>
       ![a1](assets/img/A4.png)<br>
