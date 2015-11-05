@@ -604,11 +604,8 @@ doc-alt chmod-private-key "\n\t\tChmod private key so that ssh won't complain an
 ##########
 # we had to create a crontab-oriented proper shell-script to do this in ./restart-all.sh
 # to avoid code duplication we call that script here
-# a trick to retrieve our own path:
-MY_PATH="${BASH_SOURCE[@]}"
-LOCAL_DIR=$(dirname $MY_PATH)
 function restart-all () {
-    $LOCAL_DIR/restart-all.sh interactive
+    /root/fitsophia/inventory/restart-all.sh interactive
 }
 doc-admin restart-all "Restart all 4 services omf-sfa, ntrc, openfire and dnsmasq"
 
