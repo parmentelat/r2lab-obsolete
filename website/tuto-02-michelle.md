@@ -121,7 +121,7 @@ Note : It is also possible to run this command directly without making a nodes s
         
 **6 - Run an ssh command on all selected nodes**
 
-        $ map &lt;mycommand&gt;
+        $ map [mycommand]
         
 **7 - Find other short commands**
 

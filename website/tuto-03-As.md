@@ -4,8 +4,10 @@ tab: tutorial
 <script type="text/javascript">loadMenu();</script>
 
 Below are a couple of experiments to get start with [NEPI](http://nepi.inria.fr/Install/WebHome) network tool and R2lab simulation testbed.
-The experiments were made with an increment level to allow better subject understanding. Feel free to skip to the level that fits your knowledge.
-From one experiment to other we highlight the modifications, insert and delete actions by different colors to improve the user experience learning. In most of the experiments cases a picture explaining the scenario are presented to help the experiment comprehension.
+
+The experiments were made with an increment level from **A1** to **A4** to allow better subject understanding. Feel free to skip to the level that fits your knowledge.
+
+From one experiment to other, like git style, we highlight the modifications, insert and delete actions by different colors to improve the user experience learning. In most of the experiments cases a picture explaining the scenario are presented to help the experiment comprehension.
 
 <br>
 
