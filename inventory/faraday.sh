@@ -175,9 +175,16 @@ function normreboot () { py normalize2 fit reboot "$@" ; }
 # -> set NODES to fit01 fit03 fit05 and display it too
 function nodes () {
     [ -n "$1" ] && export NODES=$(norm "$@")
-    echo "export NODES=$NODES"
+    echo "export NODES=\"$NODES\""
+    echo "export NBNODES=$(nbnodes)"
 }
 doc-nodes nodes "\tshow or define currently selected nodes; eg nodes 1-10,12 13 ~5"
+
+
+function nbnodes () {
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    echo $(for node in $nodes; do echo $node; done | wc -l)
+}
 
 # add to global NODES
 # nodes_add 4 12-15 fit33
@@ -675,3 +682,4 @@ doc-admin monitor-log alias
 
 alias sidecar-log="tail -f /var/log/sidecar.log"
 doc-admin sidecar-log alias
+
