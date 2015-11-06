@@ -15,6 +15,10 @@ function restart-all () {
     service openfire stop
     echo Stopping dnsmasq
     service dnsmasq stop
+    ### cleanup the pxlinu symlink
+    source /root/fitsophia/inventory/faraday.sh
+    nextboot-listall
+    nextboot-cleanall    
     ### start
     echo Starting dnsmasq
     service dnsmasq start
