@@ -31,6 +31,8 @@ function help-alt () { echo -e $_doc_alt; }
 function help () { help-nodes; help-alt; }
 function help-admin () { echo -e $_doc_admin; }
 doc-alt help-admin "list admin-oriented commands"
+function help-all () { help; help-admin; }
+doc-admin help-all "list all known commands : help + help-admin"
 
 #################### contextual data
 function bemol () { hostname | grep -q bemol; }
