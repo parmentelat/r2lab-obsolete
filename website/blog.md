@@ -2,6 +2,17 @@ title: Latest news, infos and incidents...
 tab: blog
 ---
 
+### November 6, 2015
+
+* Announce availability to all FIT partners
+
+### November 6, 2015
+
+* Software upgrade
+  * `omf_sfa`  now runs git hash `fd21d587` of Sept. 8 (was using
+  `752868919` of Jul. 24
+  * `nitos_testbed_rc` now runs gem 2.0.4
+
 ### September 22<sup>nd</sup> 2015
 ##### LabEx / Com4Innov meeting
 
