@@ -24,7 +24,7 @@ function start() {
 
 #    echo Using $CODEDIR/monitor.py
     # options
-    cycle=3
+    cycle=5
     verbose=
 
     while getopts ":c:" opt; do
@@ -39,7 +39,7 @@ function start() {
 
     cd $CODEDIR
 
-    ./monitor.py $verbose -c $cycle "$@" -o $LOCAL_LOG &
+    for i in $(seq 37); do ./monitor.py $verbose -c $cycle $i -m 37 -o $LOCAL_LOG & done
 }
 
 function stop() {

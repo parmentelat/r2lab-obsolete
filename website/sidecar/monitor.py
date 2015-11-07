@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 """
 given a set of nodes on the command line - either numbers or complete hostnames
@@ -334,7 +335,7 @@ def pass3_control_ping(node_ids, infos, history):
 def io_callback(*args, **kwds):
     display('on socketIO response', *args, **kwds)
 
-def one_loop(all_ids, socketio, infos, history, report_wlan):
+def one_loop(all_ids, socketio, infos, history, report_wlan, max_index):
     start = datetime.now()
     ### init    
 
@@ -383,7 +384,16 @@ def one_loop(all_ids, socketio, infos, history, report_wlan):
             return 'U'
         else:
             return '^'
-    one_liner = "".join([one_char_summary(info) for info in infos])
+
+    if not max_index:
+        mask = [one_char_summary(info) for info in infos]
+    else:
+        # if we have e.g. max_index=37, then we want to show the focus nodes
+        # in context, i.e. show 37 chars
+        mask = [ '_' for i in range(max_index) ]
+        for info in infos:
+            mask[info['id']-1] = one_char_summary(info)
+    one_liner = "".join(mask)
     summary = "{} + {} + {} = {}".format(
         len(infos1), len(infos2), len(infos3),
         len(infos1) + len(infos2) + len(infos3))
@@ -391,6 +401,7 @@ def one_loop(all_ids, socketio, infos, history, report_wlan):
     display("{} - {} - {} s {} ms".format(
         one_liner, summary,
         duration.seconds, int(duration.microseconds/1000)))
+    print("first id=", infos[0]['id'])
 
 ##########
 arg_matcher = re.compile('[^0-9]*(?P<id>\d+)')
@@ -423,7 +434,7 @@ def mainloop(nodes, socketio, args):
     history = {}
     counter = 0
     while True:
-        one_loop(all_ids, socketio, infos, history, args.report_wlan)
+        one_loop(all_ids, socketio, infos, history, args.report_wlan, args.max_index)
         counter += 1
         if runs and counter >= runs:
             display("bailing out after {} runs".format(runs))
@@ -459,6 +470,9 @@ def main():
                         help="Specify filename for logs (will be opened in append mode)")
     parser.add_argument("-w", "--no-wlan", dest='report_wlan', action='store_false', default=True,
                         help="Disable generation of wlan?_[rt]x_rate - unit here is bits/s")
+    parser.add_argument("-m", "--max-index", dest='max_index', action='store', default=None,
+                        type=int,
+                        help="When set, one-liner shows subject nodes in context; e.g. -m 37")
     parser.add_argument("nodes", nargs='*')
     args = parser.parse_args()
 
