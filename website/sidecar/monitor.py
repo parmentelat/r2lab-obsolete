@@ -401,7 +401,6 @@ def one_loop(all_ids, socketio, infos, history, report_wlan, max_index):
     display("{} - {} - {} s {} ms".format(
         one_liner, summary,
         duration.seconds, int(duration.microseconds/1000)))
-    print("first id=", infos[0]['id'])
 
 ##########
 arg_matcher = re.compile('[^0-9]*(?P<id>\d+)')
