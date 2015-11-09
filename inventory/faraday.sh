@@ -275,6 +275,10 @@ function load-u1504 ()   { load-image ubuntu-15.04.ndz "$@" ; }
 _images="$_images ubuntu-15.04.ndz"
 doc-nodes load-u1504 "Load image based on ubuntu 15.04"
 
+function load-u1510 ()   { load-image ubuntu-15.10.ndz "$@" ; }
+_images="$_images ubuntu-15.10.ndz"
+doc-nodes load-u1510 "Load image based on ubuntu 15.10"
+
 function load-f21 ()   { load-image fedora-21.ndz "$@" ; }
 _images="$_images fedora-21.ndz"
 doc-nodes load-f21 "Load image based on fedora21"
@@ -282,6 +286,10 @@ doc-nodes load-f21 "Load image based on fedora21"
 function load-f22 ()   { load-image fedora-22.ndz "$@" ; }
 _images="$_images fedora-22.ndz"
 doc-nodes load-f22 "Load image based on fedora22"
+
+function load-f23 ()   { load-image fedora-23.ndz "$@" ; }
+_images="$_images fedora-23.ndz"
+doc-nodes load-f23 "Load image based on fedora23"
 
 
 function load-gr-u1410 () { load-image gnuradio-ubuntu-14.10.ndz "$@" ; }
@@ -303,8 +311,8 @@ function list-images {
 }
 doc-alt list-images "List available images"    
 
-alias load-ubuntu=load-u1504
-alias load-fedora=load-f22
+alias load-ubuntu=load-u1510
+alias load-fedora=load-f23
 alias load-gnuradio=load-gr-u1410
 
 doc-nodes load-ubuntu "upload latest ubuntu image on all nodes"
