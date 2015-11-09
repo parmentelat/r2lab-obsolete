@@ -573,7 +573,8 @@ function serve_ubuntu_new () {
 }
 
 ####################
-alias nitos-gem="cd /var/lib/gems/1.9.1/gems/nitos_testbed_rc-2.0.3/lib/nitos_testbed_rc"
+alias nitos-gem-203="cd /var/lib/gems/1.9.1/gems/nitos_testbed_rc-2.0.3/lib/nitos_testbed_rc"
+alias nitos-gem-204="cd /var/lib/gems/1.9.1/gems/nitos_testbed_rc-2.0.4/lib/nitos_testbed_rc"
 
 # look at logs
 alias logs-dns="tail -f /var/log/dnsmasqfit.log"
@@ -677,8 +678,8 @@ ADMIN=onelab.inria.r2lab.admin
 alias admin-account="su - $ADMIN"
 doc-admin admin-account alias
 
-alias monitor-log="tail -f /var/log/monitor.log"
-doc-admin monitor-log alias
+alias logs-monitor="tail -f /var/log/monitor.log"
+doc-admin logs-monitor alias
 
 alias sidecar-log="tail -f /var/log/sidecar.log"
 doc-admin sidecar-log alias
