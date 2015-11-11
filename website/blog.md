@@ -6,6 +6,12 @@ tab: blog
 
 * availability of images based on fedora-23 and ubuntu-15.10
 
+### November 9
+
+* reverting `nitos_testbed_rc` to run gem 2.0.3 again (with our patches for
+  using latet frisbee) ; 2.0.4 is not working properly for us, loading
+  images is even less reliable than 2.0.3.
+
 ### November 6
 
 * Announce availability to all FIT partners
