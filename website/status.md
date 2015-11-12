@@ -5,7 +5,7 @@ tab: status
 R2lab testbed project offers a high quality anechoic room for your experiments. Following are the details of the anechoic room.
 
 <div class="alert alert-danger" role="alert">
-<p><strong>Attention!</strong></p>
+<p><strong>Important note!</strong></p>
 <p>R2lab platform is reset every night. A time slot from **3AM** until **4AM** (GMT +1) is reserved to execute this routine.</p>
 
 <p>Please, make sure all your experiments are save before. You can check [here](tuto-02-michelle.html#main) how to do it.</p></div>

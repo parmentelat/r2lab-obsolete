@@ -111,7 +111,7 @@ def main(args):
     grouped_os_list = build_grouped_os_list(old_os)
     cmds= []    
     do_execute = False
-    executions = 10
+    executions = 1
 
     # in case of have the version specified in the command line - do it for all
     if not None is version:
