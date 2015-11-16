@@ -223,7 +223,9 @@ function nodes-restore () {
 }
 doc-alt nodes-restore "use previously named selection"
 
-function all-nodes () { bemol && nodes 38-42 || nodes 1-37; }
+bemol && export ALL_NODES=38-42 || export ALL_NODES=1-37
+
+function all-nodes () { nodes $ALL_NODES; }
 function nodes-all () { all-nodes; }
 doc-nodes all-nodes "select all available nodes"
 
