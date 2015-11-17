@@ -11,6 +11,9 @@ class Selector:
         self.rebootname = rebootname
         self.set = set()
 
+    def __repr__(self):
+        return "<Selector " + " ".join(self.node_names()) + ">"
+
     def add_or_delete(self, index, add_if_true):
         if add_if_true:
             self.set.add(index)
@@ -51,9 +54,9 @@ class Selector:
 
     # generators
     def node_names(self):
-        return ("{}{:02}".format(self.regularname, i) for i in self.set)
+        return ("{}{:02}".format(self.regularname, i) for i in sorted(self.set))
     def cmc_names(self):
-        return ("{}{:02}".format(self.rebootname, i) for i in self.set)
+        return ("{}{:02}".format(self.rebootname, i) for i in sorted(self.set))
 
 
 ####################
