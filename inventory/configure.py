@@ -116,6 +116,22 @@ class Node(object):
             urn = "urn:publicid:IDN+omf:r2lab+node+{}".format(self.log_name()),
         )
 
+    def new_json_model(self):
+        return {
+            'cmc' : {
+                'hostname' : self.log_name(prefix='reboot'),
+                'mac' : "02:00:00:00:00:{}".format(self.phy_str0()),
+                },
+            'control' : {
+                'hostname' : self.log_name(),
+                'mac' : self.mac,
+                },
+            'data' : {
+                'hostname' : self.log_name(prefix="data"),
+                'mac' : self.alt_mac,
+                }
+            }
+
     def dnsmasq_conf(self):
         # for the control interfaces, provide IP + hostname
         control="dhcp-host=net:control,{},192.168.3.{},{}\n".\
@@ -296,6 +312,11 @@ class Nodes(OrderedDict):
         out_filename = self.out_basename+".json"
         with open (out_filename, 'w') as jsonfile:
             json_models = [ node.json_model() for node in self.values() ]
+            json.dump (json_models, jsonfile, indent=2, separators=(',', ': '), sort_keys=True)
+        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
+        out_filename = self.out_basename+"_new.json"
+        with open (out_filename, 'w') as jsonfile:
+            json_models = [ node.new_json_model() for node in self.values() ]
             json.dump (json_models, jsonfile, indent=2, separators=(',', ': '), sort_keys=True)
         print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
 

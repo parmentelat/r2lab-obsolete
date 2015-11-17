@@ -22,7 +22,7 @@ faraday-json: json
 
 SCRIPT = configure.py
 SOURCE = r2lab.map
-BYPRODUCTS = $(OMF_NAME).json $(OMF_NAME).dnsmasq $(OMF_NAME).hosts r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg
+BYPRODUCTS = $(OMF_NAME).json $(OMF_NAME)_new.json $(OMF_NAME).dnsmasq $(OMF_NAME).hosts r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg
 
 # once everything has been redone, this target pushes everything, and commits to git
 fullmonty: configure
@@ -47,8 +47,8 @@ clean:
 .PHONY: clean
 
 ####################
-json-push: $(OMF_NAME).json
-	rsync -a inject-json.sh $(OMF_NAME).json $(OMF_SSH):$(OMF_DIR)
+json-push: $(OMF_NAME).json $(OMF_NAME)_new.json
+	rsync -a inject-json.sh $(OMF_NAME).json $(OMF_NAME)_new.json $(OMF_SSH):$(OMF_DIR)
 	ssh $(OMF_SSH) $(OMF_DIR)/inject-json.sh $(OMF_NAME)
 
 json: json-push
