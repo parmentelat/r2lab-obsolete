@@ -3,6 +3,8 @@ OMF_SSH  = root@faraday.inria.fr
 OMF_DIR  = /root/omf_sfa
 OMF_NAME = r2lab
 
+IMAGING_INVENTORY = /etc/imaging-inventory.json
+
 # see the prep-* targets
 PREP_OMF_SSH  = root@bemol.pl.sophia.inria.fr
 PREP_OMF_DIR  = /root/omf_sfa
@@ -22,7 +24,7 @@ faraday-json: json
 
 SCRIPT = configure.py
 SOURCE = r2lab.map
-BYPRODUCTS = $(OMF_NAME).json $(OMF_NAME)_new.json $(OMF_NAME).dnsmasq $(OMF_NAME).hosts r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg
+BYPRODUCTS = $(OMF_NAME)-omf.json $(OMF_NAME)-imaging.json $(OMF_NAME).dnsmasq $(OMF_NAME).hosts r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg
 
 # once everything has been redone, this target pushes everything, and commits to git
 fullmonty: configure
@@ -47,8 +49,10 @@ clean:
 .PHONY: clean
 
 ####################
-json-push: $(OMF_NAME).json $(OMF_NAME)_new.json
-	rsync -a inject-json.sh $(OMF_NAME).json $(OMF_NAME)_new.json $(OMF_SSH):$(OMF_DIR)
+json-push: $(OMF_NAME)-omf.json $(OMF_NAME)-imaging.json
+	rsync -a inject-json.sh $(OMF_NAME)-omf.json $(OMF_SSH):$(OMF_DIR)
+	rsync -av $(OMF_NAME)-imaging.json $(OMF_SSH):$(IMAGING_INVENTORY)
+	@echo -n "Are you sure you want to run inject-json on $(OMF_SSH) (Ctrl-C to abort) ? "; read _
 	ssh $(OMF_SSH) $(OMF_DIR)/inject-json.sh $(OMF_NAME)
 
 json: json-push

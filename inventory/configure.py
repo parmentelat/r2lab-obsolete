@@ -121,14 +121,17 @@ class Node(object):
             'cmc' : {
                 'hostname' : self.log_name(prefix='reboot'),
                 'mac' : "02:00:00:00:00:{}".format(self.phy_str0()),
+                'ip' :  "192.168.1.{}".format(self.phy_num),
                 },
             'control' : {
                 'hostname' : self.log_name(),
                 'mac' : self.mac,
+                'ip' :  "192.168.3.{}".format(self.log_num),
                 },
             'data' : {
                 'hostname' : self.log_name(prefix="data"),
                 'mac' : self.alt_mac,
+                'ip' :  "192.168.2.{}".format(self.log_num),
                 }
             }
 
@@ -309,12 +312,12 @@ class Nodes(OrderedDict):
         self.out_basename += ".small"
 
     def write_json(self):
-        out_filename = self.out_basename+".json"
+        out_filename = self.out_basename+"-omf.json"
         with open (out_filename, 'w') as jsonfile:
             json_models = [ node.json_model() for node in self.values() ]
             json.dump (json_models, jsonfile, indent=2, separators=(',', ': '), sort_keys=True)
         print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
-        out_filename = self.out_basename+"_new.json"
+        out_filename = self.out_basename+"-imaging.json"
         with open (out_filename, 'w') as jsonfile:
             json_models = [ node.new_json_model() for node in self.values() ]
             json.dump (json_models, jsonfile, indent=2, separators=(',', ': '), sort_keys=True)

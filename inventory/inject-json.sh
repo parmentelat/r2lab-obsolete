@@ -10,7 +10,7 @@
 #  ==>
 #  export as fit.csv
 #  ==>
-#  run configure.py and produce fit.json
+#  run configure.py and produce r2lab*json
 #  ==>
 #  run this script to inject the new definition into faraday
 #
@@ -39,7 +39,7 @@ function die() {
 function run_in_omf_server() {
 
     name="$1"; shift
-    json="$name".json
+    json="$name"-omf.json
     
     [ -d $OMF_DIR ] || die "$COMMAND.$0 must not be run in an OMF server"
 
