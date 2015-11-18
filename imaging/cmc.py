@@ -17,8 +17,9 @@ class CMC:
     methods return the object itself, with the result stored as an attribute
     i.e. self.get_status() return self with self.status set
     """
-    def __init__(self, hostname):
+    def __init__(self, hostname, message_bus):
         self.hostname = hostname
+        self.message_bus = message_bus
         self.status = None
         self.action = None
         self.mac = None
@@ -120,12 +121,12 @@ class CMC:
         if self.status is None:
             yield from self.get_status()
         if self.status not in self.message_to_reset_map:
-            print("Cannot get status from CMC {}".format(self.hostname))
+            yield from self.message_bus.put("Cannot get status from CMC {}".format(self.hostname))
         message_to_send = self.message_to_reset_map[self.status]
-        print("Sending message '{}' to CMC {}".format(message_to_send, self.hostname))
+        yield from self.message_bus.put("Sending message '{}' to CMC {}".format(message_to_send, self.hostname))
         yield from self.send_action(message_to_send, check=True)
         if not self.action:
-            print("Failed to send message {} to CMC {}".format(message_to_send, self.hostname))
+            yield from self.message_bus.put("Failed to send message {} to CMC {}".format(message_to_send, self.hostname))
 
 
     ##########
@@ -134,7 +135,7 @@ class CMC:
         """
         Messes with the symlink in /tftpboot/pxelinux.cfg/
         Depending on 'action'
-        * 'reset' : clear the symlink corresponding to this CMC
+        * 'cleanup' or 'harddrive' : clear the symlink corresponding to this CMC
         * 'frisbee' : define a symlink so that next boot will run the frisbee image
         see imaging.conf for configurable options
         """
@@ -149,21 +150,22 @@ class CMC:
         source = os.path.join(root, mylink)
         dest = os.path.join(root, frisbee)
 
-        if action == 'reset':
-            os.remove(source)
-        elif action == 'frisbee':
+        if action in ('cleanup', 'harddrive'):
+            if os.path.exists(source):
+                os.remove(source)
+        elif action in ('frisbee'):
             if os.path.exists(source):
                 os.remove(source)
             os.symlink(frisbee, source)
         else:
-            print("manage_nextboot_symlink : unknown action {}".format(action))
+            yield from self.message_bus.put("manage_nextboot_symlink : unknown action {}".format(action))
 
     ##########
     @asyncio.coroutine
     def wait_for_telnet(self):
         from inventory import the_inventory
         control_interface = the_inventory.attached_hostname(self.hostname, 'control')
-        frisbee = FrisbeeConnection(control_interface)
+        frisbee = FrisbeeConnection(control_interface, self.message_bus)
         yield from frisbee.wait()
         print("telnet on {} : ready = {}".format(control_interface, frisbee.is_ready()))
         
