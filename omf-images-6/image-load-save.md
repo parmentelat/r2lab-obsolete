@@ -10,17 +10,15 @@ in short:
     reset 39
     <wait for some time>
     telnet fit39
-    cd /images
 
+As of **Nov. 2015** (and for quite some time already) the binaries for `frisbee`, `imagezip`, (on the pxefrisbee image) and `frisbeed` (on both bemol and faraday) are **the new ones**.
 
 # load
 ## server
-    cd ~/images
-    ./frisbee-binaries-inria/frisbeed -i 192.168.3.200 -m 224.0.0.1 -p 10000 -W 90000000 /var/lib/omf-images-6/fedora21-ext2.ndz
+    frisbeed -i 192.168.3.200 -m 234.5.6.7 -p 10000 -W 90000000 /var/lib/omf-images-6/fedora21.ndz
 ## client
     ip=$(ifconfig | grep 192.168.3 | sed -e 's,:, ,' | awk '{print $3;}')
-    cd /images
-    ./frisbee-binaries-inria/frisbee -i $ip -m 224.0.0.1 -p 10000 /dev/sda
+    frisbee -i $ip -m 234.5.6.7 -p 10000 /dev/sda
 
 # save
 
@@ -36,7 +34,7 @@ in short:
 
 ### ubuntu - old std pxe image
 
-interestingly one cannot use `/usr/bin/imagezip -o -z1 /dev/sda /dev/null`
+**Note** Interestingly one cannot use `/usr/bin/imagezip -o -z1 /dev/sda /dev/null`
 
     ~ # /usr/bin/imagezip -o -z1 /dev/sda - | cat > /dev/null
       Slice 6 is unused, NOT SAVING.
