@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # including nepi library and other required packages
+from __future__ import print_function
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
@@ -20,8 +21,8 @@ user02 = 'root'
 
 wifi_interface = 'wlan0' 
 wifi_channel 	 = '4'
-wifi_name 		 = 'ad-hoc'
-wifi_key 			 = '1234567890'
+wifi_name      = 'ad-hoc'
+wifi_key       = '1234567890'
 
 wifi_net_mask  = '/24'
 wifi_ip_fit01	 = '172.16.1.1'
@@ -31,28 +32,28 @@ wifi_ip_fit02	 = '172.16.1.2'
 ec = ExperimentController(exp_id="A4-ping")
 
 # creating the fit01 node
-fit01 = ec.register_resource("linux::Node")
-ec.set(fit01, "username", user01)
-ec.set(fit01, "hostname", host01)
+fit01 = ec.register_resource("linux::Node",
+                            username = user01,
+                            hostname = host01,
 # to reach the fit01 node it must go through the gateway, so let's assign the gateway infos
-ec.set(fit01, "gateway", host_gateway)
-ec.set(fit01, "gatewayUser", user_gateway)
-ec.set(fit01, "identity", user_identity)
-ec.set(fit01, "cleanExperiment", True)
-ec.set(fit01, "cleanProcesses", True)
+                            gateway = host_gateway,
+                            gatewayUser = user_gateway,
+                            identity = user_identity,
+                            cleanExperiment = True,
+                            cleanProcesses = True)
 # deploying the fit01 node
 ec.deploy(fit01)
 
-# creating the fit02 node 
-fit02 = ec.register_resource("linux::Node")
-ec.set(fit02, "username", user02)
-ec.set(fit02, "hostname", host02)
+# creating the fit02 node
+fit02 = ec.register_resource("linux::Node",
+                            username = user02,
+                            hostname = host02,
 # to reach the fit02 node it must go through the gateway, so let's assign the gateway infos
-ec.set(fit02, "gateway", host_gateway)
-ec.set(fit02, "gatewayUser", user_gateway)
-ec.set(fit02, "identity", user_identity)
-ec.set(fit02, "cleanExperiment", True)
-ec.set(fit02, "cleanProcesses", True)
+                            gateway = host_gateway,
+                            gatewayUser = user_gateway,
+                            identity = user_identity,
+                            cleanExperiment = True,
+                            cleanProcesses = True)
 # deploying the fit02 node
 ec.deploy(fit02)
 
@@ -107,12 +108,12 @@ ec.deploy(app_ping_from_fit02_to_fit01)
 ec.wait_finished(app_ping_from_fit02_to_fit01)
 
 # recovering the results of fit01
-print "\n--- INFO: output fit01:"
-print ec.trace(app_ping_from_fit01_to_fit02, "stdout")
+print ("\n--- INFO: output fit01:")
+print (ec.trace(app_ping_from_fit01_to_fit02, "stdout"))
 
 # recovering the results fit02
-print "\n--- INFO: output fit02:"
-print ec.trace(app_ping_from_fit02_to_fit01, "stdout")
+print ("\n--- INFO: output fit02:")
+print (ec.trace(app_ping_from_fit02_to_fit01, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()
