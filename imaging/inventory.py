@@ -1,11 +1,10 @@
 import json
 
-from config import Config
-
 class Inventory:
 
-    def __init__(self, config):
-        with open(Config['inventory']['path']) as feed:
+    def __init__(self):
+        from config import the_config
+        with open(the_config.value('inventory', 'path')) as feed:
            self._nodes = json.load(feed)
 
     def _locate_entry_from_hostname(self, hostname):
@@ -44,4 +43,4 @@ class Inventory:
             print(" ".join([cell_repr(k, v, verbose) for k, v in node.items()]))
         print(20*'-', "INVENTORY END")
 
-the_inventory = Inventory(Config)
+the_inventory = Inventory()

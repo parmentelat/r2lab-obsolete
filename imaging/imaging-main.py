@@ -8,10 +8,22 @@ import logging
 from cmc import CMC
 from selector import add_selector_arguments, selected_selector
 from imageloader import ImageLoader
+from imagerepo import ImageRepo
 
+# for each of these there should be a symlink to imaging-main.py
+# like imaging-load -> imaging-main.py
+# and a function in this module with no arg
+supported_commands = [ 'load', 'save', 'list', 'status', 'inventory' ]
+
+####################
 def load():
+    image_repo = ImageRepo()
+    default_image = image_repo.default()
+
     parser = ArgumentParser()
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
+    parser.add_argument("-i", "--image", action='store', default=default_image,
+                        help="Specify image to load (default is {})".format(default_image))
     add_selector_arguments(parser)
     args = parser.parse_args()
 
@@ -26,13 +38,18 @@ def load():
         if not cmc.is_known():
             print("WARNING : cmc is not known to the inventory".format(cmc.hostname))
 
-    # xxx config
-    ImageLoader(cmcs, message_bus, timeout=60, idle=12).main()
- 
-def inventory():
-    from inventory import the_inventory
-    the_inventory.display(verbose=True)
+    actual_image = image_repo.locate(args.image)
+    if not actual_image:
+        print("Image file {} not found - emergency exit".format(args.image))
+        exit(1)
 
+    ImageLoader(cmcs, message_bus, actual_image).main()
+ 
+####################
+def list():
+    ImageRepo().display()
+
+####################
 def status():
     
     parser = ArgumentParser()
@@ -50,9 +67,15 @@ def status():
     asyncio.get_event_loop().run_forever()
     asyncio.get_event_loop().close()
 
-import sys
+####################
+def inventory():
+    from inventory import the_inventory
+    the_inventory.display(verbose=True)
 
-supported_commands = [ 'load', 'status', 'inventory' ]
+####################
+####################
+####################
+import sys
 
 def main():
 #    logging.basicConfig(level=logging.DEBUG)

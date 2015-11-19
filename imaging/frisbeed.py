@@ -1,23 +1,24 @@
 import asyncio
 
 class Frisbeed:
-    def __init__(self):
+    def __init__(self, image):
         self.subprocess = None
+        self.image = image
     
     @asyncio.coroutine
     def start(self):
-        # xxx config
-        bin = "/usr/sbin/frisbeed"
+        from config import the_config
+        server = the_config.value('frisbee', 'server')
         # this one should probably be computed if no value is set in the config
         # or maybe also let admins define the local interface name (like 'control' or 'eth0')
-        local_ip = "192.168.3.200"
-        multicast_group = "234.5.6.7"
-        port = 10000
-        bandwidth = 90000000
+        local_ip = the_config.server_ip()
+        multicast_group = the_config.value('networking', 'multicast_group')
+        port = the_config.available_frisbee_port()
+        # in Mibps
+        bandwidth = int(the_config.value('networking', 'bandwidth')) * 2**20
         # should use default.ndz if not provided
-        image = "/var/lib/omf-images-6/ubuntu-14.10-ext4-v01-root+base.ndz"
         local_command = [
-            bin, "-i", local_ip, "-m", multicast_group, "-p", str(port), "-W", str(bandwidth), image
+            server, "-i", local_ip, "-m", multicast_group, "-p", str(port), "-W", str(bandwidth), self.image
             ]
         print("Starting frisbeed with {}".format(" ".join(local_command)))
         self.subprocess = yield from asyncio.create_subprocess_exec(

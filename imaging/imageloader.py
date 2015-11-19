@@ -5,17 +5,12 @@ from frisbeed import Frisbeed
 
 class ImageLoader:
 
-    def __init__(self, cmcs, message_bus, timeout, idle):
-        """
-        input argument is a list of CMC objects
-        timeout is the amount of time reasonable for the slowest node to come back on telnet
-        idle is the time after a reset during which there is no need to try the nodes
-        """
+    def __init__(self, cmcs, message_bus, image):
         self.cmcs = cmcs
         self.message_bus = message_bus
-        self.timeout = timeout
-        self.idle = idle
-        # xxx arm signal so we can clean up the nextboot area
+        self.image = image
+        # xxx arm signal so we can clean up the nextboot area ...
+        # as a matter of fact this should be done much earlier in the process...
         # signal(xxx, ...)
         self.monitor = Monitor(message_bus)
 
@@ -25,19 +20,20 @@ class ImageLoader:
         redirect nextboot symlink to frisbee, and reset all nodes
         """
 
-        # XXX not tested at all..
         @asyncio.coroutine
         def stage1_cmc(cmc):
             yield from asyncio.gather(cmc.manage_nextboot_symlink('frisbee'),
                                       cmc.ensure_reset())
-            yield from self.message_bus.put("idling for {}s".format(self.idle))
-            yield from asyncio.sleep(self.idle)
+            from config import the_config
+            idle = the_config.value('nodes', 'idle_after_reset')
+            yield from self.message_bus.put("idling for {}s".format(idle))
+            yield from asyncio.sleep(idle)
             
         yield from asyncio.gather(*[stage1_cmc(cmc) for cmc in self.cmcs])
 
     @asyncio.coroutine
     def start_frisbeed(self):
-        self.frisbeed = Frisbeed()
+        self.frisbeed = Frisbeed(self.image)
         yield from self.frisbeed.start()
 
     @asyncio.coroutine

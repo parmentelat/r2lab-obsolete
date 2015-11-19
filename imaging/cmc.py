@@ -4,7 +4,6 @@ import os.path
 
 import asyncio
 import aiohttp
-import telnetlib3
 
 from frisbee import FrisbeeConnection
 
@@ -144,10 +143,9 @@ class CMC:
         see imaging.conf for configurable options
         """
 
-        from config import Config
-        config_section = Config['pxelinux']
-        root = config_section['config_dir']
-        frisbee = config_section['frisbee_image']
+        from config import the_config
+        root = the_config.value('pxelinux', 'config_dir')
+        frisbee = the_config.value('pxelinux', 'frisbee_image')
         
         # of the form 01-00-03-1d-0e-03-53
         mylink = "01-" + self.control_mac_address().replace(':', '-')
@@ -176,13 +174,9 @@ class CMC:
     @asyncio.coroutine
     def run_frisbee(self):
         ip = self.control_ip_address()
-        # xxx to configure
-        bin = "frisbee"
-        multicast_group = "234.5.6.7"
-        port = 10000
-        hdd = "/dev/sda"
-        print("run_frisbee")
-        yield from self.frisbee.run_client(bin=bin, ip=ip, multicast_group=multicast_group, port=port, hdd = hdd)
+        from config import the_config
+        port = the_config.available_frisbee_port()
+        yield from self.frisbee.run_client(ip, port)
 
     @asyncio.coroutine
     def stage2(self):

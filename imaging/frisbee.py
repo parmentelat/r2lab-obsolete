@@ -127,16 +127,13 @@ class FrisbeeConnection:
             self._transport, self._protocol = None, None
 
     @asyncio.coroutine
-    def run_client(self, bin, ip, multicast_group, port, hdd):
-        # xxx probably too harsh
-        assert self.is_ready()
-        EOF = chr(4)
-        EOL = '\n'
+    def run_client(self, ip, port):
+        from config import the_config
+        client = the_config.value('frisbee', 'client')
+        multicast_group = the_config.value('networking', 'multicast_group')
+        hdd = the_config.value('frisbee', 'hard_drive')
         self.command = \
-          "{bin} -i {ip} -m {multicast_group} -p {port} {hdd}".format(**locals())
-
-#        # tmp - dbg
-#        self.command = "hostname"
+          "{client} -i {ip} -m {multicast_group} -p {port} {hdd}".format(**locals())
 
         EOF = chr(4)
         EOL = '\n'
