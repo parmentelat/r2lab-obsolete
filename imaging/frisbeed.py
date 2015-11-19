@@ -45,7 +45,6 @@ class Frisbeed:
             yield from asyncio.sleep(0.5)
             # after such a short time, frisbeed should not have returned yet
             # if is has, we try our luck on another couple (ip, port)
-            print("subprocess returncode = {}".format(self.subprocess.returncode))
             if self.subprocess.returncode is None:
                 print("frisbeed.start returning {}, {}".format(multicast_group, multicast_port))
                 return multicast_group, multicast_port

@@ -5,7 +5,7 @@ import asyncio
 from argparse import ArgumentParser
 import logging
 
-from cmc import CMC
+from node import Node
 from selector import add_selector_arguments, selected_selector
 from imageloader import ImageLoader
 from imagerepo import ImageRepo
@@ -34,20 +34,20 @@ def load():
     message_bus = asyncio.Queue()
 
     selector = selected_selector(args)
-    cmcs = [ CMC(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
+    nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
     print(selector)
 
-    for cmc in cmcs:
-        print("cmc: {} -> mac: {}".format(cmc, cmc.control_mac_address()))
-        if not cmc.is_known():
-            print("WARNING : cmc is not known to the inventory".format(cmc.hostname))
+    for node in nodes:
+        print("node: {} -> mac: {}".format(node, node.control_mac_address()))
+        if not node.is_known():
+            print("WARNING : node {} is not known to the inventory".format(node.hostname))
 
     actual_image = image_repo.locate(args.image)
     if not actual_image:
         print("Image file {} not found - emergency exit".format(args.image))
         exit(1)
 
-    ImageLoader(cmcs, message_bus, actual_image).main(
+    ImageLoader(nodes, message_bus, actual_image).main(
         skip_stage1 = args.skip_stage1,
         skip_stage2 = args.skip_stage2,
         skip_stage3 = args.skip_stage3
@@ -68,10 +68,10 @@ def status():
     selector = selected_selector(args)
     message_bus = asyncio.Queue()
     
-    cmcs = [ CMC(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
+    nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
 
-    for cmc in cmcs:
-        asyncio.Task(cmc.get_status_verbose())
+    for node in nodes:
+        asyncio.Task(node.get_status_verbose())
     asyncio.get_event_loop().run_forever()
     asyncio.get_event_loop().close()
 

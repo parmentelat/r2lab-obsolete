@@ -6,8 +6,8 @@ from frisbeed import Frisbeed
 
 class ImageLoader:
 
-    def __init__(self, cmcs, message_bus, image):
-        self.cmcs = cmcs
+    def __init__(self, nodes, message_bus, image):
+        self.nodes = nodes
         self.message_bus = message_bus
         self.image = image
         # xxx arm signal so we can clean up the nextboot area ...
@@ -22,16 +22,16 @@ class ImageLoader:
         """
 
         @asyncio.coroutine
-        def stage1_cmc(cmc):
+        def stage1_node(node):
             # this is now synchoneous
-            cmc.manage_nextboot_symlink('frisbee')
-            yield from cmc.ensure_reset()
+            node.manage_nextboot_symlink('frisbee')
+            yield from node.ensure_reset()
             from config import the_config
             idle = int(the_config.value('nodes', 'idle_after_reset'))
             yield from self.message_bus.put("idling for {}s".format(idle))
             yield from asyncio.sleep(idle)
             
-        yield from asyncio.gather(*[stage1_cmc(cmc) for cmc in self.cmcs])
+        yield from asyncio.gather(*[stage1_node(node) for node in self.nodes])
 
     @asyncio.coroutine
     def start_frisbeed(self):
@@ -51,7 +51,7 @@ class ImageLoader:
         """
         # start_frisbeed will return the ip+port to use 
         ip, port = yield from self.start_frisbeed()
-        yield from asyncio.gather(*[cmc.stage2(ip, port) for cmc in self.cmcs])
+        yield from asyncio.gather(*[node.stage2(ip, port) for node in self.nodes])
         # we can now kill the server
         yield from self.stop_frisbeed()
 
@@ -59,7 +59,7 @@ class ImageLoader:
     def stage3(self):
         # just reset all nodes for now
         # waiting for the nodes to come back under ssh could be another image-wait feature
-        yield from asyncio.gather(*[cmc.ensure_reset() for cmc in self.cmcs])
+        yield from asyncio.gather(*[node.ensure_reset() for node in self.nodes])
 
     # this is synchroneous
     def nextboot_cleanup(self):
@@ -67,7 +67,7 @@ class ImageLoader:
         Remove nextboot symlinks for all nodes in this selection
         so next boot will be off the harddrive
         """
-        [cmc.manage_nextboot_symlink('harddrive') for cmc in self.cmcs]
+        [node.manage_nextboot_symlink('harddrive') for node in self.nodes]
 
     @asyncio.coroutine
     def run(self, skip_stage1, skip_stage2, skip_stage3):

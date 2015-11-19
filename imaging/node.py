@@ -7,39 +7,37 @@ import aiohttp
 
 from frisbee import FrisbeeConnection
 
-class CMC:
+class Node:
 
     """
-    This class allows to talk to a CMC using http, essentially
-    for probing status and sending other commands
-    Because it is designed to be used asynchroneously,
-    methods return the object itself, with the result stored as an attribute
-    i.e. self.get_status() return self with self.status set
+    This class allows to talk to various parts of a node
+    created from the cmc hostname for convenience
+    the inventory lets us spot the other parts (control, essentially)
     """
-    def __init__(self, hostname, message_bus):
-        self.hostname = hostname
+    def __init__(self, cmc_name, message_bus):
+        self.cmc_name = cmc_name
         self.message_bus = message_bus
         self.status = None
         self.action = None
         self.mac = None
 
     def __repr__(self):
-        return "<CMC {}>".format(self.hostname)
+        return "<CMC {}>".format(self.cmc_name)
 
     def is_known(self):
         return self.control_mac_address() is not None
 
     def control_mac_address(self):
         from inventory import the_inventory
-        return the_inventory.attached_hostname_info(self.hostname, 'control', 'mac')
+        return the_inventory.attached_hostname_info(self.cmc_name, 'control', 'mac')
 
     def control_ip_address(self):
         from inventory import the_inventory
-        return the_inventory.attached_hostname_info(self.hostname, 'control', 'ip')
+        return the_inventory.attached_hostname_info(self.cmc_name, 'control', 'ip')
 
     def control_hostname(self):
         from inventory import the_inventory
-        return the_inventory.attached_hostname_info(self.hostname, 'control', 'hostname')
+        return the_inventory.attached_hostname_info(self.cmc_name, 'control', 'hostname')
 
     @asyncio.coroutine
     def get_status(self):
@@ -47,7 +45,7 @@ class CMC:
         return value stored in self.status
         either 'on' or 'off', or None if something wrong is going on
         """
-        url = "http://{}/status".format(self.hostname)
+        url = "http://{}/status".format(self.cmc_name)
         try:
             client_response = yield from aiohttp.get(url)
         except Exception as e:
@@ -64,7 +62,7 @@ class CMC:
     @asyncio.coroutine
     def get_status_verbose(self):
         yield from self.get_status()
-        print("{}:{}".format(self.hostname, self.status))
+        print("{}:{}".format(self.cmc_name, self.status))
 
     ####################
     # what status to expect after a message is sent
@@ -93,7 +91,7 @@ class CMC:
           * False to indicate that the node is 'off' after checking
           * None if something goes wrong
         """
-        url = "http://{}/{}".format(self.hostname, message)
+        url = "http://{}/{}".format(self.cmc_name, message)
         try:
             client_response = yield from aiohttp.get(url)
         except Exception as e:
@@ -124,12 +122,12 @@ class CMC:
         if self.status is None:
             yield from self.get_status()
         if self.status not in self.message_to_reset_map:
-            yield from self.message_bus.put("Cannot get status from CMC {}".format(self.hostname))
+            yield from self.message_bus.put("Cannot get status from CMC {}".format(self.cmc_name))
         message_to_send = self.message_to_reset_map[self.status]
-        yield from self.message_bus.put("Sending message '{}' to CMC {}".format(message_to_send, self.hostname))
+        yield from self.message_bus.put("Sending message '{}' to CMC {}".format(message_to_send, self.cmc_name))
         yield from self.send_action(message_to_send, check=True)
         if not self.action:
-            yield from self.message_bus.put("Failed to send message {} to CMC {}".format(message_to_send, self.hostname))
+            yield from self.message_bus.put("Failed to send message {} to CMC {}".format(message_to_send, self.cmc_name))
 
 
     ##########
