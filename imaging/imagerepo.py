@@ -8,16 +8,21 @@ class ImageRepo:
         self.name = the_config.value('frisbee', 'default_image')
     def default(self):
         return os.path.join(self.repo, self.name)
+    def add_extension(self, file):
+        for f in (file, file+".ndz"):
+            if os.path.exists(f):
+                return f
     def locate(self, image):
-        if os.path.isabs(image):
-            return os.path.exists(image) and image
-        else:
-            image = os.path.join(self.repo, image)
-            return os.path.exists(image) and image
+        return \
+          self.add_extension(image) \
+           if os.path.isabs(image) \
+           else self.add_extension(os.path.join(self.repo, image))
+
     def display(self):
         # xxx make something nicer
-        # show symlinks and defaults etc...
+        # show symlinks separately and defaults (ideally by number of links)
+        # and then sort real images by size
         print("Contents of image directory {}".format(self.repo))
-        for path in glob.glob("{}/*".format(self.repo)):
-            file = path.replace(self.repo, "")
+        for path in glob.glob("{}/*.ndz".format(self.repo)):
+            file = path.replace(self.repo+"/", "").replace(self.repo, "")
             print(file)

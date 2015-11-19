@@ -76,8 +76,8 @@ class FrisbeeConnection:
     * wait for the telnet server to come up
     * invoke frisbee
     """
-    def __init__(self, hostname, message_bus, port=23, interval=1., loop=None):
-        self.hostname = hostname
+    def __init__(self, control_ip, message_bus, port=23, interval=1., loop=None):
+        self.control_ip = control_ip
         self.message_bus = message_bus
         self.port = port
         # how often to chec kfor the connection
@@ -113,11 +113,11 @@ class FrisbeeConnection:
 
     @asyncio.coroutine
     def try_to_connect(self):
-        yield from self.message_bus.put("{} : trying to telnet".format(self.hostname))
+        yield from self.message_bus.put("{} : trying to telnet".format(self.control_ip))
         try:
             self._transport, self._protocol = \
-              yield from self.loop.create_connection(self.client_factory, self.hostname, 23)
-            yield from self.message_bus.put("{}: telnet connected".format(self.hostname))
+              yield from self.loop.create_connection(self.client_factory, self.control_ip, 23)
+            yield from self.message_bus.put("{}: telnet connected".format(self.control_ip))
             return True
         except Exception as e:
             import traceback
@@ -127,13 +127,13 @@ class FrisbeeConnection:
             self._transport, self._protocol = None, None
 
     @asyncio.coroutine
-    def run_client(self, ip, port):
+    def run_client(self, multicast_ip, port):
+        control_ip = self.control_ip
         from config import the_config
         client = the_config.value('frisbee', 'client')
-        multicast_group = the_config.value('networking', 'multicast_group')
         hdd = the_config.value('frisbee', 'hard_drive')
         self.command = \
-          "{client} -i {ip} -m {multicast_group} -p {port} {hdd}".format(**locals())
+          "{client} -i {control_ip} -m {multicast_ip} -p {port} {hdd}".format(**locals())
 
         EOF = chr(4)
         EOL = '\n'
@@ -143,7 +143,7 @@ class FrisbeeConnection:
         # make sure the command is sent (EOL) and that the session terminates afterwards (exit + EOF)
         command = command + "; exit" + EOL + EOF
         yield from self.message_bus.put("{} sending command {}"
-                                        .format(self.hostname, command))
+                                        .format(self.control_ip, command))
         self._protocol.stream.write(self._protocol.shell.encode(command))
 
         print("run_client : command = {}".format(command))

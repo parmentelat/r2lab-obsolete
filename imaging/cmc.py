@@ -172,13 +172,6 @@ class CMC:
         print("telnet on {} : ready = {}".format(ip, self.frisbee.is_ready()))
         
     @asyncio.coroutine
-    def run_frisbee(self):
-        ip = self.control_ip_address()
-        from config import the_config
-        port = the_config.available_frisbee_port()
-        yield from self.frisbee.run_client(ip, port)
-
-    @asyncio.coroutine
-    def stage2(self):
+    def stage2(self, ip , port):
         yield from self.wait_for_telnet()
-        yield from self.run_frisbee()
+        yield from self.frisbee.run_client(ip, port)

@@ -9,6 +9,9 @@ locations = [
     ("./imaging.conf", False),
 ]
 
+class ConfigException(Exception):
+    pass
+
 class ImagingConfig:
 
     def __init__(self):
@@ -18,18 +21,25 @@ class ImagingConfig:
                 self.config.read(location)
             elif mandatory:
 # for devel                
-#                raise Exception("Missing mandatory config file {}".format(location))
+#                raise ConfigException("Missing mandatory config file {}".format(location))
                 print("WARNING: Missing mandatory config file {}".format(location))
+
+    def get_or_raise(self, dict, section, key):
+        res = dict.get(key, None)
+        if res is not None:
+            return res
+        else:
+            raise ConfigException("imaging config: missing entry section={} key={}".format(section, key))
 
     def value(self, section, flag, hostname=None):
         if section not in self.config:
-            raise KeyError("No such section {} in config".format(section))
+            raise ConfigException("No such section {} in config".format(section))
         config_section = self.config[section]
         if hostname:
             return config_section.get("{flag}:{hostname}".format(**locals()), None) \
-                or config_section[flag]
+                or self.get_or_raise(config_section, section, flag)
         else:
-            return config_section[flag]
+            return self.get_or_raise(config_section, section, flag)
         
     # for now
     # the foreseeable tricky part is, this should be a coroutine..

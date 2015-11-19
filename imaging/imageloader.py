@@ -1,5 +1,6 @@
 import asyncio
 
+import util
 from monitor import Monitor
 from frisbeed import Frisbeed
 
@@ -34,7 +35,8 @@ class ImageLoader:
     @asyncio.coroutine
     def start_frisbeed(self):
         self.frisbeed = Frisbeed(self.image)
-        yield from self.frisbeed.start()
+        ip_port = yield from self.frisbeed.start()
+        return ip_port
 
     @asyncio.coroutine
     def stop_frisbeed(self):
@@ -48,8 +50,8 @@ class ImageLoader:
         """
 #        yield from asyncio.gather(self.start_frisbeed(),
 #                                  *[cmc.stage2() for cmc in self.cmcs])
-        yield from self.start_frisbeed()
-        yield from asyncio.gather(*[cmc.stage2() for cmc in self.cmcs])
+        ip, port = yield from self.start_frisbeed()
+        yield from asyncio.gather(*[cmc.stage2(ip, port) for cmc in self.cmcs])
 
         print("stage2 half done")
         yield from self.stop_frisbeed()
@@ -80,6 +82,6 @@ class ImageLoader:
         yield from self.monitor.stop()
 
     def main(self):
-        t1 = asyncio.Task(self.run())
-        t2 = asyncio.Task(self.monitor.run())
+        t1 = util.self_manage(self.run())
+        t2 = util.self_manage(self.monitor.run())
         asyncio.get_event_loop().run_until_complete(asyncio.wait([t1, t2]))
