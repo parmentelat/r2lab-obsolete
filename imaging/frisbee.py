@@ -1,9 +1,10 @@
 import time
-import asyncio
+import re
 
+import asyncio
 import telnetlib3
 
-import re
+from logger import logger
 
 class FrisbeeParser(telnetlib3.TerminalShell):
     def __init__(self, *args, **kwds):
@@ -17,6 +18,13 @@ class FrisbeeParser(telnetlib3.TerminalShell):
             self.bytes_line = b""
         else:
             self.bytes_line += x
+
+    def ip(self):
+        return self.client.proxy.control_ip
+    def feedback(self, field, msg):
+        self.client.proxy.message_bus.put_nowait({'ip': self.ip(), field: msg})
+    def send_percent(self, percent):
+        self.feedback('frisbee_progress', percent)
 
     # parse frisbee output
     # tentatively ported from nitos_testbed ruby code but never tested
@@ -33,7 +41,8 @@ class FrisbeeParser(telnetlib3.TerminalShell):
         m = self.matcher_new_style_progress.match(line)
         if m:
             if self.total_chunks == 0:
-                print("new frisbee: cannot report progress, missing total chunks")
+                logger.error("ip={}: new frisbee: cannot report progress, missing total chunks"
+                             .format(self.ip()))
                 return
             percent = int ( 100 * (1 - int(m.group('remaining_chunks'))/self.total_chunks))
             self.send_percent(percent)
@@ -51,26 +60,28 @@ class FrisbeeParser(telnetlib3.TerminalShell):
         #
         m = self.matcher_final_report.match(line)
         if m:
-            print("FRISBEE END: total = {total} bytes, actual = {actual} bytes"
-                  .format(total=m.group('total'), actual=m.group('actual')))
+            logger.info("ip={ip} FRISBEE END: total = {total} bytes, actual = {actual} bytes"
+                  .format(ip=self.ip(), total=m.group('total'), actual=m.group('actual')))
             self.send_percent(100)
             return
         #
         m = self.matcher_short_write.match(line)
         if m:
-            print("Something went wrong with frisbee...")
+            self.feedback('frisbee_error', "Something went wrong with frisbee (short write...)...")
             return
         #
         m = self.matcher_status.match(line)
         if m:
             status = int(m.group('status'))
-            print("frisbee status ->{}".format(status))
+            self.feedback('frisbee_retcod', status)
             
-    def send_percent(self, percent):
-        print("PERCENTS:", percent)
 
+class FrisbeeClient(telnetlib3.TelnetClient):
+    def __init__(self, proxy, *args, **kwds):
+        self.proxy = proxy
+        super().__init__(*args, **kwds)
 
-class FrisbeeConnection:
+class FrisbeeProxy:
     """
     a convenience class that help us
     * wait for the telnet server to come up
@@ -92,6 +103,10 @@ class FrisbeeConnection:
         return self._protocol is not None
 
     @asyncio.coroutine
+    def feedback(self, field, msg):
+        yield from self.message_bus.put({'ip': self.control_ip, field: msg})
+
+    @asyncio.coroutine
     def wait(self):
         """
         wait for the telnet server to come up
@@ -102,25 +117,27 @@ class FrisbeeConnection:
              if self.is_ready():
                  return True
              else:
-                 print("{}: backing off for {}..".format(self.control_ip, self.interval))
+                 yield from self.feedback(
+                     'frisbee_status',
+                     "backing off for {}..".format(self.control_ip, self.interval))
                  yield from asyncio.sleep(self.interval)
-
-    Client = telnetlib3.TelnetClient
-    
-    @staticmethod
-    def client_factory():
-        return FrisbeeConnection.Client(encoding='utf-8', shell=FrisbeeParser)
-#        return FrisbeeConnection.Client(encoding='utf-8', shell=telnetlib3.TerminalShell)
 
     @asyncio.coroutine
     def try_to_connect(self):
-        yield from self.message_bus.put("{} : trying to telnet".format(self.control_ip))
+        
+        # a little closure to capture our ip and expose it to the parser
+        def client_factory():
+            return FrisbeeClient(proxy = self, encoding='utf-8', shell=FrisbeeParser)
+
+        yield from self.feedback('frisbee_status', "trying to telnet")
         try:
             self._transport, self._protocol = \
-              yield from self.loop.create_connection(self.client_factory, self.control_ip, 23)
-            yield from self.message_bus.put("{}: telnet connected".format(self.control_ip))
+              yield from self.loop.create_connection(client_factory, self.control_ip, self.port)
+            yield from self.feedback('frisbee_status', "telnet connected")
             return True
         except Exception as e:
+#            import traceback
+#            traceback.print_exc()
             # just making sure
             self._transport, self._protocol = None, None
 
@@ -133,18 +150,17 @@ class FrisbeeConnection:
         self.command = \
           "{client} -i {control_ip} -m {multicast_ip} -p {port} {hdd}".format(**locals())
 
+        yield from self.feedback('frisbee_status', "running command {}"
+                                .format(self.command))
         EOF = chr(4)
         EOL = '\n'
-        # print out exit status
+        # print out exit status so the parser can catch it and expose it
         command = self.command
         command = command + "; echo FRISBEE-STATUS=$?"
         # make sure the command is sent (EOL) and that the session terminates afterwards (exit + EOF)
         command = command + "; exit" + EOL + EOF
-        yield from self.message_bus.put("{} sending command {}"
-                                        .format(self.control_ip, command))
         self._protocol.stream.write(self._protocol.shell.encode(command))
 
-        print("run_client : command = {}".format(command))
         # xxx should maybe handle timeout here with some kind of loop...
         # wait for telnet to terminate
         yield from self._protocol.waiter_closed

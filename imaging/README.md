@@ -118,10 +118,8 @@ There's also `asyncssh` that might come in handy at some point; this would let u
 
 # TODO
 
-* outputs
-  * see logging for debug msgs
-  * formalize messages for messages to monitor
-  * more decent monitor
+* compute local IP instead of configuring it
+* more decent monitor (at least knowns how many nodes, does averages..)
 * imagesaver
 * rename CMC into just plain node ?
 * nicer imaging-list

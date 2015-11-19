@@ -10,10 +10,8 @@ class ImageLoader:
         self.nodes = nodes
         self.message_bus = message_bus
         self.image = image
-        # xxx arm signal so we can clean up the nextboot area ...
-        # as a matter of fact this should be done much earlier in the process...
-        # signal(xxx, ...)
-        self.monitor = Monitor(message_bus)
+        # xxx timeout should be configurable - if it works, that is
+        self.monitor = Monitor(message_bus, 2000)
 
     @asyncio.coroutine
     def stage1(self):

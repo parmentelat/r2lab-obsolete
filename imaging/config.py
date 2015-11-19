@@ -20,16 +20,15 @@ class ImagingConfig:
             if os.path.exists(location):
                 self.config.read(location)
             elif mandatory:
-# for devel                
-#                raise ConfigException("Missing mandatory config file {}".format(location))
-                print("WARNING: Missing mandatory config file {}".format(location))
+                raise ConfigException("Missing mandatory config file {}".format(location))
 
     def get_or_raise(self, dict, section, key):
         res = dict.get(key, None)
         if res is not None:
             return res
         else:
-            raise ConfigException("imaging config: missing entry section={} key={}".format(section, key))
+            raise ConfigException("imaging config: missing entry section={} key={}"
+                                  .format(section, key))
 
     def value(self, section, flag, hostname=None):
         if section not in self.config:

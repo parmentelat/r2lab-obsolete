@@ -1,5 +1,7 @@
 import asyncio
 
+from logger import logger
+
 class Frisbeed:
     def __init__(self, image):
         self.subprocess = None
@@ -36,23 +38,25 @@ class Frisbeed:
             command = command_common + [
                 "-m", multicast_group, "-p", multicast_port,
                 ]
-            print("Trying to start frisbeed with {}".format(" ".join(command)))
             self.subprocess = yield from asyncio.create_subprocess_exec(
                 *command,
                 stdout = asyncio.subprocess.PIPE,
                 stderr = asyncio.subprocess.STDOUT
                 )
-            yield from asyncio.sleep(0.5)
+            yield from asyncio.sleep(1)
             # after such a short time, frisbeed should not have returned yet
             # if is has, we try our luck on another couple (ip, port)
+            command_line = " ".join(command)
             if self.subprocess.returncode is None:
-                print("frisbeed.start returning {}, {}".format(multicast_group, multicast_port))
+                logger.info("started frisbeed: {}".format(command_line))
                 return multicast_group, multicast_port
+            else:
+                logger.info("failed to start frisbeed with {}".format(command_line))
 
 
     @asyncio.coroutine
     def stop(self):
         self.subprocess.kill()
         self.subprocess = None
-        print("frisbeed stopped")
+        logger.info("frisbeed stopped")
         pass

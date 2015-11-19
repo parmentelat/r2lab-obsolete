@@ -3,7 +3,7 @@
 import asyncio
 
 from argparse import ArgumentParser
-import logging
+from logger import logger
 
 from node import Node
 from selector import add_selector_arguments, selected_selector
@@ -35,12 +35,10 @@ def load():
 
     selector = selected_selector(args)
     nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
-    print(selector)
 
     for node in nodes:
-        print("node: {} -> mac: {}".format(node, node.control_mac_address()))
         if not node.is_known():
-            print("WARNING : node {} is not known to the inventory".format(node.hostname))
+            logger.critical("WARNING : node {} is not known to the inventory".format(node.hostname))
 
     actual_image = image_repo.locate(args.image)
     if not actual_image:
@@ -86,7 +84,6 @@ def inventory():
 import sys
 
 def main():
-#    logging.basicConfig(level=logging.DEBUG)
     command=sys.argv[0]
     for supported in supported_commands:
         if supported in command:

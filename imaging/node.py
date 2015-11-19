@@ -5,7 +5,9 @@ import os.path
 import asyncio
 import aiohttp
 
-from frisbee import FrisbeeConnection
+from frisbee import FrisbeeProxy
+
+from logger import logger
 
 class Node:
 
@@ -59,6 +61,7 @@ class Node:
             self.status = None
             return self
 
+    # xxx this should be done by some kind of monitor
     @asyncio.coroutine
     def get_status_verbose(self):
         yield from self.get_status()
@@ -118,16 +121,23 @@ class Node:
     message_to_reset_map = { 'on' : 'reset', 'off' : 'on' }
 
     @asyncio.coroutine
+    def feedback(self, field, message):
+        yield from self.message_bus.put(
+            {'ip': self.control_ip_address(), field: message})
+
+    @asyncio.coroutine
     def ensure_reset(self):
         if self.status is None:
             yield from self.get_status()
         if self.status not in self.message_to_reset_map:
-            yield from self.message_bus.put("Cannot get status from CMC {}".format(self.cmc_name))
+            yield from self.feedback('reboot', "Cannot get status at {}".format(self.cmc_name))
         message_to_send = self.message_to_reset_map[self.status]
-        yield from self.message_bus.put("Sending message '{}' to CMC {}".format(message_to_send, self.cmc_name))
+        yield from self.feedback('reboot', "Sending message '{}' to CMC {}"
+                                 .format(message_to_send, self.cmc_name))
         yield from self.send_action(message_to_send, check=True)
         if not self.action:
-            yield from self.message_bus.put("Failed to send message {} to CMC {}".format(message_to_send, self.cmc_name))
+            yield from self.feedback("Failed to send message {} to CMC {}"
+                                     .format(message_to_send, self.cmc_name))
 
 
     ##########
@@ -153,24 +163,23 @@ class Node:
 
         if action in ('cleanup', 'harddrive'):
             if os.path.exists(source):
-                print("Removing {}".format(source))
+                logger.info("Removing {}".format(source))
                 os.remove(source)
         elif action in ('frisbee'):
             if os.path.exists(source):
                 os.remove(source)
-            print("Creating {}".format(source))
+            logger.info("Creating {}".format(source))
             os.symlink(frisbee, source)
         else:
-            print("manage_nextboot_symlink : unknown action {}".format(action))
+            logger.critical("manage_nextboot_symlink : unknown action {}".format(action))
 
     ##########
     @asyncio.coroutine
     def wait_for_telnet(self):
         from inventory import the_inventory
         ip = self.control_ip_address()
-        self.frisbee = FrisbeeConnection(ip, self.message_bus)
+        self.frisbee = FrisbeeProxy(ip, self.message_bus)
         yield from self.frisbee.wait()
-        print("telnet on {} : ready = {}".format(ip, self.frisbee.is_ready()))
         
     @asyncio.coroutine
     def stage2(self, ip , port):
