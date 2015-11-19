@@ -28,15 +28,19 @@ class CMC:
         return "<CMC {}>".format(self.hostname)
 
     def is_known(self):
-        return self.mac_address() is not None
-
-    def mac_address(self):
-        from inventory import the_inventory
-        return the_inventory.mac_address(self.hostname)
+        return self.control_mac_address() is not None
 
     def control_mac_address(self):
         from inventory import the_inventory
-        return the_inventory.mac_address(self.hostname, 'control')
+        return the_inventory.attached_hostname_info(self.hostname, 'control', 'mac')
+
+    def control_ip_address(self):
+        from inventory import the_inventory
+        return the_inventory.attached_hostname_info(self.hostname, 'control', 'ip')
+
+    def control_hostname(self):
+        from inventory import the_inventory
+        return the_inventory.attached_hostname_info(self.hostname, 'control', 'hostname')
 
     @asyncio.coroutine
     def get_status(self):
@@ -164,8 +168,23 @@ class CMC:
     @asyncio.coroutine
     def wait_for_telnet(self):
         from inventory import the_inventory
-        control_interface = the_inventory.attached_hostname(self.hostname, 'control')
-        frisbee = FrisbeeConnection(control_interface, self.message_bus)
-        yield from frisbee.wait()
-        print("telnet on {} : ready = {}".format(control_interface, frisbee.is_ready()))
+        ip = self.control_ip_address()
+        self.frisbee = FrisbeeConnection(ip, self.message_bus)
+        yield from self.frisbee.wait()
+        print("telnet on {} : ready = {}".format(ip, self.frisbee.is_ready()))
         
+    @asyncio.coroutine
+    def run_frisbee(self):
+        ip = self.control_ip_address()
+        # xxx to configure
+        bin = "frisbee"
+        multicast_group = "234.5.6.7"
+        port = 10000
+        hdd = "/dev/sda"
+        print("run_frisbee")
+        yield from self.frisbee.run_client(bin=bin, ip=ip, multicast_group=multicast_group, port=port, hdd = hdd)
+
+    @asyncio.coroutine
+    def stage2(self):
+        yield from self.wait_for_telnet()
+        yield from self.run_frisbee()

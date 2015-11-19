@@ -16,12 +16,12 @@ class Monitor:
             # this is new in 3.4.4
             if 'task_done' in dir(self.message_bus):
                 self.message_bus.task_done()
-        print("Monitor is really stopping now")
+        #print("Monitor is really stopping now")
 
     def dispatch(self, message):
         print("monitor: ==========", message)
 
     @asyncio.coroutine
     def stop(self):
-        print("MONITOR is STOPPING...")
+        #print("MONITOR is STOPPING...")
         yield from self.message_bus.put("END-MONITOR")

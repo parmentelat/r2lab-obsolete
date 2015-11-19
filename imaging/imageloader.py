@@ -1,6 +1,7 @@
 import asyncio
 
 from monitor import Monitor
+from frisbeed import Frisbeed
 
 class ImageLoader:
 
@@ -27,12 +28,21 @@ class ImageLoader:
         # XXX not tested at all..
         @asyncio.coroutine
         def stage1_cmc(cmc):
-            yield from cmc.manage_nextboot_symlink('frisbee')
-            yield from cmc.ensure_reset()
+            yield from asyncio.gather(cmc.manage_nextboot_symlink('frisbee'),
+                                      cmc.ensure_reset())
             yield from self.message_bus.put("idling for {}s".format(self.idle))
             yield from asyncio.sleep(self.idle)
             
         yield from asyncio.gather(*[stage1_cmc(cmc) for cmc in self.cmcs])
+
+    @asyncio.coroutine
+    def start_frisbeed(self):
+        self.frisbeed = Frisbeed()
+        yield from self.frisbeed.start()
+
+    @asyncio.coroutine
+    def stop_frisbeed(self):
+        yield from self.frisbeed.stop()
 
     @asyncio.coroutine
     def stage2(self):
@@ -40,11 +50,13 @@ class ImageLoader:
         wait for all nodes to be telnet-friendly
         then run frisbee in all of them
         """
-        @asyncio.coroutine
-        def stage2_cmc(cmc):
-            yield from cmc.wait_for_telnet()
-        
-        yield from asyncio.gather(*[stage2_cmc(cmc) for cmc in self.cmcs])
+#        yield from asyncio.gather(self.start_frisbeed(),
+#                                  *[cmc.stage2() for cmc in self.cmcs])
+        yield from self.start_frisbeed()
+        yield from asyncio.gather(*[cmc.stage2() for cmc in self.cmcs])
+
+        print("stage2 half done")
+        yield from self.stop_frisbeed()
 
     @asyncio.coroutine
     def nextboot_cleanup(self):

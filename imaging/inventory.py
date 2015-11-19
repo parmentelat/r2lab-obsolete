@@ -22,19 +22,7 @@ class Inventory:
                     return host, k
         return None, None
 
-    def mac_address(self, hostname, key=None):
-        """
-        if key is e.g. 'control' then this will return the MAC
-        address of the control interface of the node that has
-        at least one interface matching 'hostname'
-        """
-        host, k = self._locate_entry_from_hostname(hostname)
-        if host and key is None:
-            key = k
-        if host and key in host:
-            return host[key]['mac']
-
-    def attached_hostname(self, hostname, key):
+    def attached_hostname_info(self, hostname, interface_key='control', info_key='hostname'):
         """
         locate the entry that has at least one hostname equal to 'hostname'
         and returns the 'hostname' attached to that key
@@ -42,8 +30,8 @@ class Inventory:
         attached_hostname('reboot01', 'control') => 'fit01'
         """
         host, k = self._locate_entry_from_hostname(hostname)
-        if host and key in host:
-            return host[key]['hostname']
+        if host and interface_key in host:
+            return host[interface_key][info_key]
 
     def display(self, verbose=False):
         def cell_repr(k, v, verbose):
