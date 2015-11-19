@@ -23,10 +23,11 @@ class ImageLoader:
 
         @asyncio.coroutine
         def stage1_cmc(cmc):
-            yield from asyncio.gather(cmc.manage_nextboot_symlink('frisbee'),
-                                      cmc.ensure_reset())
+            # this is now synchoneous
+            cmc.manage_nextboot_symlink('frisbee')
+            yield from cmc.ensure_reset()
             from config import the_config
-            idle = the_config.value('nodes', 'idle_after_reset')
+            idle = int(the_config.value('nodes', 'idle_after_reset'))
             yield from self.message_bus.put("idling for {}s".format(idle))
             yield from asyncio.sleep(idle)
             
@@ -48,40 +49,45 @@ class ImageLoader:
         wait for all nodes to be telnet-friendly
         then run frisbee in all of them
         """
-#        yield from asyncio.gather(self.start_frisbeed(),
-#                                  *[cmc.stage2() for cmc in self.cmcs])
+        # start_frisbeed will return the ip+port to use 
         ip, port = yield from self.start_frisbeed()
         yield from asyncio.gather(*[cmc.stage2(ip, port) for cmc in self.cmcs])
-
-        print("stage2 half done")
+        # we can now kill the server
         yield from self.stop_frisbeed()
 
     @asyncio.coroutine
+    def stage3(self):
+        # just reset all nodes for now
+        # waiting for the nodes to come back under ssh could be another image-wait feature
+        yield from asyncio.gather(*[cmc.ensure_reset() for cmc in self.cmcs])
+
+    # this is synchroneous
     def nextboot_cleanup(self):
         """
         Remove nextboot symlinks for all nodes in this selection
         so next boot will be off the harddrive
         """
-        yield from asyncio.gather(*[cmc.manage_nextboot_symlink('harddrive') for cmc in self.cmcs])
+        [cmc.manage_nextboot_symlink('harddrive') for cmc in self.cmcs]
 
     @asyncio.coroutine
-    def reset(self):
-        """
-        reset all nodes in this selection
-        """
-        print("NOT RESETTING!")
-# TMP        yield from asyncio.gather(*[cmc.ensure_reset() for cmc in self.cmcs])
-
-    @asyncio.coroutine
-    def run(self):
-        print("SKIPPING stage1")
-# TMP       yield from self.stage1()
-        yield from self.stage2()
-        yield from asyncio.gather(self.nextboot_cleanup(),
-                                  self.reset())
+    def run(self, skip_stage1, skip_stage2, skip_stage3):
+        yield from (self.stage1() if not skip_stage1 else self.message_bus.put("Skipping stage1"))
+        yield from (self.stage2() if not skip_stage2 else self.message_bus.put("Skipping stage2"))
+        yield from (self.stage3() if not skip_stage3 else self.message_bus.put("Skipping stage3"))
         yield from self.monitor.stop()
 
-    def main(self):
-        t1 = util.self_manage(self.run())
+    def main(self, skip_stage1=False, skip_stage2=False, skip_stage3=False):
+        loop = asyncio.get_event_loop()
+        t1 = util.self_manage(self.run(skip_stage1, skip_stage2, skip_stage3))
         t2 = util.self_manage(self.monitor.run())
-        asyncio.get_event_loop().run_until_complete(asyncio.wait([t1, t2]))
+        tasks = asyncio.gather(t1, t2)
+        try:
+            loop.run_until_complete(tasks)
+        except KeyboardInterrupt as e:
+            self.nextboot_cleanup()
+            tasks.cancel()
+            loop.run_forever()
+            tasks.exception()
+        finally:
+            self.nextboot_cleanup()
+            loop.close()

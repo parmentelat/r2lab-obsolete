@@ -45,6 +45,31 @@ In short: see `/etc/imaging-inventory.json`
 
 Unfortunately the tools need a mapping between hostnames and MAC addresses - essentially for messing with pxelinux symlinks. At this point at least; it occurred to me only later that maybe an IP address would have done. In any case for now the tool needs to find an inventory in a file named	`/etc/imaging-inventory.json`. This is taken care of by  `inventory/configure.py` and its `Makefile`. Note that like for the OMF JSON inventory file, `configure.py` creates 2 different files for faraday and bemol - to account for any replacement node on farady, like when e.g. node 41 actually sits in slot 15.
 
+FYI an inventory files just looks like below; the `data` field is not needed
+
+#
+    # less /etc/imaging-inventory.json
+     [
+      {
+        "cmc": {
+          "hostname": "reboot01",
+          "ip": "192.168.1.1",
+          "mac": "02:00:00:00:00:01"
+        },
+        "control": {
+          "hostname": "fit01",
+          "ip": "192.168.3.1",
+          "mac": "00:03:1d:0e:03:19"
+        },
+        "data": {
+          "hostname": "data01",
+          "ip": "192.168.2.1",
+          "mac": "00:03:1d:0e:03:18"
+        }
+      },
+      ... etc
+      ]
+
 ## Configuration
 
 Configuration is done through a collection of files, which are loaded in this order if they exist:
@@ -91,3 +116,12 @@ it would have been this instead
 
 There's also `asyncssh` that might come in handy at some point; this would let us create ssh connections, and then sessions inside that (sharing a connection for several purposes), all this in a asynchroneous way; sounds real great e.g. for nepi. But another story entirely..
 
+# TODO
+
+* outputs
+  * see logging for debug msgs
+  * formalize messages for messages to monitor
+  * more decent monitor
+* imagesaver
+* rename CMC into just plain node ?
+* nicer imaging-list

@@ -24,6 +24,10 @@ def load():
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-i", "--image", action='store', default=default_image,
                         help="Specify image to load (default is {})".format(default_image))
+    parser.add_argument("-1", "--skip-stage1", action='store_true', default=False)
+    parser.add_argument("-2", "--skip-stage2", action='store_true', default=False)
+    parser.add_argument("-3", "--skip-stage3", action='store_true', default=False)
+                        
     add_selector_arguments(parser)
     args = parser.parse_args()
 
@@ -43,7 +47,11 @@ def load():
         print("Image file {} not found - emergency exit".format(args.image))
         exit(1)
 
-    ImageLoader(cmcs, message_bus, actual_image).main()
+    ImageLoader(cmcs, message_bus, actual_image).main(
+        skip_stage1 = args.skip_stage1,
+        skip_stage2 = args.skip_stage2,
+        skip_stage3 = args.skip_stage3
+        )
  
 ####################
 def list():

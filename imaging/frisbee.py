@@ -102,6 +102,7 @@ class FrisbeeConnection:
              if self.is_ready():
                  return True
              else:
+                 print("{}: backing off for {}..".format(self.control_ip, self.interval))
                  yield from asyncio.sleep(self.interval)
 
     Client = telnetlib3.TelnetClient
@@ -120,9 +121,6 @@ class FrisbeeConnection:
             yield from self.message_bus.put("{}: telnet connected".format(self.control_ip))
             return True
         except Exception as e:
-            import traceback
-            traceback.print_exc()
-            yield from self.message_bus.put("Could not connect - backing off for a while")
             # just making sure
             self._transport, self._protocol = None, None
 

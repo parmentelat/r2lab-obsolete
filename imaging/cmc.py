@@ -133,7 +133,8 @@ class CMC:
 
 
     ##########
-    @asyncio.coroutine
+    # used to be a coroutine but as we need this when dealing by KeybordInterrupt
+    # it appears much safer to just keep this a traditional function
     def manage_nextboot_symlink(self, action):
         """
         Messes with the symlink in /tftpboot/pxelinux.cfg/
@@ -154,13 +155,15 @@ class CMC:
 
         if action in ('cleanup', 'harddrive'):
             if os.path.exists(source):
+                print("Removing {}".format(source))
                 os.remove(source)
         elif action in ('frisbee'):
             if os.path.exists(source):
                 os.remove(source)
+            print("Creating {}".format(source))
             os.symlink(frisbee, source)
         else:
-            yield from self.message_bus.put("manage_nextboot_symlink : unknown action {}".format(action))
+            print("manage_nextboot_symlink : unknown action {}".format(action))
 
     ##########
     @asyncio.coroutine
@@ -174,4 +177,5 @@ class CMC:
     @asyncio.coroutine
     def stage2(self, ip , port):
         yield from self.wait_for_telnet()
+        self.manage_nextboot_symlink('cleanup')
         yield from self.frisbee.run_client(ip, port)
