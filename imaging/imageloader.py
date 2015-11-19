@@ -76,6 +76,7 @@ class ImageLoader:
         yield from (self.stage3() if not skip_stage3 else self.message_bus.put("Skipping stage3"))
         yield from self.monitor.stop()
 
+    # from http://stackoverflow.com/questions/30765606/whats-the-correct-way-to-clean-up-after-an-interrupted-event-loop
     def main(self, skip_stage1=False, skip_stage2=False, skip_stage3=False):
         loop = asyncio.get_event_loop()
         t1 = util.self_manage(self.run(skip_stage1, skip_stage2, skip_stage3))
