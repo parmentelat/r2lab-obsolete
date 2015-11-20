@@ -33,9 +33,14 @@ def load():
     parser.add_argument("-1", "--skip-stage1", action='store_true', default=False)
     parser.add_argument("-2", "--skip-stage2", action='store_true', default=False)
     parser.add_argument("-3", "--skip-stage3", action='store_true', default=False)
-                        
+
+    parser.add_argument("-c", "--show-config", action='store_true', default=False)                        
     add_selector_arguments(parser)
     args = parser.parse_args()
+
+    if args.show_config:
+        the_config.display()
+        exit(0)
 
     message_bus = asyncio.Queue()
 

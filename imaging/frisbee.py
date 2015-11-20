@@ -1,10 +1,20 @@
 import time
 import re
+import random
+from logger import logger
 
 import asyncio
 import telnetlib3
 
-from logger import logger
+
+"""
+FrisbeeProxy is what controls the telnet connection to the node,
+invokes the client, parses its output and terminates it
+
+as per the design of telnetlib3, it uses a couple helper classes
+that we specialize so we can propagate our own stuff (the message bus essentially)
+down to FrisbeeParser
+"""
 
 class FrisbeeParser(telnetlib3.TerminalShell):
     def __init__(self, *args, **kwds):
@@ -77,9 +87,14 @@ class FrisbeeParser(telnetlib3.TerminalShell):
             
 
 class FrisbeeClient(telnetlib3.TelnetClient):
+    """
+    this specialization of TelnetClient is meant for FrisbeeParser
+    to retrieve its correponding FrisbeeProxy instance
+    """
     def __init__(self, proxy, *args, **kwds):
         self.proxy = proxy
         super().__init__(*args, **kwds)
+
 
 class FrisbeeProxy:
     """
@@ -87,13 +102,12 @@ class FrisbeeProxy:
     * wait for the telnet server to come up
     * invoke frisbee
     """
-    def __init__(self, control_ip, message_bus, port=23, interval=1., loop=None):
+    def __init__(self, control_ip, message_bus):
         self.control_ip = control_ip
         self.message_bus = message_bus
-        self.port = port
-        # how often to chec kfor the connection
-        self.interval = interval
-        self.loop = loop if loop is not None else asyncio.get_event_loop()
+        from config import the_config
+        self.port = int(the_config.value('networking', 'telnet_port'))
+        self.backoff = float(the_config.value('networking', 'telnet_backoff'))
         # internals
         self._transport = None
         self._protocol = None
@@ -117,10 +131,11 @@ class FrisbeeProxy:
              if self.is_ready():
                  return True
              else:
+                 backoff = self.backoff*(0.5 + random.random())
                  yield from self.feedback(
                      'frisbee_status',
-                     "backing off for {}s".format(self.interval))
-                 yield from asyncio.sleep(self.interval)
+                     "backing off for {:.3}s".format(backoff))
+                 yield from asyncio.sleep(backoff)
 
     @asyncio.coroutine
     def try_to_connect(self):
@@ -130,9 +145,10 @@ class FrisbeeProxy:
             return FrisbeeClient(proxy = self, encoding='utf-8', shell=FrisbeeParser)
 
         yield from self.feedback('frisbee_status', "trying to telnet")
+        loop = asyncio.get_event_loop()
         try:
             self._transport, self._protocol = \
-              yield from self.loop.create_connection(client_factory, self.control_ip, self.port)
+              yield from loop.create_connection(client_factory, self.control_ip, self.port)
             yield from self.feedback('frisbee_status', "telnet connected")
             return True
         except Exception as e:

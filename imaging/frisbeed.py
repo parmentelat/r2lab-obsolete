@@ -53,8 +53,9 @@ class Frisbeed:
                 self.message_bus.put({'loader': "frisbee server started"})
                 return multicast_group, multicast_port
             else:
-                logger.critical("failed to start frisbeed with {}".format(command_line))
-                raise Exception("Could not start frisbee server")
+                logger.info("failed to start frisbeed with {}".format(command_line))
+        logger.critical("Could not find a free IP multicast address + port to start frisbeed")
+        raise Exception("Could not start frisbee server")
 
 
     @asyncio.coroutine
