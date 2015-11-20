@@ -26,7 +26,7 @@ class ImageLoader:
             yield from node.ensure_reset()
             from config import the_config
             idle = int(the_config.value('nodes', 'idle_after_reset'))
-            yield from self.message_bus.put("idling for {}s".format(idle))
+            yield from node.feedback('reboot', "idling for {}s".format(idle))
             yield from asyncio.sleep(idle)
             
         yield from asyncio.gather(*[stage1_node(node) for node in self.nodes])
