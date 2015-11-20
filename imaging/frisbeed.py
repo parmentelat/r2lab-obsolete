@@ -3,9 +3,10 @@ import asyncio
 from logger import logger
 
 class Frisbeed:
-    def __init__(self, image):
+    def __init__(self, image, message_bus):
         self.subprocess = None
         self.image = image
+        self.message_bus = message_bus
     
     @asyncio.coroutine
     def start(self):
@@ -48,10 +49,12 @@ class Frisbeed:
             # if is has, we try our luck on another couple (ip, port)
             command_line = " ".join(command)
             if self.subprocess.returncode is None:
-                logger.info("started frisbeed: {}".format(command_line))
+                logger.info("frisbeed started: {}".format(command_line))
+                self.message_bus.put({'loader': "frisbee server started"})
                 return multicast_group, multicast_port
             else:
-                logger.info("failed to start frisbeed with {}".format(command_line))
+                logger.critical("failed to start frisbeed with {}".format(command_line))
+                raise Exception("Could not start frisbee server")
 
 
     @asyncio.coroutine
@@ -59,4 +62,5 @@ class Frisbeed:
         self.subprocess.kill()
         self.subprocess = None
         logger.info("frisbeed stopped")
+        self.message_bus.put({'loader': "frisbee server stopped"})
         pass

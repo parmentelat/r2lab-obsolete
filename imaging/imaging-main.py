@@ -9,6 +9,8 @@ from node import Node
 from selector import add_selector_arguments, selected_selector
 from imageloader import ImageLoader
 from imagerepo import ImageRepo
+from config import the_config
+
 
 # for each of these there should be a symlink to imaging-main.py
 # like imaging-load -> imaging-main.py
@@ -19,11 +21,15 @@ supported_commands = [ 'load', 'save', 'list', 'status', 'inventory' ]
 def load():
     image_repo = ImageRepo()
     default_image = image_repo.default()
+    default_timeout = the_config.value('nodes', 'load_default_timeout')
 
     parser = ArgumentParser()
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-i", "--image", action='store', default=default_image,
                         help="Specify image to load (default is {})".format(default_image))
+    parser.add_argument("-t", "--timeout", action='store', default=default_timeout,
+                        help="Specify global timeout for the whole process, default={}"
+                              .format(default_timeout))
     parser.add_argument("-1", "--skip-stage1", action='store_true', default=False)
     parser.add_argument("-2", "--skip-stage2", action='store_true', default=False)
     parser.add_argument("-3", "--skip-stage3", action='store_true', default=False)
@@ -36,6 +42,10 @@ def load():
     selector = selected_selector(args)
     nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
 
+    message_bus.put_nowait({'selected_nodes' : selector})
+    if args.verbose:
+        message_bus.put_nowait('timeout', args.timeout)
+
     for node in nodes:
         if not node.is_known():
             logger.critical("WARNING : node {} is not known to the inventory".format(node.hostname))
@@ -45,7 +55,10 @@ def load():
         print("Image file {} not found - emergency exit".format(args.image))
         exit(1)
 
-    ImageLoader(nodes, message_bus, actual_image).main(
+    message_bus.put_nowait({'selected image' : actual_image})
+
+    loader = ImageLoader(nodes, message_bus, actual_image, args.timeout)
+    return loader.main(
         skip_stage1 = args.skip_stage1,
         skip_stage2 = args.skip_stage2,
         skip_stage3 = args.skip_stage3
@@ -88,7 +101,7 @@ def main():
     for supported in supported_commands:
         if supported in command:
             main_function = globals()[supported]
-            return main_function()
+            exit(main_function())
     print("Unknown command {}", command)
 
 if __name__ == '__main__':

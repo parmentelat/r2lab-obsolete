@@ -4,14 +4,17 @@ import util
 from monitor import Monitor
 from frisbeed import Frisbeed
 
+from config import the_config
+
 class ImageLoader:
 
-    def __init__(self, nodes, message_bus, image):
+    def __init__(self, nodes, message_bus, image, timeout):
         self.nodes = nodes
         self.message_bus = message_bus
         self.image = image
+        self.timeout = float(timeout)
         # xxx timeout should be configurable - if it works, that is
-        self.monitor = Monitor(message_bus, 2000)
+        self.monitor = Monitor(message_bus)
 
     @asyncio.coroutine
     def stage1(self):
@@ -21,11 +24,14 @@ class ImageLoader:
 
         @asyncio.coroutine
         def stage1_node(node):
-            # this is now synchoneous
+            # this is now synchroneous
             node.manage_nextboot_symlink('frisbee')
             yield from node.ensure_reset()
-            from config import the_config
             idle = int(the_config.value('nodes', 'idle_after_reset'))
+            # leve the message from ensure reset available for 3 seconds
+            if idle >= 3:
+                yield from asyncio.sleep(3)
+                idle -= 3
             yield from node.feedback('reboot', "idling for {}s".format(idle))
             yield from asyncio.sleep(idle)
             
@@ -33,7 +39,7 @@ class ImageLoader:
 
     @asyncio.coroutine
     def start_frisbeed(self):
-        self.frisbeed = Frisbeed(self.image)
+        self.frisbeed = Frisbeed(self.image, self.message_bus)
         ip_port = yield from self.frisbeed.start()
         return ip_port
 
@@ -80,13 +86,20 @@ class ImageLoader:
         t1 = util.self_manage(self.run(skip_stage1, skip_stage2, skip_stage3))
         t2 = util.self_manage(self.monitor.run())
         tasks = asyncio.gather(t1, t2)
+        wrapper = asyncio.wait_for(tasks, timeout = self.timeout)
         try:
-            loop.run_until_complete(tasks)
+            loop.run_until_complete(wrapper)
+            return 0
         except KeyboardInterrupt as e:
+            print("imaging-load : keyboard interrupt - exiting")
             self.nextboot_cleanup()
             tasks.cancel()
             loop.run_forever()
             tasks.exception()
+            return 1
+        except asyncio.TimeoutError as e:
+            print("imaging-load : timeout expired after {}s".format(self.timeout))
+            return 1
         finally:
             self.nextboot_cleanup()
             loop.close()

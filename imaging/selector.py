@@ -73,10 +73,12 @@ def add_selector_arguments(arg_parser):
     arg_parser.add_argument(
         "ranges", nargs="*",
         help="""
-        nodes can be specified one by one, like 1 004 fit01 reboot01
-        by range (inclusive) like 2-12, fit4-reboot12,
-        by range+step like 4-16-2 which would be all even numbers from 4 to 16,
-        ranges can also be excluded with ~; so ~1-4 means remove 1,2,3,4
+        nodes can be specified one by one, like: 1 004 fit01 reboot01;
+        or by range (inclusive) like: 2-12, fit4-reboot12;
+        or by range+step like: 4-16-2 which would be all even numbers from 4 to 16;
+        ranges can also be excluded with '~', so ~1-4 means remove 1,2,3,4
+
+        ex:  1-4 7-13-2 
         """)
         
 # parser_args is the result of arg_parser.parse_args()

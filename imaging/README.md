@@ -120,6 +120,8 @@ There's also `asyncssh` that might come in handy at some point; this would let u
 
 * get the timeout to work
 * return some decent retcod
+* cleanup frisbee proxy constructor & config (telnet port?)
+* provide a tool that can wait for ssh connectivity
 * more decent monitor (at least knowns how many nodes, does averages..)
 * imagesaver
 * rename CMC into just plain node ?

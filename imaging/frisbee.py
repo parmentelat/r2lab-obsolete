@@ -119,7 +119,7 @@ class FrisbeeProxy:
              else:
                  yield from self.feedback(
                      'frisbee_status',
-                     "backing off for {}..".format(self.control_ip, self.interval))
+                     "backing off for {}s".format(self.interval))
                  yield from asyncio.sleep(self.interval)
 
     @asyncio.coroutine
