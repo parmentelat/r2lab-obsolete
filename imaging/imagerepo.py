@@ -26,3 +26,5 @@ class ImageRepo:
         for path in glob.glob("{}/*.ndz".format(self.repo)):
             file = path.replace(self.repo+"/", "").replace(self.repo, "")
             print(file)
+
+the_imagerepo = ImageRepo()

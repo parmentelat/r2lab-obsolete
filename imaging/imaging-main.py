@@ -8,19 +8,18 @@ from logger import logger
 from node import Node
 from selector import add_selector_arguments, selected_selector
 from imageloader import ImageLoader
-from imagerepo import ImageRepo
+from imagerepo import the_imagerepo
 from config import the_config
 
 
 # for each of these there should be a symlink to imaging-main.py
 # like imaging-load -> imaging-main.py
 # and a function in this module with no arg
-supported_commands = [ 'load', 'save', 'list', 'status', 'inventory' ]
+supported_commands = [ 'load', 'save', 'list', 'status' ]
 
 ####################
 def load():
-    image_repo = ImageRepo()
-    default_image = image_repo.default()
+    default_image = the_imagerepo.default()
     default_timeout = the_config.value('nodes', 'load_default_timeout')
 
     parser = ArgumentParser()
@@ -34,13 +33,8 @@ def load():
     parser.add_argument("-2", "--skip-stage2", action='store_true', default=False)
     parser.add_argument("-3", "--skip-stage3", action='store_true', default=False)
 
-    parser.add_argument("-c", "--show-config", action='store_true', default=False)                        
     add_selector_arguments(parser)
     args = parser.parse_args()
-
-    if args.show_config:
-        the_config.display()
-        exit(0)
 
     message_bus = asyncio.Queue()
 
@@ -71,7 +65,25 @@ def load():
  
 ####################
 def list():
-    ImageRepo().display()
+    parser = ArgumentParser()
+    parser.add_argument("-c", "--config", action='store_true', default=False,
+                        help="display configuration store")
+    parser.add_argument("-i", "--images", action='store_true', default=False,
+                        help="display available images")
+    parser.add_argument("-n", "--inventory", action='store_true', default=False,
+                        help="display nodes from inventory")
+    parser.add_argument("-a", "--all", action='store_true', default=False)
+    args = parser.parse_args()
+
+    if args.config or args.all:
+        the_config.display()
+    if args.images or args.all:
+        from imagerepo import the_imagerepo
+        the_imagerepo.display()
+    if args.inventory or args.all:
+        from inventory import the_inventory
+        the_inventory.display(verbose=True)
+    return 0
 
 ####################
 def status():
@@ -90,11 +102,6 @@ def status():
         asyncio.Task(node.get_status_verbose())
     asyncio.get_event_loop().run_forever()
     asyncio.get_event_loop().close()
-
-####################
-def inventory():
-    from inventory import the_inventory
-    the_inventory.display(verbose=True)
 
 ####################
 ####################
