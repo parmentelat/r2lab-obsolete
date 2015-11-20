@@ -18,7 +18,7 @@ class Frisbeed:
         server_options = the_config.value('frisbee', 'server_options')
         # this one should probably be computed if no value is set in the config
         # or maybe also let admins define the local interface name (like 'control' or 'eth0')
-        local_ip = the_config.server_ip()
+        local_ip = the_config.local_control_ip()
         # in Mibps
         bandwidth = int(the_config.value('networking', 'bandwidth')) * 2**20
         # should use default.ndz if not provided

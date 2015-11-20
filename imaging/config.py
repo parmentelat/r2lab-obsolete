@@ -1,6 +1,7 @@
 import os
 
 import configparser
+import guessip
 
 # location, mandatory
 locations = [
@@ -44,8 +45,16 @@ class ImagingConfig:
     # the foreseeable tricky part is, this should be a coroutine..
     def available_frisbee_port(self):
         return self.value('networking', 'port')
+
     # maybe this one too
-    def server_ip(self):
-        return self.value('networking', 'server_ip')
+    def local_control_ip(self):
+        # if specified in the config file, then use that
+        if 'networking' in self.config and 'local_control_ip' in self.config['networking']:
+            return self.config['networking']['local_control_ip']
+        # but otherwise guess it
+        from inventory import the_inventory
+        from guessip import local_ip_on_same_network_as
+        ip, prefixlen = local_ip_on_same_network_as(the_inventory.one_control_interface())
+        return ip
 
 the_config = ImagingConfig()

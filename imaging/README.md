@@ -118,7 +118,8 @@ There's also `asyncssh` that might come in handy at some point; this would let u
 
 # TODO
 
-* compute local IP instead of configuring it
+* get the timeout to work
+* return some decent retcod
 * more decent monitor (at least knowns how many nodes, does averages..)
 * imagesaver
 * rename CMC into just plain node ?

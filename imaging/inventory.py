@@ -43,4 +43,7 @@ class Inventory:
             print(" ".join([cell_repr(k, v, verbose) for k, v in node.items()]))
         print(20*'-', "INVENTORY END")
 
+    def one_control_interface(self):
+        return self._nodes[0]['control']['ip']
+
 the_inventory = Inventory()
