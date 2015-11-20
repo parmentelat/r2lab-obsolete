@@ -5,12 +5,10 @@ tab: tutorial
 <script type="text/javascript">loadMenu();</script>
 
 ###Pre-requisite
-
 [Obtain a slice account on R2LAB (faraday)](tuto-01-registration.html#main)
 
 
 ###Direct ssh access to the node
-
 Example IP addresses of the target node
 
 * CM card interface : 192.168.1.25
@@ -57,7 +55,6 @@ The baseline image `baseline.ndz` is located in `/var/lib/omf-images-6`.
 	$ omf6 save -n fit25
 
 ###Using short commands through ssh #
-
 **1 - Connect to your account in faraday**
 
     $ ssh my-account@faraday.inria.fr
