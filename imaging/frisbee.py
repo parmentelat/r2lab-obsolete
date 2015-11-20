@@ -60,7 +60,7 @@ class FrisbeeParser(telnetlib3.TerminalShell):
         m = self.matcher_total_chunks.match(line)
         if m:
             self.total_chunks = int(m.group('total_chunks'))
-            self.send_percent(1)
+            self.send_percent(0)
             return
         #
         m = self.matcher_old_style_progress.match(line)
@@ -166,8 +166,9 @@ class FrisbeeProxy:
         self.command = \
           "{client} -i {control_ip} -m {multicast_ip} -p {port} {hdd}".format(**locals())
 
-        yield from self.feedback('frisbee_status', "running command {}"
-                                .format(self.command))
+        logger.info("on {} : running command {}".format(self.control_ip, self.command))
+        yield from self.feedback('frisbee_status', "starting frisbee client")
+        
         EOF = chr(4)
         EOL = '\n'
         # print out exit status so the parser can catch it and expose it

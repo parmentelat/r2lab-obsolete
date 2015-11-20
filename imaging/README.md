@@ -113,21 +113,26 @@ it would have been this instead
 
 * `telnetlib3` for invoking `frisbee` on the nodes
 * `aiohttp` for talking to the CMC cards
+* `asyncssh` for talking to ssh; for that on ubuntu there is a need to run `apt-get install libffi-dev` before `pip3 install asyncssh`
 
 There's also `asyncssh` that might come in handy at some point; this would let us create ssh connections, and then sessions inside that (sharing a connection for several purposes), all this in a asynchroneous way; sounds real great e.g. for nepi. But another story entirely..
 
 # TODO
 
 * provide a tool that can wait for ssh connectivity
+  * how to deal with known hosts
+  * how to specify alternative user and key
+
+* refactor how mains are done; some have a monitor and some others not
+* ideally before writing imagesaver, although no big deal
+ 
+* check for the order of arguments in constructors...
 * check for imaging-load --verbose; 
   * is that really useful ?
   * should rather tweak logger's verbosity in addition ?
   * or just remove this for now ?
+
 * more decent monitor (at least knowns how many nodes, does averages..)
-* imagesaver
 * rename CMC into just plain node ?
-* nicer imaging-list
-* see what to do with these 3 gadgets
-  * show config
-  * list images
-  * show inventory
+
+* nicer imaging-list (sizes, symlinks, etc..)

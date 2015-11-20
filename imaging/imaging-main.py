@@ -38,9 +38,10 @@ def load():
 
     # xxx this is truly more for debugging
     # I'd rather not have these in the help message...
-    parser.add_argument("-1", "--skip-stage1", action='store_true', default=False)
-    parser.add_argument("-2", "--skip-stage2", action='store_true', default=False)
-    parser.add_argument("-3", "--skip-stage3", action='store_true', default=False)
+    parser.add_argument("-n", "--no-reset", dest='reset', action='store_false', default=True,
+                        help = """use this with nodes that are already running a frisbee image.
+                        They won't get reset, neither before or after the frisbee session
+                        """)
 
     args = parser.parse_args()
 
@@ -65,11 +66,7 @@ def load():
     message_bus.put_nowait({'selected image' : actual_image})
 
     loader = ImageLoader(nodes, message_bus=message_bus, image=actual_image, bandwidth=args.bandwidth, timeout=args.timeout)
-    return loader.main(
-        skip_stage1 = args.skip_stage1,
-        skip_stage2 = args.skip_stage2,
-        skip_stage3 = args.skip_stage3
-        )
+    return loader.main(reset = args.reset)
  
 ####################
 def save():
@@ -91,12 +88,22 @@ def status():
     message_bus = asyncio.Queue()
     
     print(selector)
+    loop = asyncio.get_event_loop()
+
+# scaffolding on sshwatchers - stand by for now
+#    ### tmp beg
+#    from sshwatcher import SshWatcher
+#    watchers = [ SshWatcher(name) for name in selector.node_names() ]
+#    coros = [ watcher.run('hostname') for watcher in watchers]
+#    loop.run_until_complete(asyncio.gather(*coros))
+#    for watcher in watchers:
+#        print(watcher)
+#    return 0
+#    ### tmp end
 
     nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
     coros = [ node.get_status() for node in nodes ]
     
-    loop = asyncio.get_event_loop()
-
     tasks = util.self_manage(asyncio.gather(*coros))
     wrapper = asyncio.wait_for(tasks, timeout = args.timeout)
     try:

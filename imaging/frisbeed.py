@@ -61,8 +61,12 @@ class Frisbeed:
 
     @asyncio.coroutine
     def stop(self):
-        self.subprocess.kill()
-        self.subprocess = None
-        logger.info("frisbeed stopped")
-        self.message_bus.put({'loader': "frisbee server stopped"})
-        pass
+        self.stop_wait()
+        
+    def stop_wait(self):
+        # make it idempotent
+        if self.subprocess:
+            self.subprocess.kill()
+            self.subprocess = None
+            logger.info("frisbeed stopped")
+            self.message_bus.put({'loader': "frisbee server stopped"})
