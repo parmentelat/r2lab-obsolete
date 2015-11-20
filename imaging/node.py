@@ -44,7 +44,7 @@ class Node:
     @asyncio.coroutine
     def get_status(self):
         """
-        return value stored in self.status
+        updates self.status
         either 'on' or 'off', or None if something wrong is going on
         """
         url = "http://{}/status".format(self.cmc_name)
@@ -52,20 +52,11 @@ class Node:
             client_response = yield from aiohttp.get(url)
         except Exception as e:
             self.status = None
-            return self
         try:
             text = yield from client_response.text()
             self.status = text.strip()
-            return self
         except Exception as e:
             self.status = None
-            return self
-
-    # xxx this should be done by some kind of monitor
-    @asyncio.coroutine
-    def get_status_verbose(self):
-        yield from self.get_status()
-        print("{}:{}".format(self.cmc_name, self.status))
 
     ####################
     # what status to expect after a message is sent

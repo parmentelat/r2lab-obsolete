@@ -3,9 +3,10 @@ import asyncio
 from logger import logger
 
 class Frisbeed:
-    def __init__(self, image, message_bus):
+    def __init__(self, image, bandwidth, message_bus):
         self.subprocess = None
         self.image = image
+        self.bandwidth = bandwidth
         self.message_bus = message_bus
     
     @asyncio.coroutine
@@ -21,7 +22,7 @@ class Frisbeed:
         # or maybe also let admins define the local interface name (like 'control' or 'eth0')
         local_ip = the_config.local_control_ip()
         # in Mibps
-        bandwidth = int(the_config.value('networking', 'bandwidth')) * 2**20
+        bandwidth = self.bandwidth * 2**20
         # should use default.ndz if not provided
         command_common = [
             server, "-i", local_ip, "-W", str(bandwidth), self.image

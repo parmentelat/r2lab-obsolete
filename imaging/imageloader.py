@@ -8,11 +8,12 @@ from config import the_config
 
 class ImageLoader:
 
-    def __init__(self, nodes, message_bus, image, timeout):
+    def __init__(self, nodes, message_bus, image, bandwidth, timeout):
         self.nodes = nodes
         self.message_bus = message_bus
         self.image = image
-        self.timeout = float(timeout)
+        self.bandwidth = bandwidth
+        self.timeout = timeout
         # xxx timeout should be configurable - if it works, that is
         self.monitor = Monitor(message_bus)
 
@@ -39,7 +40,7 @@ class ImageLoader:
 
     @asyncio.coroutine
     def start_frisbeed(self):
-        self.frisbeed = Frisbeed(self.image, self.message_bus)
+        self.frisbeed = Frisbeed(self.image, self.bandwidth, self.message_bus)
         ip_port = yield from self.frisbeed.start()
         return ip_port
 

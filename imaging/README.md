@@ -119,6 +119,10 @@ There's also `asyncssh` that might come in handy at some point; this would let u
 # TODO
 
 * provide a tool that can wait for ssh connectivity
+* check for imaging-load --verbose; 
+  * is that really useful ?
+  * should rather tweak logger's verbosity in addition ?
+  * or just remove this for now ?
 * more decent monitor (at least knowns how many nodes, does averages..)
 * imagesaver
 * rename CMC into just plain node ?
