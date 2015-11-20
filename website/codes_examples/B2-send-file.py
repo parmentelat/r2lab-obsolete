@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # including nepi library and other required packages
+from __future__ import print_function
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
@@ -38,38 +39,38 @@ wifi_ip_fit02	 = '172.16.1.2'
 ec = ExperimentController(exp_id="B2-send-file")
 
 # creating local
-local = ec.register_resource("linux::Node")
-ec.set(local, "hostname", "localhost")
-ec.set(local, "cleanExperiment", True)
-ec.set(local, "cleanProcesses", True)
+local   = ec.register_resource("linux::Node",
+														 	hostname = localhost,
+														 	cleanExperiment = True,
+														 	cleanProcesses = True)
 
 # creating the gateway node
-gateway = ec.register_resource("linux::Node")
-ec.set(gateway, "username", user_gateway)
-ec.set(gateway, "hostname", host_gateway)
-ec.set(gateway, "identity", user_identity)
-ec.set(gateway, "cleanExperiment", True)
-ec.set(gateway, "cleanProcesses", True)
+gateway = ec.register_resource("linux::Node",
+                             	username = user_gateway,
+                             	hostname = host_gateway,
+                             	identity = user_identity,
+                              cleanExperiment = True,
+                              cleanProcesses = True)
 
 # creating the fit01 node
-fit01 = ec.register_resource("linux::Node")
-ec.set(fit01, "username", user01)
-ec.set(fit01, "hostname", host01)
-ec.set(fit01, "gateway", host_gateway)
-ec.set(fit01, "gatewayUser", user_gateway)
-ec.set(fit01, "identity", user_identity)
-ec.set(fit01, "cleanExperiment", True)
-ec.set(fit01, "cleanProcesses", True)
+fit01 	= ec.register_resource("linux::Node",
+                            	username = user01,
+                            	hostname = host01,
+                            	gateway = host_gateway,
+                            	gatewayUser = user_gateway,
+                            	identity = user_identity,
+                            	cleanExperiment = True,
+                            	cleanProcesses = True)
 
 # creating the fit02 node 
-fit02 = ec.register_resource("linux::Node")
-ec.set(fit02, "username", user02)
-ec.set(fit02, "hostname", host02)
-ec.set(fit02, "gateway", host_gateway)
-ec.set(fit02, "gatewayUser", user_gateway)
-ec.set(fit02, "identity", user_identity)
-ec.set(fit02, "cleanExperiment", True)
-ec.set(fit02, "cleanProcesses", True)
+fit02   = ec.register_resource("linux::Node",
+                            	username = user02,
+                            	hostname = host02,
+                            	gateway = host_gateway,
+                            	gatewayUser = user_gateway,
+                            	identity = user_identity,
+                            	cleanExperiment = True,
+                            	cleanProcesses = True)
 
 # application to setup data interface on fit01 node
 app_adhoc_fit01 = ec.register_resource("linux::Application")
@@ -152,8 +153,8 @@ ec.deploy([local, gateway, fit01, fit02, app_local, app_gateway, app_adhoc_fit01
 ec.wait_finished(app_fit02_ls)
 
 # recovering the results
-print "\n--- INFO: listing directory on fit02:"
-print ec.trace(app_fit02_ls, "stdout")
+print ("\n--- INFO: listing directory on fit02:")
+print (ec.trace(app_fit02_ls, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()

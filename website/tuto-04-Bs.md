@@ -42,10 +42,11 @@ The dependent condition will install for us NC (netcat) tool prerequisites and t
   </center>
   
 
-  <pre data-src="prism.js"  data-line="80,87,98,101,104,107" class="line-numbers"><code class="language-python">
+  <pre data-src="prism.js"  data-line="81,88,99,102,105,108" class="line-numbers"><code class="language-python">
 #!/usr/bin/env python
 
 # including nepi library and other required packages
+from &#95;&#95;future&#95;&#95; import print_function
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
@@ -74,38 +75,38 @@ local_dir  = '[some_file_path]'
 ec = ExperimentController(exp_id="B1-send-file")
 
 # creating local
-local = ec.register_resource("linux::Node")
-ec.set(local, "hostname", "localhost")
-ec.set(local, "cleanExperiment", True)
-ec.set(local, "cleanProcesses", True)
+local   = ec.register_resource("linux::Node",
+                              hostname = localhost,
+                              cleanExperiment = True,
+                              cleanProcesses = True)
 
 # creating the gateway node
-gateway = ec.register_resource("linux::Node")
-ec.set(gateway, "username", user_gateway)
-ec.set(gateway, "hostname", host_gateway)
-ec.set(gateway, "identity", user_identity)
-ec.set(gateway, "cleanExperiment", True)
-ec.set(gateway, "cleanProcesses", True)
+gateway = ec.register_resource("linux::Node",
+                              username = user_gateway,
+                              hostname = host_gateway,
+                              identity = user_identity,
+                              cleanExperiment = True,
+                              cleanProcesses = True)
 
 # creating the fit01 node
-fit01 = ec.register_resource("linux::Node")
-ec.set(fit01, "username", user01)
-ec.set(fit01, "hostname", host01)
-ec.set(fit01, "gateway", host_gateway)
-ec.set(fit01, "gatewayUser", user_gateway)
-ec.set(fit01, "identity", user_identity)
-ec.set(fit01, "cleanExperiment", True)
-ec.set(fit01, "cleanProcesses", True)
+fit01   = ec.register_resource("linux::Node",
+                              username = user01,
+                              hostname = host01,
+                              gateway = host_gateway,
+                              gatewayUser = user_gateway,
+                              identity = user_identity,
+                              cleanExperiment = True,
+                              cleanProcesses = True)
 
 # creating the fit02 node 
-fit02 = ec.register_resource("linux::Node")
-ec.set(fit02, "username", user02)
-ec.set(fit02, "hostname", host02)
-ec.set(fit02, "gateway", host_gateway)
-ec.set(fit02, "gatewayUser", user_gateway)
-ec.set(fit02, "identity", user_identity)
-ec.set(fit02, "cleanExperiment", True)
-ec.set(fit02, "cleanProcesses", True)
+fit02   = ec.register_resource("linux::Node",
+                              username = user02,
+                              hostname = host02,
+                              gateway = host_gateway,
+                              gatewayUser = user_gateway,
+                              identity = user_identity,
+                              cleanExperiment = True,
+                              cleanProcesses = True)
 
 # application to copy file from local to gateway
 app_local = ec.register_resource("linux::Application")
@@ -158,8 +159,8 @@ ec.deploy([local, gateway, fit01, fit02, app_local, app_gateway, app_fit01, app_
 ec.wait_finished(app_fit02_ls)
 
 # recovering the results
-print "\n--- INFO: listing directory on fit02:"
-print ec.trace(app_fit02_ls, "stdout")
+print ("\n--- INFO: listing directory on fit02:")
+print (ec.trace(app_fit02_ls, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()
@@ -174,10 +175,12 @@ ec.shutdown()
       Download the <a href="codes_examples/B2-send-file.py" download target="_blank">B2 experiment</a> code
     </center>
  
-  <pre data-src="prism.js" data-line-edit-line="38,125,149" data-line-edit-line="" data-line-inlcude-line="25-35,74-102" class="line-numbers"><code class="language-python">
+  
+<pre data-src="prism.js" data-line-edit-line="40,127,151" data-line-edit-line="" data-line-inlcude-line="27-37,76-104" class="line-numbers"><code class="language-python">
 #!/usr/bin/env python
 
 # including nepi library and other required packages
+from &#95;&#95;future&#95;&#95; import print_function
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
@@ -215,38 +218,38 @@ wifi_ip_fit02  = '172.16.1.2'
 ec = ExperimentController(exp_id="B2-send-file")
 
 # creating local
-local = ec.register_resource("linux::Node")
-ec.set(local, "hostname", "localhost")
-ec.set(local, "cleanExperiment", True)
-ec.set(local, "cleanProcesses", True)
+local   = ec.register_resource("linux::Node",
+                              hostname = localhost,
+                              cleanExperiment = True,
+                              cleanProcesses = True)
 
 # creating the gateway node
-gateway = ec.register_resource("linux::Node")
-ec.set(gateway, "username", user_gateway)
-ec.set(gateway, "hostname", host_gateway)
-ec.set(gateway, "identity", user_identity)
-ec.set(gateway, "cleanExperiment", True)
-ec.set(gateway, "cleanProcesses", True)
+gateway = ec.register_resource("linux::Node",
+                              username = user_gateway,
+                              hostname = host_gateway,
+                              identity = user_identity,
+                              cleanExperiment = True,
+                              cleanProcesses = True)
 
 # creating the fit01 node
-fit01 = ec.register_resource("linux::Node")
-ec.set(fit01, "username", user01)
-ec.set(fit01, "hostname", host01)
-ec.set(fit01, "gateway", host_gateway)
-ec.set(fit01, "gatewayUser", user_gateway)
-ec.set(fit01, "identity", user_identity)
-ec.set(fit01, "cleanExperiment", True)
-ec.set(fit01, "cleanProcesses", True)
+fit01   = ec.register_resource("linux::Node",
+                              username = user01,
+                              hostname = host01,
+                              gateway = host_gateway,
+                              gatewayUser = user_gateway,
+                              identity = user_identity,
+                              cleanExperiment = True,
+                              cleanProcesses = True)
 
 # creating the fit02 node 
-fit02 = ec.register_resource("linux::Node")
-ec.set(fit02, "username", user02)
-ec.set(fit02, "hostname", host02)
-ec.set(fit02, "gateway", host_gateway)
-ec.set(fit02, "gatewayUser", user_gateway)
-ec.set(fit02, "identity", user_identity)
-ec.set(fit02, "cleanExperiment", True)
-ec.set(fit02, "cleanProcesses", True)
+fit02   = ec.register_resource("linux::Node",
+                              username = user02,
+                              hostname = host02,
+                              gateway = host_gateway,
+                              gatewayUser = user_gateway,
+                              identity = user_identity,
+                              cleanExperiment = True,
+                              cleanProcesses = True)
 
 # application to setup data interface on fit01 node
 app_adhoc_fit01 = ec.register_resource("linux::Application")
@@ -329,8 +332,8 @@ ec.deploy([local, gateway, fit01, fit02, app_local, app_gateway, app_adhoc_fit01
 ec.wait_finished(app_fit02_ls)
 
 # recovering the results
-print "\n--- INFO: listing directory on fit02:"
-print ec.trace(app_fit02_ls, "stdout")
+print ("\n--- INFO: listing directory on fit02:")
+print (ec.trace(app_fit02_ls, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()

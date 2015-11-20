@@ -33,6 +33,7 @@ You will be able load and control the most common Linux distros at R2lab testbed
 #!/usr/bin/env python
 
 # including nepi library and other required packages
+from &#95;&#95;future&#95;&#95; import print_function
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
@@ -54,12 +55,12 @@ version = 'fedora-21.ndz'
 ec = ExperimentController()
 
 # creating the gateway node
-gateway = ec.register_resource("linux::Node")
-ec.set(gateway, "username", user_gateway)
-ec.set(gateway, "hostname", host_gateway)
-ec.set(gateway, "identity", user_identity)
-ec.set(gateway, "cleanExperiment", True)
-ec.set(gateway, "cleanProcesses", True)
+gateway = ec.register_resource("linux::Node",
+                                username = user_gateway,
+                                hostname = host_gateway,
+                                identity = user_identity,
+                                cleanExperiment = True,
+                                cleanProcesses = True)
 ec.deploy(gateway)
 
 # application to copy load at fit01 a fresh distro
@@ -73,14 +74,14 @@ ec.deploy(app_gateway)
 ec.wait_finished(app_gateway)
 
 # creating the fit01 node
-fit01 = ec.register_resource("linux::Node")
-ec.set(fit01, "username", user01)
-ec.set(fit01, "hostname", host01)
-ec.set(fit01, "gateway", host_gateway)
-ec.set(fit01, "gatewayUser", user_gateway)
-ec.set(fit01, "identity", user_identity)
-ec.set(fit01, "cleanExperiment", True)
-ec.set(fit01, "cleanProcesses", True)
+fit01   = ec.register_resource("linux::Node",
+                                username = user01,
+                                hostname = host01,
+                                gateway = host_gateway,
+                                gatewayUser = user_gateway,
+                                identity = user_identity,
+                                cleanExperiment = True,
+                                cleanProcesses = True)
 ec.deploy(fit01)
 
 # fit01 will check for the current version
@@ -94,8 +95,8 @@ ec.deploy(app_fit01)
 ec.wait_finished(app_fit01)
 
 # recovering the results
-print "\n--- INFO: listing fit01 distro:"
-print ec.trace(app_fit01, "stdout")
+print ("\n--- INFO: listing fit01 distro:")
+print (ec.trace(app_fit01, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()

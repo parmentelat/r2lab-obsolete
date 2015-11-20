@@ -44,7 +44,7 @@ From one experiment to other, like git style, we highlight the modifications, in
 #!/usr/bin/env python
 
 # including nepi library and other required packages
-from __future__ import print_function
+from &#95;&#95;future&#95;&#95; import print_function
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
@@ -105,7 +105,7 @@ ec.shutdown()
 #!/usr/bin/env python
 
 # including nepi library and other required packages
-from __future__ import print_function
+from &#95;&#95;future&#95;&#95; import print_function
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
@@ -181,7 +181,7 @@ ec.shutdown()
 #!/usr/bin/env python
 
 # including nepi library and other required packages
-from __future__ import print_function
+from &#95;&#95;future&#95;&#95; import print_function
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
@@ -285,7 +285,7 @@ ec.shutdown()
 #!/usr/bin/env python
 
 # including nepi library and other required packages
-from __future__ import print_function
+from &#95;&#95;future&#95;&#95; import print_function
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
