@@ -52,6 +52,8 @@ class Frisbeed:
             if self.subprocess.returncode is None:
                 logger.info("frisbeed started: {}".format(command_line))
                 self.message_bus.put({'loader': "frisbee server started"})
+                self.multicast_group = multicast_group
+                self.multicast_port = multicast_port
                 return multicast_group, multicast_port
             else:
                 logger.info("failed to start frisbeed with {}".format(command_line))
@@ -68,5 +70,5 @@ class Frisbeed:
         if self.subprocess:
             self.subprocess.kill()
             self.subprocess = None
-            logger.info("frisbeed stopped")
+            logger.info("frisbeed ({}:{}) stopped".format(self.multicast_group, self.multicast_port))
             self.message_bus.put({'loader': "frisbee server stopped"})

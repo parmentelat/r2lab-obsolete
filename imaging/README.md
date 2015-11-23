@@ -31,13 +31,16 @@ If no node argument is provided on the command line, the value of the `NODES` en
 
 Would effectively address all nodes currently turned on
 
-In addition, the `-a` option allows you to use the **ALL_NODES** variables
+In addition, the `-a` option allows you to use the **ALL_NODES** variables. So to deal with all nodes except node 4, one can do
+
+    $ imaging-load -a ~4 
+    
 
 ## Logging
 
-TBD
+At this point all logging goes into a file named `imaging.log`
  
-# Install and Configure
+# Configuration
 
 ## Inventory
 
@@ -78,18 +81,24 @@ Configuration is done through a collection of files, which are loaded in this or
  * `~/.imaging.conf`
  * `./imaging.conf`
 
- So in essence, there is a system-wide config (mandatory), and possibly overridden values at a user level, or even more specific at a directory level.
+ So in essence, there is a system-wide config (mandatory), that should contain all variable definitions, and possibly overridden values at a user level, or even more specific at a directory level; these 2 last files do not need to be complete and can just redefine one variable if needed.
  
  Format is like aim	 `.ini` file, should be straightforward. Just beware to **not mention quotes** around strings, as such quotes end up in the python string verbatim.
 
+# Installation
+
+## Core
+
+Nothing has been done yet to provide a pypi packaging. As far as the code itself, everything is in `fitsophia/imaging` and one can run the command from there, provided that the inventory and config are available in `/etc`. 
 
 
-# Dependencies
+## Dependencies
 
-## python-3.4 *vs* python-3.5
+## `asyncio`
+
 We use python 3.4's `asyncio` library. python3.4 can be taken as granted on the ubuntus we use on both `faraday` and `bemol`. 
 
-It would have been nice to assume `python3.5` instead, as the syntax has changed rather drastically between the 2 versions. However as of this writing (Nov. 2015), python3.5 is not yet available on ubuntu-LTS-14.04 that we use, and I'd rather not install that from sources.
+**Note** the syntax for writing asynchroneous code has changed in 3.5 and now relies on `async` and `await`. So it would have been nice to assume `python3.5` instead of `3.4`. However as of this writing (Nov. 2015), python3.5 is not yet available on ubuntu-LTS-14.04 that we use, and I'd rather not install that from sources.
 
 In practical terms this means that whenever we use 
 
@@ -111,13 +120,17 @@ it would have been this instead
 
 ## other libs
 
+Installed with `pip3`
+
 * `telnetlib3` for invoking `frisbee` on the nodes
 * `aiohttp` for talking to the CMC cards
 * `asyncssh` for talking to ssh; for that on ubuntu there is a need to run `apt-get install libffi-dev` before `pip3 install asyncssh`
 
-There's also `asyncssh` that might come in handy at some point; this would let us create ssh connections, and then sessions inside that (sharing a connection for several purposes), all this in a asynchroneous way; sounds real great e.g. for nepi. But another story entirely..
 
 # TODO
+
+* robustify ensure_reset
+  if a node is still answering ping right after it was reset then it's wrong
 
 * provide a tool that can wait for ssh connectivity
   * how to deal with known hosts

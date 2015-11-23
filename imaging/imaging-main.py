@@ -10,6 +10,8 @@ from selector import add_selector_arguments, selected_selector
 from imageloader import ImageLoader
 from imagerepo import the_imagerepo
 from config import the_config
+from monitor import Monitor
+from monitor_curses import MonitorCurses
 import util
 
 # for each of these there should be a symlink to imaging-main.py
@@ -33,6 +35,8 @@ def load():
     parser.add_argument("-b", "--bandwidth", action='store', default=default_bandwidth, type=int,
                         help="Set bandwidth in Mibps for frisbee uploading - default={}"
                               .format(default_bandwidth))
+    parser.add_argument("-c", "--curses", action='store_true', default=False)
+
 
     add_selector_arguments(parser)
 
@@ -63,9 +67,11 @@ def load():
         print("Image file {} not found - emergency exit".format(args.image))
         exit(1)
 
-    message_bus.put_nowait({'selected image' : actual_image})
-
-    loader = ImageLoader(nodes, message_bus=message_bus, image=actual_image, bandwidth=args.bandwidth, timeout=args.timeout)
+    message_bus.put_nowait({'loading_image' : actual_image})
+    monitor_class = Monitor if not args.curses else MonitorCurses
+    monitor = monitor_class(nodes, message_bus)
+    loader = ImageLoader(nodes, image=actual_image, bandwidth=args.bandwidth,
+                         message_bus=message_bus, monitor=monitor, timeout=args.timeout)
     return loader.main(reset = args.reset)
  
 ####################

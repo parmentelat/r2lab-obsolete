@@ -7,17 +7,17 @@ class Inventory:
         with open(the_config.value('inventory', 'path')) as feed:
            self._nodes = json.load(feed)
 
-    def _locate_entry_from_hostname(self, hostname):
+    def _locate_entry_from_key(self, key, value):
         """
         search for an entry that has given hostname
         returns a tuple (host, key)
         e.g.
-        _locate_entry_from_hostname('reboot01') =>
+        _locate_entry_from_key('hostname', 'reboot01') =>
          ( { 'cmc' : {...}, 'control' : {...}, 'data' : {...} }, 'cmc' )
          """
         for host in self._nodes:
             for k, v in host.items():
-                if v['hostname'] == hostname:
+                if v[key] == value:
                     return host, k
         return None, None
 
@@ -28,9 +28,14 @@ class Inventory:
         e.g.
         attached_hostname('reboot01', 'control') => 'fit01'
         """
-        host, k = self._locate_entry_from_hostname(hostname)
+        host, k = self._locate_entry_from_key('hostname', hostname)
         if host and interface_key in host:
             return host[interface_key][info_key]
+
+    def control_ip_from_any_ip(self, ip):
+        host, k = self._locate_entry_from_key('ip', ip)
+        if host:
+            return host['control']['ip']
 
     def display(self, verbose=False):
         def cell_repr(k, v, verbose):

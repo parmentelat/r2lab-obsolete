@@ -34,7 +34,7 @@ class FrisbeeParser(telnetlib3.TerminalShell):
     def feedback(self, field, msg):
         self.client.proxy.message_bus.put_nowait({'ip': self.ip(), field: msg})
     def send_percent(self, percent):
-        self.feedback('frisbee_progress', percent)
+        self.feedback('progress', percent)
 
     # parse frisbee output
     # tentatively ported from nitos_testbed ruby code but never tested
@@ -144,12 +144,13 @@ class FrisbeeProxy:
         def client_factory():
             return FrisbeeClient(proxy = self, encoding='utf-8', shell=FrisbeeParser)
 
-        yield from self.feedback('frisbee_status', "trying to telnet")
+        yield from self.feedback('frisbee_status', "trying to telnet..")
+        logger.info("Trying to telnet to {}".format(self.control_ip))
         loop = asyncio.get_event_loop()
         try:
             self._transport, self._protocol = \
               yield from loop.create_connection(client_factory, self.control_ip, self.port)
-            yield from self.feedback('frisbee_status', "telnet connected")
+            logger.info("{}: telnet connected".format(self.control_ip))
             return True
         except Exception as e:
 #            import traceback

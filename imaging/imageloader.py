@@ -1,21 +1,21 @@
 import asyncio
 
 import util
-from monitor import Monitor
 from frisbeed import Frisbeed
 
 from config import the_config
 
 class ImageLoader:
 
-    def __init__(self, nodes, message_bus, image, bandwidth, timeout):
+    def __init__(self, nodes,  image, bandwidth,
+                 message_bus, monitor, timeout):
         self.nodes = nodes
-        self.message_bus = message_bus
         self.image = image
         self.bandwidth = bandwidth
+        self.monitor = monitor
+        self.message_bus = message_bus
         self.timeout = timeout
-        # xxx timeout should be configurable - if it works, that is
-        self.monitor = Monitor(message_bus)
+        self.frisbeed = None
 
     @asyncio.coroutine
     def stage1(self):
@@ -69,7 +69,7 @@ class ImageLoader:
 
     @asyncio.coroutine
     def run(self, reset):
-        yield from (self.stage1() if reset else self.message_bus.put("Skipping stage1"))
+        yield from (self.stage1() if reset else self.message_bus.put({'info': "Skipping stage1"}))
         yield from (self.stage2(reset))
         yield from self.monitor.stop()
 
@@ -84,15 +84,16 @@ class ImageLoader:
             loop.run_until_complete(wrapper)
             return 0
         except KeyboardInterrupt as e:
-            print("imaging-load : keyboard interrupt - exiting")
+            self.monitor.set_goodbye("imaging-load : keyboard interrupt - exiting")
             tasks.cancel()
             loop.run_forever()
             tasks.exception()
             return 1
         except asyncio.TimeoutError as e:
-            print("imaging-load : timeout expired after {}s".format(self.timeout))
+            self.monitor.set_goodbye("imaging-load : timeout expired after {}s".format(self.timeout))
             return 1
         finally:
-            self.frisbeed.stop_wait()
+            self.frisbeed and self.frisbeed.stop_wait()
             self.nextboot_cleanup()
+            self.monitor.stop_nowait()
             loop.close()
