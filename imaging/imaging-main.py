@@ -26,7 +26,6 @@ def load():
     default_bandwidth = the_config.value('networking', 'bandwidth')
                             
     parser = ArgumentParser()
-    parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-i", "--image", action='store', default=default_image,
                         help="Specify image to load (default is {})".format(default_image))
     parser.add_argument("-t", "--timeout", action='store', default=default_timeout, type=float,
@@ -55,8 +54,7 @@ def load():
     nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
 
     message_bus.put_nowait({'selected_nodes' : selector})
-    if args.verbose:
-        message_bus.put_nowait('timeout', args.timeout)
+    logger.info("timeout is {}".format(args.timeout))
 
     for node in nodes:
         if not node.is_known():

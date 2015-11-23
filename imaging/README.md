@@ -129,23 +129,17 @@ Installed with `pip3`
 
 # TODO
 
-* robustify ensure_reset
-  if a node is still answering ping right after it was reset then it's wrong
-
 * provide a tool that can wait for ssh connectivity
-  * how to deal with known hosts
-  * how to specify alternative user and key
+  * imaging-wait -s (ssh) -p (ping) or -n (telnet) 
+  * -t would be for -timeout
+  * this is unless we change the timeout option to be -T; given that this is mostly for the nightly script anyway
+
+* robustify ensure_reset (fit04)
+  if a node is still answering ping right after it was reset then it's wrong
 
 * refactor how mains are done; some have a monitor and some others not
 * ideally before writing imagesaver, although no big deal
  
 * check for the order of arguments in constructors...
-* check for imaging-load --verbose; 
-  * is that really useful ?
-  * should rather tweak logger's verbosity in addition ?
-  * or just remove this for now ?
-
-* more decent monitor (at least knowns how many nodes, does averages..)
-* rename CMC into just plain node ?
 
 * nicer imaging-list (sizes, symlinks, etc..)
