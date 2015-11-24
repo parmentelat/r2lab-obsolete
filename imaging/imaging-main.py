@@ -5,19 +5,21 @@ import asyncio
 from argparse import ArgumentParser
 from logger import logger
 
+from monitor import Monitor
+from monitor_curses import MonitorCurses
+
 from node import Node
 from selector import add_selector_arguments, selected_selector
 from imageloader import ImageLoader
 from imagerepo import the_imagerepo
 from config import the_config
-from monitor import Monitor
-from monitor_curses import MonitorCurses
+from ssh import SshProxy
 import util
 
 # for each of these there should be a symlink to imaging-main.py
 # like imaging-load -> imaging-main.py
 # and a function in this module with no arg
-supported_commands = [ 'load', 'save', 'status', 'list' ]
+supported_commands = [ 'load', 'save', 'status', 'wait', 'list' ]
 
 ####################
 def load():
@@ -94,17 +96,6 @@ def status():
     print(selector)
     loop = asyncio.get_event_loop()
 
-# scaffolding on sshwatchers - stand by for now
-#    ### tmp beg
-#    from sshwatcher import SshWatcher
-#    watchers = [ SshWatcher(name) for name in selector.node_names() ]
-#    coros = [ watcher.run('hostname') for watcher in watchers]
-#    loop.run_until_complete(asyncio.gather(*coros))
-#    for watcher in watchers:
-#        print(watcher)
-#    return 0
-#    ### tmp end
-
     nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
     coros = [ node.get_status() for node in nodes ]
     
@@ -127,6 +118,58 @@ def status():
     finally:
         loop.close()
 
+####################
+def wait():
+    default_timeout = the_config.value('nodes', 'wait_default_timeout')
+    default_backoff = the_config.value('networking', 'ssh_backoff')
+    
+    parser = ArgumentParser()
+    parser.add_argument("-t", "--timeout", action='store', default=default_timeout, type=float,
+                        help="Specify global timeout for the whole process, default={}"
+                              .format(default_timeout))
+    parser.add_argument("-b", "--backoff", action='store', default=default_backoff, type=float,
+                        help="Specify backoff average for between attempts to ssh connect, default={}"
+                              .format(default_backoff))
+    parser.add_argument("-c", "--curses", action='store_true', default=False)
+
+    add_selector_arguments(parser)
+    args = parser.parse_args()
+
+    selector = selected_selector(args)
+    message_bus = asyncio.Queue()
+
+    print(selector)
+    loop = asyncio.get_event_loop()
+
+    nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
+    sshs =  [ SshProxy(node) for node in nodes ]
+    coros = [ ssh.wait_for(args.backoff) for ssh in sshs ]
+    
+#    monitor_class = Monitor if not args.curses else MonitorCurses
+#    monitor = monitor_class(nodes, message_bus)
+
+    t1 = util.self_manage(asyncio.gather(*coros))
+#    t2 = util.self_manage(monitor.run())
+#    tasks = asyncio.gather(t1, t2)
+    tasks = t1
+    wrapper = asyncio.wait_for(tasks, timeout = args.timeout)
+    try:
+        loop.run_until_complete(wrapper)
+        return 0
+    except KeyboardInterrupt as e:
+        print("imaging-status : keyboard interrupt - exiting")
+        tasks.cancel()
+        loop.run_forever()
+        tasks.exception()
+        return 1
+    except asyncio.TimeoutError as e:
+        print("imaging-wait : timeout expired after {}s".format(args.timeout))
+        return 1
+    finally:
+        for ssh in sshs:
+            print("{}:{}".format(ssh.node, ssh.status))
+        loop.close()
+        
 ####################
 def list():
     parser = ArgumentParser()

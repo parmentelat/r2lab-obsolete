@@ -24,7 +24,7 @@ class Node:
         self.mac = None
 
     def __repr__(self):
-        return "<CMC {}>".format(self.cmc_name)
+        return "<Node {}>".format(self.control_hostname())
 
     def is_known(self):
         return self.control_mac_address() is not None
@@ -181,3 +181,5 @@ class Node:
             yield from self.ensure_reset()
         else:
             yield from self.feedback('reboot', 'skipping final reset')
+
+    

@@ -125,21 +125,39 @@ Installed with `pip3`
 * `telnetlib3` for invoking `frisbee` on the nodes
 * `aiohttp` for talking to the CMC cards
 * `asyncssh` for talking to ssh; for that on ubuntu there is a need to run `apt-get install libffi-dev` before `pip3 install asyncssh`
+* `progressbar33` is used in rendering progress bar in the regular monitor (i.e. without the -c option).
 
 
 # TODO
 
-* provide a tool that can wait for ssh connectivity
-  * imaging-wait -s (ssh) -p (ping) or -n (telnet) 
+## crucial (P1)
+* finish wait-ssh (monitor) and why not come up with a wait-telnet as well ?
+  * imaging-wait -s (ssh: default) -p (ping) or -n (telnet) 
   * -t would be for -timeout
   * this is unless we change the timeout option to be -T; given that this is mostly for the nightly script anyway
+
+* imaging-save
 
 * robustify ensure_reset (fit04)
   if a node is still answering ping right after it was reset then it's wrong
 
 * refactor how mains are done; some have a monitor and some others not
-* ideally before writing imagesaver, although no big deal
+
+## for deployment (P2)
+
+* couple usage with leases system
+
+* think of some other name ? 
+  * imaging makes sense for load & save but for wait or list ?
+
+* packaging (pypi?)
+
+## nice to have (P3)
+
+* rewrite monitor.py within this framework ()
+
+## cosmetic (P4)
  
-* check for the order of arguments in constructors...
+* come up with a means to set bandwidth on a node-by-node basis
 
 * nicer imaging-list (sizes, symlinks, etc..)
