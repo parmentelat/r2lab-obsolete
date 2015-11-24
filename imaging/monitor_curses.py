@@ -84,5 +84,10 @@ class MonitorCurses(Monitor):
     def pad(self, text):
         return self._pad(text, self.submaxc-2)
     def _pad(self, text, width):
-        missing = width-len(text)
-        return text + missing*' ' 
+        if len(text) == width:
+            return text
+        elif len(text) > width:
+            return text[:(width-3)] + '...'
+        else:
+            missing = width-len(text)
+            return text + missing*' ' 

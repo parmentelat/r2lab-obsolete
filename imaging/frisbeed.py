@@ -10,6 +10,10 @@ class Frisbeed:
         self.message_bus = message_bus
     
     @asyncio.coroutine
+    def feedback(self, field, msg):
+        yield from self.message_bus.put({field: msg})
+
+    @asyncio.coroutine
     def start(self):
         """
         Start a frisbeed instance
@@ -51,7 +55,7 @@ class Frisbeed:
             command_line = " ".join(command)
             if self.subprocess.returncode is None:
                 logger.info("frisbeed started: {}".format(command_line))
-                self.message_bus.put({'loader': "frisbee server started"})
+                yield from self.feedback('loader', "frisbee server started")
                 self.multicast_group = multicast_group
                 self.multicast_port = multicast_port
                 return multicast_group, multicast_port
@@ -71,4 +75,4 @@ class Frisbeed:
             self.subprocess.kill()
             self.subprocess = None
             logger.info("frisbeed ({}:{}) stopped".format(self.multicast_group, self.multicast_port))
-            self.message_bus.put({'loader': "frisbee server stopped"})
+            yield from self.feedback({'loader': "frisbee server stopped"})

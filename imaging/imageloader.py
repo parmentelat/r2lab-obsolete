@@ -18,6 +18,10 @@ class ImageLoader:
         self.frisbeed = None
 
     @asyncio.coroutine
+    def feedback(self, field, msg):
+        yield from self.message_bus.put({field: msg})
+
+    @asyncio.coroutine
     def stage1(self):
         """
         redirect nextboot symlink to frisbee, and reset all nodes
@@ -69,7 +73,7 @@ class ImageLoader:
 
     @asyncio.coroutine
     def run(self, reset):
-        yield from (self.stage1() if reset else self.message_bus.put({'info': "Skipping stage1"}))
+        yield from (self.stage1() if reset else self.feedback({'info': "Skipping stage1"}))
         yield from (self.stage2(reset))
         yield from self.monitor.stop()
 

@@ -13,6 +13,8 @@ class Selector:
 
     def __repr__(self):
         return "<Selector " + " ".join(self.node_names()) + ">"
+    def __str__(self):
+        return "Selected nodes: " + " ".join(self.node_names())
 
     def add_or_delete(self, index, add_if_true):
         if add_if_true:
@@ -89,10 +91,18 @@ def selected_selector(parser_args):
     selector = Selector('fit', 'reboot')
     # nothing set on the command line : let's use $NODES
     if parser_args.all_nodes:
-        selector.add_range(os.environ["ALL_NODES"])
+        try:
+            selector.add_range(os.environ["ALL_NODES"])
+        except KeyError:
+            print("option -a requires you to set env. variable 'ALL_NODES'")
+            exit(1)            
     if not ranges:
-        for node in os.environ["NODES"].split():
-            selector.add_range(node)
+        try:
+            for node in os.environ["NODES"].split():
+                selector.add_range(node)
+        except KeyError:
+            print("no argument specified : this requires you to set env. variable 'NODES'")
+            exit(1)            
     else:
         for range in ranges:
             selector.add_range(range)

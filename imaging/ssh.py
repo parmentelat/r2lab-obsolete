@@ -37,8 +37,10 @@ class MySSHClient(asyncssh.SSHClient):
         if debug: print('SSC Authentication successful.')
 
 class SshProxy:
-    def __init__(self, node):
+    def __init__(self, node, verbose=False):
         self.node = node
+        self.verbose = verbose
+        #
         self.hostname = self.node.control_hostname()
         self.status = None
 
@@ -56,7 +58,7 @@ class SshProxy:
                 )
             return True
         except (OSError, asyncssh.Error) as e:
-            yield from self.node.feedback('status', 'connect failed')
+            #yield from self.node.feedback('ssh_status', 'connect failed')
             # print('MYssh failed: {}'.format(e))
             return False
 
@@ -82,12 +84,15 @@ class SshProxy:
         while True:
             self.status = yield from self.connect()
             if self.status:
-                self.node.feedback('status', "ssh connection OK")
+                if self.verbose:
+                    yield from self.node.feedback('ssh_status', "connection OK")
                 yield from self.close()
                 return self.status
             random_backoff = (0.5+random.random())*backoff
-            yield from self.node.feedback('ssh_status',
-                                          "cannot connect, backing off for {}s".format(random_backoff))
+            if self.verbose:
+                yield from self.node.feedback(
+                    'ssh_status',
+                    "cannot connect, backing off for {:.3}s".format(random_backoff))
             yield from asyncio.sleep(random_backoff)
 
 @asyncio.coroutine

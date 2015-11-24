@@ -55,6 +55,7 @@ def load():
     selector = selected_selector(args)
     nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
 
+    # send feedback
     message_bus.put_nowait({'selected_nodes' : selector})
     logger.info("timeout is {}".format(args.timeout))
 
@@ -67,6 +68,7 @@ def load():
         print("Image file {} not found - emergency exit".format(args.image))
         exit(1)
 
+    # send feedback
     message_bus.put_nowait({'loading_image' : actual_image})
     monitor_class = Monitor if not args.curses else MonitorCurses
     monitor = monitor_class(nodes, message_bus)
@@ -130,7 +132,9 @@ def wait():
     parser.add_argument("-b", "--backoff", action='store', default=default_backoff, type=float,
                         help="Specify backoff average for between attempts to ssh connect, default={}"
                               .format(default_backoff))
-    parser.add_argument("-c", "--curses", action='store_true', default=False)
+# iwait/curses won't work too well - turned off for now
+#    parser.add_argument("-c", "--curses", action='store_true', default=False)
+    parser.add_argument("-v", "--verbose", action='store_true', default=False)
 
     add_selector_arguments(parser)
     args = parser.parse_args()
@@ -138,26 +142,33 @@ def wait():
     selector = selected_selector(args)
     message_bus = asyncio.Queue()
 
-    print(selector)
+    if args.verbose:
+        message_bus.put_nowait(selector)
     loop = asyncio.get_event_loop()
 
     nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
-    sshs =  [ SshProxy(node) for node in nodes ]
+    sshs =  [ SshProxy(node, verbose=args.verbose) for node in nodes ]
     coros = [ ssh.wait_for(args.backoff) for ssh in sshs ]
-    
-#    monitor_class = Monitor if not args.curses else MonitorCurses
-#    monitor = monitor_class(nodes, message_bus)
 
-    t1 = util.self_manage(asyncio.gather(*coros))
-#    t2 = util.self_manage(monitor.run())
-#    tasks = asyncio.gather(t1, t2)
-    tasks = t1
+# iwait/curses won't work too well - turned off for now
+#    monitor_class = Monitor if not args.curses else MonitorCurses
+    monitor_class = Monitor
+    monitor = monitor_class(nodes, message_bus)
+
+    @asyncio.coroutine
+    def run():
+        yield from asyncio.gather(*coros)
+        yield from monitor.stop()
+
+    t1 = util.self_manage(run())
+    t2 = util.self_manage(monitor.run())
+    tasks = asyncio.gather(t1, t2)
     wrapper = asyncio.wait_for(tasks, timeout = args.timeout)
     try:
         loop.run_until_complete(wrapper)
         return 0
     except KeyboardInterrupt as e:
-        print("imaging-status : keyboard interrupt - exiting")
+        print("imaging-wait : keyboard interrupt - exiting")
         tasks.cancel()
         loop.run_forever()
         tasks.exception()

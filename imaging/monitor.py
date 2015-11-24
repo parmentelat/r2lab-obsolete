@@ -104,9 +104,9 @@ class Monitor:
             self.dispatch_hook(message, timestamp, duration)
 
     def message_to_text(self, message):
-        if isinstance(message, str):
+        if not isinstance(message, dict):
             # should not happen
-            return "STR!!" + message
+            return "LITTERAL" + str(message)
         elif 'info' in message:
             return message['info']
         elif 'loading_image' in message:
@@ -117,16 +117,20 @@ class Monitor:
         else:
             return str(message)
 
+    subkeys = ['frisbee_retcod', 'reboot', 'ssh_status']
+
     def message_to_text_ip(self, message, node, mention_node=True):
+        text = None
         if 'progress' in message:
             text = "{:02}".format(message['progress'])
         elif 'frisbee_retcod' in message:
             text = "Uploading successful" if message['frisbee_retcod'] == 0 else "Uploading FAILED !"
-        elif 'frisbee_status' in message:
-            text = message['frisbee_status']
-        elif 'reboot' in message:
-            text = message['reboot']
         else:
+            for key in self.subkeys:
+                if key in message:
+                    text = message[key]
+                    break
+        if text is None:
             text = str(message)
         return text if mention_node == False else "{} : {}".format(node.name, text)
 
