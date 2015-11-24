@@ -256,7 +256,24 @@ function map () {
 }
 doc-nodes map "\trun an ssh command on all selected nodes"
 
-# sequentially load the ubuntu image on $NODES, or arguments if provided
+#
+alias iload=imaging-load
+alias iwait=imaging-wait
+alias isave=imaging-save
+alias iwait=imaging-wait
+alias ilist=imaging-list
+
+alias iload-fedora="iload -i fedora"
+alias iload-ubuntu="iload -i ubuntu"
+alias iload-f21="iload -i fedora-21"
+alias iload-f22="iload -i fedora-22"
+alias iload-f23="iload -i fedora-23"
+alias iload-u1404="iload -i ubuntu-14.04"
+alias iload-u1410="iload -i ubuntu-14.10"
+alias iload-u1504="iload -i ubuntu-15.04"
+alias iload-u1510="iload -i ubuntu-15.10"
+
+# load an image on $NODES, or arguments if provided
 function load-image () {
     imagename="$1"; shift
     image=/var/lib/omf-images-6/$imagename
