@@ -9,8 +9,9 @@ from monitor import Monitor
 from monitor_curses import MonitorCurses
 
 from node import Node
-from selector import add_selector_arguments, selected_selector
+from selector import Selector, add_selector_arguments, selected_selector
 from imageloader import ImageLoader
+from imagesaver import ImageSaver
 from imagerepo import the_imagerepo
 from config import the_config
 from ssh import SshProxy
@@ -37,17 +38,12 @@ def load():
                         help="Set bandwidth in Mibps for frisbee uploading - default={}"
                               .format(default_bandwidth))
     parser.add_argument("-c", "--curses", action='store_true', default=False)
-
-
-    add_selector_arguments(parser)
-
-    # xxx this is truly more for debugging
-    # I'd rather not have these in the help message...
+    # this is more for debugging
     parser.add_argument("-n", "--no-reset", dest='reset', action='store_false', default=True,
                         help = """use this with nodes that are already running a frisbee image.
                         They won't get reset, neither before or after the frisbee session
                         """)
-
+    add_selector_arguments(parser)
     args = parser.parse_args()
 
     message_bus = asyncio.Queue()
@@ -59,10 +55,6 @@ def load():
     message_bus.put_nowait({'selected_nodes' : selector})
     logger.info("timeout is {}".format(args.timeout))
 
-    for node in nodes:
-        if not node.is_known():
-            logger.critical("WARNING : node {} is not known to the inventory".format(node.hostname))
-
     actual_image = the_imagerepo.locate(args.image)
     if not actual_image:
         print("Image file {} not found - emergency exit".format(args.image))
@@ -73,13 +65,44 @@ def load():
     monitor_class = Monitor if not args.curses else MonitorCurses
     monitor = monitor_class(nodes, message_bus)
     loader = ImageLoader(nodes, image=actual_image, bandwidth=args.bandwidth,
-                         message_bus=message_bus, monitor=monitor, timeout=args.timeout)
-    return loader.main(reset = args.reset)
+                         message_bus=message_bus, monitor=monitor)
+    return loader.main(reset=args.reset, timeout=args.timeout)
  
 ####################
 def save():
-    print("save NYI")
-    return 1
+    default_timeout = the_config.value('nodes', 'save_default_timeout')
+
+    parser = ArgumentParser()
+    parser.add_argument("-o", "--output", action='store', default=None,
+                        help="Specify output name for image")
+    parser.add_argument("-t", "--timeout", action='store', default=default_timeout, type=float,
+                        help="Specify global timeout for the whole process, default={}"
+                              .format(default_timeout))
+    parser.add_argument("-c", "--curses", action='store_true', default=False)
+    parser.add_argument("-n", "--no-reset", dest='reset', action='store_false', default=True,
+                        help = """use this with nodes that are already running a frisbee image.
+                        They won't get reset, neither before or after the frisbee session
+                        """)
+    parser.add_argument("node")
+    args = parser.parse_args()
+
+    message_bus = asyncio.Queue()
+
+    selector = Selector()
+    selector.add_range(args.node)
+    print(selector)
+    # in case there was one argument but it was not found in inventory
+    if selector.how_many() != 1:
+        parser.print_help()
+    
+    nodename = next(selector.node_names())
+    actual_image = the_imagerepo.where_to_save(nodename, args.output)
+    message_bus.put_nowait({'saving_image' : actual_image})
+    monitor_class = Monitor if not args.curses else MonitorCurses
+    monitor = monitor_class(nodes, message_bus)
+    saver = ImageSaver(nodename, image=actual_image,
+                       message_bus=message_bus, monitor = monitor, timeout=args.timeout)
+    return saver.main(reset = args.reset)
 
 ####################
 def status():

@@ -4,7 +4,7 @@ class Inventory:
 
     def __init__(self):
         from config import the_config
-        with open(the_config.value('inventory', 'path')) as feed:
+        with open(the_config.value('testbed', 'inventory_path')) as feed:
            self._nodes = json.load(feed)
 
     def _locate_entry_from_key(self, key, value):

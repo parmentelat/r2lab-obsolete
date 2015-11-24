@@ -2,13 +2,15 @@
 
 import os
 
+from config import the_config
+
 class Selector:
 
     # typically regularname='fit' and rebootname='reboot'
     # so that fit01 and reboot01 are names that resolve
-    def __init__(self, regularname, rebootname):
-        self.regularname = regularname
-        self.rebootname = rebootname
+    def __init__(self):
+        self.regularname = the_config.value('testbed', 'regularname')
+        self.rebootname = the_config.value('testbed', 'rebootname')
         self.set = set()
 
     def __repr__(self):
@@ -60,6 +62,9 @@ class Selector:
     def cmc_names(self):
         return ("{}{:02}".format(self.rebootname, i) for i in sorted(self.set))
 
+    def how_many(self):
+        return len(self.set)
+
 
 ####################
 #convenience tools shared by all commands that need this sort of selection
@@ -88,7 +93,7 @@ def selected_selector(parser_args):
     ranges = parser_args.ranges
     
     # our naming conventions
-    selector = Selector('fit', 'reboot')
+    selector = Selector()
     # nothing set on the command line : let's use $NODES
     if parser_args.all_nodes:
         try:

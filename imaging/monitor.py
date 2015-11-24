@@ -94,8 +94,8 @@ class Monitor:
                 delta = node_current_percent - node_previous_percent
                 node.percent = node_current_percent
                 self.counter += delta
-                logger.info("{} progress: previous = {}, current = {}, total {}/{}"
-                            .format(node.name, node_previous_percent, node_current_percent,
+                logger.info("{} progress: {}/100 (was {}), total {}/{}"
+                            .format(node.name, node_current_percent, node_previous_percent,
                                     self.counter, 100*len(self.nodes)))
                 self.dispatch_ip_progress_hook(ip, node, message, timestamp, duration)
             else:

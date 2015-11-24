@@ -173,7 +173,14 @@ class Node:
         yield from self.frisbee.wait()
         
     @asyncio.coroutine
-    def stage2(self, ip , port, reset):
+    def load_stage1(self, idle):
+        self.manage_nextboot_symlink('frisbee')
+        yield from self.ensure_reset()
+        yield from self.feedback('reboot', "idling for {}s".format(idle))
+        yield from asyncio.sleep(idle)
+
+    @asyncio.coroutine
+    def load_stage2(self, ip , port, reset):
         yield from self.wait_for_telnet()
         self.manage_nextboot_symlink('cleanup')
         yield from self.frisbee.run_client(ip, port)

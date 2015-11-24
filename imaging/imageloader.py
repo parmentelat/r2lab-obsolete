@@ -8,13 +8,13 @@ from config import the_config
 class ImageLoader:
 
     def __init__(self, nodes,  image, bandwidth,
-                 message_bus, monitor, timeout):
+                 message_bus, monitor):
         self.nodes = nodes
         self.image = image
         self.bandwidth = bandwidth
         self.monitor = monitor
         self.message_bus = message_bus
-        self.timeout = timeout
+        #
         self.frisbeed = None
 
     @asyncio.coroutine
@@ -23,20 +23,8 @@ class ImageLoader:
 
     @asyncio.coroutine
     def stage1(self):
-        """
-        redirect nextboot symlink to frisbee, and reset all nodes
-        """
-
-        @asyncio.coroutine
-        def stage1_node(node):
-            # this is now synchroneous
-            node.manage_nextboot_symlink('frisbee')
-            yield from node.ensure_reset()
-            idle = int(the_config.value('nodes', 'idle_after_reset'))
-            yield from node.feedback('reboot', "idling for {}s".format(idle))
-            yield from asyncio.sleep(idle)
-            
-        yield from asyncio.gather(*[stage1_node(node) for node in self.nodes])
+        idle = int(the_config.value('nodes', 'idle_after_reset'))
+        yield from asyncio.gather(*[node.load_stage1(idle) for node in self.nodes])
 
     @asyncio.coroutine
     def start_frisbeed(self):
@@ -53,15 +41,9 @@ class ImageLoader:
         """
         # start_frisbeed will return the ip+port to use 
         ip, port = yield from self.start_frisbeed()
-        yield from asyncio.gather(*[node.stage2(ip, port, reset) for node in self.nodes])
+        yield from asyncio.gather(*[node.load_stage2(ip, port, reset) for node in self.nodes])
         # we can now kill the server
         yield from self.frisbeed.stop()
-
-    @asyncio.coroutine
-    def stage3(self):
-        # just reset all nodes for now
-        # waiting for the nodes to come back under ssh could be another image-wait feature
-        yield from asyncio.gather(*[node.ensure_reset() for node in self.nodes])
 
     # this is synchroneous
     def nextboot_cleanup(self):
@@ -78,12 +60,12 @@ class ImageLoader:
         yield from self.monitor.stop()
 
     # from http://stackoverflow.com/questions/30765606/whats-the-correct-way-to-clean-up-after-an-interrupted-event-loop
-    def main(self, reset):
+    def main(self, reset, timeout):
         loop = asyncio.get_event_loop()
         t1 = util.self_manage(self.run(reset))
         t2 = util.self_manage(self.monitor.run())
         tasks = asyncio.gather(t1, t2)
-        wrapper = asyncio.wait_for(tasks, timeout = self.timeout)
+        wrapper = asyncio.wait_for(tasks, timeout)
         try:
             loop.run_until_complete(wrapper)
             return 0

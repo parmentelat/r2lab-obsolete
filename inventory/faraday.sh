@@ -258,8 +258,8 @@ doc-nodes map "\trun an ssh command on all selected nodes"
 
 #
 alias iload=imaging-load
-alias iwait=imaging-wait
 alias isave=imaging-save
+alias istat=imaging-status
 alias iwait=imaging-wait
 alias ilist=imaging-list
 
