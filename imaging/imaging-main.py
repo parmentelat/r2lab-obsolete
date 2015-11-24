@@ -95,9 +95,10 @@ def status():
     selector = selected_selector(args)
     message_bus = asyncio.Queue()
     
-    print(selector)
-    loop = asyncio.get_event_loop()
+    message_bus.put_nowait({'selected_nodes' : selector})
+    logger.info("timeout is {}".format(args.timeout))
 
+    loop = asyncio.get_event_loop()
     nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
     coros = [ node.get_status() for node in nodes ]
     
@@ -143,9 +144,10 @@ def wait():
     message_bus = asyncio.Queue()
 
     if args.verbose:
-        message_bus.put_nowait(selector)
-    loop = asyncio.get_event_loop()
+        message_bus.put_nowait({'selected_nodes' : selector})
+    logger.info("timeout is {}".format(args.timeout))
 
+    loop = asyncio.get_event_loop()
     nodes = [ Node(cmc_name, message_bus) for cmc_name in selector.cmc_names() ]
     sshs =  [ SshProxy(node, verbose=args.verbose) for node in nodes ]
     coros = [ ssh.wait_for(args.backoff) for ssh in sshs ]

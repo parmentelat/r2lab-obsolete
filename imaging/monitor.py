@@ -113,7 +113,7 @@ class Monitor:
             return "Loading image {}".format(message['loading_image'])
         elif 'selected_nodes' in message:
             names = message['selected_nodes'].node_names()
-            return " ".join(names) if names else "EMPTY NODE SELECTION"
+            return ("Selection: " + " ".join(names)) if names else "Empty Node Selection"
         else:
             return str(message)
 
