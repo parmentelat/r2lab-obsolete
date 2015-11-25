@@ -4,7 +4,7 @@ import os.path
 import glob
 import time
 
-class ImageRepo:
+class ImagesRepo:
     def __init__(self):
         self.repo = the_config.value('frisbee', 'images_dir')
         self.name = the_config.value('frisbee', 'default_image')
@@ -53,4 +53,4 @@ class ImageRepo:
             file = path.replace(self.repo+"/", "").replace(self.repo, "")
             print(file)
 
-the_imagerepo = ImageRepo()
+the_imagesrepo = ImagesRepo()

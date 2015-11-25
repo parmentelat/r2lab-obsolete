@@ -12,7 +12,7 @@ from node import Node
 from selector import Selector, add_selector_arguments, selected_selector
 from imageloader import ImageLoader
 from imagesaver import ImageSaver
-from imagerepo import the_imagerepo
+from imagesrepo import the_imagesrepo
 from config import the_config
 from ssh import SshProxy
 import util
@@ -24,7 +24,7 @@ supported_commands = [ 'load', 'save', 'status', 'wait', 'list' ]
 
 ####################
 def load():
-    default_image = the_imagerepo.default()
+    default_image = the_imagesrepo.default()
     default_timeout = the_config.value('nodes', 'load_default_timeout')
     default_bandwidth = the_config.value('networking', 'bandwidth')
                             
@@ -54,8 +54,9 @@ def load():
     # send feedback
     message_bus.put_nowait({'selected_nodes' : selector})
     logger.info("timeout is {}".format(args.timeout))
+    logger.info("bandwidth is {}".format(args.bandwidth))
 
-    actual_image = the_imagerepo.locate(args.image)
+    actual_image = the_imagesrepo.locate(args.image)
     if not actual_image:
         print("Image file {} not found - emergency exit".format(args.image))
         exit(1)
@@ -94,15 +95,17 @@ def save():
     # in case there was one argument but it was not found in inventory
     if selector.how_many() != 1:
         parser.print_help()
+    cmc_name = next(selector.cmc_names())
+    node = Node(cmc_name, message_bus)
+    nodename = node.control_hostname()
     
-    nodename = next(selector.node_names())
-    actual_image = the_imagerepo.where_to_save(nodename, args.output)
+    actual_image = the_imagesrepo.where_to_save(nodename, args.output)
     message_bus.put_nowait({'saving_image' : actual_image})
     monitor_class = Monitor if not args.curses else MonitorCurses
-    monitor = monitor_class(nodes, message_bus)
-    saver = ImageSaver(nodename, image=actual_image,
-                       message_bus=message_bus, monitor = monitor, timeout=args.timeout)
-    return saver.main(reset = args.reset)
+    monitor = monitor_class([node], message_bus)
+    saver = ImageSaver(node, image=actual_image,
+                       message_bus=message_bus, monitor = monitor)
+    return saver.main(reset = args.reset, timeout=args.timeout)
 
 ####################
 def status():
@@ -221,8 +224,8 @@ def list():
     if args.config or args.all:
         the_config.display()
     if args.images or args.all:
-        from imagerepo import the_imagerepo
-        the_imagerepo.display()
+        from imagesrepo import the_imagesrepo
+        the_imagesrepo.display()
     if args.inventory or args.all:
         from inventory import the_inventory
         the_inventory.display(verbose=True)

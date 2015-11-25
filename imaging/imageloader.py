@@ -79,7 +79,7 @@ class ImageLoader:
             self.monitor.set_goodbye("imaging-load : timeout expired after {}s".format(self.timeout))
             return 1
         finally:
-            self.frisbeed and self.frisbeed.stop_wait()
+            self.frisbeed and self.frisbeed.stop_nowait()
             self.nextboot_cleanup()
             self.monitor.stop_nowait()
             loop.close()

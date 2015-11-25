@@ -117,7 +117,7 @@ class Monitor:
         else:
             return str(message)
 
-    subkeys = ['frisbee_retcod', 'reboot', 'ssh_status']
+    subkeys = ['frisbee_retcod', 'reboot', 'ssh_status', 'frisbee_status']
 
     def message_to_text_ip(self, message, node, mention_node=True):
         text = None
@@ -128,7 +128,7 @@ class Monitor:
         else:
             for key in self.subkeys:
                 if key in message:
-                    text = message[key]
+                    text = "{} = {}".format(key, message[key])
                     break
         if text is None:
             text = str(message)
@@ -148,7 +148,7 @@ class Monitor:
         print("{} - {}: {}".format(timestamp, duration, text))
 
     def dispatch_ip_hook(self, ip, node, message, timestamp, duration):
-        text = self.message_to_text_ip(message, node)
+        text = self.message_to_text_ip(message, node, mention_node=False)
             
         print("{} - {}: {} {}".format(timestamp, duration, node.name , text))
 

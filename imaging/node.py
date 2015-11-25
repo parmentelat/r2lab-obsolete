@@ -5,9 +5,10 @@ import os.path
 import asyncio
 import aiohttp
 
-from frisbee import FrisbeeProxy
-
 from logger import logger
+from inventory import the_inventory
+from frisbee import Frisbee
+from imagezip import ImageZip
 
 class Node:
 
@@ -30,15 +31,12 @@ class Node:
         return self.control_mac_address() is not None
 
     def control_mac_address(self):
-        from inventory import the_inventory
         return the_inventory.attached_hostname_info(self.cmc_name, 'control', 'mac')
 
     def control_ip_address(self):
-        from inventory import the_inventory
         return the_inventory.attached_hostname_info(self.cmc_name, 'control', 'ip')
 
     def control_hostname(self):
-        from inventory import the_inventory
         return the_inventory.attached_hostname_info(self.cmc_name, 'control', 'hostname')
 
     @asyncio.coroutine
@@ -166,11 +164,15 @@ class Node:
 
     ##########
     @asyncio.coroutine
-    def wait_for_telnet(self):
-        from inventory import the_inventory
+    def wait_for_telnet(self, service):
         ip = self.control_ip_address()
-        self.frisbee = FrisbeeProxy(ip, self.message_bus)
-        yield from self.frisbee.wait()
+        if service == 'frisbee':
+            self.frisbee = Frisbee(ip, self.message_bus)
+            yield from self.frisbee.wait()
+        elif service == 'imagezip':
+            self.imagezip = ImageZip(ip, self.message_bus)
+            yield from self.imagezip.wait()
+            pass
         
     @asyncio.coroutine
     def load_stage1(self, idle):
@@ -181,12 +183,22 @@ class Node:
 
     @asyncio.coroutine
     def load_stage2(self, ip , port, reset):
-        yield from self.wait_for_telnet()
+        yield from self.wait_for_telnet('frisbee')
         self.manage_nextboot_symlink('cleanup')
-        yield from self.frisbee.run_client(ip, port)
+        yield from self.frisbee.run(ip, port)
         if reset:
             yield from self.ensure_reset()
         else:
             yield from self.feedback('reboot', 'skipping final reset')
 
-    
+    # incidentally, same stages for both loading and saving
+    save_stage1 = load_stage1
+
+    @asyncio.coroutine
+    def save_stage2(self, port, reset):
+        yield from self.wait_for_telnet('imagezip')
+        yield from self.imagezip.run(port)
+        if reset:
+            yield from self.ensure_reset()
+        else:
+            yield from self.feedback('reboot', 'skipping final reset')

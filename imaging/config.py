@@ -1,7 +1,9 @@
 import os
+from logger import logger
 
 import configparser
 import guessip
+import socket
 
 # location, mandatory
 locations = [
@@ -17,11 +19,20 @@ class ImagingConfig:
 
     def __init__(self):
         self.parser = configparser.ConfigParser()
+        # load all configurations when they exist
         for location, mandatory in locations:
             if os.path.exists(location):
                 self.parser.read(location)
+                logger.info("Loaded config from {}".format(location))                
             elif mandatory:
                 raise ConfigException("Missing mandatory config file {}".format(location))
+        # 
+        self._hostname = None
+
+    def local_hostname(self):
+        if not self._hostname:
+            self._hostname = socket.gethostname().split('.')[0]
+        return self._hostname
 
     def get_or_raise(self, dict, section, key):
         res = dict.get(key, None)
@@ -31,15 +42,13 @@ class ImagingConfig:
             raise ConfigException("imaging config: missing entry section={} key={}"
                                   .format(section, key))
 
-    def value(self, section, flag, hostname=None):
+    def value(self, section, flag):
         if section not in self.parser:
             raise ConfigException("No such section {} in config".format(section))
         config_section = self.parser[section]
-        if hostname:
-            return config_section.get("{flag}:{hostname}".format(**locals()), None) \
+        hostname = self.local_hostname()
+        return config_section.get("{flag}.{hostname}".format(**locals()), None) \
                 or self.get_or_raise(config_section, section, flag)
-        else:
-            return self.get_or_raise(config_section, section, flag)
         
     # for now
     # the foreseeable tricky part is, this should be a coroutine..

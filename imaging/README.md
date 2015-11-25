@@ -20,7 +20,7 @@ Would essentially work on nodes 1 to 3, 7 to 12, and 15 to 18
 
 Run `imaging-load --help` as usual for a list of options.
 
-## env. variables    
+## Env. variables    
 
 If no node argument is provided on the command line, the value of the `NODES` environment variable is used. So 
 
@@ -94,7 +94,7 @@ Nothing has been done yet to provide a pypi packaging. As far as the code itself
 
 ## Dependencies
 
-## `asyncio`
+## The `asyncio` module
 
 We use python 3.4's `asyncio` library. python3.4 can be taken as granted on the ubuntus we use on both `faraday` and `bemol`. 
 
@@ -118,43 +118,41 @@ it would have been this instead
     await bar()
 
 
-## other libs
+## other libraries
 
 Installed with `pip3`
 
 * `telnetlib3` for invoking `frisbee` on the nodes
 * `aiohttp` for talking to the CMC cards
-* `asyncssh` for talking to ssh; for that on ubuntu there is a need to run `apt-get install libffi-dev` before `pip3 install asyncssh`
+* `asyncssh` for talking to ssh (imaging-wait mostly for now); 
+   * **ubuntu:** there is a need to run `apt-get install libffi-dev` before `pip3 install asyncssh`
 * `progressbar33` is used in rendering progress bar in the regular monitor (i.e. without the -c option).
-
 
 # TODO
 
 ## crucial (P1)
-* finish wait-ssh (monitor) and why not come up with a wait-telnet as well ?
-  * imaging-wait -s (ssh: default) -p (ping) or -n (telnet) 
-  * -t would be for -timeout
-  * this is unless we change the timeout option to be -T; given that this is mostly for the nightly script anyway
 
 * imaging-save
 
-* robustify ensure_reset (fit04)
-  if a node is still answering ping right after it was reset then it's wrong
-
-* refactor how mains are done; some have a monitor and some others not
+* couple usage with leases system
 
 ## for deployment (P2)
-
-* couple usage with leases system
 
 * think of some other name ? 
   * imaging makes sense for load & save but for wait or list ?
 
 * packaging (pypi?)
 
+* rewrite monitor.py within this framework ()
+
 ## nice to have (P3)
 
-* rewrite monitor.py within this framework ()
+* robustify ensure_reset ? (fit04)
+  if a node is still answering ping right after it was reset then it's wrong
+
+* should iwait have a telnet mode (-n/--telnet) as well ?
+
+* refactor how mains are done; some have a monitor and some others not
 
 ## cosmetic (P4)
  

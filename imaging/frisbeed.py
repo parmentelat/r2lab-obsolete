@@ -13,6 +13,9 @@ class Frisbeed:
     def feedback(self, field, msg):
         yield from self.message_bus.put({field: msg})
 
+    def feedback_nowait(self, field, msg):
+        self.message_bus.put_nowait({field: msg})
+
     @asyncio.coroutine
     def start(self):
         """
@@ -22,8 +25,6 @@ class Frisbeed:
         from config import the_config
         server = the_config.value('frisbee', 'server')
         server_options = the_config.value('frisbee', 'server_options')
-        # this one should probably be computed if no value is set in the config
-        # or maybe also let admins define the local interface name (like 'control' or 'eth0')
         local_ip = the_config.local_control_ip()
         # in Mibps
         bandwidth = self.bandwidth * 2**20
@@ -55,24 +56,24 @@ class Frisbeed:
             command_line = " ".join(command)
             if self.subprocess.returncode is None:
                 logger.info("frisbeed started: {}".format(command_line))
-                yield from self.feedback('loader', "frisbee server started")
+                yield from self.feedback('info', "frisbee server started")
                 self.multicast_group = multicast_group
                 self.multicast_port = multicast_port
                 return multicast_group, multicast_port
             else:
-                logger.info("failed to start frisbeed with {}".format(command_line))
+                logger.warning("failed to start frisbeed with {}".format(command_line))
         logger.critical("Could not find a free IP multicast address + port to start frisbeed")
         raise Exception("Could not start frisbee server")
 
 
     @asyncio.coroutine
     def stop(self):
-        self.stop_wait()
+        self.stop_nowait()
         
-    def stop_wait(self):
+    def stop_nowait(self):
         # make it idempotent
         if self.subprocess:
             self.subprocess.kill()
             self.subprocess = None
             logger.info("frisbeed ({}:{}) stopped".format(self.multicast_group, self.multicast_port))
-            yield from self.feedback({'loader': "frisbee server stopped"})
+            self.feedback_nowait('info', "frisbee server ({}:{}) stopped".format(self.multicast_group, self.multicast_port))
