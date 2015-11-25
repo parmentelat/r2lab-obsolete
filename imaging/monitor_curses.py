@@ -56,7 +56,7 @@ class MonitorCurses(Monitor):
         self.screen.refresh()
         self.subwin.refresh()
 
-    def dispatch_ip_progress_hook(self, ip, node, message, timestamp, duration):
+    def dispatch_ip_percent_hook(self, ip, node, message, timestamp, duration):
         # global area
         timemsg = "{} {}".format(timestamp, duration)
         text = self.node_percent_bar(int((self.counter)/len(self.nodes)))

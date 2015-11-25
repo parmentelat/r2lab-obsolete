@@ -33,7 +33,7 @@ class Monitor:
         self._alive = True
         self._start_time = None
         # this will go from 0 to 100*len(self.nodes)
-        self.counter = 0
+        self.total_percent = 0
         # correspondance ip -> monitor_node
         self._monitor_node_by_ip = {}
         self.goodbye_message = None
@@ -87,17 +87,19 @@ class Monitor:
         if isinstance(message, dict) and 'ip' in message:
             ip = message['ip']
             node = self.get_monitor_node(ip)
-            if 'progress' in message:
-                # compute delta, update node.percent and self.counter
+            if 'tick' in message:
+                self.dispatch_ip_tick_hook(ip, node, message, timestamp, duration)
+            elif 'percent' in message:
+                # compute delta, update node.percent and self.total_percent
                 node_previous_percent = node.percent
-                node_current_percent = message['progress']
+                node_current_percent = message['percent']
                 delta = node_current_percent - node_previous_percent
                 node.percent = node_current_percent
-                self.counter += delta
-                logger.info("{} progress: {}/100 (was {}), total {}/{}"
+                self.total_percent += delta
+                logger.info("{} percent: {}/100 (was {}), total {}/{}"
                             .format(node.name, node_current_percent, node_previous_percent,
-                                    self.counter, 100*len(self.nodes)))
-                self.dispatch_ip_progress_hook(ip, node, message, timestamp, duration)
+                                    self.total_percent, 100*len(self.nodes)))
+                self.dispatch_ip_percent_hook(ip, node, message, timestamp, duration)
             else:
                 self.dispatch_ip_hook(ip, node, message, timestamp, duration)
         else:
@@ -121,8 +123,8 @@ class Monitor:
 
     def message_to_text_ip(self, message, node, mention_node=True):
         text = None
-        if 'progress' in message:
-            text = "{:02}".format(message['progress'])
+        if 'percent' in message:
+            text = "{:02}".format(message['percent'])
         elif 'frisbee_retcod' in message:
             text = "Uploading successful" if message['frisbee_retcod'] == 0 else "Uploading FAILED !"
         else:
@@ -152,7 +154,7 @@ class Monitor:
             
         print("{} - {}: {} {}".format(timestamp, duration, node.name , text))
 
-    def dispatch_ip_progress_hook(self, ip, node, message, timestamp, duration):
+    def dispatch_ip_percent_hook(self, ip, node, message, timestamp, duration):
         # start progressbar
         if self.pbar is None:
             widgets = [ progressbar.Bar(), 
@@ -164,6 +166,27 @@ class Monitor:
                 progressbar.ProgressBar(widgets = widgets,
                                         maxval = len(self.nodes)*100)
             self.pbar.start()
-        self.pbar.update(self.counter)
-        if self.counter == len(self.nodes)*100:
+        self.pbar.update(self.total_percent)
+        if self.total_percent == len(self.nodes)*100:
+            self.pbar.finish()
+
+    def dispatch_ip_tick_hook(self, ip, node, message, timestamp, duration):
+        # start progressbar
+        if self.pbar is None:
+            widgets = [ 'Collecting image : ',
+#                        progressbar.BouncingBar(marker=progressbar.RotatingMarker()),
+                        progressbar.BouncingBar(marker='*'),
+                        progressbar.FormatLabel(' %(seconds).2fs'),
+                    ]
+            self.pbar = \
+                progressbar.ProgressBar(widgets = widgets,
+                                        maxval = progressbar.UnknownLength)
+            self.pbar.start()
+            # progressbar is willing to work as expected here with maxval=UnknownLength
+            # but still insists to get a real value apparently
+            self.value = 0
+        self.value += 1
+        self.pbar.update(self.value)
+        # hack way to finish the progressbar since we have no other way to figure it out
+        if message['tick'] == 'END':
             self.pbar.finish()

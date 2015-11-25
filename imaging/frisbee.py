@@ -24,7 +24,7 @@ class FrisbeeParser(telnetlib3.TerminalShell):
     def feedback(self, field, msg):
         self.client.proxy.message_bus.put_nowait({'ip': self.ip(), field: msg})
     def send_percent(self, percent):
-        self.feedback('progress', percent)
+        self.feedback('percent', percent)
 
     # parse frisbee output
     # tentatively ported from nitos_testbed ruby code but never tested
@@ -105,6 +105,5 @@ class Frisbee(TelnetProxy):
         command = command + "; exit" + EOL + EOF
         self._protocol.stream.write(self._protocol.shell.encode(command))
 
-        # xxx should maybe handle timeout here with some kind of loop...
         # wait for telnet to terminate
         yield from self._protocol.waiter_closed

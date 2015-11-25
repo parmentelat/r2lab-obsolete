@@ -94,4 +94,3 @@ class TelnetProxy:
                      'frisbee_status',
                      "backing off for {:.3}s".format(backoff))
                  yield from asyncio.sleep(backoff)
-

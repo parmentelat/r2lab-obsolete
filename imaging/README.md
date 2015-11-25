@@ -159,4 +159,5 @@ Installed with `pip3`
 * come up with a means to set bandwidth on a node-by-node basis
 * nicer imaging-list (sizes, symlinks, etc..)
 * selector does not seem to check for nodes validity; i.e. `iload fedora-21` does not say that I screwed up and forgot the `-i`
+* implement some way to store the logs from frisbee and imagezip somewhere
 

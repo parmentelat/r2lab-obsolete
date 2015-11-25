@@ -6,33 +6,36 @@ import telnetlib3
 
 from telnet import TelnetProxy
 
-from frisbee import FrisbeeParser as ImageZipParser
+class ImageZipParser(telnetlib3.TerminalShell):
+    def __init__(self, *args, **kwds):
+        super().__init__(*args, **kwds)
+        self.bytes_line = b""
+        self.total_chunks = 0
 
-#class ImageZipParser(telnetlib3.TerminalShell):
-#    def __init__(self, *args, **kwds):
-#        super().__init__(*args, **kwds)
-#        self.bytes_line = b""
-#        self.total_chunks = 0
-#
-#    def feed_byte(self, x):
-#        if x == b"\n":
-#            self.parse_line()
-#            self.bytes_line = b""
-#        else:
-#            self.bytes_line += x
-#
-#    def ip(self):
-#        return self.client.proxy.control_ip
-#    def feedback(self, field, msg):
-#        self.client.proxy.message_bus.put_nowait({'ip': self.ip(), field: msg})
-#    def send_percent(self, percent):
-#        self.feedback('progress', percent)
-#
-#    # parse imagezip output ????
-#    def parse_line(self):
-#        line = self.bytes_line.decode().strip()
-#        #
-#        self.feedback('imagezip_raw', line)
+    def feed_byte(self, x):
+        if x == b"\n":
+            self.parse_line()
+            self.bytes_line = b""
+        else:
+            self.bytes_line += x
+
+    def ip(self):
+        return self.client.proxy.control_ip
+    def feedback(self, field, msg):
+        self.client.proxy.message_bus.put_nowait({'ip': self.ip(), field: msg})
+    def send_percent(self, percent):
+        self.feedback('progress', percent)
+
+    # parse imagezip output ????
+    def parse_line(self):
+        line = self.bytes_line.decode().strip()
+        #
+        # we don't parse anything here because there does not seem to be a way
+        # to estimate some total first off, and later get percentages
+        # useful to see the logs:
+        # self.feedback('imagezip_raw', line)
+        # send 10 ticks in a raw - not a good idea
+        # for i in range(10): self.feedback('tick', '')
         
 class ImageZip(TelnetProxy):
     @asyncio.coroutine
@@ -42,6 +45,19 @@ class ImageZip(TelnetProxy):
     @asyncio.coroutine
     def wait(self):
         yield from self._wait_until_connect(shell=ImageZipParser)
+
+    @asyncio.coroutine
+    def ticker(self):
+        while self._running:
+            yield from self.feedback('tick', '')
+            yield from asyncio.sleep(0.1)
+
+    @asyncio.coroutine
+    def wait_protocol_and_stop_ticker(self):
+        yield from self._protocol.waiter_closed
+        # hack so we can finish the progressbar
+        yield from self.feedback('tick', 'END')
+        self._running = False
 
     @asyncio.coroutine
     def run(self, port):
@@ -65,6 +81,6 @@ class ImageZip(TelnetProxy):
         command = command + "; exit" + EOL + EOF
         self._protocol.stream.write(self._protocol.shell.encode(command))
 
-        # xxx should maybe handle timeout here with some kind of loop...
         # wait for telnet to terminate
-        yield from self._protocol.waiter_closed
+        self._running = True
+        yield from asyncio.gather(self.ticker(), self.wait_protocol_and_stop_ticker())
