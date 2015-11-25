@@ -132,8 +132,6 @@ Installed with `pip3`
 
 ## crucial (P1)
 
-* imaging-save
-
 * couple usage with leases system
 
 ## for deployment (P2)
