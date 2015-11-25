@@ -51,4 +51,7 @@ class Inventory:
     def one_control_interface(self):
         return self._nodes[0]['control']['ip']
 
+    def all_control_hostnames(self):
+        return (node['control']['hostname'] for node in self._nodes)
+
 the_inventory = Inventory()

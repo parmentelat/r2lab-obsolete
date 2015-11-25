@@ -1,10 +1,22 @@
 # Purpose
 
-This is a tentative rewriting of the `omf6 load` and other similar commands in python.
+This is a tentative rewriting of the `omf6 load` and other similar commands in python3 using `asyncio`. This results in a single-thread, yet reactive, solution. The following features are currently available:
+
+* `imaging-load` : parallel loading of an image, much like `omf6 load`
+  * Two modes are supported, with the `-c` option running on top of curses to show individual progress for each node
+  * 'nextboot' symlinks (that tell a node to boot onto the frisbee image) are reliably removed in all cases, even if program crashes or is interrupted
+* `imaging-save` image saving, much like `omf6 save`
+* `imaging-wait` : waiting for all nodes to be available (can connect to ssh)
+
+With these additional benefits:
+
+* single configuration file in `/etc/imaging.conf`, individual setting can be overridden at either user- (`~/.imaging.conf`) or directory- (`./imaging.conf`) level
+* all commands accept a timeout; a timeout that actually works, that is.
+* all commands return a reliable code. When everything goes fine for all subject nodes they return 0, and 1 otherwise.
 
 # How to use
 
-## Invoking
+## Invoking : node scope
 
 The python entry point is named `imaging-main.py` but it should be called through one of the symlinks like `imaging-load`.
 
@@ -46,7 +58,9 @@ At this point all logging goes into a file named `imaging.log`
 
 In short: see `/etc/imaging-inventory.json`
 
-Unfortunately the tools need a mapping between hostnames and MAC addresses - essentially for messing with pxelinux symlinks. At this point at least; it occurred to me only later that maybe an IP address would have done. In any case for now the tool needs to find an inventory in a file named	`/etc/imaging-inventory.json`. This is taken care of by  `inventory/configure.py` and its `Makefile`. Note that like for the OMF JSON inventory file, `configure.py` creates 2 different files for faraday and bemol - to account for any replacement node on farady, like when e.g. node 41 actually sits in slot 15.
+Unfortunately the tool needs a mapping between hostnames and MAC addresses - essentially for messing with pxelinux *nextboot* symlinks. This is why the tool needs to find an inventory in a file named `/etc/imaging-inventory.json`. 
+
+**On R2LAB**: this is taken care of by `inventory/configure.py` and its `Makefile`. Note that like for the OMF JSON inventory file, `configure.py` creates 2 different files for faraday and bemol - to account for any replacement node on faraday, like when e.g. node 41 actually sits in slot 15.
 
 FYI an inventory files just looks like below; the `data` field is not needed
 
@@ -102,20 +116,16 @@ We use python 3.4's `asyncio` library. python3.4 can be taken as granted on the 
 
 In practical terms this means that whenever we use 
 
+    # python-3.4 syntax (the old one)
     @asyncio.coroutine
     def foo():
+        yield from bar()
     
 we would have written instead in pure python-3.5 this
 
+    # new syntax since python-3.5
     async def foo():
-    
-and also each we have written this
-
-    yield from bar()
-    
-it would have been this instead
-
-    await bar()
+        await bar()
 
 
 ## other libraries
@@ -154,8 +164,7 @@ Installed with `pip3`
 
 ## cosmetic (P4)
  
-* come up with a means to set bandwidth on a node-by-node basis
 * nicer imaging-list (sizes, symlinks, etc..)
-* selector does not seem to check for nodes validity; i.e. `iload fedora-21` does not say that I screwed up and forgot the `-i`
+* check if selector checks for nodes validity; i.e. `iload fedora-21` does not say that I screwed up and forgot the `-i`
 * implement some way to store the logs from frisbee and imagezip somewhere
 
