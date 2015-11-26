@@ -138,7 +138,7 @@ class Node:
         Depending on 'action'
         * 'cleanup' or 'harddrive' : clear the symlink corresponding to this CMC
         * 'frisbee' : define a symlink so that next boot will run the frisbee image
-        see imaging.conf for configurable options
+        see rhubarbe.conf for configurable options
         """
 
         from config import the_config

@@ -7,7 +7,7 @@ logging.basicConfig(
     level=logging.INFO,
 #    level=logging.DEBUG,
     format = log_format,
-    filename = 'imaging.log'
+    filename = 'rhubarbe.log'
     )
 
-logger = logging.getLogger('imaging')
+logger = logging.getLogger('rhubarbe')

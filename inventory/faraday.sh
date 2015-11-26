@@ -257,23 +257,24 @@ function map () {
 doc-nodes map "\trun an ssh command on all selected nodes"
 
 #
-alias iload=imaging-load
-alias isave=imaging-save
-alias istat=imaging-status
-alias iwait=imaging-wait
-alias ilist=imaging-list
+alias rload=rhubarbe-load
+alias rsave=rhubarbe-save
+alias rstat=rhubarbe-status
+alias rwait=rhubarbe-wait
+alias rlist=rhubarbe-list
 
-alias iload-fedora="iload -i fedora"
-alias iload-ubuntu="iload -i ubuntu"
-alias iload-f21="iload -i fedora-21"
-alias iload-f22="iload -i fedora-22"
-alias iload-f23="iload -i fedora-23"
-alias iload-u1404="iload -i ubuntu-14.04"
-alias iload-u1410="iload -i ubuntu-14.10"
-alias iload-u1504="iload -i ubuntu-15.04"
-alias iload-u1510="iload -i ubuntu-15.10"
+alias rload-fedora="iload -i fedora"
+alias rload-ubuntu="iload -i ubuntu"
+alias rload-f21="iload -i fedora-21"
+alias rload-f22="iload -i fedora-22"
+alias rload-f23="iload -i fedora-23"
+alias rload-u1404="iload -i ubuntu-14.04"
+alias rload-u1410="iload -i ubuntu-14.10"
+alias rload-u1504="iload -i ubuntu-15.04"
+alias rload-u1510="iload -i ubuntu-15.10"
 
 # load an image on $NODES, or arguments if provided
+# xxx to finish...
 function load-image () {
     imagename="$1"; shift
     image=/var/lib/omf-images-6/$imagename
@@ -646,7 +647,7 @@ function restart-all () {
 }
 doc-admin restart-all "Restart all 4 services omf-sfa, ntrc, openfire and dnsmasq"
 
-alias images="cd /var/lib/omf-images-6/"
+alias images="cd /var/lib/rhubarbe-images/"
 doc-admin images alias
 
 alias r2lab-users="ls -d /home/onelab.inria.r2lab*"

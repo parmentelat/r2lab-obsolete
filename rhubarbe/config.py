@@ -7,15 +7,15 @@ import socket
 
 # location, mandatory
 locations = [
-    ("/etc/imaging.conf", True),
-    (os.path.expanduser("~/.imaging.conf"), False),
-    ("./imaging.conf", False),
+    ("/etc/rhubarbe/rhubarbe.conf", True),
+    (os.path.expanduser("~/.rhubarbe.conf"), False),
+    ("./rhubarbe.conf", False),
 ]
 
 class ConfigException(Exception):
     pass
 
-class ImagingConfig:
+class RhubarbeConfig:
 
     def __init__(self):
         self.parser = configparser.ConfigParser()
@@ -39,7 +39,7 @@ class ImagingConfig:
         if res is not None:
             return res
         else:
-            raise ConfigException("imaging config: missing entry section={} key={}"
+            raise ConfigException("rhubarbe config: missing entry section={} key={}"
                                   .format(section, key))
 
     def value(self, section, flag):
@@ -72,4 +72,4 @@ class ImagingConfig:
             for fname, value in section.items():
                 print("{} = {}".format(fname, value))
 
-the_config = ImagingConfig()
+the_config = RhubarbeConfig()

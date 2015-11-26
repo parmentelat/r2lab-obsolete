@@ -70,13 +70,13 @@ class ImageLoader:
             loop.run_until_complete(wrapper)
             return 0
         except KeyboardInterrupt as e:
-            self.monitor.set_goodbye("imaging-load : keyboard interrupt - exiting")
+            self.monitor.set_goodbye("rhubarbe-load : keyboard interrupt - exiting")
             tasks.cancel()
             loop.run_forever()
             tasks.exception()
             return 1
         except asyncio.TimeoutError as e:
-            self.monitor.set_goodbye("imaging-load : timeout expired after {}s".format(self.timeout))
+            self.monitor.set_goodbye("rhubarbe-load : timeout expired after {}s".format(self.timeout))
             return 1
         finally:
             self.frisbeed and self.frisbeed.stop_nowait()

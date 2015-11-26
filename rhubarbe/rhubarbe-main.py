@@ -17,8 +17,8 @@ from config import the_config
 from ssh import SshProxy
 import util
 
-# for each of these there should be a symlink to imaging-main.py
-# like imaging-load -> imaging-main.py
+# for each of these there should be a symlink to rhubarbe-main.py
+# like rhubarbe-load -> rhubarbe-main.py
 # and a function in this module with no arg
 supported_commands = [ 'load', 'save', 'status', 'wait', 'list' ]
 
@@ -136,13 +136,13 @@ def status():
             print("{}:{}".format(node.cmc_name, node.status))
         return 0
     except KeyboardInterrupt as e:
-        print("imaging-status : keyboard interrupt - exiting")
+        print("rhubarbe-status : keyboard interrupt - exiting")
         tasks.cancel()
         loop.run_forever()
         tasks.exception()
         return 1
     except asyncio.TimeoutError as e:
-        print("imaging-status : timeout expired after {}s".format(args.timeout))
+        print("rhubarbe-status : timeout expired after {}s".format(args.timeout))
         return 1
     finally:
         loop.close()
@@ -196,13 +196,13 @@ def wait():
         loop.run_until_complete(wrapper)
         return 0
     except KeyboardInterrupt as e:
-        print("imaging-wait : keyboard interrupt - exiting")
+        print("rhubarbe-wait : keyboard interrupt - exiting")
         tasks.cancel()
         loop.run_forever()
         tasks.exception()
         return 1
     except asyncio.TimeoutError as e:
-        print("imaging-wait : timeout expired after {}s".format(args.timeout))
+        print("rhubarbe-wait : timeout expired after {}s".format(args.timeout))
         return 1
     finally:
         for ssh in sshs:
