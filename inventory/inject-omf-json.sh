@@ -36,19 +36,20 @@ function die() {
     exit 1
 }
 
-function run_in_omf_server() {
+function main(){
 
-    name="$1"; shift
-    json="$name"-omf.json
-    
-    [ -d $OMF_DIR ] || die "$COMMAND.$0 must not be run in an OMF server"
+    # default value
+    name="r2lab"
+    [[ -n "$@" ]] && { name="$1"; shift; }
 
     [ $(id -u) == 0 ] || die "$COMMAND must be run as root"
-
+    [ -d $OMF_DIR ] || die "$COMMAND.$0 must be run in an OMF server"
     cd $OMF_DIR
-
     # check for input file
-    [ -f $json ] || die "$COMMAND expects $json to be present in $OMF_DIR"
+    [ -f "${name}" ] && json=${name}
+    [ -f "${name}.json" ] && json=${name}.json
+    [ -f "${name}-omf.json" ] && json=${name}-omf.json
+    [ -f $json ] || die "Could not find input json $json"
 
     ########## erase DB
     set -x
@@ -77,22 +78,6 @@ function run_in_omf_server() {
     
     ########## xxx should check everything is fine
     # e.g. using curl on the REST API or something..
-}
-    
-
-function main(){
-
-    # default value
-    name="fit"
-    [[ -n "$@" ]] && { name="$1"; shift; }
-
-    # figure if we are running on an OMF server 
-    # or from a remote location
-    if [ -d $OMF_DIR ] ; then
-	run_in_omf_server $name >& $OMF_DIR/$LOG
-    else
-	die "Could not find $OMF_DIR - not an OMF server"
-    fi
 }
 
 main "$@"

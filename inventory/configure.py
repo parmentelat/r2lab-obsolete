@@ -62,7 +62,7 @@ class Node(object):
     def latitude(self):
         return self.degree_to_float( (43, 36, 52.30) )
     
-    def json_model(self):
+    def omf_json_model(self):
         domain = 'r2lab'
         return OrderedDict (
             cmc_attributes = {
@@ -116,7 +116,19 @@ class Node(object):
             urn = "urn:publicid:IDN+omf:r2lab+node+{}".format(self.log_name()),
         )
 
-    def new_json_model(self):
+    # I'd like to keep the previous code intact for now
+    def hacked_omf_json_model(self):
+        json = self.omf_json_model()
+        # patch
+        json['name'] = 'r2lab'
+        json['urn'] = json['urn'].replace(self.log_name(), "r2lab")
+        # cleanup
+        del json['cmc_attributes']
+        del json['hostname']
+        del json['interfaces_attributes']
+        return json
+
+    def rhubarbe_json_model(self):
         return {
             'cmc' : {
                 'hostname' : self.log_name(prefix='reboot'),
@@ -314,12 +326,15 @@ class Nodes(OrderedDict):
     def write_json(self):
         out_filename = self.out_basename+"-omf.json"
         with open (out_filename, 'w') as jsonfile:
-            json_models = [ node.json_model() for node in self.values() ]
-            json.dump (json_models, jsonfile, indent=2, separators=(',', ': '), sort_keys=True)
+# nov. 2015 : expose only one node to onelab / sfa
+#            json_models = [ node.omf_json_model() for node in self.values() ]
+            first_node = list(self.values())[0]
+            one_json_model = first_node.hacked_omf_json_model()
+            json.dump ([one_json_model], jsonfile, indent=2, separators=(',', ': '), sort_keys=True)
         print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
-        out_filename = self.out_basename+"-imaging.json"
+        out_filename = self.out_basename+"-rhubarbe.json"
         with open (out_filename, 'w') as jsonfile:
-            json_models = [ node.new_json_model() for node in self.values() ]
+            json_models = [ node.rhubarbe_json_model() for node in self.values() ]
             json.dump (json_models, jsonfile, indent=2, separators=(',', ': '), sort_keys=True)
         print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
 
