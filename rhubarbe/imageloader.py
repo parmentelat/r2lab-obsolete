@@ -4,6 +4,7 @@ import util
 from frisbeed import Frisbeed
 
 from config import the_config
+from leases import Leases
 
 class ImageLoader:
 
@@ -55,8 +56,16 @@ class ImageLoader:
 
     @asyncio.coroutine
     def run(self, reset):
-        yield from (self.stage1() if reset else self.feedback({'info': "Skipping stage1"}))
-        yield from (self.stage2(reset))
+        leases = Leases(self.message_bus)
+        self.feedback('authentication','checking for a valid lease')
+        valid = yield from leases.is_valid()
+        if not valid:
+            yield from self.feedback('authentication','access denied')
+            yield from self.feedback("Access refused : you have no lease on the testbed at this time")
+        else:
+            yield from self.feedback('authentication','access granted')
+            yield from (self.stage1() if reset else self.feedback({'info': "Skipping stage1"}))
+            yield from (self.stage2(reset))
         yield from self.monitor.stop()
 
     # from http://stackoverflow.com/questions/30765606/whats-the-correct-way-to-clean-up-after-an-interrupted-event-loop

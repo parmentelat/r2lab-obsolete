@@ -16,6 +16,7 @@ from imagesrepo import the_imagesrepo
 from config import the_config
 from ssh import SshProxy
 import util
+from leases import Leases
 
 # for each of these there should be a symlink to rhubarbe-main.py
 # like rhubarbe-load -> rhubarbe-main.py

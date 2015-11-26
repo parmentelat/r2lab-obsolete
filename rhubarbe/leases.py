@@ -5,10 +5,9 @@ import time, calendar
 from datetime import datetime
 import json
 
+from logger import logger
 from config import the_config
 from inventory import the_inventory
-
-debug = False
 
 # Nov 2015
 # what we get from omf_sfa is essentially something like this
@@ -71,11 +70,17 @@ class MyLease:
             if suntil[-1] == 'Z': suntil = suntil[:-1] + 'UTC'
             self.ifrom = calendar.timegm(time.strptime(sfrom, self.wire_timeformat))
             self.iuntil = calendar.timegm(time.strptime(suntil, self.wire_timeformat))
+            self.broken = False
         except Exception as e:
-            # not made monitor-friendly yet
-            print("Could not read omf sfa lease: {}".format(e))
+            if 'components' not in r:
+                self.broken = 'lease with no component : ignored'
+            else:
+                self.broken = "lease broken b/c of exception {}".format(e)
+            yield from self.feedback('lease', "ERROR: {}".format(self.broken))
 
     def __repr__(self):
+        if self.broken:
+            return "<BROKEN LEASE {}>".format(self.broken)
         now = time.time()
         if self.iuntil < now:
             time_message = 'expired'
@@ -93,15 +98,17 @@ class MyLease:
         return time.strftime(MyLease.human_timeformat, time.localtime(epoch))
 
     def is_valid(self, owner):
+        if self.broken:
+            return False
         if not self.owner == owner:
-            if debug: print("{} : wrong owner - wants {}".format(self, owner))
+            logger.info("{} : wrong owner - wants {}".format(self, owner))
             return False
         if not self.ifrom <= time.time() <= self.iuntil:
-            if debug: print("{} : wrong timerange".format(self))
+            logger.info("{} : wrong timerange".format(self))
             return False
         # nothing more to check; the subject name cannot be wrong, there's only
         # one node that one can get a lease on
-        return True
+        return self
 
 ####################
 class Leases:
@@ -123,8 +130,7 @@ class Leases:
 
     @asyncio.coroutine
     def feedback(self, field, msg):
-#        yield from self.message_bus.put({field: msg})
-        print("pseudo feedback {} {}".format(field, msg))
+        yield from self.message_bus.put({field: msg})
 
     @asyncio.coroutine
     def is_valid(self):
@@ -134,7 +140,7 @@ class Leases:
             yield from self.fetch()
             return self._is_valid()
         except Exception as e:
-            self.feedback('info', "Could not fetch leases : {}".format(e))
+            yield from self.feedback('info', "Could not fetch leases : {}".format(e))
             return False
 
 # TCPConnector with verify_ssl = False
@@ -151,22 +157,23 @@ class Leases:
             text = yield from response.text()
             omf_sfa_answer = json.loads(text)
             resources = omf_sfa_answer['resource_response']['resources']
-            self.myleases = [MyLease(resource) for resource in resources]
+            self.myleases = [ MyLease(resource) for resource in resources ]
         except Exception as e:
-            self.feedback('leases_error', 'cannot get leases from {}'.format(self))
+            yield from self.feedback('leases_error', 'cannot get leases from {}'.format(self))
         
     def _is_valid(self):
-        valid_leases = [lease.is_valid(self.login) for lease in self.myleases]
+        valid_leases = [ lease.is_valid(self.login) for lease in self.myleases]
         return valid_leases and valid_leases[0]
 
     def display(self):
         if self.has_special_privileges():
-            print("{}: privileged account".format(self))
+            yield from self.feedback('lease', "{}: privileged account".format(self))
         else:
-            print(self)
+            yield from self.feedback('lease', str(self))
             for i, mylease in enumerate(self.myleases):
-                print("{}: {}".format(i, mylease))
+                yield from self.feedback('lease', "{}: {}".format(i, mylease))
 
+# micro test
 if __name__ == '__main__':
     import sys
     @asyncio.coroutine
