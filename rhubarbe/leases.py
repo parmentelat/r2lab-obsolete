@@ -12,19 +12,23 @@ debug = False
 
 # Nov 2015
 # what we get from omf_sfa is essentially something like this
+#root@faraday /tmp/asyncio # curl -k https://localhost:12346/resources/leases
+# {
+#  "resource_response": {
+#    "resources": [
 #      {
-#        "urn": "urn:publicid:IDN+omf:r2lab+lease+715f6987-0a4d-4ac1-8be0-112b9ef5e327",
-#        "uuid": "715f6987-0a4d-4ac1-8be0-112b9ef5e327",
+#        "urn": "urn:publicid:IDN+omf:r2lab+lease+ee3614fb-74d2-4097-99c5-fe0b988f2f2d",
+#        "uuid": "ee3614fb-74d2-4097-99c5-fe0b988f2f2d",
 #        "resource_type": "lease",
-#        "valid_from": "2015-11-25T14:30:00Z",
-#        "valid_until": "2015-11-25T15:30:00Z",
-#        "status": "active",
-#        "client_id": "e78dbc52-290e-4f9a-a577-9ae7a3836743",
+#        "valid_from": "2015-11-26T10:30:00Z",
+#        "valid_until": "2015-11-26T11:30:00Z",
+#        "status": "accepted",
+#        "client_id": "b089e80a-3b0a-4580-86ba-aacff6e4043e",
 #        "components": [
 #          {
-#            "name": "fit01",
-#            "urn": "urn:publicid:IDN+omf:r2lab+node+fit01",
-#            "uuid": "c9ab033a-3546-472d-a363-a408b96d2065",
+#            "name": "r2lab",
+#            "urn": "urn:publicid:IDN+omf:r2lab+node+r2lab",
+#            "uuid": "11fbdd9e-067f-4ee9-bd98-3b12d63fe189",
 #            "resource_type": "node",
 #            "domain": "omf:r2lab",
 #            "available": true,
@@ -35,16 +39,20 @@ debug = False
 #        "account": {
 #          "name": "onelab.inria.foo1",
 #          "urn": "urn:publicid:IDN+onelab:inria+slice+foo1",
-#          "uuid": "20a34274-8db5-414f-af6d-14bff79f8215",
+#          "uuid": "6a49945c-1a17-407e-b334-dca4b9b40373",
 #          "resource_type": "account",
-#          "created_at": "2015-11-17T10:22:10Z",
+#          "created_at": "2015-11-26T10:22:26Z",
 #          "valid_until": "2015-12-08T15:13:52Z"
 #        }
-#      },
+#      }
+#    ],
+#    "about": "/resources/leases"
+#  }
 
 class MyLease:
 
-    timeformat = "%Y-%m-%dT%H:%M:%S%Z"
+    wire_timeformat = "%Y-%m-%dT%H:%M:%S%Z"
+    human_timeformat = "%m-%d @ %H:%M %Z"
 
     """
     a simple extract from the omf_sfa loghorrea
@@ -53,15 +61,16 @@ class MyLease:
         r = omf_sfa_resource
         try:
             self.owner = r['account']['name']
-            self.subjects = set(c['name'] for c in r['components'])
+            # this is only for information since there's only one node exposed to SFA
+            self.subject = r['components'][0]['name']
             sfrom = r['valid_from']
             suntil = r['valid_until']
             # turns out that datetime.strptime() does not seem to like
             # the terminal 'Z', so let's do this manually
             if sfrom[-1] == 'Z': sfrom = sfrom[:-1] + 'UTC'
             if suntil[-1] == 'Z': suntil = suntil[:-1] + 'UTC'
-            self.ifrom = calendar.timegm(time.strptime(sfrom, self.timeformat))
-            self.iuntil = calendar.timegm(time.strptime(suntil, self.timeformat))
+            self.ifrom = calendar.timegm(time.strptime(sfrom, self.wire_timeformat))
+            self.iuntil = calendar.timegm(time.strptime(suntil, self.wire_timeformat))
         except Exception as e:
             # not made monitor-friendly yet
             print("Could not read omf sfa lease: {}".format(e))
@@ -71,17 +80,17 @@ class MyLease:
         if self.iuntil < now:
             time_message = 'expired'
         elif self.ifrom < now:
-            time_message = "from now until {}".format(self.i_to_s(self.iuntil))
+            time_message = "from now until {}".format(self.human(self.iuntil))
         else:
             time_message = 'from {} until {}'.format(
-                self.i_to_s(self.ifrom),
-                self.i_to_s(self.iuntil))
+                self.human(self.ifrom),
+                self.human(self.iuntil))
         return "<Lease for {} on {} - {}>"\
-            .format(self.owner, self.subjects, time_message)
+            .format(self.owner, self.subject, time_message)
 
     @staticmethod
-    def i_to_s(epoch):
-        return time.strftime(MyLease.timeformat, time.localtime(epoch))
+    def human(epoch):
+        return time.strftime(MyLease.human_timeformat, time.localtime(epoch))
 
     def is_valid(self, owner):
         if not self.owner == owner:
@@ -90,9 +99,8 @@ class MyLease:
         if not self.ifrom <= time.time() <= self.iuntil:
             if debug: print("{} : wrong timerange".format(self))
             return False
-        if not self.subjects.intersection(set(the_inventory.all_control_hostnames())):
-            if debug: print("{} : wrong subjects".format(self))
-            return False
+        # nothing more to check; the subject name cannot be wrong, there's only
+        # one node that one can get a lease on
         return True
 
 ####################
@@ -109,6 +117,10 @@ class Leases:
         return "<Leases for login {} - omf_sfa@{}:{}>"\
             .format(self.login, self.hostname, self.port)
 
+    def has_special_privileges(self):
+        # the condition on login is mostly for tests
+        return self.login == 'root' and os.getuid() == 0
+
     @asyncio.coroutine
     def feedback(self, field, msg):
 #        yield from self.message_bus.put({field: msg})
@@ -116,7 +128,7 @@ class Leases:
 
     @asyncio.coroutine
     def is_valid(self):
-        if self.login == 'root':
+        if self.has_special_privileges():
             return True
         try:
             yield from self.fetch()
@@ -148,22 +160,28 @@ class Leases:
         return valid_leases and valid_leases[0]
 
     def display(self):
-        print("Leases for login {}".format(self.login))
-        for i, mylease in enumerate(self.myleases):
-            print("{}: {}".format(i, mylease))
+        if self.has_special_privileges():
+            print("{}: privileged account".format(self))
+        else:
+            print(self)
+            for i, mylease in enumerate(self.myleases):
+                print("{}: {}".format(i, mylease))
 
 if __name__ == '__main__':
-    try:
-        login = sys.argv[1]
-    except:
-        login = 'onelab.inria.foo1'
+    import sys
     @asyncio.coroutine
-    def foo(leases):
+    def foo(login):
+        leases = Leases(asyncio.Queue(), login=login)
         print("leases {}".format(leases))
         valid = yield from leases.is_valid()
         print("valid = {}".format(valid))
         leases.display()
-    leases = Leases(asyncio.Queue(), login)
-    loop = asyncio.get_event_loop()
-    task = foo(leases)
-    loop.run_until_complete(task)
+    def test_one_login(login):
+        print("Testing for login={}".format(login))
+        asyncio.get_event_loop().run_until_complete(foo(login))
+
+    builtin_logins = ['root', 'someoneelse', 'onelab.inria.foo1']
+    arg_logins = sys.argv[1:]
+    for login in arg_logins + builtin_logins:
+        test_one_login(login)
+    
