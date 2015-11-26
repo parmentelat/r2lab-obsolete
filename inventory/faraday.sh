@@ -548,14 +548,8 @@ function omf-nodes () {
 }
 doc-nodes omf-nodes "display selected nodes using REST"
     
-function omf-leases-all () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
-    for node in $(norm $nodes); do
-	echo ======================================== $node
-	curl -k 'https://localhost:12346/resources/leases'
-    done
-}
-doc-alt omf-leases-all "display all leases set on the system in the future"
+alias omf-leases-all="curl -k https://localhost:12346/resources/leases; echo"
+doc-alt omf-leases-all alias
     
 # XXX todo : a tool for turning on and off debug mode in omf6 commands
 # omf-debug : says what is in action
