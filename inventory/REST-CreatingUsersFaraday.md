@@ -60,7 +60,7 @@ This will also create the `/home/account_name/.ssh/authorized_keys` file and add
     -X POST -d '{"name":"KEY_NAME","ssh_key":"THE_KEY"}' \
     -i https://localhost:12346/resources/keys
 
-# To associate a user with a ssh key:
+# To associate a user with an ssh key:
 
     # curl -k --cert /root/certificates-omf/user_cert.pem \
     -H "Accept: application/json" -H "Content-Type:application/json" \
