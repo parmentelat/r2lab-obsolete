@@ -59,7 +59,7 @@ class MonitorCurses(Monitor):
     def dispatch_ip_percent_hook(self, ip, node, message, timestamp, duration):
         # global area
         timemsg = "{} {}".format(timestamp, duration)
-        text = self.node_percent_bar(int((self.counter)/len(self.nodes)))
+        text = self.node_percent_bar(int((self.total_percent)/len(self.nodes)))
         self.screen.addstr(2, 1, timemsg)
         self.screen.addstr(2, self.offsetc+1, self.pad(text))
         # node area
