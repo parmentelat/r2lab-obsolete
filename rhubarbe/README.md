@@ -143,15 +143,12 @@ Installed with `pip3`
 ## crucial (P1)
 
 * couple usage with leases system
+* packaging (pypi?)
 
 ## for deployment (P2)
 
-* think of some other name ? 
-  * rhubarbe makes sense for load & save but for wait or list ?
-
-* packaging (pypi?)
-
 * rewrite monitor.py within this framework ()
+* the script for synchronizing images from bemol to faraday seems to have gone
 
 ## nice to have (P3)
 
@@ -168,4 +165,5 @@ Installed with `pip3`
 * check if selector checks for nodes validity; i.e. `iload fedora-21` does not say that I screwed up and forgot the `-i`
 * implement some way to store the logs from frisbee and imagezip somewhere
 * wait really is not talkative; even without -v we'd expect some logging...
-
+* is there a way to remove incomplete images under -save (both keybord interrupt and timeout..)
+* should we not log all the messages on the feedback/bus onto logger as well ?
