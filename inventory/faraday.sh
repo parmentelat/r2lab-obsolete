@@ -257,79 +257,37 @@ function map () {
 doc-nodes map "\trun an ssh command on all selected nodes"
 
 #
-alias rload=rhubarbe-load
-alias rsave=rhubarbe-save
-alias rstat=rhubarbe-status
-alias rwait=rhubarbe-wait
-alias rlist=rhubarbe-list
+alias rload="rhubarbe load"
+doc-nodes rload "load image (specify with -i) on selected nodes"
+alias rsave="rhubarbe save"
+doc-nodes rsave "save image"
+alias rstat="rhubarbe status"
+doc-nodes rstat "show if nodes are turned on or off"
+alias rwait="rhubarbe wait"
+doc-nodes rwait "wait for nodes to be reachable through ssh"
+alias list-images="rhubarbe list -i"
+doc-nodes rlist "display available images"
 
-alias rload-fedora="iload -i fedora"
-alias rload-ubuntu="iload -i ubuntu"
-alias rload-f21="iload -i fedora-21"
-alias rload-f22="iload -i fedora-22"
-alias rload-f23="iload -i fedora-23"
-alias rload-u1404="iload -i ubuntu-14.04"
-alias rload-u1410="iload -i ubuntu-14.10"
-alias rload-u1504="iload -i ubuntu-15.04"
-alias rload-u1510="iload -i ubuntu-15.10"
-
-# load an image on $NODES, or arguments if provided
-# xxx to finish...
-function load-image () {
-    imagename="$1"; shift
-    image=/var/lib/omf-images-6/$imagename
-    [ -f $image ] || { echo Image not found $image; return; }
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
-    nodes=$(cnorm $nodes)
-    echo "==================== parallel loading $image on $nodes"
-    omf6 load -t $nodes -i $image
-}
-doc-nodes load-image "mandatory arg: image; load specified image on selected nodes"
-
-_images=""
-function load-u1410 ()   { load-image ubuntu-14.10.ndz "$@" ; }
-_images="$_images ubuntu-14.10.ndz"
-doc-nodes load-u1410 "Load image based on ubuntu 14.10"
-
-function load-u1504 ()   { load-image ubuntu-15.04.ndz "$@" ; }
-_images="$_images ubuntu-15.04.ndz"
-doc-nodes load-u1504 "Load image based on ubuntu 15.04"
-
-function load-u1510 ()   { load-image ubuntu-15.10.ndz "$@" ; }
-_images="$_images ubuntu-15.10.ndz"
-doc-nodes load-u1510 "Load image based on ubuntu 15.10"
-
-function load-f21 ()   { load-image fedora-21.ndz "$@" ; }
-_images="$_images fedora-21.ndz"
-doc-nodes load-f21 "Load image based on fedora21"
-
-function load-f22 ()   { load-image fedora-22.ndz "$@" ; }
-_images="$_images fedora-22.ndz"
-doc-nodes load-f22 "Load image based on fedora22"
-
-function load-f23 ()   { load-image fedora-23.ndz "$@" ; }
-_images="$_images fedora-23.ndz"
-doc-nodes load-f23 "Load image based on fedora23"
-
+alias load-fedora="rload -i fedora"
+doc-nodes rload-fedora alias
+alias load-ubuntu="rload -i ubuntu"
+doc-nodes rload-ubuntu alias
+alias load-f21="rload -i fedora-21"
+doc-nodes rload-f21 alias
+alias load-f22="rload -i fedora-22"
+doc-nodes rload-f22 alias
+alias load-f23="rload -i fedora-23"
+doc-nodes rload-f23 alias
+alias load-u1410="rload -i ubuntu-14.10"
+doc-nodes rload-u1410 alias
+alias load-u1504="rload -i ubuntu-15.04"
+doc-nodes rload-u1504 alias
+alias load-u1510="rload -i ubuntu-15.10"
+doc-nodes rload-u1510 alias
 
 function load-gr-u1410 () { load-image gnuradio-ubuntu-14.10.ndz "$@" ; }
-_images="$_images gnuradio-ubuntu-14.10.ndz"
-doc-nodes load-gr-u1410 "Load image based on ubuntu 14.10 with gnuradio installed"
-
 function load-gr-u1504 () { load-image gnuradio-ubuntu-15.04.ndz "$@" ; }
-_images="$_images gnuradio-ubuntu-15.04.ndz"
-doc-nodes load-gr-u1504 "Load image based on ubuntu 15.04 with gnuradio installed"
-
-function load-gr-f21 () { load-image gnuradio-fedora-21.ndz "$@" ; }
-_images="$_images gnuradio-fedora-21.ndz"
-doc-nodes load-gr-f21 "Load image based on fedora 21 with gnuradio installed"
-
-function list-images {
-    pushd /var/lib/omf-images-6/ >& /dev/null
-    ls -lL $_images
-    popd >& /dev/null
-}
-doc-alt list-images "List available images"    
+function load-gr-f21 ()   { load-image gnuradio-fedora-21.ndz "$@" ; }
 
 alias load-ubuntu=load-u1510
 alias load-fedora=load-f23
