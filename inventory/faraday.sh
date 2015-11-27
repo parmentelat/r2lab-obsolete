@@ -269,21 +269,21 @@ alias list-images="rhubarbe list -i"
 doc-nodes rlist "display available images"
 
 alias load-fedora="rload -i fedora"
-doc-nodes rload-fedora alias
+doc-nodes load-fedora alias
 alias load-ubuntu="rload -i ubuntu"
-doc-nodes rload-ubuntu alias
+doc-nodes load-ubuntu alias
 alias load-f21="rload -i fedora-21"
-doc-nodes rload-f21 alias
+doc-nodes load-f21 alias
 alias load-f22="rload -i fedora-22"
-doc-nodes rload-f22 alias
+doc-nodes load-f22 alias
 alias load-f23="rload -i fedora-23"
-doc-nodes rload-f23 alias
+doc-nodes load-f23 alias
 alias load-u1410="rload -i ubuntu-14.10"
-doc-nodes rload-u1410 alias
+doc-nodes load-u1410 alias
 alias load-u1504="rload -i ubuntu-15.04"
-doc-nodes rload-u1504 alias
+doc-nodes load-u1504 alias
 alias load-u1510="rload -i ubuntu-15.10"
-doc-nodes rload-u1510 alias
+doc-nodes load-u1510 alias
 
 function load-gr-u1410 () { load-image gnuradio-ubuntu-14.10.ndz "$@" ; }
 function load-gr-u1504 () { load-image gnuradio-ubuntu-15.04.ndz "$@" ; }
