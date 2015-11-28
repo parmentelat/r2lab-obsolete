@@ -223,9 +223,9 @@ function nodes-restore () {
 }
 doc-alt nodes-restore "use previously named selection"
 
-bemol && export ALL_NODES=38-42 || export ALL_NODES=1-37
+bemol && export _all_nodes=38-42 || export _all_nodes=1-37
 
-function all-nodes () { nodes $ALL_NODES; }
+function all-nodes () { nodes $_all_nodes; }
 function nodes-all () { all-nodes; }
 doc-nodes all-nodes "select all available nodes"
 
@@ -265,6 +265,7 @@ alias rstat="rhubarbe status"
 doc-nodes rstat "show if nodes are turned on or off"
 alias rwait="rhubarbe wait"
 doc-nodes rwait "wait for nodes to be reachable through ssh"
+alias rlist="rhubarbe list"
 alias list-images="rhubarbe list -i"
 doc-nodes rlist "display available images"
 
@@ -309,8 +310,8 @@ function -curl () {
 
 # showstatus
 # display status on arguments, or $NODES if not provided
-function st () { -curl status "$@" ; }
-doc-nodes st "\tshow node CMC status"
+alias st=rstat
+doc-nodes st "\tshow node CMC status (rhubarbe stat)"
 # idem for actually doing stuff
 function reset () { -curl reset "$@" ; }
 doc-nodes reset "\treset node through its CMC"
