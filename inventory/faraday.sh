@@ -507,7 +507,7 @@ function omf-nodes () {
 }
 doc-nodes omf-nodes "display selected nodes using REST"
     
-alias omf-leases-all="curl -k https://localhost:12346/resources/leases; echo"
+alias omf-leases-all="curl -k https://faraday.inria.fr:12346/resources/leases; echo"
 doc-alt omf-leases-all alias
     
 # XXX todo : a tool for turning on and off debug mode in omf6 commands
