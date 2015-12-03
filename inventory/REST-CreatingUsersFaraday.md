@@ -79,3 +79,9 @@ after the update this will also create `/home/account_name/.ssh/authorized_keys`
     -d '{"uuid":"key_uuid"}' \
     -i https://localhost:12346/resources/users/user_uuid/keys
     
+
+# leases 
+
+    curl -k https://localhost:12346/resources/leases
+
+    
