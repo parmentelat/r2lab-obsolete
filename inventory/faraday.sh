@@ -668,3 +668,6 @@ doc-admin sidecar-log alias
 
 alias rhubarbe-update='pip3 install --upgrade rhubarbe'
 doc-admin rhubarbe-update alias
+
+alias pull-bashrc="su faraday /home/faraday/fitsophia/auto-update.sh"
+doc-admin pull-bashrc alias
