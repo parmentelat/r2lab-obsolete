@@ -666,5 +666,5 @@ doc-admin logs-monitor alias
 alias sidecar-log="tail -f /var/log/sidecar.log"
 doc-admin sidecar-log alias
 
-alias rhubarbe-update 'pip3 install --upgrade rhubarbe'
+alias rhubarbe-update='pip3 install --upgrade rhubarbe'
 doc-admin rhubarbe-update alias
