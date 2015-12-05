@@ -345,7 +345,7 @@ function LiveMap() {
 	for (var i=0; i< this.nodes.length; i++)
 	    if (this.nodes[i].id == id)
 		return this.nodes[i];
-	console.log("ERROR: livemap: locate_node_by_id: id=" + id + " was not found");
+/*	console.log("ERROR: livemap: locate_node_by_id: id=" + id + " was not found"); */
     }
     
     this.handle_json_status = function(json) {
