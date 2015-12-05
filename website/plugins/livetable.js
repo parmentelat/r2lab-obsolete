@@ -254,7 +254,7 @@ function LiveTable() {
 		if (node != undefined)
 		    node.update_from_news(node_info);
 		else
-		    console.log("could not locate node id " + id + " - ignored");
+		    console.log("livetable: could not locate node id " + id + " - ignored");
 	    }
 	    this.animate_changes(node_infos);
 	} catch(err) {

@@ -366,7 +366,10 @@ function LiveMap() {
 		var node_info = nodes_info[i];
 		var id = node_info['id'];
 		var node = this.locate_node_by_id(id);
-		node.update_from_news(node_info);
+		if (node != undefined)
+		    node.update_from_news(node_info);
+		else
+		    console.log("livemap: could not locate node id " + id + " - ignored");
 	    }
 	    this.animate_changes();
 	} catch(err) {
