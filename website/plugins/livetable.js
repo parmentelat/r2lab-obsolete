@@ -251,7 +251,10 @@ function LiveTable() {
 		var node_info = node_infos[i];
 		var id = node_info['id'];
 		var node = this.locate_node_by_id(id);
-		node.update_from_news(node_info);
+		if (node != undefined)
+		    node.update_from_news(node_info);
+		else
+		    console.log("could not locate node id " + id + " - ignored");
 	    }
 	    this.animate_changes(node_infos);
 	} catch(err) {
