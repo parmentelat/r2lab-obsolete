@@ -494,22 +494,12 @@ doc-alt nextboot-cleanall "\n\t\tremove all pxelinux symlinks"
 # for now we use a different port for bemol and faraday
 
 # mostly meant as a means to check the broker is alive and well configured
-function omf-nodes-all () {
-    curl -k https://localhost:12346/resources/nodes
-}
-doc-admin rest-nodes-all "list known resources using REST"
-
-#function omf-nodes () {
-#    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
-#    for node in $(norm $nodes); do
-#	echo ======================================== $node
-#	curl -k 'https://localhost:12346/resources/nodes?name='$node
-#    done
-#}
-#doc-nodes omf-nodes "display selected nodes using REST"
-    
-alias omf-leases-all="curl -k https://faraday.inria.fr:12346/resources/leases; echo"
-doc-alt omf-leases-all alias
+alias omf-nodes="curl -k https://localhost:12346/resources/nodes; echo"
+doc-admin omf-nodes alias
+alias omf-leases="curl -k https://faraday.inria.fr:12346/resources/leases; echo"
+doc-alt omf-leases alias
+alias omf-accounts="curl -k https://faraday.inria.fr:12346/resources/accounts; echo"
+doc-alt omf-accounts alias
     
 # XXX todo : a tool for turning on and off debug mode in omf6 commands
 # omf-debug : says what is in action
