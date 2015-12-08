@@ -494,19 +494,19 @@ doc-alt nextboot-cleanall "\n\t\tremove all pxelinux symlinks"
 # for now we use a different port for bemol and faraday
 
 # mostly meant as a means to check the broker is alive and well configured
-function rest-nodes-all () {
+function omf-nodes-all () {
     curl -k https://localhost:12346/resources/nodes
 }
 doc-admin rest-nodes-all "list known resources using REST"
 
-function omf-nodes () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
-    for node in $(norm $nodes); do
-	echo ======================================== $node
-	curl -k 'https://localhost:12346/resources/nodes?name='$node
-    done
-}
-doc-nodes omf-nodes "display selected nodes using REST"
+#function omf-nodes () {
+#    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+#    for node in $(norm $nodes); do
+#	echo ======================================== $node
+#	curl -k 'https://localhost:12346/resources/nodes?name='$node
+#    done
+#}
+#doc-nodes omf-nodes "display selected nodes using REST"
     
 alias omf-leases-all="curl -k https://faraday.inria.fr:12346/resources/leases; echo"
 doc-alt omf-leases-all alias
