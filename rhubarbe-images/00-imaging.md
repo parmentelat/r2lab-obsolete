@@ -1,5 +1,64 @@
 Entries listed latest first
 
+# 2015/12/09: `ubuntu-12.04.5`
+
+* for Naoufal's experiment; an old image is required
+* done from scratch on `fit41`
+* with the usual `ext4` layout
+* standard install entirely; just added the OpenSsh service during
+  installation; this also forced me to add me a `r2lab` account
+* logged in from terminal (using r2lab account), did `sudo su -` to
+set a passwd for root
+* at that point I could enter through ssh from bemol
+
+#
+    apt-get update
+    apt-get install -y emacs23-nox
+
+* too bad, something is wrong here
+
+#
+    W: Failed to fetch bzip2:/var/lib/apt/lists/partial/us.archive.ubuntu.com_ubuntu_dists_precise_main_source_Sources  Hash Sum mismatch
+
+* fixed the problem [as per this page](http://askubuntu.com/questions/41605/trouble-downloading-packages-list-due-to-a-hash-sum-mismatch-error)
+
+#
+    rm -rf /var/lib/apt/lists/*
+    apt-get update
+
+* could then install additional packages
+
+#
+	apt-get install -y emacs23-nox
+    apt-get install -y rsync make git gcc
+	apt-get install -y iw ethtool tcpdump wireshark bridge-utils
+	
+* edited `/etc/ssh/sshd_config` so that
+
+#
+    root@r2lab:/etc/ssh# grep -v '^#' /etc/ssh/sshd_config | egrep -i 'Root|Password|PAM'
+    PermitRootLogin yes
+    PermitEmptyPasswords yes
+    PasswordAuthentication yes
+    UsePAM no
+
+* cleared passwd and extra user
+
+#
+    passwd --delete root
+    userdel --remove r2lab
+
+* hostname
+  * found an occurrence of fit41in /etc/hosts for 127.0.0.1 - using `fit-image` instead
+  * plus the usual:
+
+#
+    rm -f /etc/hostname
+
+* netnames (control and data)- like for other ubuntus, see `rhubarbe-images/netnames-scratchpad.sh`
+
+
+
 # 2015/11/09 : `fedora-23`
 
 **Important note:** [do not use `fedup` that is deprecated; see this page instead](https://fedoraproject.org/wiki/DNF_system_upgrade)
@@ -55,7 +114,7 @@ at this point, made a blank omf6 save and load on 40 -> everything is fine
 * enable empty passwords in sshd_config
 
 #
-    root@fit41:/etc/ssh# grep -v '^#' sshd_config | egrep -i 'Root|Password|PAM'
+    root@fit41:/etc/ssh# grep -v '^#' /etc/ssh/sshd_config | egrep -i 'Root|Password|PAM'
     PermitRootLogin yes
     PermitEmptyPasswords yes
     PasswordAuthentication yes
@@ -163,7 +222,7 @@ Number  Start   End    Size    Type     File system     Flags
   * enable empty passwords in `sshd_config`
 
 # 
-    root@fit41:/etc/ssh# grep -v '^#' sshd_config | egrep -i 'Root|Password|PAM'
+    root@fit41:/etc/ssh# grep -v '^#' /etc/ssh/sshd_config | egrep -i 'Root|Password|PAM'
     PermitRootLogin yes
     PermitEmptyPasswords yes
     PasswordAuthentication yes
