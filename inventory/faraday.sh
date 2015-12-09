@@ -1,4 +1,4 @@
-unalias ls 2> /dev/null
+0;95;cunalias ls 2> /dev/null
 
 ########## pseudo docstrings
 _doc_nodes="#################### commands that work on a selection of nodes"
@@ -494,11 +494,11 @@ doc-alt nextboot-cleanall "\n\t\tremove all pxelinux symlinks"
 # for now we use a different port for bemol and faraday
 
 # mostly meant as a means to check the broker is alive and well configured
-alias omf-nodes="curl -k https://localhost:12346/resources/nodes; echo"
+function omf-nodes() { curl -k https://localhost:12346/resources/nodes; echo; }
 doc-admin omf-nodes alias
-alias omf-leases="curl -k https://faraday.inria.fr:12346/resources/leases; echo"
+function omf-leases() { curl -k https://faraday.inria.fr:12346/resources/leases; echo; }
 doc-alt omf-leases alias
-alias omf-accounts="curl -k https://faraday.inria.fr:12346/resources/accounts; echo"
+function omf-accounts() { curl -k https://faraday.inria.fr:12346/resources/accounts; echo; }
 doc-alt omf-accounts alias
     
 # XXX todo : a tool for turning on and off debug mode in omf6 commands
@@ -656,7 +656,7 @@ doc-admin logs-monitor alias
 alias sidecar-log="tail -f /var/log/sidecar.log"
 doc-admin sidecar-log alias
 
-alias rhubarbe-update='pip3 install --upgrade rhubarbe'
+alias rhubarbe-update='pip3 install --upgrade rhubarbe; rhubarbe version'
 doc-admin rhubarbe-update alias
 
 alias pull-bashrc="su faraday /home/faraday/fitsophia/auto-update.sh"
