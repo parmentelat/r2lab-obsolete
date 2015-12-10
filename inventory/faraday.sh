@@ -1,4 +1,4 @@
-0;95;cunalias ls 2> /dev/null
+unalias ls 2> /dev/null
 
 ########## pseudo docstrings
 _doc_nodes="#################### commands that work on a selection of nodes"
@@ -9,6 +9,7 @@ function doc-nodes () {
   fun=$1; shift;
   docstring=$1; shift
   [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
+  [ "$docstring" == 'function' ] && docstring=$(type $fun)
   _doc_nodes="$_doc_nodes\n$fun\t$docstring"
 }
 
@@ -495,11 +496,11 @@ doc-alt nextboot-cleanall "\n\t\tremove all pxelinux symlinks"
 
 # mostly meant as a means to check the broker is alive and well configured
 function omf-nodes() { curl -k https://localhost:12346/resources/nodes; echo; }
-doc-admin omf-nodes alias
+doc-admin omf-nodes function
 function omf-leases() { curl -k https://faraday.inria.fr:12346/resources/leases; echo; }
-doc-alt omf-leases alias
+doc-alt omf-leases function
 function omf-accounts() { curl -k https://faraday.inria.fr:12346/resources/accounts; echo; }
-doc-alt omf-accounts alias
+doc-alt omf-accounts function
     
 # XXX todo : a tool for turning on and off debug mode in omf6 commands
 # omf-debug : says what is in action
@@ -606,7 +607,7 @@ function init-user-env () {
 
     MY_CERT=$HOME/.omf/user_cert.pem
     MY_KEY=$HOME/.ssh/id_rsa
-    # turns out regular users cannot use REST; sigh..
+    # turns out regular users cannot use CJ; sigh..
     #CURL_CERT="--cert $MY_CERT --key $MY_KEY"
     CURL_CERT=""
     # root user does has a plain pem with private key embedded
@@ -619,16 +620,17 @@ function init-user-env () {
 
     CURL_JSON='-H "Accept: application/json" -H "Content-Type:application/json"'
 
-    REST="$CURL $CURL_JSON"
+    CJ="$CURL $CURL_JSON"
 
-    RES=https://localhost:12346/resources/
+    RU=https://localhost:12346/resources/
 
 }
-doc-alt CURL "\tenv. variable: CURL=$CURL"
-doc-alt REST "\tenv. variable: CURL + use-json"
-doc-alt RES "\tenv. variable: RES=$RES"
 
 init-user-env
+
+doc-alt CURL "\tenv. variable: CURL=$CURL"
+doc-alt CJ "\tenv. variable: CJ=$CJ"
+doc-alt RU "\tenv. variable: RU=$RU"
 
 function slice () {
     [ -n "$1" ] && SLICE=$1
@@ -638,7 +640,7 @@ doc-alt slice "\tDisplay current slice (and optionnally set it)"
 
 function GET () {
     request=$1; shift
-    $CURL https://localhost:12346/resources/$request
+    $CURL $RU/$request
 }
 doc-alt GET "\tIssue a REST GET api call - expects one arguments like 'accounts' or 'accounts?name=onelab.inria.r2lab.admin'"
 
