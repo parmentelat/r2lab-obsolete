@@ -20,8 +20,8 @@ circle.op-status {
     opacity: .5;
 }
 
-circle.available {
-    opacity: .7;
+circle.unavailable {
+    opacity: .5;
     fill: #f00;
     stroke: 0;
 }

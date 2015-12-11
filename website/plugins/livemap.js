@@ -201,7 +201,7 @@ var MapNode = function (node_spec) {
     }	    
 
     
-    this.cst_radius_unavailable = 22;
+    this.cst_radius_unavailable = 24;
     this.cst_radius_ok = 18;
     this.cst_radius_pinging = 12;
     this.cst_radius_warming = 6;
@@ -265,7 +265,7 @@ var MapNode = function (node_spec) {
     }
 
     // a missing 'available' means the node is OK
-    this.available_display = function() {
+    this.unavailable_display = function() {
 	if ((this.available == undefined)
 	    || (this.available == "ok"))
 	    return "none";
@@ -414,19 +414,19 @@ function LiveMap() {
 	;
 
 	// how to display unavailable nodes
-	var availables = svg.selectAll('circle.available')
+	var unavailables = svg.selectAll('circle.unavailable')
 	    .data(this.nodes, get_node_id);
-	availables.enter()
+	unavailables.enter()
 	    .append('circle')
-	    .attr('class', 'available')
+	    .attr('class', 'unavailable')
 	    .attr('cx', function(node){return node.x;})
 	    .attr('cy', function(node){return node.y;})
 	    .attr('r', function(node){return node.cst_radius_unavailable;})
 	;
-	availables
+	unavailables
 	    .transition()
 	    .duration(1000)
-	    .attr('display', function(node){return node.available_display();})
+	    .attr('display', function(node){return node.unavailable_display();})
 	;
 	
 	if (livemap_show_rxtx_rates) {
