@@ -82,7 +82,7 @@ class Node(object):
                 "cache_l1": "n/a",
                 "cache_l2": "8 Mb"
             }],
-            domain = 'omf:r2lab',
+            domain = domain,
             gateway = 'faraday.inria.fr',
             hardware_type = "PC-Icarus",
             hd_capacity = "240 GB",
@@ -113,15 +113,15 @@ class Node(object):
             name = self.log_name(),
             ram = "8 GB",
             ram_type = "DIMM Synchronous",
-            urn = "urn:publicid:IDN+omf:r2lab+node+{}".format(self.log_name()),
+            urn = "urn:publicid:IDN+r2lab+node+{}".format(self.log_name()),
         )
 
     # I'd like to keep the previous code intact for now
     def hacked_omf_json_model(self):
         json = self.omf_json_model()
         # patch
-        json['name'] = 'r2lab'
-        json['urn'] = json['urn'].replace(self.log_name(), "r2lab")
+        json['name'] = '37nodes'
+        json['urn'] = json['urn'].replace(self.log_name(), json['name'])
         # cleanup
         del json['cmc_attributes']
         del json['hostname']
