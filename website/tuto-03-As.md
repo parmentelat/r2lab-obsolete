@@ -59,8 +59,6 @@ key   = '~/.ssh/[your_public_ssh_key]'
 ec = ExperimentController(exp_id="A1-ping")
 
 # creating a node using the already filled credentials
-# in this case we are creating the gateway node
-# we are setting up the host, user and ssh key. 
 node = ec.register_resource("linux::Node",
                             username = user,
                             hostname = host,
