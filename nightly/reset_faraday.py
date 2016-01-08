@@ -111,7 +111,7 @@ def main(args):
     grouped_os_list = build_grouped_os_list(old_os)
     cmds= []    
     do_execute = False
-    executions = 1
+    executions = 37 #(divide from the total nodes - 1 means 37/1)
 
     # in case of have the version specified in the command line - do it for all
     if not None is version:
@@ -156,7 +156,7 @@ def main(args):
             omf_load = Parallel(cmd)
             omf_load.start()
 
-            check_number_times = 3  # Let's check n times before kiil the thread (normally using groups of 5 in executions)
+            check_number_times = 3   # Let's check n times before kiil the thread (normally using groups of 5 in executions)
             delay_before_kill  = 60  # Timeout for each check
 
             for i in range(check_number_times+1):
@@ -309,7 +309,7 @@ def main(args):
     save_in_json(loaded_nodes, 'reset_faraday')
 
     set_node_status(range(1,38), 'ok')
-    set_node_status(zumbie_nodes, 'ko')
+    #set_node_status(zumbie_nodes, 'ko')
     set_node_status(bug_node, 'ko')
     
     print "-- INFO: end of main"
@@ -333,7 +333,7 @@ def set_node_status(nodes, status='ok'):
     infos = [{'id': arg, 'available' : status} for arg in nodes]
 
     socketio = SocketIO(hostname, port, LoggingNamespace)
-    print("Sending {infos} onto {hostname}:{port}".format(**locals()))
+    # print("Sending {infos} onto {hostname}:{port}".format(**locals()))
     socketio.emit('r2lab-news', json.dumps(infos), None)
 
 
