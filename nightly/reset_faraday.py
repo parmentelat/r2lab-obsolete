@@ -123,9 +123,7 @@ def main(args):
             all_nodes = stringfy_list(all_nodes)
             real_version = named_version(version)
             
-
-            #cmds.append("omf6 load -t {} -i {}; ".format(all_nodes, real_version))
-            cmds.append("rload {} -i {}; ".format(all_nodes, real_version))
+            cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
     else:
         for k, v in grouped_os_list.iteritems():
             do_execute = True
@@ -140,7 +138,7 @@ def main(args):
                     new_version = which_version(os)
                     real_version = named_version(new_version)
 
-                    cmds.append("rload {} -i {}; ".format(all_nodes, real_version))
+                    cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
 
             # IN CASE OF RETURN A unknown OS NAME
             else:
@@ -310,6 +308,10 @@ def main(args):
 
     save_in_json(loaded_nodes, 'reset_faraday')
 
+    set_node_status(range(1,38), 'ok')
+    set_node_status(zumbie_nodes, 'ko')
+    set_node_status(bug_node, 'ko')
+    
     print "-- INFO: end of main"
 
     # =========================================
@@ -317,6 +319,22 @@ def main(args):
     # print "-- INFO: Restarting services"
     # print "-- INFO: {}".format(now())
     # execute(RESTART_ALL)
+
+
+
+
+def set_node_status(nodes, status='ok'):
+    """ Inform status page in r2lab.inria.fr the nodes with problem """
+    from socketIO_client import SocketIO, LoggingNamespace
+
+    hostname = 'r2lab.inria.fr'
+    port     = 443
+    
+    infos = [{'id': arg, 'available' : status} for arg in nodes]
+
+    socketio = SocketIO(hostname, port, LoggingNamespace)
+    print("Sending {infos} onto {hostname}:{port}".format(**locals()))
+    socketio.emit('r2lab-news', json.dumps(infos), None)
 
 
 
