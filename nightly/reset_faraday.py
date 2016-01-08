@@ -81,7 +81,7 @@ def main(args):
     #=========================================
     # CHECK THE CURRENT OS ===================
     print "-- INFO: check OS version for each node"
-    wait_and_update_progress_bar(30)
+    wait_and_update_progress_bar(20)
     all_nodes = to_str(nodes)
     bug_node   = []
     old_os = {}
@@ -111,7 +111,7 @@ def main(args):
     grouped_os_list = build_grouped_os_list(old_os)
     cmds= []    
     do_execute = False
-    executions = 37 #(divide from the total nodes - 1 means 37/1)
+    executions = 38 #(divide from the total nodes - 1 means 37/1)
 
     # in case of have the version specified in the command line - do it for all
     if not None is version:
@@ -187,7 +187,7 @@ def main(args):
     #=========================================
     # CHECK AGAIN THE OS =====================
     print "-- INFO: check OS version for each node"
-    wait_and_update_progress_bar(30)
+    wait_and_update_progress_bar(20)
     all_nodes = to_str(nodes)
     new_os     = {}
     results    = {}
@@ -267,7 +267,7 @@ def main(args):
     #=========================================
     # CHECK ZUMBIE (not turn off) NODES =====================
     print "-- INFO: check for zumbie nodes"
-    wait_and_update_progress_bar(30)
+    wait_and_update_progress_bar(20)
     all_nodes   = to_str(nodes)
     zumbie_nodes= []
     results     = {}
