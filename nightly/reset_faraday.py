@@ -49,7 +49,7 @@ def main(args):
 
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
-    # print "-- INFO: {}".format(now())
+    print "-- INFO: {}".format(now())
     # print "-- INFO: Restarting services"
     # execute(RESTART_ALL)
     
@@ -111,7 +111,7 @@ def main(args):
     grouped_os_list = build_grouped_os_list(old_os)
     cmds= []    
     do_execute = False
-    executions = 38 #(divide from the total nodes - 1 means 37/1)
+    executions = 38 #(divide from the total nodes - 1 means total_nodes/1)
 
     # in case of have the version specified in the command line - do it for all
     if not None is version:
@@ -317,7 +317,7 @@ def main(args):
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
     # print "-- INFO: Restarting services"
-    # print "-- INFO: {}".format(now())
+    print "-- INFO: {}".format(now())
     # execute(RESTART_ALL)
 
 
