@@ -132,7 +132,7 @@ def ranges (*rngspecs):
 def _normalize (sep, *args):
 #    print('normalize', args)
     constant = args[0]
-    rngspecs = [ arg.replace(constant, "") for arg in args[1:] ]
+    rngspecs = [ arg.replace(constant, "") for arg in args[1:] if arg ]
     return sep.join( [ "{}{:02d}".format(constant, arg) for arg in _ranges(*rngspecs) ] )
 
 def normalize (*args):
@@ -145,8 +145,8 @@ def comma_normalize (*args):
 def normalize2 (*args):
 #    print('normalize', args)
     constant = args[0]
-    output = args [1]
-    rngspecs = [ arg.replace(constant, "").replace(output, "") for arg in args[2:] ]
+    output = args[1]
+    rngspecs = [ arg.replace(constant, "").replace(output, "") for arg in args[2:] if arg ]
     return " ".join( [ "{}{:02d}".format(output, arg) for arg in _ranges(*rngspecs) ] )
 
 def main():
@@ -338,8 +338,7 @@ function show-nodes-on () {
 }
 doc-nodes show-nodes-on "display only selected nodes that are ON - does not change selection"
 function focus-nodes-on () {
-    export NODES="$(show-nodes-on)"
-    nodes
+    nodes $(show-nodes-on)
 }
 doc-nodes focus-nodes-on "restrict current selection to nodes that are ON"
 
