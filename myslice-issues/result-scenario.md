@@ -9,7 +9,6 @@ The related document aims present all bugs and issues of all user steps to have 
 5. pass
 
 ### 2. creating a project
-
 1. pass
 2. pass
 3. if the project is approved while the user is logged (active session) at the portal, its project list is not loading/appearing. **A logout/login is mandatory to have the list of projects**.
@@ -18,7 +17,6 @@ The related document aims present all bugs and issues of all user steps to have 
 1. pass
 
 ### 4. book a resource
-
 1. pass
 2. pass
 3. pass
