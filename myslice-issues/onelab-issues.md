@@ -12,7 +12,11 @@ It was fixed, but come back again today. Seems a little not unstable.
 4. After change to Paris resources, the screen never ends to load. Must reload the page and wait again for the left panel load. All the time it takes almost 2 minutes.
 ![alt tag](img/7.png)
 
-### 2. problems in creating a slice
+### 2. problems when creating projects
+1. After login no information about the projects. They disappeared. I did logout/login again to fix it. 
+![alt tag](img/5.png)
+
+### 3. problems in creating a slice
 1. When I try to select two resources and apply for the reservation a mysterious message appears. To fix it you must logout and login again or reload the page.
 ![alt tag](img/1.png)
 2. After had selected the slice correctly with the resource scheduled I had problems with public key.
@@ -23,11 +27,11 @@ Permission denied (public-key)
 4. Unaccountable message. The user have no idea what means.
 ![alt tag](img/10.png)
 
-### 3. problems when creating projects
-1. After login no information about the projects. They disappeared. I did logout/login again to fix it. 
-![alt tag](img/5.png)
+### 4. problems with access rules
+5. I can login to faraday even my slice time ended. I can load images even my slice time ended. My slice was until 15:30.
+![alt tag](img/15.png)
 
-### 4. problems with layout
+### 5. problems with layout
 1. Position of the text.
 ![alt tag](img/8.png)
 2. Comfused messages.
@@ -40,7 +44,7 @@ I have no idea if the close only close the window or if cancel all.
 ![alt tag](img/12.png)
 5. The negative message when reserve a slice just told me: FAILURE. In fact it was because someone else already took the slice. Failure is a little generalist. If the site could say that the time is already taken I would know that is not a problem but a concurrent time.
 
-### 5. problems with layout and UI
+### 6. problems with layout and UI
 1. There's no information about the address to SSH access or clear message how to access the resource. Must rolled the portal in all directions to find only the Paris platform address.
 2. The panel of schedule is complex, The number of options for the user is huge. In resource/slice reservation's screen the user has ~25 links to click... only in the main screen. In all this links the user can clicks: news, about, public website, intranet, onelablogo, experiment, support, users, information, tools, all available, unconfigured, pending, reserved, apply, table, map, scheduler, date slice table, previous & next, slice time icon, facilities itens.
 3. In the tabs, each one has new options and configurations.
@@ -49,5 +53,3 @@ I have no idea if the close only close the window or if cancel all.
 5. Another example of complex screen for the users is the account tab in account option/slice reservation. I am little confused about all these credentials.
 ![alt tag](img/14.png)
 4. The resource names have complex names. (ex.: host2.planetlab.informatik.tu-darmstadt.de)
-5. I can login to faraday even my slice time ended. I can load images even my slice time ended. My slice was until 15:30.
-![alt tag](img/15.png)
