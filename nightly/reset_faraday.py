@@ -49,7 +49,7 @@ def main(args):
 
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
-    # print "-- INFO: {}".format(now())
+    print "-- INFO: {}".format(now())
     # print "-- INFO: Restarting services"
     # execute(RESTART_ALL)
     
@@ -81,7 +81,7 @@ def main(args):
     #=========================================
     # CHECK THE CURRENT OS ===================
     print "-- INFO: check OS version for each node"
-    wait_and_update_progress_bar(30)
+    wait_and_update_progress_bar(20)
     all_nodes = to_str(nodes)
     bug_node   = []
     old_os = {}
@@ -111,7 +111,7 @@ def main(args):
     grouped_os_list = build_grouped_os_list(old_os)
     cmds= []    
     do_execute = False
-    executions = 1
+    executions = 38 #(divide from the total nodes - 1 means total_nodes/1)
 
     # in case of have the version specified in the command line - do it for all
     if not None is version:
@@ -123,7 +123,7 @@ def main(args):
             all_nodes = stringfy_list(all_nodes)
             real_version = named_version(version)
             
-            cmds.append("omf6 load -t {} -i {}; ".format(all_nodes, real_version))
+            cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
     else:
         for k, v in grouped_os_list.iteritems():
             do_execute = True
@@ -138,7 +138,7 @@ def main(args):
                     new_version = which_version(os)
                     real_version = named_version(new_version)
 
-                    cmds.append("omf6 load -t {} -i {}; ".format(all_nodes, real_version))
+                    cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
 
             # IN CASE OF RETURN A unknown OS NAME
             else:
@@ -156,7 +156,7 @@ def main(args):
             omf_load = Parallel(cmd)
             omf_load.start()
 
-            check_number_times = 3  # Let's check n times before kiil the thread (normally using groups of 5 in executions)
+            check_number_times = 3   # Let's check n times before kiil the thread (normally using groups of 5 in executions)
             delay_before_kill  = 60  # Timeout for each check
 
             for i in range(check_number_times+1):
@@ -187,7 +187,7 @@ def main(args):
     #=========================================
     # CHECK AGAIN THE OS =====================
     print "-- INFO: check OS version for each node"
-    wait_and_update_progress_bar(30)
+    wait_and_update_progress_bar(20)
     all_nodes = to_str(nodes)
     new_os     = {}
     results    = {}
@@ -267,7 +267,7 @@ def main(args):
     #=========================================
     # CHECK ZUMBIE (not turn off) NODES =====================
     print "-- INFO: check for zumbie nodes"
-    wait_and_update_progress_bar(30)
+    wait_and_update_progress_bar(20)
     all_nodes   = to_str(nodes)
     zumbie_nodes= []
     results     = {}
@@ -308,13 +308,33 @@ def main(args):
 
     save_in_json(loaded_nodes, 'reset_faraday')
 
+    set_node_status(range(1,38), 'ok')
+    #set_node_status(zumbie_nodes, 'ko')
+    set_node_status(bug_node, 'ko')
+    
     print "-- INFO: end of main"
 
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
     # print "-- INFO: Restarting services"
-    # print "-- INFO: {}".format(now())
+    print "-- INFO: {}".format(now())
     # execute(RESTART_ALL)
+
+
+
+
+def set_node_status(nodes, status='ok'):
+    """ Inform status page in r2lab.inria.fr the nodes with problem """
+    from socketIO_client import SocketIO, LoggingNamespace
+
+    hostname = 'r2lab.inria.fr'
+    port     = 443
+    
+    infos = [{'id': arg, 'available' : status} for arg in nodes]
+
+    socketio = SocketIO(hostname, port, LoggingNamespace)
+    # print("Sending {infos} onto {hostname}:{port}".format(**locals()))
+    socketio.emit('r2lab-news', json.dumps(infos), None)
 
 
 
