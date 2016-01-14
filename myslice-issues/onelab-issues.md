@@ -62,7 +62,7 @@ The negative message when reserve a slice just told me: FAILURE. In fact it was 
 Gerenal notes:
 -There's no information about the adress to SSH access or clear message how to access the resource. Must rolled the portal in all directons to find only the Paris plataform address.
 
--The panel of schedule is complex, The number of options for the user is huge. In resource/slice reservation's screen the user has ~25 links to click... only in the main screen. In all this links the user can clicks: news, about, public website, intranet, onelablogo, experiment, support, users, information, tools, all available, unconfigured, pending, reserved, apply, table, map, scheduler, date slice table, previous & next, slice time icon, facilities itens.
+The panel of schedule is complex, The number of options for the user is huge. In resource/slice reservation's screen the user has ~25 links to click... only in the main screen. In all this links the user can clicks: news, about, public website, intranet, onelablogo, experiment, support, users, information, tools, all available, unconfigured, pending, reserved, apply, table, map, scheduler, date slice table, previous & next, slice time icon, facilities itens.
 -In the tabs, each one has new options and configurations.
 -The button apply is in a confused position.
 
