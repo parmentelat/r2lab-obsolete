@@ -334,7 +334,6 @@ doc-nodes wait "\twait for all nodes to respond to ping on their control interfa
 # nodes-on : filter nodes that are on from args, or NODES if not provided
 function show-nodes-on () {
     [ -n "$1" ] && nodes="$@" || nodes="$NODES"
-    echo nodes=$nodes
     rhubarbe status $nodes | grep 'on' | cut -d: -f1 | sed -e s,reboot,fit,
 }
 doc-nodes show-nodes-on "display only selected nodes that are ON - does not change selection"
