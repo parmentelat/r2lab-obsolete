@@ -312,8 +312,8 @@ function -curl () {
 
 # showstatus
 # display status on arguments, or $NODES if not provided
-alias st="rhubarbe stat"
-doc-nodes st "\tshow node CMC status (rhubarbe stat)"
+alias st="rhubarbe status"
+doc-nodes st "\tshow node CMC status (rhubarbe status)"
 # idem for actually doing stuff
 function reset () { -curl reset "$@" ; }
 doc-nodes reset "\treset node through its CMC"
