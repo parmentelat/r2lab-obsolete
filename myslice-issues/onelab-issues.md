@@ -5,7 +5,6 @@ When I try to select two resources and apply for the reservation a mysterious me
 
 ![alt tag](img/1.png)
 
-
 After had selected the slice correctly with the resource scheduled I had problems with public key.
 nano$ ssh onelab.inria.mario.tutorial@faraday.inria.fr
 Permission denied (publickey)
@@ -78,5 +77,4 @@ I can login to faraday even my slice time ended.
 I can load images even my slice time ended. My slice was until 15:30.
 
 ![alt tag](img/15.png)
-
 
