@@ -312,7 +312,7 @@ function -curl () {
 
 # showstatus
 # display status on arguments, or $NODES if not provided
-alias st=rstat
+alias st="rhubarbe stat"
 doc-nodes st "\tshow node CMC status (rhubarbe stat)"
 # idem for actually doing stuff
 function reset () { -curl reset "$@" ; }
@@ -333,12 +333,14 @@ doc-nodes wait "\twait for all nodes to respond to ping on their control interfa
 
 # nodes-on : filter nodes that are on from args, or NODES if not provided
 function show-nodes-on () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
-    st $nodes | grep ' on' | awk '{print $1;}' | sed -e s,reboot,fit,
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
+    echo nodes=$nodes
+    rhubarbe status $nodes | grep 'on' | cut -d: -f1 | sed -e s,reboot,fit,
 }
 doc-nodes show-nodes-on "display only selected nodes that are ON - does not change selection"
 function focus-nodes-on () {
-    nodes $(show-nodes-on)
+    export NODES="$(show-nodes-on)"
+    nodes
 }
 doc-nodes focus-nodes-on "restrict current selection to nodes that are ON"
 
