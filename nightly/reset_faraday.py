@@ -312,6 +312,8 @@ def main(args):
     #set_node_status(zumbie_nodes, 'ko')
     set_node_status(bug_node, 'ko')
     
+    summary_in_mail(list(set(bug_node)))
+
     print "-- INFO: end of main"
 
     # =========================================
@@ -319,6 +321,29 @@ def main(args):
     # print "-- INFO: Restarting services"
     print "-- INFO: {}".format(now())
     # execute(RESTART_ALL)
+
+
+
+
+def summary_in_mail(content):
+    """send a summary output of the routine"""
+
+    list_of_bug_nodes = content
+
+    title = ''
+    body  = ''
+    #to    = 'mario.zancanaro@inria.fr, thierry.parmentelat@inria.fr'
+    to    = 'mario.zancanaro@inria.fr'
+
+    if len(list_of_bug_nodes) < 1:
+        title = 'Nightly Routine: Perfect!'
+        body  = 'All nodes are OK!'
+    elif len(list_of_bug_nodes) >= 1:
+        title = 'Nightly Routine: Issues!'
+        body  = 'Something went wrong with the node(s): <br> {}'.format(', '.join(str(x) for x in list_of_bug_nodes))
+
+    cmd = 'mail -a "Content-type: text/html" -s "{}" {} <<< "{}"'.format(title, to, body)
+    result = execute(cmd)
 
 
 
