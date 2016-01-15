@@ -3,7 +3,7 @@ This document tries to summarize the features and improvements that we (Inria - 
 
 It is based primarily on a few attempts made on guinea pig users, who had no prior knowledge of the tools, and who accepted to try the portal from a R2lab user's perspective.
 
-Please bare in mind that R2lab has no local website for account creation, slice deployment and lease reservation, and so the workflow for our users requires the use of the myslice-based OneLab portal - unlike more mature testbeds like e.g. IotLab, NITOS and PLE. 
+Please bear in mind that R2lab has no local website for account creation, slice deployment and lease reservation, and so the workflow for our users requires the use of the myslice-based OneLab portal - unlike more mature testbeds like e.g. IotLab, NITOS and PLE. 
 
 ## Generic issues
 
