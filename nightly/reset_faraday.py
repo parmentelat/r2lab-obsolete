@@ -332,14 +332,14 @@ def summary_in_mail(content):
 
     title = ''
     body  = ''
-    #to    = 'mario.zancanaro@inria.fr, thierry.parmentelat@inria.fr'
-    to    = 'mario.zancanaro@inria.fr'
+    to    = 'mario.zancanaro@inria.fr, thierry.parmentelat@inria.fr, thierry.turletti@inria.fr'
+    #to    = 'mario.zancanaro@inria.fr'
 
     if len(list_of_bug_nodes) < 1:
-        title = 'Nightly Routine: Perfect!'
+        title = 'Nightly Routine of {}: Perfect!'.format(date())
         body  = 'All nodes are OK!'
     elif len(list_of_bug_nodes) >= 1:
-        title = 'Nightly Routine: Issues!'
+        title = 'Nightly Routine of {}: Issues!'.format(date())
         body  = 'Something went wrong with the node(s): <br> {}'.format(', '.join(str(x) for x in list_of_bug_nodes))
 
     cmd = 'mail -a "Content-type: text/html" -s "{}" {} <<< "{}"'.format(title, to, body)
@@ -670,8 +670,15 @@ def split(array, size):
 
 
 def now():
-    """ Time now """
+    """ DateTime now """
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+
+
+def date():
+    """ Date now """
+    return datetime.now().strftime('%Y-%m-%d')
 
 
 
