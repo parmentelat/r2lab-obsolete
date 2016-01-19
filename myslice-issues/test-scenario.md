@@ -22,7 +22,7 @@ Upon confirmation of your signup request, an email will be send to the manager a
 
 ### 4. managing slices
 
-1. At the **resources**, already selected, uncheck all itens at the left panel (**facilities**), except by FitR2Lab item.
+1. At the **resources**, already selected, uncheck all items at the left panel (**facilities**), except by FitR2Lab item.
 2. At the list located at **table** tab, which are already selected,  check the box related to **37nodes.r2lab** item.
 3. Click **apply** button.
 4. A panel will open. Wait for the message **success** in the status column to close the panel.

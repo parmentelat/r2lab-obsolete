@@ -332,7 +332,7 @@ def summary_in_mail(content):
 
     title = ''
     body  = ''
-    to    = 'mario.zancanaro@inria.fr, thierry.parmentelat@inria.fr, thierry.turletti@inria.fr'
+    to    = 'mario.zancanaro@inria.fr, thierry.parmentelat@inria.fr, thierry.turletti@inria.fr, walid.dabbous@inria.fr'
     #to    = 'mario.zancanaro@inria.fr'
 
     if len(list_of_bug_nodes) < 1:
