@@ -22,4 +22,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^md/', include('md.urls')),
-]  + static( '/plugins/', document_root=settings.BASE_DIR+'/plugins/')
+]  + static( '/plugins/', document_root=settings.BASE_DIR+'/plugins/') \
+   + static( '/codes_examples/', document_root=settings.BASE_DIR+'/codes_examples/') 
+
+

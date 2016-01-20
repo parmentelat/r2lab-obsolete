@@ -41,7 +41,7 @@ The dependent condition will install for us NC (netcat) tool prerequisites and t
 
   <center>
     <img src="/assets/img/B1.png" alt="b1"><br/>
-    Download the <a href="codes_examples/B1-send-file.py" download target="_blank">B1 experiment</a> code
+    Download the <a href="/codes_examples/B1-send-file.py" download target="_blank">B1 experiment</a> code
   </center>
   
 
@@ -177,7 +177,7 @@ ec.shutdown()
     
     <center>
       <img src="/assets/img/B2.png" alt="b2"><br/>
-      Download the <a href="codes_examples/B2-send-file.py" download target="_blank">B2 experiment</a> code
+      Download the <a href="/codes_examples/B2-send-file.py" download target="_blank">B2 experiment</a> code
     </center>
  
   

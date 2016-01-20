@@ -25,7 +25,7 @@ You will be able load and control the most common Linux distros at R2lab testbed
 
   <center>
     <img src="/assets/img/C1.png" alt="c1"><br>
-    Download the <a href="codes_examples/C1-load.py" download target="_blank">C1 experiment</a> code
+    Download the <a href="/codes_examples/C1-load.py" download target="_blank">C1 experiment</a> code
   </center>
   
 
