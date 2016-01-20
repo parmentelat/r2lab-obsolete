@@ -71,4 +71,4 @@ def show(request, markdown_file):
     except:
         import traceback
         exc = traceback.format_exc()
-        return HttpResponse("Could not render markdown_file = {} <pre>\n{}\n</pre>".format(markdown_file, exc))
+        return HttpResponseNotFound("<h1> Oops - could not render markdown_file = {}</h1> <pre>\n{}\n</pre>".format(markdown_file, exc))
