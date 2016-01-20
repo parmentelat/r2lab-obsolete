@@ -11,6 +11,8 @@ from .models import Page
 import markdown2
 from django.utils.safestring import mark_safe
 
+from django.conf import settings
+
 ########## xxx dummy index - based on the db but we don't need the db ...
 def index(request):
     pages = Page.objects.order_by('markdown_file')
@@ -41,7 +43,8 @@ def match_meta(line):
 def parse(markdown_file):
     metavars = {}
     markdown = ""
-    with open(os.path.join(markdown_subdir, markdown_file), encoding='utf-8') as file:
+    absolute_path = os.path.join(settings.BASE_DIR, markdown_subdir, markdown_file)
+    with open(absolute_path, encoding='utf-8') as file:
         in_header = True
         for lineno, line in enumerate(file):
 #            if lineno <= 10:
