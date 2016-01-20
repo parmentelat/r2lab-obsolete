@@ -22,8 +22,10 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^md/', include('md.urls')),
-]  + static( '/plugins/', document_root=settings.BASE_DIR+'/plugins/') \
-   + static( '/codes_examples/', document_root=settings.BASE_DIR+'/codes_examples/') \
+] \
+    + static( '/assets/', document_root=settings.BASE_DIR+'/assets/') \
+    + static( '/plugins/', document_root=settings.BASE_DIR+'/plugins/') \
+    + static( '/codes_examples/', document_root=settings.BASE_DIR+'/codes_examples/') \
 + [
     # default -> md/
     # very rough - see md/views.py
