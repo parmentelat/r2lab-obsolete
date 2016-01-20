@@ -2,11 +2,11 @@
 
 # faraday
 
-* **has `/root/fitsophia` git-updated every 10 minutes**
+* **has `/root/r2lab` git-updated every 10 minutes**
 
 * runs `monitor.py` through `monitor-loop.sh`
 * logs in `/var/log/monitor.log`
-* sources in `/root/fitsophia/website/sidecar/`
+* sources in `/root/r2lab/website/sidecar/`
 
 * this essentially repeatedly pushes full results in `news.json` (see location below)
 
@@ -16,11 +16,11 @@
 
 # r2lab
 
-* **has `/root/fitsophia` git-updated every 10 minutes**
+* **has `/root/r2lab` git-updated every 10 minutes**
 * **also runs `make preview publish` every 10 minutes**
 
 * runs `sidecar.js` through `sidecar.sh` 
-* sources in `/root/fitsophia/website/sidecar/`
+* sources in `/root/r2lab/website/sidecar/`
 * this watches file in `/var/lib/sidecar/news.json`
   * this contents gets broadcasted to all web clients through `socket.io`
   * this **does not need** to contain everything; if just one node has changed its `os_release` it is perfectly fine to write just `[{'id':12, 'os_release':'windows'}]` in `news.json` and everything else will work as expected
