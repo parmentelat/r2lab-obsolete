@@ -4,7 +4,7 @@
 
     yum install git
     cd /root
-    git clone https://github.com/parmentelat/fitsophia.git
+    git clone https://github.com/parmentelat/r2lab.git
     
 ## node.js
 
@@ -21,15 +21,15 @@ This does not work right away; some kind of unmet dependency...
 
 I put this in standby for now; not crucial anyway
 
-## fitsophia
+## r2lab
  
-    cd /root/fitsophia/website/sidecar
+    cd /root/r2lab/website/sidecar
     npm install --save socket.io
     npm install --save express
     
 After what
      
-    # cd /root/fitsophia/website/sidecar
+    # cd /root/r2lab/website/sidecar
     [root@r2lab sidecar]# node sidecar.js
     listening on *:443	
     

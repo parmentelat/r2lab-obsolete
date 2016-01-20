@@ -3,7 +3,7 @@
 # this utility script is called every 10 minutes through cron on both faraday and r2lab
 # 
 
-GIT_REPO=/root/fitsophia
+GIT_REPO=/root/r2lab
 
 case $(hostname) in
     faraday*)
