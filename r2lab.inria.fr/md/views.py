@@ -3,7 +3,7 @@ import re
 
 from django.shortcuts import render
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.template import loader
 
 from .models import Page
@@ -57,7 +57,13 @@ def parse(markdown_file):
             markdown += line
     return metavars, markdown
 
-def show(request, markdown_file):
+# xxx quick and ugly
+# xxx accept 2 arguments for now
+# this is a quick and dirty way to allow for http://r2lab.inria.fr/index.md
+# as a synonym for http://r2lab.inria.fr/md/index.md
+# until I can find a better way to do this
+def markdown_page(request, markdown_file, toplevel_markdown_file):
+    markdown_file = toplevel_markdown_file if toplevel_markdown_file else markdown_file
     try:
         markdown_file = normalize(markdown_file)
         metavars, markdown = parse(markdown_file)
