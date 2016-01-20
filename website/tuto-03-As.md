@@ -3,13 +3,20 @@ tab: tutorial
 ---
 <script type="text/javascript">loadMenu();</script>
 
-Below are a couple of experiments to get start with [NEPI](http://nepi.inria.fr/Install/WebHome) network tool and R2lab simulation testbed.
+Below are a couple of experiments to get started with
+[NEPI](http://nepi.inria.fr/Install/WebHome) experiment orchestration
+tool, and with R2lab simulation testbed.
 
-The experiments were made with an increment level from **A1** to **A4** to allow better subject understanding. Feel free to skip to the level that fits your knowledge.
+This suite of experiments, labelled **A1** to **A4**, are designed as
+a suite of small incremental changes, to allow better subject
+understanding. Feel free to skip to the level that fits your
+knowledge.
 
-From one experiment to other, like git style, we highlight the modifications, insert and delete actions by different colors to improve the user experience learning. In most of the experiments cases a picture explaining the scenario are presented to help the experiment comprehension.
+From one experiment to the other, we highlight the required changes in
+a git-like style: inserted and deleted lines are shown with a
+different color, so readers can see what is new in this tutorial. 
 
-<br>
+<br/>
 
 <ul id="myTabs" class="nav nav-tabs" role="tablist">
   <li role="presentation" class="active">
@@ -27,20 +34,18 @@ From one experiment to other, like git style, we highlight the modifications, in
 </ul>
 
 <div id="contents" class="tab-content">
-
+<!------------ A1 ------------>
 <div role="tabpanel" class="tab-pane fade active in" id="A1" aria-labelledby="home-tab">
   <br/>
-  In this experiment example, from your computer, you will create and deploy an application to connect R2lab **gateway** (faraday.inria.fr) node.
-  <br><br>
-  Once there, from the **gateway** node, you will ping **google server** and recovery the answer of it.
-
-  <center>
-    ![a1](assets/img/A1.png)<br>
-    Download the <a href="codes_examples/A1-ping.py" download target="_blank">A1 experiment</a> code
-  </center>
-  
-
-  <pre data-src="prism.js" class="line-numbers"><code class="language-python">
+  In this experiment example, from your computer, you will create and deploy an application to connect to the R2lab
+  <strong>gateway</strong> (faraday.inria.fr).
+  <br/><br/>
+  Once there, from the <strong>gateway</strong>, you will ping a <strong>google server</strong> and recover its answer.
+<center>
+  <img src="/assets/img/A1.png" alt="a1"> <br/>
+  Download the <a href="codes_examples/A1-ping.py" download target="_blank">A1 experiment</a> code
+</center>
+<pre data-src="prism.js" class="line-numbers"><code class="language-python">
 #!/usr/bin/env python
 
 # including nepi library and other required packages
@@ -86,20 +91,21 @@ print (ec.trace(app, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()
-  </code></pre>
-  </div>
-  <div role="tabpanel" class="tab-pane fade" id="A2" aria-labelledby="profile-tab">
+</code></pre>
+</div>
+<!------------ A2 ------------>
+<div role="tabpanel" class="tab-pane fade" id="A2" aria-labelledby="profile-tab">
     <br/>
-    In this experiment example, from your computer, you will create and deploy two applications nodes. The first one to connect R2lab **gateway** (faraday.inria.fr) node and, from there, reach **fit01** node. 
-    <br><br>
-    Once connected at the R2lab **gateway** node, you will ping **fit01** node at the **control interface** of it. At the and you will recovery the answer of the experiment.
-    
-    <center>
-      ![a1](assets/img/A2.png)<br>
-      Download the <a href="codes_examples/A2-ping.py" download target="_blank">A2 experiment</a> code
-    </center>
- 
-  <pre data-src="prism.js" data-line-edit-line="10-13,20,22-30,47,51" data-line-inlcude-line="15-17,32-43" class="line-numbers"><code class="language-python">
+    In this experiment example, from your computer, you will create and deploy two application nodes. The first one to connect to the R2lab gateway (faraday.inria.fr) and, from there, reach the <strong>fit01</strong> node. 
+    <br/><br/>
+    Once connected at the R2lab gateway, you will ping the <strong>fit01</strong> node at its <strong>control interface</strong> (available as the <code>control</code> device under linux).
+    At the end you will retrieve the answer of the experiment.
+<center>
+  <img src="/assets/img/A2.png" alt="a2"><br/>
+  Download the <a href="codes_examples/A2-ping.py" download target="_blank">A2 experiment</a> code
+</center>
+<pre data-src="prism.js" data-line-edit-line="10-13,20,22-30,47,51" data-line-inlcude-line="15-17,32-43" class="line-numbers">
+<code class="language-python">
 #!/usr/bin/env python
 
 # including nepi library and other required packages
@@ -162,20 +168,20 @@ print (ec.trace(app, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()
-  </code></pre>
-  </div>
+</code></pre>
+</div>
+<!------------ A3 ------------>
   <div role="tabpanel" class="tab-pane fade" id="A3" aria-labelledby="profile-tab">
     <br/>
-    The experiment below uses two nodes. From your computer you will create and deploy **fit01** and **fit02** nodes. You will configure in both nodes the wired **experiment interface** (data) using DHCP.
-    <br><br>
-    Once configured the interface in both nodes, you will be able to ping the **experiment interface** at **fit02** from **fit01**.
-    
-    <center>
-      ![a1](assets/img/A3.png)<br>
-      Download the <a href="codes_examples/A3-ping.py" download target="_blank">A3 experiment</a> code
-    </center>
- 
-  <pre data-src="prism.js" data-line-remove-line="25-33"  data-line-edit-line="23,77-83,87" data-line-inlcude-line="19,20,48-59,61-67,69-75" class="line-numbers"><code class="language-python">
+    The experiment below uses two wireless nodes. From your computer you will create and deploy <strong>fit01</strong> and <strong>fit02</strong> nodes. You will configure in both nodes the wired <strong>experiment interface</strong> (available as <code>data</code> under linux) using DHCP.
+    <br/><br/>
+    Once configured the interface in both nodes, you will be able to ping the <strong>experiment interface</strong> at </strong>fit02</strong> from <strong>fit01</strong>.
+<center>
+   <img src="/assets/img/A3.png" alt="a3"><br/>
+    Download the <a href="codes_examples/A3-ping.py" download target="_blank">A3 experiment</a> code
+</center>
+<pre data-src="prism.js" data-line-remove-line="25-33"  data-line-edit-line="23,77-83,87" data-line-inlcude-line="19,20,48-59,61-67,69-75" class="line-numbers">
+<code class="language-python">
 #!/usr/bin/env python
 
 # including nepi library and other required packages
@@ -266,20 +272,24 @@ print (ec.trace(app_ping_from_fit01_to_fit02, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()
-  </code></pre>
-  </div>
-  <div role="tabpanel" class="tab-pane fade" id="A4" aria-labelledby="profile-tab">
-    <br/>
-    The experiment below uses two nodes and update the previous experiment A3. From your computer you will create the same **fit01** and the **fit02** nodes. However, now, you will configure an AD-HOC network in both nodes ** wireless interface ** (wlan0).
-    <br><br>
-    Once configured the interface, you will ping **fit01** and **fit02** each other using the **wireless interface**.
-    
-    <center>
-      ![a1](assets/img/A4.png)<br>
-      Download the <a href="codes_examples/A4-ping.py" download target="_blank">A4 experiment</a> code
-    </center>
- 
-  <pre data-src="prism.js" data-line-remove-line="62,79" data-line-edit-line="32,94,96,110,111" data-line-inlcude-line="22-29,63-71,80-88,102-108,114-116" class="line-numbers"><code class="language-python">
+</code></pre>
+</div>
+
+
+<!------------ A4 ------------>
+<div role="tabpanel" class="tab-pane fade" id="A4" aria-labelledby="profile-tab">
+  <br/>
+    The experiment below uses two nodes and is an incremental change from previous experiment A3.
+    From your computer you will create the same fit01 and fit02 nodes.
+    This time however, you will configure an <em>ad-hoc</em> network between both nodes <strong>wireless interfaces</strong> (exposed in linux as <code>wlan0</code>).
+    <br/><br/>
+    Once the interfaces configured, you will ping fit01 and fit02 from one another using the <strong>wireless interface</strong>.
+<center>
+  <img src="/assets/img/A4.png" alt="a4"><br/>
+  Download the <a href="codes_examples/A4-ping.py" download target="_blank">A4 experiment</a> code
+</center>
+<pre data-src="prism.js" data-line-remove-line="62,79" data-line-edit-line="32,94,96,110,111" data-line-inlcude-line="22-29,63-71,80-88,102-108,114-116" class="line-numbers">
+<code class="language-python">
 #!/usr/bin/env python
 
 # including nepi library and other required packages
@@ -399,7 +409,8 @@ print (ec.trace(app_ping_from_fit02_to_fit01, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()
-  </code></pre>
-  </div>
+</code></pre>
+</div>
+
 </div>
 

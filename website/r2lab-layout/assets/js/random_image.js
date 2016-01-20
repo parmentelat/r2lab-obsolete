@@ -3,7 +3,7 @@
 
 	// returns a random image from a given image list already placed in assets/img folder 
   getOneImage = function(imagesList, path) {
-  	path = path || 'assets/img/';	
+  	path = path || '/assets/img/';	
   	idx  = Math.round(Math.random() * (imagesList.length - 1));
   	return path+imagesList[idx]
   }

@@ -15,7 +15,7 @@ You will use **dependent** and **condition** NEPI instructions. Respectively lin
 
 The dependent condition will install for us NC (netcat) tool prerequisites and the condition instruction will ensure that the **fit01** node will send the file only after **fit02** is done and listening on it.
 
-<br>
+<br/>
 
 <ul id="myTabs" class="nav nav-tabs" role="tablist">
   <li role="presentation" class="active">
@@ -28,16 +28,19 @@ The dependent condition will install for us NC (netcat) tool prerequisites and t
 
 <div id="contents" class="tab-content">
 
+<!------------ B1 ------------>
 <div role="tabpanel" class="tab-pane fade active in" id="B1" aria-labelledby="home-tab">
   <br/>
-  The experiment below uses four nodes. From your computer you will create and deploy **local**, **gateway**, **fit01** and **fit02** nodes. 
-  <br><br>
-  From **local** you will copy "file.txt" to R2lab **gateway** node, which in turn will copy the same file to **fit02** node. Both copy file will use "scp command".
-  <br><br>
-  Once the file is present in **fit02** node, you will start NC (netcat) at **fit01** to listen in port 1234. After **fit01** starts listening in 1234 port, **fit02** node will transmit the file also using NC. The transmission from **fit02** to **fit01** use the wired **control interface**.
+  The experiment below uses four nodes. From your computer you will create and deploy <strong>local</strong>, <strong>gateway</strong>, <strong>fit01</strong> and <strong>fit02</strong> nodes. 
+  <br/><br/>
+  From <strong>local</strong> you will copy <code>file.txt</code> to R2lab <strong>gateway</strong> node, which in turn will copy the same file to <strong>fit02</strong> node. Both copies file will use <code>scp command</code>.
+  <br/><br/>
+  Once the file is present in <strong>fit02</strong> node, you will start <code>nc</code> (a.k.a. netcat) at <strong>fit01</strong> to listen in port 1234.
+  After <strong>fit01</strong> starts listening in 1234 port, <strong>fit02</strong> node will transmit the file also using <code>nc</code>.
+  The transmission from <strong>fit02</strong> to <strong>fit01</strong> use the wired <strong>control interface</strong>.
 
   <center>
-    ![a1](assets/img/B1.png)<br>
+    <img src="/assets/img/B1.png" alt="b1"><br/>
     Download the <a href="codes_examples/B1-send-file.py" download target="_blank">B1 experiment</a> code
   </center>
   
@@ -166,12 +169,14 @@ print (ec.trace(app_fit02_ls, "stdout"))
 ec.shutdown()
   </code></pre>
   </div>
-  <div role="tabpanel" class="tab-pane fade" id="B2" aria-labelledby="profile-tab">
+
+<!------------ B2 ------------>
+<div role="tabpanel" class="tab-pane fade" id="B2" aria-labelledby="profile-tab">
     <br/>
-    The experiment below are the same as the previous (B1), however here, to send the file from **fit02** to **fit01**, you will use the wireless interface instead the wired one.
+    The experiment below are the same as the previous (B1), however here, to send the file from <strong>fit02</strong> to <strong>fit01</strong>, you will use the wireless interface instead of the wired one.
     
     <center>
-      ![a1](assets/img/B2.png)<br>
+      <img src="/assets/img/B2.png" alt="b2"><br/>
       Download the <a href="codes_examples/B2-send-file.py" download target="_blank">B2 experiment</a> code
     </center>
  
@@ -337,8 +342,8 @@ print (ec.trace(app_fit02_ls, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()
-  </code></pre>
-  </div>
+</code></pre>
+</div>
 
 </div>
 

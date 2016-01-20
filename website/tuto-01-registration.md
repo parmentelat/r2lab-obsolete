@@ -9,7 +9,7 @@ The official OneLab portal is located at [http://portal.onelab.eu](http://portal
 
 Note there is also a [development portal](http://dev.myslice.info) that is also connected to R2Lab, but usage should be restricted in theory.
 
-<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true" markdown="1">
   
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="headingOne">
@@ -22,32 +22,32 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
       <div class="panel-body">
       	To proceed your registration at onelab portal:
-      	<br>
-      	<br>
+      	<br/>
+      	<br/>
 				**1 -** Fill the form with the requested info. Organization, first name, etc ... . 
-				<br>
-				<br>
+				<br/>
+				<br/>
 				<center>
-				![register](assets/img/register.png)<br>
+				![register](/assets/img/register.png)<br/>
 				Fig. 1 - Register
 				</center>
-				<br>
+				<br/>
 				If your organization is not listed in the portal, you can [request](https://portal.onelab.eu/portal/join) its addition (fig 1, <font color="red">**A**</font>).
-				<br>
+				<br/>
 				In the keys form (fig 1, <font color="red">**B**</font>), you'll find two options:
-				<br>
-				<br>
+				<br/>
+				<br/>
 				**default/automatic:** Choose this option if you have no keys generated in your device or if you are not an advanced user. In case of any doubts about the keys process, this option is recommended as well.
-				<br>
+				<br/>
 				With this policy choice selected the portal will generate and manage the key pair identity for you.
-				<br>
-				<br>
+				<br/>
+				<br/>
 				**advanced/manual:** Choose this option if you have knowledge about keys pairs and you already have them generated.
-				<br>
+				<br/>
 				A file button is provided to search at your computer your correspondent key and upload to the portal.
 				Once chosen the manual delegation of credentials option, a **[complementary step](https://portal.onelab.eu/portal/manual_delegation)** is required. This step can be done after the validation of your account by the manager of your organization.
-				<br>
-				<br>
+				<br/>
+				<br/>
 				**2 -** An email will be send to confirm your subscription. At this point you are a limited user. To gain full access you must **click at the link present** in the email confirmation and wait for the **manager organization validation** of your request.
       </div>
     </div>
@@ -63,37 +63,37 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
       <div class="panel-body">
 				In order to use the plataform, run and play your experiments, you must **create a new project** or **join a project** that already exists and book an **slice** inside of it. These concepts and how to interact with them are explained as follows.
-				<br>
-				<br>
+				<br/>
+				<br/>
 				<center>
-				![dashboard](assets/img/dashboard.png)<br>
+				![dashboard](/assets/img/dashboard.png)<br/>
 				Fig. 2 - Dashboard
 				</center>
-				<br>
+				<br/>
 				<h3>Project</h3>
 				A **project** is a sub-authority under the responsibility of your institution gathering users who will be able to create slices for their experiments.
 				Once logged in your dashboard a **[create/join project](https://portal.onelab.eu/portal/project_request/)** (fig 2, <font color="red">**A**</font>) project link is proposed and you can:
-				<br>
-				<br>
+				<br/>
+				<br/>
 				- **create new project** tab: In this option some informations for your new project are required.
 				Once this information is given the project could be submited.
-				<br>
-				<br>
+				<br/>
+				<br/>
 				- **join a project** tab: In this option a list of projects already created are proposed. Select the project you would like to join and confirm. 
-				<br>
+				<br/>
 				An email confirmation resumes your action and your request will be send to authority manager validation.
-				<br>
+				<br/>
 				<h3>Slice</h3>
 				A **slice** is a set of testbed resources on which you can conduct an experiment. You can request a new slice or either ask your colleagues to give you access to an existing one.
-				<br>
-				<br>
+				<br/>
+				<br/>
 				- **create a slice**: Once logged, in your dashboard a **[request slice](https://portal.onelab.eu/portal/slice_request/)** (fig 2, <font color="red">**B**</font>) link is proposed. 
 				Once this information is given the slice could be required.
-				<br>
+				<br/>
 				When a slice request is created, a confirmation email resumes your action and your request will be send to authority manager validation.
 				Once the validation is done your dashboard present the slices list (fig 2, <font color="red">**C**</font>) and the resource reservation is available.
-				<br>
-				<br>
+				<br/>
+				<br/>
 				The resources could be reserved in some easy steps:
 				<ul>
 					<li>Check the resources in the table list **or** click on the icon in the map.</li>
@@ -101,15 +101,15 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 					<li>Send the request using the submit button (fig 3, <font color="red">**C**</font>) and wait for the reservation. A progress message will appear.</li>
 					<li>For each resource scheduled a slice time must be selected to operate in the resource. In ** scheduler tab, ** item (fig 3, <font color="red">**A**</font>) is possible book the resource. Once the scheduler tool is open, select the range time of your interest (fig 4)</li>
 				</ul>
-				<br>
+				<br/>
 				<center>
-				![dashboard](assets/img/slice_a.png)<br>
+				![dashboard](/assets/img/slice_a.png)<br/>
 				Fig. 3 - Slice Dashboard
 				</center>
-				<br>
-				<br>
+				<br/>
+				<br/>
 				<center>
-				![dashboard](assets/img/schedule_details.png)<br>
+				![dashboard](/assets/img/schedule_details.png)<br/>
 				Fig. 4 - Booking a node
 				</center>
       </div>
@@ -125,54 +125,48 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
     </div>
     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
       <div class="panel-body">
-        Once the schedule has finished you can reach your node. In order to do it, the gateway is reacheble by ssh connection.
-        <br>
-        <br>
-        
-        <b>1 - Connect to your account in faraday</b>
+        Once the schedule has finished you can reach your node. In order to do it, the gateway is reachable by ssh connection.
+        <br/>
+        <br/>
+
+ <strong>1 - Connect to your account in faraday</strong>
         <p>
         	<pre class="hljs"><code>$ ssh your_account@faraday<span class="hljs-class">.inria</span><span class="hljs-class">.fr</span></code></pre>
       	</p>
       	<h6>
-      		Note that your account name is composed by: <b>project name"."slice name</b>.
-      		<br>
-      		<br>
+      		Note that your account name is composed by: <strong>project name"."slice name</strong>.
+      		<br/>
+      		<br/>
       		<p>
-		      	Example:<br>
-		      	<b>Project Name:</b> onelab.inria.name<br>
-		      	<b>Slice Name:</b> tutorial<br>
-		      	<b>Your account</b>: onelab.inria.name.tutorial
+		      	Example:<br/>
+		      	<strong>Project Name:</strong> onelab.inria.name<br/>
+		      	<strong>Slice Name:</strong> tutorial<br/>
+		      	<strong>Your account</strong>: onelab.inria.name.tutorial
 	      	</p>
       	</h6>
 
-        <b>2 - Connect your node</b>
-				<p>
-        	<pre class="hljs"><code>$ ssh root@your_reserved_resource</span></code></pre>
-        </p>
-      	<h6>
+<strong>2 - Connect your node</strong>
+<p>
+<pre class="hljs"><code>$ ssh root@fit10</span></code></pre>
+</p>
 
-      		<p>
-      		Example:<br>
-		      ssh root@fit10
-		      <br>
-		      ssh root@fit26
-		    	</p>
-      	</h6>
-
-      	[See more](tuto-02-michelle.html#main) how to manipulate the nodes.
-      	</p>
+[See more](tuto-02-michelle.html#main) about how to manipulate the nodes.
+</p>
       
-      	<b>3 - Troubleshooting</b>
-				<p>
-      	<p>If you have the <code>Permission denied (publickey).</code> error, check if you correctly pasted your public key on the OneLab portal. Also ensure that the ssh-agent is enabled and add your key to it, by:
-      	<p>
-        	<pre class="hljs"><code>$ ssh-add ~/.ssh/id_rsa</span></code></pre>
-        </p>
-      	Alternatively, restart the tutorial registration from the beginning.</p>
+<strong>3 - Troubleshooting</strong>
+<p>
+<p>If you have the <code>Permission denied (publickey).</code> error, check if you correctly pasted your public key on the OneLab portal. Also ensure that the ssh-agent is enabled and add your key to it, by:
+<p>
+<pre class="hljs"><code>$ ssh-add ~/.ssh/id_rsa</span></code></pre>
+</p>
 
-      </div>
-    </div>
-  </div>
+<!-- oooohhh
+Alternatively, restart the tutorial registration from the beginning.
+-->
+
+</div>
+</div>
+</div>
   
 </div>
 
