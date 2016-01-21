@@ -26,6 +26,7 @@ git reset --hard HEAD >> $LOG 2>&1
 
 # invoking monitor.sh or sidecar.sh accordingly
 # note that monitor.sh comes with rhubarbe
+# and sidecar.sh is a symlink manually created in /usr/bin
 $command.sh stop >> $LOG 2>&1 
 sleep 1
 $command.sh start >> $LOG 2>&1
