@@ -16,7 +16,7 @@ function restart-all () {
     echo Stopping dnsmasq
     service dnsmasq stop
     ### cleanup the pxlinu symlink
-    source /root/fitsophia/inventory/faraday.sh
+    source /root/r2lab/inventory/faraday.sh
     echo "Dealing with any dangling symlink"
     nextboot-listall
     nextboot-cleanall    
