@@ -1,4 +1,4 @@
-PUBLISH_PATH = /var/www/r2lab
+PUBLISH_PATH = /var/www/r2lab.inria.fr
 
 EXCLUDES = .git
 
