@@ -24,11 +24,13 @@ cd $GIT_REPO
 git reset --hard HEAD >> $LOG 2>&1
 ./auto-update.sh
 
+# invoking monitor.sh or sidecar.sh accordingly
+# note that monitor.sh comes with rhubarbe
 $command.sh stop >> $LOG 2>&1 
 sleep 1
 $command.sh start >> $LOG 2>&1
 
-
+# publish website contents
 if [ -n "$run_publish" ]; then
     make -C $GIT_REPO/r2lab.inria.fr install >> $LOG 2>&1
 fi
