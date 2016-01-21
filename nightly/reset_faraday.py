@@ -312,7 +312,10 @@ def main(args):
     #set_node_status(zumbie_nodes, 'ko')
     set_node_status(bug_node, 'ko')
     
+    print "-- INFO: send email"
     summary_in_mail(list(set(bug_node)))
+    print "-- INFO: write in file"
+    write_in_file(list(set(bug_node)))
 
     print "-- INFO: end of main"
 
@@ -321,6 +324,21 @@ def main(args):
     # print "-- INFO: Restarting services"
     print "-- INFO: {}".format(now())
     # execute(RESTART_ALL)
+
+
+
+
+def write_in_file(text):
+    """save the results in a file for posterior use of it """
+
+    dir_name  = ""
+    file_name = "historic_reset_faraday.txt"
+    
+    text = ', '.join(str(x) for x in text)
+
+    fl = open(dir_name+file_name,"a")
+    fl.write(date() + ': ' + text + "\n")
+    fl.close()
 
 
 
