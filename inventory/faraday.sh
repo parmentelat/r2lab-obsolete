@@ -588,7 +588,7 @@ doc-alt chmod-private-key "\n\t\tChmod private key so that ssh won't complain an
 # we had to create a crontab-oriented proper shell-script to do this in ./restart-all.sh
 # to avoid code duplication we call that script here
 function restart-all () {
-    /root/r2lab/inventory/restart-all.sh interactive
+    /root/r2lab/infra/scripts/restart-all.sh interactive
 }
 doc-admin restart-all "Restart all 4 services omf-sfa, ntrc, openfire and dnsmasq"
 
