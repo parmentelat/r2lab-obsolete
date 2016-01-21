@@ -34,7 +34,7 @@ full control and granted access<br>
   </div>
 </div>
 <br>
-<div class="row">
+<div class="row" markdown="1">
   <div class="col-md-7"> 
   <span>
     <h3>Node details</h3>
@@ -91,12 +91,12 @@ full control and granted access<br>
   </div>
   <div class="col-md-3">
     <br>
-    <img src="assets/img/icarus6i.png" width="300px">
+    <img src="/assets/img/icarus6i.png" width="300px">
     <center>Fig. 1 - Resource/Node Icarus</center>
     <br>
     <br>
     <br>
-    <img src="assets/img/node_interface_2.jpg" width="300px">
+    <img src="/assets/img/node_interface_2.jpg" width="300px">
     <center>Fig. 2 - Resource/Node Icarus</center>
   </div>
 </div>

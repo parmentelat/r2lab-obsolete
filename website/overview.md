@@ -19,7 +19,7 @@ tab: overview
 
   <div class="col-md-6">
   	<br>
-  	<img src="assets/img/nodes_range.jpg">
+  	<img src="/assets/img/nodes_range.jpg">
   </div>
 </div>
 
@@ -28,7 +28,7 @@ tab: overview
 <div class="row">
   <div class="col-md-3">
     <br>
-    <img src="assets/img/node_interface.jpg">
+    <img src="/assets/img/node_interface.jpg">
   </div>
   
   <div class="col-md-7"> 
@@ -50,7 +50,7 @@ tab: overview
 
 <br>
 ### The OneLab platform
-<div class="row">
+<div class="row" markdown="1">
   <div class="col-md-7"> 
   <br>
   R2Lab is also part of the OneLab project - a consortium of higher education and research institutions.
@@ -63,7 +63,7 @@ tab: overview
 
   <div class="col-md-3">
     <br>
-    <img src="assets/img/onelab-logo.png" style="height:55px;">
+    <img src="/assets/img/onelab-logo.png" style="height:55px;">
   </div>
   
   <div class="col-md-2"> 

@@ -4,11 +4,16 @@ tab: status
 
 R2lab testbed project offers a high quality anechoic room for your experiments. Following are the details of the anechoic room.
 
-<div class="alert alert-danger" role="alert">
-<p><strong>Important note!</strong></p>
-<p>R2lab platform is reset every night. A time slot from **3AM** until **4AM** (GMT +1) is reserved to execute this routine.</p>
 
-<p>Please, make sure all your experiments are save before. You can check [here](tuto-02-michelle.html#main) how to do it.</p></div>
+<div class="alert alert-danger" role="alert" markdown="1">
+**Important note!**
+
+R2lab platform is reset every night. A time slot from **3AM** until
+**4AM** (GMT +1) is reserved to execute this routine.
+
+Please, make sure all your experiments are saved before. You can check
+[here](tuto-02-michelle.html#main) how to do it.
+</div>
 
 ### Overall status (livemap)
 
@@ -33,9 +38,9 @@ For accurate dimensions of the room, please see the [static blueprint
 at the bottom of this page](#accurate-layout).
 
 <div id="livemap_container"></div>
-<script type="text/javascript" src="plugins/livemap.js"></script>
+<script type="text/javascript" src="/plugins/livemap.js"></script>
 <script>livemap_show_rxtx_rates = true;</script>
-<style type="text/css"> @import url("plugins/livemap.css"); </style>
+<style type="text/css"> @import url("/plugins/livemap.css"); </style>
 
 ***
 
@@ -60,9 +65,9 @@ Also please note that
 <br />
 
 <table class="table table-condensed" id='livetable_container'> </table>
-<script type="text/javascript" src="plugins/livetable.js"></script>
+<script type="text/javascript" src="/plugins/livetable.js"></script>
 <script>livetable_show_rxtx_rates = true;</script>
-<style type="text/css"> @import url("plugins/livetable.css"); </style>
+<style type="text/css"> @import url("/plugins/livetable.css"); </style>
 
 <br />
 
@@ -75,7 +80,7 @@ Below is the ground plan layout of the anechoic room which provides thirty-seven
 The nodes are arranged in a grid with ≈1.0m (vertical) and ≈1.15m (horizontal) of distance between them, except for the nodes 12, 16, 17, 20 and 23, 24, 27 which are the nodes surrounding the two columns of the room.
 
 <left>
-	<img src="assets/img/status.png" style="width:950px; height:592px;"/><br>
+	<img src="/assets/img/status.png" style="width:950px; height:592px;"/><br>
 	<!-- <center> Fig. 1 - Resources status</center> -->
 </left>
 
