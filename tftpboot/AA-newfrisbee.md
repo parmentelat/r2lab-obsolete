@@ -8,7 +8,7 @@ As a short reminder, here's the gist of how I came up with my modified PXE image
 
 i.e.
     
-    parmentelat ~/git/fitsophia/images/tftpboot $ ls -l initramfs-omf6.igz.oldfrisbee
+    parmentelat ~/git/r2lab/images/tftpboot $ ls -l initramfs-omf6.igz.oldfrisbee
     -rwxr-xr-x  1 parmentelat  staff  71103697 Feb 17 10:04 initramfs-omf6.igz.oldfrisbee
 
 * unwrap it
@@ -33,7 +33,7 @@ i.e.
 
 i.e.
 
-    parmentelat ~/git/fitsophia/images $ diff -r unwrap-initramfs-omf6 wrap-new-frisbee
+    parmentelat ~/git/r2lab/images $ diff -r unwrap-initramfs-omf6 wrap-new-frisbee
     diff: unwrap-initramfs-omf6/etc/mtab: No such file or directory
     diff: wrap-new-frisbee/etc/mtab: No such file or directory
     diff: unwrap-initramfs-omf6/sbin/udevadm: No such file or directory
@@ -59,7 +59,7 @@ i.e.
 
 i.e. 
  
-    parmentelat ~/git/fitsophia/images/tftpboot $ ls -l initramfs-omf6.igz.*
+    parmentelat ~/git/r2lab/images/tftpboot $ ls -l initramfs-omf6.igz.*
     -rwxr-xr-x  1 parmentelat  staff  70491187 Feb 17 10:35 initramfs-omf6.igz.newfrisbee
     -rwxr-xr-x  1 parmentelat  staff  71103697 Feb 17 10:04 initramfs-omf6.igz.oldfrisbee
     

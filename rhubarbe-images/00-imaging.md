@@ -144,7 +144,7 @@ All looks fine; except for device names, as I found the MAC addresses from the i
 * I had on `fit39` `p2p1`, `eth1`, `wlan0` and `wlan1`,
 * while on `fit40` this was `p2p1`, `eth0`, `wlan2` and `wlan3`
 
-See `fitsophia/omf-images-6/netnames-scratchpad.sh` on how to deal with this, and have nice and clean names in `control` and `data`
+See `r2lab/omf-images-6/netnames-scratchpad.sh` on how to deal with this, and have nice and clean names in `control` and `data`
 
 ## `netnames` 
 

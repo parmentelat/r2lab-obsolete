@@ -33,7 +33,7 @@ currently runs this kernel :
 
 painful; we have
 
-* `~/git/fitsophia/tftpboot` local git repo
+* `~/git/r2lab/tftpboot` local git repo
 * `frisbeeimage.pl.sophia.inria.fr`: a debian-15.04 VM on stupeflip, for running frisbeeimage.sh (which incidentally does not work right now)
 * `boxtops:/vservers/pxelinux` a place where to run a qemu-based node that alows to try out images; some known limitations 
   * in terms of display (uses curses, no graphic mode), 

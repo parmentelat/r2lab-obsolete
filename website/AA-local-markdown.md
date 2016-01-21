@@ -13,9 +13,9 @@ We have proposed a patch to upstream's `markdown-styles` so that `meta.json` can
 
 I have forked [the upstream git repo (mixu)](https://github.com/mixu/markdown-styles) as [`parmentelat` in github](https://github.com/parmentelat/markdown-styles)
 
-This fork is expected to have been git-cloned at the same level as `fitsophia`; that is to say, in my case I have
+This fork is expected to have been git-cloned at the same level as `r2lab`; that is to say, in my case I have
 
-  * `~/git/fitsophia`
+  * `~/git/r2lab`
   * `~/git/markdown-styles`
     
 This latter one being cloned from

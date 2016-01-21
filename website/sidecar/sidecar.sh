@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CODEDIR=/root/fitsophia/website/sidecar
+CODEDIR=/root/r2lab/website/sidecar
 DATADIR=/var/lib/sidecar
 LOG=/var/log/sidecar.log
 
