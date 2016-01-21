@@ -344,9 +344,9 @@ doc-nodes focus-nodes-on "restrict current selection to nodes that are ON"
 
 ####################
 # reload these tools
-alias reload="source /home/faraday/fitsophia/inventory/faraday.sh"
+alias reload="source /home/faraday/r2lab/inventory/faraday.sh"
 # git pull and then reload; not allowed to everybody
-alias refresh="/home/faraday/fitsophia/auto-update.sh; chown -R faraday:faraday ~faraday/fitsophia; reload"
+alias refresh="/home/faraday/r2lab/auto-update.sh; chown -R faraday:faraday ~faraday/r2lab; reload"
 doc-alt refresh "install latest version of these utilities"
 
 ####################
@@ -588,7 +588,7 @@ doc-alt chmod-private-key "\n\t\tChmod private key so that ssh won't complain an
 # we had to create a crontab-oriented proper shell-script to do this in ./restart-all.sh
 # to avoid code duplication we call that script here
 function restart-all () {
-    /root/fitsophia/inventory/restart-all.sh interactive
+    /root/r2lab/inventory/restart-all.sh interactive
 }
 doc-admin restart-all "Restart all 4 services omf-sfa, ntrc, openfire and dnsmasq"
 
@@ -661,5 +661,5 @@ doc-admin sidecar-log alias
 alias rhubarbe-update='pip3 install --upgrade rhubarbe; rhubarbe version'
 doc-admin rhubarbe-update alias
 
-alias pull-bashrc="su faraday /home/faraday/fitsophia/auto-update.sh"
+alias pull-bashrc="su faraday /home/faraday/r2lab/auto-update.sh"
 doc-admin pull-bashrc alias

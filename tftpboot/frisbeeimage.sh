@@ -16,8 +16,8 @@
 #
 # a /build/ directory
 # 
-# /build/fitsophia is expected to have been set up as a git clone of
-#    https://github.com/parmentelat/fitsophia.git
+# /build/r2lab is expected to have been set up as a git clone of
+#    https://github.com/parmentelat/r2lab.git
 # this is the place where the frisbee binaries are being fetched
 #
 # NOTE about locating proper kernel image
@@ -173,7 +173,7 @@ CHROOT
 
 ####################
 function install_newfrisbee () {
-    cd /build/fitsophia/frisbee-binaries-inria
+    cd /build/r2lab/frisbee-binaries-inria
     rsync -av frisbee* /$ROOT/usr/sbin
     rsync -av image* /$ROOT/usr/bin
 }
