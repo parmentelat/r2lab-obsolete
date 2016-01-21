@@ -1,41 +1,83 @@
-# FIT Inventory tools
+# R2lab inventory : purpose
 
-the workflow for maintaining our inventory from the googl spreadsheet is as follows
+This subdir contains various tools for interacting with the `omf_sfa` instance deployed on `faraday.inria.fr`, as well as the various companion tools like `dnsmasq`.
 
-## get the latest `csv` file
+Mainly we maintain a local map in `r2lab.map`; this is where we map physical numbers (i.e. the  on the label that is glued to the node) and logical numbers (the actual location in the room). 
 
-make sure to get the latest `fit.csv` from the spreadsheet
+Most of the time of course there is no discrepency; however when a spare node needs to be deployed instead, the testbed needs to be reconfigured.
 
-* if your browser stores stuff under `~/Downloads` you can probably use `make import` 
+# Workflow
 
-## update the faraday deployment
+Here is how to implement a change
+
+## edit `r2lab.map`
+
+Edit `r2lab.map`. Lines starting with a `#` are comments. Typically this file would include lines like
+
+```
+# phy   mac                     room slot       wlan0                   wlan1
+01      00:03:1d:0e:03:19       01              7c:c3:a1:a8:1b:70       7c:c3:a1:a2:67:f5 
+<snip>
+38      00:03:1d:0e:24:79       preplab         04:54:53:00:e2:65       7c:c3:a1:a8:0b:63
+```
+
+Which means that node labeled `fit01` is deployed in position, while node labeled `fit38` is not deployed in the chamber, but in the preplab instead. So you can change the `room slot` column (mac addresses must of course be kept intact) to reflect your change.
+
+Imagine we now need to **take out `fit27` for maintenance**, and **replace it with node `fit42`**, we would then write instead
+
+```
+# phy   mac                     room slot       wlan0                   wlan1
+<snip>
+27      00:03:1d:0d:e1:9b       preplab         e4:ce:8f:53:f4:08       7c:c3:a1:a8:0a:fd
+<snip>
+42      00:03:1d:0e:03:5b       27              7c:c3:a1:a8:26:9e       7c:c3:a1:a8:1c:2a
+```
+
+## faraday 
+
+### compute new config
+
+```
+parmentelat ~/git/r2lab/inventory $ make configure
+configure.py r2lab.map
+r2lab.map:27 - undeployed physical node 27 - ignored
+r2lab.map:38 - undeployed physical node 38 - ignored
+r2lab.map:39 - undeployed physical node 39 - ignored
+r2lab.map:40 - undeployed physical node 40 - ignored
+r2lab.map:41 - undeployed physical node 41 - ignored
+(Over)wrote r2lab-omf.json from r2lab.map
+(Over)wrote r2lab-rhubarbe.json from r2lab.map
+(Over)wrote r2lab.dnsmasq from r2lab.map
+(Over)wrote r2lab.hosts from r2lab.map
+(Over)wrote r2lab-nagios-nodes.cfg from r2lab.map
+(Over)wrote r2lab-nagios-groups.cfg from r2lab.map
+(Over)wrote r2lab-diana.db from r2lab.map
+```
+
+The warning messages are normal, then let you check which node definitions were not used to compute the new configuration for faraday.
+
+### apply new config
 
 for deploying this on faraday you can just run
 
-`make faraday`
+ * `make infra` to push the dnsmasq tables into faraday, so that DHCP knows about the new mapping, and optionnally
 
- that will take care of
+ * `make json` to push the omf-sfa config 
+ * `make nagios` to refresh the configuration for `faraday.inria.fr/nagios3`
 
-  * populating the DB from JSON
-  * updating `/etc/hosts`
-  * updating `/etc/dnsmasq.d/testbed.conf` and restarting `dnsmasq`
-  * and finally update the details of the `nagios` config, as well as restarting the `nagios` service
+**NOTES** the last 2 operations are optional because
+* since late 2015 the omf-sfa config only exposes a single node (named `37nodes`) upstream to the portal, so that reservation is simpler; the consequence of this is that the omf-sfa configuration does not change very often any more, if at all.
+* and likewise, the nagios configuration won't change in this example
 
-## updating bemol
+## bemol (preplab)
 
-Likewise you can just run
+In the preplab, there is no notion of a physical location, of course. So a node labeled `fit23` or `fit42` will always we accessible as `fit23` or `fit42` resp., regardless of the `room slot` column in `r2lab.map`. So in this particular example no change is required on bemol.
 
-`make bemol` 
+Regardless, the following targets are available when targetting `bemol` instead; the `bemol-` prefix can be replaced with `prep-` 
 
-that will do the same for `bemol`, except for the `nagios` since there is no such service on nagios.
-
-## **NOTES**
-
-* The config on `faraday` needs to change if for example you replace the node on physical position `15` with the node labelled `39`
-
-  This is because from then on, OMF needs to reach IP 192.168.1.39 for restarting logical node 15, but at the same time for DHCP we assign the MAC addresses of physical-node-39 to the 192.168.{2,3}.15 IP addresses
-
-* OTOH for bemol there is no such trick, so the config for bemol is expected to be more stable and to need less frequently to be updated.
+* `make bemol-configure` 
+* `make bemol-json` 
+* `make bemol-infra` 
 
 ## Miscell
 

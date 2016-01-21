@@ -10,9 +10,6 @@ PREP_OMF_SSH  = root@bemol.pl.sophia.inria.fr
 PREP_OMF_DIR  = /root/omf_sfa
 PREP_OMF_NAME = r2lab-prep
 
-# a convenience
-PREP_MAKE = $(MAKE) OMF_SSH=$(PREP_OMF_SSH) OMF_DIR=$(PREP_OMF_DIR) OMF_NAME=$(PREP_OMF_NAME)
-
 # see AA-README.md
 
 all: configure 
@@ -30,7 +27,7 @@ BYPRODUCTS = $(OMF_NAME)-omf.json $(OMF_NAME)-rhubarbe.json $(OMF_NAME).dnsmasq 
 fullmonty: configure
 	@echo "Enter git comment for these changes (one line) "; read comment; git commit -m "$comment"
 	git push
-	$(MAKE) json infra nagios
+	$(MAKE) configure json infra nagios
 
 
 .PHONY: fullmonty
@@ -92,20 +89,22 @@ tools:
 	rsync -av $(TOOLS) $(OMF_SSH):/usr/bin
 
 ####################
-# refreshing the bemol deployment
-# the --prep-lab option creates files named r2lab-prep*
+# bemol-configure and other similar targets
+BEMOL-TARGETS = configure json infra
 
-prep-files:
-	configure.py --prep-lab
+define bemol-target
+bemol-$(1): OMF_SSH=$(PREP_OMF_SSH)
+bemol-$(1): OMF_DIR=$(PREP_OMF_DIR)
+bemol-$(1): OMF_NAME=$(PREP_OMF_NAME)
+bemol-$(1): $(1)
+prep-$(1): bemol-$(1)
+.PHONY: bemol-$(1) prep-$(1)
+endef
 
-prep-push:
-	$(PREP_MAKE) json infra
+$(foreach target,$(BEMOL-TARGETS),$(eval $(call bemol-target,$(target))))
 
-bemol: prep-files prep-push
+bemol: force $(foreach target,$(BEMOL-TARGETS), bemol-$(target))
 
-bemol-tools:
-	$(PREP_MAKE) tools
+force:
 
-.PHONY: prep-files prep-push bemol bemol-tools
-
-####################
+.PHONY: bemol
