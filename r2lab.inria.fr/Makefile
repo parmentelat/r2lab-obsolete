@@ -6,7 +6,7 @@ RSYNC-EXCLUDES = $(foreach exc,$(EXCLUDES), --exclude $(exc))
 
 ########## contents
 publish:
-	rsync $(RSYNC-EXCLUDES) --delete --delete-excluded ./ $(PUBLISH_PATH)/
+	rsync -av $(RSYNC-EXCLUDES) --delete --delete-excluded ./ $(PUBLISH_PATH)/
 
 install: publish
 
