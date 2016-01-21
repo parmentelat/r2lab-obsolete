@@ -14,28 +14,36 @@ PREP_OMF_NAME = r2lab-prep
 
 all: configure 
 
-faraday: json infra nagios
-faraday-json: json
+publish: configure json infra nagios
 
-.PHONY: all faraday faraday-json
+.PHONY: all publish
 
 SCRIPT = configure.py
 SOURCE = r2lab.map
-BYPRODUCTS = $(OMF_NAME)-omf.json $(OMF_NAME)-rhubarbe.json $(OMF_NAME).dnsmasq $(OMF_NAME).hosts r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg
+
+define byproducts
+$(1)-omf.json $(1)-rhubarbe.json $(1).dnsmasq $(1).hosts 
+endef
+
+PRODUCTS         = $(call byproducts,$(OMF_NAME))
+BEMOL-PRODUCTS   = $(call byproducts,$(PREP_OMF_NAME))
 
 # once everything has been redone, this target pushes everything, and commits to git
 fullmonty: configure
-	@echo "Enter git comment for these changes (one line) "; read comment; git commit -m "$comment"
+	@echo "Enter git comment for these changes (one line) "; read comment; git commit -m "$$comment"
 	git push
 	$(MAKE) configure json infra nagios
 
 
 .PHONY: fullmonty
 ####################
-configure: $(BYPRODUCTS)
-
-$(BYPRODUCTS): $(SCRIPT) $(SOURCE)
+configure: $(PRODUCTS)
+$(PRODUCTS) r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg: $(SCRIPT) $(SOURCE)
 	$(SCRIPT) $(SOURCE)
+
+$(BEMOL-PRODUCTS): $(SCRIPT) $(SOURCE)
+	$(SCRIPT) -p $(SOURCE)
+bemol-configure: $(BEMOL-PRODUCTS)
 
 .PHONY: configure
 
@@ -90,14 +98,16 @@ tools:
 
 ####################
 # bemol-configure and other similar targets
-BEMOL-TARGETS = configure json infra
+BEMOL-TARGETS = configure json infra publish
 
 define bemol-target
 bemol-$(1): OMF_SSH=$(PREP_OMF_SSH)
 bemol-$(1): OMF_DIR=$(PREP_OMF_DIR)
 bemol-$(1): OMF_NAME=$(PREP_OMF_NAME)
 bemol-$(1): $(1)
+
 prep-$(1): bemol-$(1)
+
 .PHONY: bemol-$(1) prep-$(1)
 endef
 

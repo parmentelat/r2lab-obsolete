@@ -61,13 +61,11 @@ The warning messages are normal, then let you check which node definitions were 
 for deploying this on faraday you can just run
 
  * `make infra` to push the dnsmasq tables into faraday, so that DHCP knows about the new mapping, and optionnally
+ * `make nagios` to refresh the configuration for `faraday.inria.fr/nagios3`; note that this should be done even when swapping a spare node for a broken node, because the IP address of the CMC card is burned into the box and cannot be defined through DHCP.
 
  * `make json` to push the omf-sfa config 
- * `make nagios` to refresh the configuration for `faraday.inria.fr/nagios3`
 
-**NOTES** the last 2 operations are optional because
-* since late 2015 the omf-sfa config only exposes a single node (named `37nodes`) upstream to the portal, so that reservation is simpler; the consequence of this is that the omf-sfa configuration does not change very often any more, if at all.
-* and likewise, the nagios configuration won't change in this example
+**NOTE** the last operation is optional because, since late 2015 the omf-sfa config only exposes a single node (named `37nodes`) upstream to the portal, so that reservation is simpler; the consequence of this is that the omf-sfa configuration does not change very often any more, if at all.
 
 ## bemol (preplab)
 
