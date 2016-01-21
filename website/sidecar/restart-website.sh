@@ -30,5 +30,5 @@ $command.sh start >> $LOG 2>&1
 
 
 if [ -n "$run_publish" ]; then
-    make -C $GIT_REPO/r2lab install >> $LOG 2>&1
+    make -C $GIT_REPO/r2lab.inria.fr install >> $LOG 2>&1
 fi
