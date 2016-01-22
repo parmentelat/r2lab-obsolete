@@ -9,6 +9,7 @@ and outline the ones that are not reliable
 
 from argparse import ArgumentParser
 import os
+import os.path
 from datetime import datetime
 import time
 import sys
@@ -339,7 +340,7 @@ def write_in_file(text):
     
     text = ', '.join(str(x) for x in text)
 
-    with open(dir_name+file_name,"a") as fl:
+    with open(os.path.join(dir_name, file_name), "a") as fl:
         fl.write("{}: {}\n".format(date(),text))
 
 
