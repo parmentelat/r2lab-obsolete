@@ -2,28 +2,31 @@
 #
 # Author file: Mario Zancanaro <mario.zancanaro@inria.fr>
 #
-# This is a maintenance functions used to make group operations at the nodes from
-# INRIA testbed (R2Lab).
-#
+"""
+The nightly script used to monitor all the R2lab on a nightly basis
+and outline the ones that are not reliable
+"""
 
-from nepi.execution.ec import ExperimentController
-from nepi.execution.resource import ResourceAction, ResourceState
 from argparse import ArgumentParser
 import os
-from nepi.util.sshfuncs import logger
 from datetime import datetime
 import time
 import sys
 import re
 import json
 from parallel import Parallel
-from datetime import datetime
+
+from nepi.execution.ec import ExperimentController
+from nepi.execution.resource import ResourceAction, ResourceState
+from nepi.util.sshfuncs import logger
 
 parser = ArgumentParser()
 parser.add_argument("-N", "--nodes", dest="nodes", 
-       help="Comma separated list of nodes")
+                    help="Comma separated list of nodes")
 parser.add_argument("-V", "--version", default=None, dest="version", 
-       help="O.S version to load")
+                    help="O.S version to load")
+parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
+                    help="Directory to save text file")
 
 args = parser.parse_args()
 
@@ -41,7 +44,7 @@ def main(args):
     nodes    = args.nodes
     version  = args.version
 
-    if not None is version:
+    if version is not None:
         valid_version(version)
 
     nodes    = format_nodes(nodes)
@@ -331,16 +334,13 @@ def main(args):
 def write_in_file(text):
     """save the results in a file for posterior use of it """
 
-    dir_name  = ""
-    file_name = "historic_reset_faraday.txt"
+    dir_name  = args.text_dir
+    file_name = "nightly.txt"
     
     text = ', '.join(str(x) for x in text)
 
-    fl = open(dir_name+file_name,"a")
-    fl.write(date() + ': ' + text + "\n")
-    fl.close()
-
-
+    with open(dir_name+file_name,"a") as fl:
+        fl.write("{}: {}\n".format(date(),text))
 
 
 def summary_in_mail(content):
@@ -664,10 +664,8 @@ def save_in_json(results, file_name=None):
     except:
         os.mkdir(dir)
 
-    file = open(dir+file_name+ext, "w")
-    file.write(json.dumps(results))
-    file.close()
-
+    with open(dir+file_name+ext, "w") as js:
+        js.write(json.dumps(results))
 
 
 
@@ -688,14 +686,14 @@ def split(array, size):
 
 
 def now():
-    """ DateTime now """
+    """ Current datetime """
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
 
 
 def date():
-    """ Date now """
+    """ Current date """
     return datetime.now().strftime('%Y-%m-%d')
 
 
