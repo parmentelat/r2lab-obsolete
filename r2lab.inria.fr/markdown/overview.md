@@ -39,7 +39,7 @@ tab: overview
   A full control of network nodes is provided with direct access to the gateway nodes. A full stack monitoring capability allow monitoring feedback from all network metrics like energy consumption, delay, throughput, overhead and etc. 
   <br>
   <br>
-  Besides, NEPI tool ([see more](tools.html)) offers a quick experiments deployment and easy evaluation of results. NEPI offers the possibility of implement different simulation types, topologies and covering of a wide range of network real use cases.
+  Besides, NEPI tool ([see more](tools.md)) offers a quick experiments deployment and easy evaluation of results. NEPI offers the possibility of implement different simulation types, topologies and covering of a wide range of network real use cases.
   <br>
   <br>
   </div>

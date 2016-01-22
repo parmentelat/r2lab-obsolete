@@ -150,7 +150,7 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 <pre class="hljs"><code>$ ssh root@fit10</span></code></pre>
 </p>
 
-[See more](tuto-02-michelle.html#main) about how to manipulate the nodes.
+[See more](tuto-02-michelle.md#main) about how to manipulate the nodes.
 </p>
       
 <strong>3 - Troubleshooting</strong>
