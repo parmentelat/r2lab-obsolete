@@ -43,10 +43,12 @@ CA_DURATION=$((3600*24*365*10))
 # others for 2 years
 DURATION=$((3600*24*365*2))
 
-# use option -n to run in dry-mode
-DRY_RUN=
 # use option -o to force overwriting of exiting certificates
 FORCE_OVERWRITE=
+# use option -n to run in dry-mode
+DRY_RUN=
+# use -i option to run in interactive mode (prompted for each command)
+INTERACTIVE=
 
 #################### utility to display/run a command in dry-mode
 # show_and_run "some message" the command to be run
@@ -57,8 +59,24 @@ function show_and_run () {
     echo "$message using command:"
     [ -n "$DRY_RUN" ] && echo -n "(dry)"
     echo -e "\t $command"
-    # do it unless dry-run
-    [ -z "$DRY_RUN" ] && $command
+    # return this function if in dry-run mode
+    [ -n "$DRY_RUN" ] && return
+    # if interactive mode
+    if [ -n "$INTERACTIVE" ]; then
+	while true; do
+	    echo -n "Run [y]/n ? "; read answer
+	    case "$answer" in
+		# OK let's proceed
+		y*|"") echo proceeding; break;;
+		# return from this function
+		n*) echo skipped; return;;
+		# keep on asking
+		*) ;;
+	    esac
+	done
+    fi
+    # do it 
+    $command
 }    
     
 #################### utility for splitting a pem into public and private parts
@@ -167,13 +185,14 @@ function restart-all () {
 }
 
 function main () {
-    while getopts "u:i:f:on" opt; do
+    while getopts "u:a:f:oni" opt; do
 	case $opt in
 	    u) PUBLIC_AREA=$OPTARG;;
-	    i) PRIVATE_AREA=$OPTARG;;
+	    a) PRIVATE_AREA=$OPTARG;;
 	    f) FEDERATED=$OPTARG;;
 	    o) FORCE_OVERWRITE=true;;
 	    n) DRY_RUN=true;;
+	    i) INTERACTIVE=true;;
 	esac
     done
     echo Will store private material in $PRIVATE_AREA
