@@ -32,4 +32,4 @@ urlpatterns = [
 ] \
     + static( '/assets/', document_root=settings.BASE_DIR+'/assets/') \
     + static( '/plugins/', document_root=settings.BASE_DIR+'/plugins/') \
-    + static( '/codes_examples/', document_root=settings.BASE_DIR+'/codes_examples/') 
+    + static( '/code/', document_root=settings.BASE_DIR+'/code/') 

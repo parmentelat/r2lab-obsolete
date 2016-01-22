@@ -43,7 +43,7 @@ different color, so readers can see what is new in this tutorial.
   Once there, from the <strong>gateway</strong>, you will ping a <strong>google server</strong> and recover its answer.
 <center>
   <img src="/assets/img/A1.png" alt="a1"> <br/>
-  Download the <a href="/codes_examples/A1-ping.py" download target="_blank">A1 experiment</a> code
+  Download the <a href="/code/A1-ping.py" download target="_blank">A1 experiment</a> code
 </center>
 <pre data-src="prism.js" class="line-numbers"><code class="language-python">
 #!/usr/bin/env python
@@ -102,7 +102,7 @@ ec.shutdown()
     At the end you will retrieve the answer of the experiment.
 <center>
   <img src="/assets/img/A2.png" alt="a2"><br/>
-  Download the <a href="/codes_examples/A2-ping.py" download target="_blank">A2 experiment</a> code
+  Download the <a href="/code/A2-ping.py" download target="_blank">A2 experiment</a> code
 </center>
 <pre data-src="prism.js" data-line-edit-line="10-13,20,22-30,47,51" data-line-inlcude-line="15-17,32-43" class="line-numbers">
 <code class="language-python">
@@ -178,7 +178,7 @@ ec.shutdown()
     Once configured the interface in both nodes, you will be able to ping the <strong>experiment interface</strong> at </strong>fit02</strong> from <strong>fit01</strong>.
 <center>
    <img src="/assets/img/A3.png" alt="a3"><br/>
-    Download the <a href="/codes_examples/A3-ping.py" download target="_blank">A3 experiment</a> code
+    Download the <a href="/code/A3-ping.py" download target="_blank">A3 experiment</a> code
 </center>
 <pre data-src="prism.js" data-line-remove-line="25-33"  data-line-edit-line="23,77-83,87" data-line-inlcude-line="19,20,48-59,61-67,69-75" class="line-numbers">
 <code class="language-python">
@@ -286,7 +286,7 @@ ec.shutdown()
     Once the interfaces configured, you will ping fit01 and fit02 from one another using the <strong>wireless interface</strong>.
 <center>
   <img src="/assets/img/A4.png" alt="a4"><br/>
-  Download the <a href="/codes_examples/A4-ping.py" download target="_blank">A4 experiment</a> code
+  Download the <a href="/code/A4-ping.py" download target="_blank">A4 experiment</a> code
 </center>
 <pre data-src="prism.js" data-line-remove-line="62,79" data-line-edit-line="32,94,96,110,111" data-line-inlcude-line="22-29,63-71,80-88,102-108,114-116" class="line-numbers">
 <code class="language-python">
