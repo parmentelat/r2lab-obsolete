@@ -20,18 +20,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 
+import md.views
+
 urlpatterns = [
-    url(r'^(/)?$', RedirectView.as_view(url='/index', permanent=False), name='index'),
+    # default: empty or just / -> md/index.md
+    url(r'^(/)?$', RedirectView.as_view(url='/index.md', permanent=False)),
+    # no subdir
+    url(r'^(?P<markdown_file>[^/]*)$', md.views.markdown_page),
+    url(r'^md/(?P<markdown_file>.*)$', md.views.markdown_page),
     url(r'^admin/', admin.site.urls),
-    url(r'^md/', include('md.urls')),
 ] \
     + static( '/assets/', document_root=settings.BASE_DIR+'/assets/') \
     + static( '/plugins/', document_root=settings.BASE_DIR+'/plugins/') \
-    + static( '/codes_examples/', document_root=settings.BASE_DIR+'/codes_examples/') \
-+ [
-    # default -> md/
-    # very rough - see md/views.py
-    url(r'^(?P<toplevel_markdown_file>.*)$', include('md.urls')),
-]
-
-
+    + static( '/codes_examples/', document_root=settings.BASE_DIR+'/codes_examples/') 
