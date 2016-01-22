@@ -12,11 +12,11 @@ host_gateway  = 'faraday.inria.fr'
 user_gateway  = '[your_onelab_user]'
 user_identity = '~/.ssh/[your_public_ssh_key]'
 
-# setting up the credentials for the nodes
-host01 = 'fit31'
+# setting up the credentials for the nodes 
+host01 = 'fit01'
 user01 = 'root'
 
-host02 = 'fit32'
+host02 = 'fit02'
 user02 = 'root'
 
 # creating a new ExperimentController (EC) to manage the experiment

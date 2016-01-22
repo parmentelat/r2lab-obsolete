@@ -23,17 +23,17 @@ user02 = 'root'
 host02_dir = '/home/'
 port   = 1234
 
-local_file = 'file.txt'
-local_dir  = '/Users/nano/'
+local_file = '[some_file.txt]'
+local_dir  = '[some_file_path]'
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="B1-send-file")
 
 # creating local
 local   = ec.register_resource("linux::Node",
-														 	hostname = localhost,
-														 	cleanExperiment = True,
-														 	cleanProcesses = True)
+                               hostname = localhost,
+                               cleanExperiment = True,
+                               cleanProcesses = True)
 
 # creating the gateway node
 gateway = ec.register_resource("linux::Node",
@@ -119,4 +119,3 @@ print (ec.trace(app_fit02_ls, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()
-

@@ -27,22 +27,22 @@ local_file = '[some_file.txt]'
 local_dir  = '[some_file_path]'
 
 wifi_interface = 'wlan2' 
-wifi_channel 	 = '4'
-wifi_name 		 = 'ad-hoc'
-wifi_key 			 = '1234567890'
+wifi_channel   = '4'
+wifi_name      = 'ad-hoc'
+wifi_key       = '1234567890'
 
 wifi_net_mask  = '/24'
-wifi_ip_fit01	 = '172.16.1.1'
-wifi_ip_fit02	 = '172.16.1.2'
+wifi_ip_fit01  = '172.16.1.1'
+wifi_ip_fit02  = '172.16.1.2'
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="B2-send-file")
 
 # creating local
 local   = ec.register_resource("linux::Node",
-														 	hostname = localhost,
-														 	cleanExperiment = True,
-														 	cleanProcesses = True)
+                              hostname = localhost,
+                              cleanExperiment = True,
+                              cleanProcesses = True)
 
 # creating the gateway node
 gateway = ec.register_resource("linux::Node",
@@ -158,4 +158,3 @@ print (ec.trace(app_fit02_ls, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()
-
