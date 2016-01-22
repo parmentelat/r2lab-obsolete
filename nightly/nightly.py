@@ -310,7 +310,7 @@ def main(args):
         print "--"
     print " "
 
-    save_in_json(loaded_nodes, 'reset_faraday')
+    save_in_json(loaded_nodes, 'nightly')
 
     set_node_status(range(1,38), 'ok')
     #set_node_status(zumbie_nodes, 'ko')
@@ -651,21 +651,13 @@ def format_nodes(nodes):
 
 
 
-def save_in_json(results, file_name=None):
+def save_in_json(results, file_name):
     """ Save the result in a json file """
     
-    dir = os.getcwd() + "/"
-    ext = ".json"
+    dir = args.text_dir
+    file_name = "{}.ext".format(file_name)
 
-    if file_name is None:
-        file_name = 'result_reset_faraday'+ext
-
-    try:
-        os.stat(dir)
-    except:
-        os.mkdir(dir)
-
-    with open(dir+file_name+ext, "w") as js:
+    with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(results))
 
 
