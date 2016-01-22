@@ -28,7 +28,7 @@
 
 # our global settings
 DOMAIN=r2lab.inria.fr
-AM_SERVER_DOMAIN=omf:r2lab
+AM_SERVER_DOMAIN=r2lab
 XMPP_DOMAIN=r2lab
 
 # the name for the root certificate
