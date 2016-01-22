@@ -7,10 +7,10 @@ from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
 import os
 
-# setting up the default host, onelab user and shh key credential
+# setting up the default host, onelab user and ssh key credential
 host  = 'faraday.inria.fr'
 user  = '[your_onelab_user]'
-key 	= '~/.ssh/[your_public_ssh_key]'
+key   = '~/.ssh/[your_public_ssh_key]'
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="A1-ping")
