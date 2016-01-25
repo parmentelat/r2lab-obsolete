@@ -278,7 +278,7 @@ def main(args):
     
     for node in all_nodes:
         wait_and_update_progress_bar(2)
-        cmd = "curl 192.168.1.{}/status;".format(node)
+        cmd = "curl reboot{}/status;".format(node)
         result = execute(cmd, key=node)
         results.update(result)
 
@@ -388,7 +388,7 @@ def command_in_curl(nodes, action='status'):
     
     nodes = number_node(nodes)
 
-    in_curl = map(lambda x:'curl 192.168.1.'+str(x)+'/'+action, nodes)
+    in_curl = map(lambda x:'curl reboot'+str('0'+str(x) if x<10 else x)+'/'+action, nodes)
     in_curl = '; '.join(in_curl)
 
     return in_curl
