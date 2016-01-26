@@ -12,7 +12,7 @@ R2lab platform is reset every night. A time slot from **3AM** until
 **4AM** (GMT +1) is reserved to execute this routine.
 
 Please, make sure all your experiments are saved before. You can check
-[here](tuto-02-michelle.md#main) how to do it.
+[here](tuto-02-shell-tools.md#main) how to do it.
 </div>
 
 ### Overall status (livemap)

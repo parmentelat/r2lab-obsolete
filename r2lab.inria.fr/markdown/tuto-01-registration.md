@@ -62,7 +62,7 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
     </div>
     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
       <div class="panel-body">
-				In order to use the plataform, run and play your experiments, you must **create a new project** or **join a project** that already exists and book an **slice** inside of it. These concepts and how to interact with them are explained as follows.
+				In order to use the platform, run and play your experiments, you must **create a new project** or **join a project** that already exists and book an **slice** inside of it. These concepts and how to interact with them are explained as follows.
 				<br/>
 				<br/>
 				<center>
@@ -150,7 +150,7 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 <pre class="hljs"><code>$ ssh root@fit10</span></code></pre>
 </p>
 
-[See more](tuto-02-michelle.md#main) about how to manipulate the nodes.
+[See more](tuto-02-shell-tools.md#main) about how to manipulate the nodes.
 </p>
       
 <strong>3 - Troubleshooting</strong>

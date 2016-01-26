@@ -21,7 +21,7 @@ tab: tutorial
 			<h3>Infrastructure:</h3>
 				<p> - <a href="tuto-01-registration.md">OneLab register account</a></p>
 				<p><h6>All information about how to register and schedule a node</h6></p>
-				<p> - <a href="tuto-02-michelle.md">SSH connection to Faraday gateway and nodes</a></p>
+				<p> - <a href="tuto-02-shell-tools.md">SSH connection to Faraday gateway and nodes</a></p>
 				<p><h6>Discover how to access the nodes and run your first experiments</h6></p>
 			
 			<br>
