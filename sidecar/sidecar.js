@@ -45,6 +45,36 @@ function vdisplay(args){
 }
 
 
+//==============================================
+//CALENDAR slices
+//==============================================
+// file of booked slices
+var slices_complete = 'slices_complete.json';
+
+// file when the slices are registered.
+// for now is in the root of the website
+app.get('/events', function(req, res){
+  res.sendFile('events.html', { root: __dirname });
+});
+
+app.get('/slices_complete', function(req, res){
+  res.sendFile('slices_complete.json', { root: __dirname });
+});
+
+io.on('connection', function(socket){
+  // ADD SLICE MESSAGE
+  socket.on('add_slice', function(msg){
+    // console.log(msg);
+    io.emit('add_slice', msg);
+  });
+  // REMOVE SLICE MESSAGE BY ID
+  socket.on('remove_slice_by_id', function(msg){
+    // console.log(msg);
+    io.emit('remove_slice_by_id', msg);
+  });
+});
+//==============================================
+
 // program this webserver so that a GET to /
 // exposes the complete json status
 // + triggers a broadcast on all clients
@@ -52,7 +82,7 @@ function vdisplay(args){
 app.get('/', function(req, res){
     // answer something
     res.sendFile(__dirname + '/r2lab-complete.json');
-    // and emit the complete status 
+    // and emit the complete status
     display("Received request on / : sending " + filename_complete);
     emit_file(filename_complete);
 });
@@ -78,7 +108,7 @@ io.on('connection', function(socket){
 	update_complete_file_from_news(news_string);
 	io.emit(channel_news, news_string);
     });
-    // this is more crucial, this is how complete status gets transmitted initially 
+    // this is more crucial, this is how complete status gets transmitted initially
     socket.on(channel_signalling, function(msg){
 	display("Received " + msg + " on channel " + channel_signalling);
 	emit_file(filename_complete);
@@ -88,10 +118,10 @@ io.on('connection', function(socket){
 // convenience function to synchroneously read a file as a string
 // xxx hack - sometimes (quite often indeed) we see
 // this read returning an empty string...
-// apparently when watching a file we get to it too fast, so 
+// apparently when watching a file we get to it too fast, so
 // allow for 2 attempts
 function sync_read_file_as_string(filename, verbose){
-    try{ 
+    try{
 	var contents = fs.readFileSync(filename, 'utf8');
 	if (verbose) vdisplay("sync read (1) " + filename + " -> " + contents);
 	if (contents == "") {
@@ -126,8 +156,8 @@ function sync_save_infos_in_file(filename, infos){
     } catch(err) {
 	display("Could not sync write " + filename + err);
     }
-}    
-    
+}
+
 // merge news info into complete infos; return new complete
 function merge_news_into_complete(complete_infos, news_infos){
     vdisplay("ENTERING merge with complete = " + complete_infos);
@@ -156,7 +186,7 @@ function merge_news_into_complete(complete_infos, news_infos){
     vdisplay("EXITING merge with complete = " + complete_infos);
     return complete_infos;
 }
-		
+
 
 // utility to open a file and broadcast its contents on channel_news
 function emit_file(filename){
@@ -229,7 +259,7 @@ function init_watcher() {
 
     // watch news file and attach callback
     var watcher = fs.watch(
-	filename_news, 
+	filename_news,
 	function(event, filename){
 	    vdisplay("watch -> event=" + event);
 	    // read news file as a string
