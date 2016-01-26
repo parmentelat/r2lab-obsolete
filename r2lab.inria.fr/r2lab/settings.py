@@ -10,6 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
+import logging
+
+logger = logging.getLogger('r2lab')
+
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -130,3 +134,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "assets"),
 ]
 
+manifold_url = "https://portal.onelab.eu:7080/"
+
+AUTHENTICATION_BACKENDS = ( 'mfauth.mfbackend.ManifoldBackend', )
