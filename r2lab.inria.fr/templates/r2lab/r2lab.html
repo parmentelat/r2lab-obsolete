@@ -83,7 +83,10 @@
     <div class="col-md-10 col-md-offset-1 fit">
       <h2><span class="blue bold">{{title}}</span></h2>
       <p class="subtitle">
-
+{% if subtitle %}
+  <p>{{subtitle}}</p>
+  <p>&nbsp;</p>
+{% endif %}
       </p>
     </div>
   </div>
