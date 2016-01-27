@@ -1,5 +1,6 @@
 title: Welcome to R2Lab
 tab: index
+login_widget_template: r2lab/login_widget.html
 ---
 
 <div class="container text-center">

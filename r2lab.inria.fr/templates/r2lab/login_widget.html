@@ -1,0 +1,46 @@
+{% load staticfiles %}
+  <div class="row" style="height:400px;" id="onelab_login">
+    <div class="col-md-4 col-sm-7 col-md-offset-2 slogan">
+      <h2>
+        R2lab anechoic chamber,
+      </h2>
+      <h3>
+        a heterogeneous wireless testbed
+      </h3>
+    </div>
+
+    <div class="col-lg-3 col-md-4 col-sm-5 col-md-offset-1 login-column">
+      <div class="login-header">
+        FIT platforms are part of <br />the OneLab Experimental Facility
+      </div>
+      <a name="main"></a>
+      <div class="login-form">
+        <div class="onelab-form">
+          <a href="http://onelab.eu"><img class="img-responsive" src="{% static 'img/onelab-small.png' %}" alt="OneLab" /></a>
+          <div class="onelab-tagline">
+            Access FIT platforms with your <br /> OneLab account information
+          </div>
+        </div>
+        <form action="http://portal.onelab.eu/login/" method="post" role="form">
+          <div class="form-group">
+            <input class="input-md" type="email" name="username" placeholder="Enter Email / Username">
+          </div>
+          <div class="form-group">
+              <input type="password" name="password" placeholder="Password">
+          </div>
+          <div class="login-submit">
+            <input type="submit" class="btn btn-onelab" value="Sign In" />
+            <span class="lost-password">&nbsp;&nbsp;&nbsp;<a href="https://portal.onelab.eu/portal/pass_reset/">Can't access your account?</a></span>
+          </div>
+          <div class="login-signup">
+            You don't have an account yet?
+            <br /><a href="https://portal.onelab.eu/register" target="_blank">Sign Up!</a>
+          </div>
+          <div class="login-submit">
+            <br>
+            <span class="lost-password"><a href="tuto-01-registration.md">Need help? See the registration guide.</a></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
