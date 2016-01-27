@@ -2,7 +2,23 @@ title: Latest news, infos and incidents...
 tab: blog
 ---
 
-### November 10
+### December 20, 2015
+
+* Announcement of global availability; the testbed is now open to public use.
+
+### November 30
+
+* Deployment of [rhubarbe](https://github.com/parmentelat/rhubarbe) as a replacement of `omf6` for managing node images. New features include
+  * written in [python 3 / asyncio](https://docs.python.org/3/library/asyncio.html) which results in a single threaded asynchroneous application
+  * which makes it much more efficient than its ruby ancestor (can load all 37 nodes in parallel without a glitch)
+  * and more reliable too (**always** exits if timeout expires for any reason)
+  * includes a tool to wait for all nodes to be responsive (`rhubarbe wait`)
+  * and to inspect current reservations (`rhubarbe leases`)
+  * as well as a monitoring tool (this is what feeds the [livemap](status.md#livemap) and [livetable](status.md#livetable) views
+
+* As a result, it is now possible for us to expose a single resource named `37nodes` to the noelab portal, thus materializing the fact that the whole testbed is actually reserved 
+
+### November 10 
 
 * availability of images based on fedora-23 and ubuntu-15.10
 
@@ -34,7 +50,7 @@ tab: blog
 * R2lab Platform Status : from today is possible follow the tech details of R2lab platform.
 
 * We are monitoring some informations from the nodes in the anechoic chamber.
-Have a look in <a href="status.md#main">status page</a>the details.
+Have a look at [our status page](status.md#livemap) for details.
 
-### July 9<sup>th</sup>, 2015
+### July 9 2015
 * FIT Meeting in Paris.

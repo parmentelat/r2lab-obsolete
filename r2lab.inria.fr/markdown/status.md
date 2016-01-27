@@ -34,6 +34,7 @@ node concerning technical infos, incidents and operational details:
 * Finally, if a node is hidden behind a large red circle, it means it
   is out of order, and altogether unavailable.
 
+<a name="livemap"></a>
 For accurate dimensions of the room, please see the [static blueprint
 at the bottom of this page](#accurate-layout).
 
@@ -61,6 +62,8 @@ Also please note that
 
  * Clicking anywhere in the header will focus on the nodes that are currently up; a second click returns to full mode.
  * Clicking a node badge will take it off the list
+
+<a name="livetable"></a>
 
 <br />
 
