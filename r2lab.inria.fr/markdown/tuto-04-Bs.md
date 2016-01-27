@@ -1,7 +1,7 @@
 title: NEPI - File Exchange
 tab: tutorial
+float_menu_template: r2lab/float_menu-tutorials.html
 ---
-<script type="text/javascript">loadMenu();</script>
 
 Below are a couple of experiments as a second level of learning [NEPI](http://nepi.inria.fr/Install/WebHome) network tool and R2lab simulation testbed.
 

@@ -1,8 +1,7 @@
 title: Registration Tutorial
 tab: tutorial
+float_menu_template: r2lab/float_menu-tutorials.html
 ---
-
-<script type="text/javascript">loadMenu();</script>
 
 ### Entry point
 The official OneLab portal is located at [http://portal.onelab.eu](http://portal.onelab.eu).

@@ -1,10 +1,9 @@
 title: SSH access
 tab: tutorial
+float_menu_template: r2lab/float_menu-tutorials.html
 ---
 
-<script type="text/javascript">loadMenu();</script>
-
-###Pre-requisite
+### Pre-requisite
 [Obtain a slice account on R2LAB (faraday)](tuto-01-registration.md#main)
 
 

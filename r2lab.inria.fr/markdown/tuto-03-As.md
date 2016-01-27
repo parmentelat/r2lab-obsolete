@@ -1,7 +1,7 @@
 title: NEPI - Pings
 tab: tutorial
+float_menu_template: r2lab/float_menu-tutorials.html
 ---
-<script type="text/javascript">loadMenu();</script>
 
 Below are a couple of experiments to get started with
 [NEPI](http://nepi.inria.fr/Install/WebHome) experiment orchestration

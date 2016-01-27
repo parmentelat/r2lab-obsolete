@@ -1,8 +1,7 @@
 title: Tutorials
 tab: tutorial
+float_menu_template: r2lab/float_menu-tutorials.html
 ---
-
-<script type="text/javascript">loadMenu();</script>
 
 <div class="container">
 	<div class="row">
