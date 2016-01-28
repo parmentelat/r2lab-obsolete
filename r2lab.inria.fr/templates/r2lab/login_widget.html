@@ -22,7 +22,7 @@
      Access FIT platforms with your <br /> OneLab account information
     </div>
    </div>
-        <form action="http://portal.onelab.eu/login/" method="post" role="form">
+   <form action="/login/" method="post" role="form">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}" />
     <div class="form-group">
