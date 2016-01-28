@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # md is our own brew for displaying web pages written in markdown
     # it will serve http://<>/md/foo{,.md,.html} by searching for markdown/foo.md
     'md.apps.MdConfig',
+    'mfauth.apps.MfauthConfig',
 ]
 
 MIDDLEWARE_CLASSES = [

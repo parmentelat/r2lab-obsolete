@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from manifoldapi.manifoldapi    import ManifoldException
 from manifold.core.query        import Query
 
-from .mfsession import get_session
+from .mfsession import get_details
 
 from r2lab.settings import manifold_url as config_manifold_url
 from r2lab.settings import logger
@@ -27,44 +27,28 @@ class ManifoldBackend:
         except User.DoesNotExist:
             return None
 
-    # Create an authentication method
-#    def authenticate(self, email, password):
-#        return get_session(self.manifold_url, email, password)
-
     # This is called by the standard Django login procedure
     def authenticate(self, token=None):
-        print("AUTHENTICATE!")
-        if not token:
-            return None
+        if token is None:
+            return
         
-        person = {}
-
         try:
             email = token['username']
-#            username = email.split('@')[-1]
             password = token['password']
             request = token['request']
 
-            session = get_session(self.manifold_url, email, password, logger)
-            if not session:
+            session, person, api = get_details(self.manifold_url, email, password, logger)
+            if session is None or person is None:
                 return None
             logger.debug("SESSION : {}".format(session.keys()))
             
-            # Change to session authentication
-            api.auth = {'AuthMethod': 'session', 'session': session['session']}
-            self.api = api
-
-            # Get account details
-            # the new API would expect Get('local:user') instead
-            persons_result = api.forward(Query.get('local:user').to_dict())
-            persons = persons_result.ok_value()
-            if not persons:
-                logger.error("GetPersons failed: {}".format(persons_result.error()))
-                return None
-            person = persons[0]
-            logger.debug("PERSON : {}".format(person))
-            
-            request.session['manifold'] = {'auth': api.auth, 'person': person, 'expires': session['expires']}
+            # extend request to save this environment
+            # api.auth and session['expires'] may be of further interest
+            request.session['r2lab_context'] = {'session' : session,
+                                                'auth': api.auth,
+                                                'person': person,
+                                                'manifold_url' : self.manifold_url,
+            }
 
         except ManifoldException as e:
             logger.error("ManifoldException in Auth Backend: {}".format(e.manifold_result))
@@ -78,19 +62,19 @@ class ManifoldBackend:
             # Check if the user exists in Django's local database
             user = User.objects.get(email=email)
         except User.DoesNotExist:
+            logger.debug("Creating django user object")
             # Create a user in Django's local database
-            user = User.objects.create_user(username, email, 'passworddoesntmatter')
-            user.email = person['email']
+            # first arg is a name, second an email
+            user = User.objects.create_user(email, email, 'passworddoesntmatter')
 
         if 'firstname' in person:
             user.first_name = person['firstname']
         if 'lastname' in person:
             user.last_name = person['lastname']
 
-#        request.session['user'] = {
-#            'email' : user.email,
-#            'firstname' : user.first_name,
-#            'lastname' : user.last_name,
-#        }
+        request.session['r2lab_context'].update({'user' : { 'email' : user.email,
+                                                            'firstname' : user.first_name,
+                                                            'lastname' : user.last_name,
+                                                        }})
         return user
 

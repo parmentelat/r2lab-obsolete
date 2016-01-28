@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 
 import md.views
+import mfauth.views
 
 urlpatterns = [
     # default: empty or just / -> md/index.md
@@ -28,7 +29,9 @@ urlpatterns = [
     # no subdir
     url(r'^(?P<markdown_file>[^/]*)$', md.views.markdown_page),
     url(r'^md/(?P<markdown_file>.*)$', md.views.markdown_page),
-    url(r'^admin/', admin.site.urls),
+    url(r'^login/', mfauth.views.Login.as_view()),
+    # probably not useful
+#    url(r'^admin/', admin.site.urls),
 ] \
     + static( '/assets/', document_root=settings.BASE_DIR+'/assets/') \
     + static( '/plugins/', document_root=settings.BASE_DIR+'/plugins/') \

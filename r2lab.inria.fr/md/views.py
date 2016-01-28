@@ -54,8 +54,6 @@ def parse(markdown_file):
     with open(absolute_path, encoding='utf-8') as file:
         in_header = True
         for lineno, line in enumerate(file):
-#            if lineno <= 10:
-#                print("{}:{}: in_header={} - line={}".format(markdown_file, lineno+1, in_header, line))
             if in_header:
                 name_value_or_none = match_meta(line)
                 if name_value_or_none:
@@ -115,8 +113,11 @@ def markdown_page(request, markdown_file):
         # convert and mark safe to prevent further escaping
         html = markdown2.markdown(markdown, extras=['markdown-in-html'])
         metavars['html_from_markdown'] = mark_safe(html)
+        # set default for the 'title' metavar if not specified in header
         if 'title' not in metavars:
             metavars['title'] = markdown_file.replace(".md", "")
+        # define the 'r2lab_context' metavar from current session
+        metavars['r2lab_context'] = request.session.get('r2lab_context', {})
         return render(request, 'r2lab/r2lab.html', metavars)
     except:
         import traceback
