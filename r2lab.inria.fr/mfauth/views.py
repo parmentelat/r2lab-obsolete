@@ -4,6 +4,9 @@ from django.http                        import HttpResponseRedirect
 from django.shortcuts                   import render_to_response
 from django.template                    import RequestContext
 
+import md.views
+from r2lab.settings import logger
+
 # this is linked to http://r2lab.inria.fr/login
 # which is invoked from login_widget.html
 # together with username/password in the POST data
@@ -30,22 +33,23 @@ class Login(View):
         env = {}
         if user is None:
             env['login_message'] = "Your username and/or password is incorrect"
+            return md.views.markdown_page(request, 'index', env)
         elif not user.is_active:
             env['login_message'] = "This user is inactive"
+            return md.views.markdown_page(request, 'index', env)
         # r2lab_context is expected to have been attached to the session by mfbackend
         elif 'r2lab_context' not in request.session:
             logger.error("Internal error - cannot retrieve r2lab_context")
             env['login_message'] = "Cannot log you in - please get in touch with admin"
-            redirect_url = "/oops.md"
+            return md.views.markdown_page(request, 'oops', env)
         else:
             logger.debug("login for user={}".format(user))
             login(request, user)
             env['login_message'] = "Logged in as user {}".format(user)
             env['r2lab_context'] = request.session['r2lab_context']
             redirect_url = "/status.md#livemap"
+            return HttpResponseRedirect(redirect_url)
 
-        return HttpResponseRedirect(redirect_url)
-
-    def http_method_not_allowed(request):
-        return HttpResponseRedirect("/oops.md")
-        
+    def http_method_not_allowed(self, request):
+        env = {'login_message' : 'HTTP method not allowed'}
+        return md.views.markdown_page(request, 'oops', env)
