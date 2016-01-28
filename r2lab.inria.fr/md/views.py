@@ -4,8 +4,8 @@ import traceback
 
 from django.shortcuts import render
 
-from django.http import HttpResponse, HttpResponseNotFound
-from django.template import loader
+#from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+#from django.template import loader
 
 # not using the DB
 #from .models import Page
@@ -26,7 +26,9 @@ def normalize(filename):
     """
     returns foo.md for an input that would be either foo, foo.md or foo.html
     """
-    return filename.replace(".md", "").replace(".html", "") + ".md"
+    # do not support the .html extension now that we've migrated away from the old website
+    #return filename.replace(".md", "").replace(".html", "") + ".md"
+    return filename.replace(".md", "") + ".md"
 
 metavar_re = re.compile("\A(?P<name>[\S_]+):\s*(?P<value>.*)\Z")
 
@@ -105,7 +107,16 @@ def resolve_codediff(markdown):
     return resolved
                       
 
-def markdown_page(request, markdown_file):
+def markdown_page(request, markdown_file, extra_metavars={}):
+    """
+    the view to render a URL that points at a markdown source
+    e.g.
+    if markdown_file is 'index' - or 'index.md', then we
+     * look for the file markdown/index.md
+     * extract any metavar in its header - they get passed to the template
+     * and expand markdown to html - passed to the template as 'html_from_markdown'
+    additional metavars can be passed along as well if needed
+    """
     try:
         markdown_file = normalize(markdown_file)
         metavars, markdown = parse(markdown_file)
@@ -118,10 +129,16 @@ def markdown_page(request, markdown_file):
             metavars['title'] = markdown_file.replace(".md", "")
         # define the 'r2lab_context' metavar from current session
         metavars['r2lab_context'] = request.session.get('r2lab_context', {})
+        metavars.update(extra_metavars)
         return render(request, 'r2lab/r2lab.html', metavars)
-    except:
-        import traceback
-        exc = traceback.format_exc()
-        return HttpResponseNotFound(
-            "<h1> Oops - could not render markdown_file = {}</h1> <pre>\n{}\n</pre>"
-            .format(markdown_file, exc))
+    except Exception as e:
+        previous_message = "<h1> Oops - could not render markdown_file = {}</h1>".format(markdown_file)
+        if isinstance(e, FileNotFoundError):
+            previous_message += str(e)
+        else:
+            import traceback
+            stack = traceback.format_exc()
+            print(stack)
+            previous_message += "<pre>\n{}\n</pre>".format(stack)
+        previous_message = mark_safe(previous_message)
+        return markdown_page(request, 'oops', {'previous_message': previous_message})

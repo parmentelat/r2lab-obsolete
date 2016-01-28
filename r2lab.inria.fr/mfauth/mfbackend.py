@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 
 ##################################################
 from manifoldapi.manifoldapi    import ManifoldException
-from manifold.core.query        import Query
 
 from .mfsession import get_details
 
