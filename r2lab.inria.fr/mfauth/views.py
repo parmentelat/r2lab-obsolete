@@ -4,6 +4,9 @@ from django.http                        import HttpResponseRedirect
 from django.shortcuts                   import render_to_response
 from django.template                    import RequestContext
 
+
+from r2lab.settings import logger
+
 # this is linked to http://r2lab.inria.fr/login
 # which is invoked from login_widget.html
 # together with username/password in the POST data

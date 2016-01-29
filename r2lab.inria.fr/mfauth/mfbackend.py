@@ -37,16 +37,19 @@ class ManifoldBackend:
             password = token['password']
             request = token['request']
 
-            session, person, api = get_details(self.manifold_url, email, password, logger)
+            session, auth, person, slices = get_details(self.manifold_url, email, password, logger)
             if session is None or person is None:
                 return None
             logger.debug("SESSION : {}".format(session.keys()))
             
             # extend request to save this environment
-            # api.auth and session['expires'] may be of further interest
+            # auth and session['expires'] may be of further interest
+            # we cannot expose just 'api' because it can't be marshalled in JSON
+            # BUT we can expose the 'auth' field
             request.session['r2lab_context'] = {'session' : session,
-                                                'auth': api.auth,
+                                                'auth': auth,
                                                 'person': person,
+                                                'slices' : slices,
                                                 'manifold_url' : self.manifold_url,
             }
 
