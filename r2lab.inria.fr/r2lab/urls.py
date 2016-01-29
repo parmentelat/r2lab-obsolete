@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^(?P<markdown_file>[^/]*)$', md.views.markdown_page),
     url(r'^md/(?P<markdown_file>.*)$', md.views.markdown_page),
     url(r'^login/', mfauth.views.Login.as_view()),
+    url(r'^logout/', mfauth.views.Logout.as_view()),
     # probably not useful
 #    url(r'^admin/', admin.site.urls),
 ] \

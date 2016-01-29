@@ -14,6 +14,7 @@
   <link type="text/css" rel="stylesheet" href="{% static 'css/hljs-github.min.css' %}"/>
   <!---------------------------------------->
   <!-- openlab layout -->
+  <link rel="stylesheet" type="text/css" media="screen" href="{% static 'css/r2lab.css' %}" />
   <link rel="stylesheet" type="text/css" media="screen" href="{% static 'css/bootstrap-fit.min.css' %}" />
   <link rel="stylesheet" type="text/css" media="screen" href="{% static 'css/openlab-fit-layout.css' %}" />
   <link type="text/css" rel="stylesheet" href="{% static 'font-awesome-4.4.0/css/font-awesome.min.css' %}"/>
@@ -41,7 +42,7 @@
    <div class="container">
     <div class="row">
      <div class="col-xs-12 col-sm-3 col-md-2 logo">
-      <a href="index.md">
+      <a href="/index.md">
        <img class="img-responsive" src="{% static 'img/r2lab_logo.svg' %}" alt="OneLab - Future Internet Testbeds" />
       </a>
      </div>
@@ -57,7 +58,14 @@
      <div class="col-xs-12 col-sm-2 col-md-3 secondary">
       <ul>
        <li>
+{# temporary - show a logout button when actually logged in #}
+{# this way we can still this code in production #}
+{% if r2lab_context.mfuser %}
+        <a class="button logout" href="http:/logout/">Logout</a>
+{% else %}
         <a class="button" target="_blank" href="http://portal.onelab.eu">Access the portal</a>
+{% endif %}
+{# temporary #}
        </li>
       </ul>
      </div>
@@ -83,7 +91,7 @@
     <div class="col-md-10 col-md-offset-1 fit">
      <h2><span class="blue bold">{{title}}</span></h2>
      {% if subtitle %} <p class="subtitle">{{subtitle}}</p>{% endif %}
-     <!-- temporary-->
+{# temporary #}
      {% if login_message %} <p>login_message = {{login_message}}</p> {% endif %}
      {% if previous_message %} <p>previous_message = {{previous_message}}</p> {% endif %}
      {% if r2lab_context.mfuser.email %} <p>mail = {{r2lab_context.mfuser.email}}@{{r2lab_context.manifold_url}}</p> {% endif %}
@@ -91,7 +99,7 @@
      {% for slice in r2lab_context.slices %}
         <p> in slice {{slice}}</p>
      {% endfor %}
-     <!-- temporary-->
+{# temporary #}
     </div>
    </div>
    <div class="row">
