@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leases Booking</title>
+  <meta charset='utf-8' />
+  <link href='fullcalendar.css' rel='stylesheet' />
+  <link href='fullcalendar.print.css' rel='stylesheet' media='print' />
+  <link href='calendar.css' rel='stylesheet'/>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src='moment.min.js'></script>
+  <script src='jquery.min.js'></script>
+  <script src='fullcalendar.min.js'></script>
+  <script src="calendar.js"></script>
+  <script src="update_calendar.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div align="center">
+		<p>Book Leases in R2lab</p>
+		<p>Click in the date you are interested to book</p>
+		<p>Double click in the leases to delete it</p>
+	</div>
+  <div><hr></div>
+  <div id='messages' style="display: none" class="alert alert-danger" role="alert">
+    <strong>Ooops!</strong> This is a past date!
+    <a class="close" onclick="$('.alert').hide()">×</a>
+  </div>
+  <br />
+	<div id='calendar'></div>
+</body>
+</html>

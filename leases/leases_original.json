@@ -1,0 +1,78 @@
+[
+{
+  "resource_response": {
+    "resources": [
+      {
+        "urn": "urn:publicid:IDN+r2lab+lease+74aa0dc7-7fb6-485a-b03c-59fbadd18859",
+        "uuid": "74aa0dc7-7fb6-485a-b03c-59fbadd18859",
+        "resource_type": "lease",
+        "valid_from": "2016-01-27T08:30:00Z",
+        "valid_until": "2016-01-27T20:00:00Z",
+        "status": "active",
+        "client_id": "6724bc2a-2545-4818-b3f7-10e95620898b",
+        "components": [
+
+        ],
+        "account": {
+          "name": "onelab.inria.r2lab.naoufal",
+          "urn": "urn:publicid:IDN+onelab:inria:r2lab+slice+naoufal",
+          "uuid": "374f1211-03cd-4880-80d3-67c7806ef8fe",
+          "resource_type": "account",
+          "created_at": "2016-01-25T09:40:06Z",
+          "valid_until": "2016-02-17T10:30:52Z"
+        }
+      },
+      {
+        "urn": "urn:publicid:IDN+r2lab+lease+74aa0dc7-7fb6-485a-b03c-59fbadd18859",
+        "uuid": "74aa0dc7-7fb6-485a-b03c-59fbadd18859",
+        "resource_type": "lease",
+        "valid_from": "2016-01-29T15:30:00Z",
+        "valid_until": "2016-01-29T22:00:00Z",
+        "status": "active",
+        "client_id": "6724bc2a-2545-4818-b3f7-10e95620898b",
+        "components": [
+
+        ],
+        "account": {
+          "name": "onelab.inria.r2lab.naoufal",
+          "urn": "urn:publicid:IDN+onelab:inria:r2lab+slice+naoufal",
+          "uuid": "374f1211-03cd-4880-80d3-67c7806ef8fe",
+          "resource_type": "account",
+          "created_at": "2016-01-25T09:40:06Z",
+          "valid_until": "2016-02-17T10:30:52Z"
+        }
+      },
+      {
+        "urn": "urn:publicid:IDN+r2lab+lease+bfd0b1bd-749d-4ebd-8646-529f69a93ef2",
+        "uuid": "bfd0b1bd-749d-4ebd-8646-529f69a93ef2",
+        "resource_type": "lease",
+        "valid_from": "2016-01-28T09:00:00Z",
+        "valid_until": "2016-01-28T10:30:00Z",
+        "status": "accepted",
+        "client_id": "bbf4cbd0-6d43-4bcf-a2a4-7b7a620db21f",
+        "components": [
+          {
+            "name": "37nodes",
+            "urn": "urn:publicid:IDN+r2lab+node+37nodes",
+            "uuid": "ef716070-ea4e-4606-acd2-a42985bd5a78",
+            "resource_type": "node",
+            "domain": "r2lab",
+            "available": true,
+            "status": "unknown",
+            "exclusive": true
+          }
+        ],
+        "account": {
+          "name": "onelab.inria.mario.script",
+          "urn": "urn:publicid:IDN+onelab:inria:mario+slice+script",
+          "uuid": "6476b81a-91ad-420c-8313-845a9451963b",
+          "resource_type": "account",
+          "created_at": "2016-01-27T10:48:56Z",
+          "valid_until": "2016-02-10T13:46:31Z"
+        }
+      }
+    ],
+    "about": "/resources/leases"
+  }
+}
+]
