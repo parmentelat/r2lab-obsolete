@@ -4,7 +4,7 @@ import traceback
 
 from django.shortcuts import render
 
-#from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 #from django.template import loader
 
 # not using the DB
@@ -141,4 +141,7 @@ def markdown_page(request, markdown_file, extra_metavars={}):
             print(stack)
             previous_message += "<pre>\n{}\n</pre>".format(stack)
         previous_message = mark_safe(previous_message)
-        return markdown_page(request, 'oops', {'previous_message': previous_message})
+        if settings.DEBUG:
+            return HttpResponseNotFound(previous_message)
+        else:
+            return markdown_page(request, 'oops', {'previous_message': previous_message})
