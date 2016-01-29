@@ -85,7 +85,8 @@
      <!-- temporary-->
      {% if login_message %} <p>login_message = {{login_message}}</p> {% endif %}
      {% if previous_message %} <p>previous_message = {{previous_message}}</p> {% endif %}
-     {% if r2lab_context.user.email %} <p>mail = {{r2lab_context.user.email}}@{{r2lab_context.manifold_url}}</p> {% endif %}
+     {% if r2lab_context.mfuser.email %} <p>mail = {{r2lab_context.mfuser.email}}@{{r2lab_context.manifold_url}}</p> {% endif %}
+     {% if r2lab_context.mfuser.hrn %} <p>hrn = {{r2lab_context.mfuser.hrn}}</p> {% endif %}
      {% for slice in r2lab_context.slices %}
         <p> in slice {{slice}}</p>
      {% endfor %}

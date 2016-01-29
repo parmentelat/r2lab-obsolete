@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 ##################################################
 from manifoldapi.manifoldapi    import ManifoldException
 
-from .mfdetails import get_details
+from .mfdetails import manifold_details
 
 from r2lab.settings import manifold_url as config_manifold_url
 from r2lab.settings import logger
@@ -36,8 +36,8 @@ class ManifoldBackend:
             password = token['password']
             request = token['request']
 
-            session, auth, person, slices = get_details(self.manifold_url, email, password, logger)
-            if session is None or person is None:
+            session, auth, mfuser, slices = manifold_details(self.manifold_url, email, password, logger)
+            if session is None or mfuser is None:
                 return None
             logger.debug("SESSION : {}".format(session.keys()))
             
@@ -47,7 +47,7 @@ class ManifoldBackend:
             # BUT we can expose the 'auth' field
             request.session['r2lab_context'] = {'session' : session,
                                                 'auth': auth,
-                                                'person': person,
+                                                'mfuser': mfuser,
                                                 'slices' : slices,
                                                 'manifold_url' : self.manifold_url,
             }
@@ -69,14 +69,10 @@ class ManifoldBackend:
             # first arg is a name, second an email
             user = User.objects.create_user(email, email, 'passworddoesntmatter')
 
-        if 'firstname' in person:
-            user.first_name = person['firstname']
-        if 'lastname' in person:
-            user.last_name = person['lastname']
+        if 'firstname' in mfuser:
+            user.first_name = mfuser['firstname']
+        if 'lastname' in mfuser:
+            user.last_name = mfuser['lastname']
 
-        request.session['r2lab_context'].update({'user' : { 'email' : user.email,
-                                                            'firstname' : user.first_name,
-                                                            'lastname' : user.last_name,
-                                                        }})
         return user
 
