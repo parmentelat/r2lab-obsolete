@@ -80,7 +80,7 @@
 
 {% if not skip_header %}
   <div class="container-fluid personal" id="background">
-   {% if login_widget_template %}{% include login_widget_template %}{% endif %}
+   {% if widget_login_template %}{% include widget_login_template %}{% endif %}
   </div>
   <br>
   <br>
@@ -98,13 +98,7 @@
      {% if subtitle %} <p class="subtitle">{{subtitle}}</p>{% endif %}
 {# temporary #}
 {% if skip_header %}
-     {% if login_message %} <p>login_message = {{login_message}}</p> {% endif %}
-     {% if previous_message %} <p>previous_message = {{previous_message}}</p> {% endif %}
-     {% if r2lab_context.mfuser.email %} <p>mail = {{r2lab_context.mfuser.email}}@{{r2lab_context.manifold_url}}</p> {% endif %}
-     {% if r2lab_context.mfuser.hrn %} <p>hrn = {{r2lab_context.mfuser.hrn}}</p> {% endif %}
-     {% for slice in r2lab_context.slices %}
-        <p> in slice {{slice}}</p>
-     {% endfor %}
+{% include 'r2lab/widget_id.html' %}
 {% endif %}
 {# temporary #}
     </div>

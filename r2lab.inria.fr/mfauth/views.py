@@ -8,7 +8,7 @@ import md.views
 from r2lab.settings import logger
 
 # this is linked to http://r2lab.inria.fr/login
-# which is invoked from login_widget.html
+# which is invoked from widget_login.html
 # together with username/password in the POST data
 
 class Login(View):

@@ -1,6 +1,6 @@
 title: Overview
 tab: overview
-login_widget_template: r2lab/login_widget.html
+widget_login_template: r2lab/widget_login.html
 ---
 
 ### What is R2Lab ?
