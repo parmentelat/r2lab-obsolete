@@ -83,9 +83,12 @@
      <h2><span class="blue bold">{{title}}</span></h2>
      {% if subtitle %} <p class="subtitle">{{subtitle}}</p>{% endif %}
      <!-- temporary-->
-     {% if r2lab_context.user.email %} <p>mail = {{r2lab_context.user.email}}@{{r2lab_context.manifold_url}}</p> {% endif %}
      {% if login_message %} <p>login_message = {{login_message}}</p> {% endif %}
      {% if previous_message %} <p>previous_message = {{previous_message}}</p> {% endif %}
+     {% if r2lab_context.user.email %} <p>mail = {{r2lab_context.user.email}}@{{r2lab_context.manifold_url}}</p> {% endif %}
+     {% for slice in r2lab_context.slices %}
+        <p> in slice {{slice}}</p>
+     {% endfor %}
      <!-- temporary-->
     </div>
    </div>
