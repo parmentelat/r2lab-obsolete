@@ -60,3 +60,21 @@ class Login(View):
     def http_method_not_allowed(self, request):
         env = {'login_message' : 'HTTP method not allowed'}
         return md.views.markdown_page(request, 'oops', env)
+
+class Logout(View):
+    # using GET for now - should probably be POST instead some day
+    def get(self, request):
+        env = {}
+        if 'r2lab_context' not in request.session or \
+         'mfuser' not in request.session['r2lab_context']:
+            env['login_message'] = 'cannot logout - not logged in'
+            return md.views.markdown_page(request, 'index', env)
+        logout(request)
+        env['login_message'] = 'logged out'
+        return md.views.markdown_page(request, 'index', env)
+
+    def http_method_not_allowed(self, request):
+        env = {'login_message' : 'HTTP method not allowed'}
+        return md.views.markdown_page(request, 'oops', env)
+
+        
