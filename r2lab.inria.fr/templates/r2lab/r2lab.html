@@ -85,6 +85,10 @@
      <!-- temporary-->
      {% if login_message %} <p>login_message = {{login_message}}</p> {% endif %}
      {% if r2lab_context.user.email %} <p>mail = {{r2lab_context.user.email}}@{{r2lab_context.manifold_url}}</p> {% endif %}
+     {% for slice in r2lab_context.slices %}
+        <p> in slice {{slice}}</p>
+     {% endfor %}
+     
      <!-- temporary-->
     </div>
    </div>
