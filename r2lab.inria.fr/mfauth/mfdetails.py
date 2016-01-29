@@ -58,7 +58,7 @@ def get_details(url, email, password, logger):
         slices = [ nm for nm_d in nm_d_s for nm in nm_d['slices'] ]
     except Exception as e:
         import traceback
-        logger.error("mfsession: Could not retrieve user's slices\n{}"
+        logger.error("mfdetails: Could not retrieve user's slices\n{}"
                      .format(traceback.format_exc()))
         slices = []
 

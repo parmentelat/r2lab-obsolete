@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 ##################################################
 from manifoldapi.manifoldapi    import ManifoldException
 
-from .mfsession import get_details
+from .mfdetails import get_details
 
 from r2lab.settings import manifold_url as config_manifold_url
 from r2lab.settings import logger
