@@ -44,37 +44,6 @@ function vdisplay(args){
 	display.apply(this, arguments);
 }
 
-
-//==============================================
-//CALENDAR slices
-//==============================================
-// file of booked slices
-var slices_complete = 'slices_complete.json';
-
-// file when the slices are registered.
-// for now is in the root of the website
-app.get('/events', function(req, res){
-  res.sendFile('events.html', { root: __dirname });
-});
-
-app.get('/slices_complete', function(req, res){
-  res.sendFile('slices_complete.json', { root: __dirname });
-});
-
-io.on('connection', function(socket){
-  // ADD SLICE MESSAGE
-  socket.on('add_slice', function(msg){
-    // console.log(msg);
-    io.emit('add_slice', msg);
-  });
-  // REMOVE SLICE MESSAGE BY ID
-  socket.on('remove_slice_by_id', function(msg){
-    // console.log(msg);
-    io.emit('remove_slice_by_id', msg);
-  });
-});
-//==============================================
-
 // program this webserver so that a GET to /
 // exposes the complete json status
 // + triggers a broadcast on all clients
