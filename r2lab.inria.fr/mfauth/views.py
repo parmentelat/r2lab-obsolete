@@ -32,16 +32,20 @@ class Login(View):
 
         env = {}
         if user is None:
-            env['login_message'] = "Your username and/or password is incorrect"
+            env['login_message'] = "incorrect username and/or password"
             return md.views.markdown_page(request, 'index', env)
         elif not user.is_active:
-            env['login_message'] = "This user is inactive"
+            env['login_message'] = "this user is inactive"
             return md.views.markdown_page(request, 'index', env)
         # r2lab_context is expected to have been attached to the session by mfbackend
         elif 'r2lab_context' not in request.session:
             logger.error("Internal error - cannot retrieve r2lab_context")
-            env['login_message'] = "Cannot log you in - please get in touch with admin"
+            env['login_message'] = "cannot log you in - please get in touch with admin"
             return md.views.markdown_page(request, 'oops', env)
+        elif 'slices' not in request.session['r2lab_context'] or \
+          not request.session['r2lab_context']['slices']:
+            env['login_message'] = "this user has no slice !"
+            return md.views.markdown_page(request, 'index', env)
         else:
             logger.debug("login for user={}".format(user))
             login(request, user)
