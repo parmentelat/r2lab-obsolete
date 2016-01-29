@@ -9,18 +9,16 @@ if __name__ == '__main__':
 from manifold.core.query     import Query
 from manifoldapi.manifoldapi import ManifoldAPI
 
-def get_details(url, email, password, logger):
+def manifold_details(url, email, password, logger):
     """
     return a tuple with (session, auth, person, slices)
     associated with these credentials at the manifold backend
     
     * session : the session with the manifold API
     * auth : ready-to use auth to talk to the API again
-    * person : the manifold object as-is - looks like this
-	{'status': 2, 'config': '{"firstname": "Thierry", 
-                                  "lastname": "Parmentelat", 
-                                  "authority": "onelab.inria"}',
-         'user_id': 55, 'email': 'thierry.parmentelat@inria.fr', 'password': '<>'}
+    * user : a flat structure with at least the following keys
+      * email, hrn, authority
+      * firstname, lastname
     * slices : the list of slice hrns that the person is in
 
     in case of failure, return tuple with same size with only None's
@@ -53,16 +51,31 @@ def get_details(url, email, password, logger):
     mf_result = api.forward(query.to_dict())
     try:
         # xxx use ManifoldResult ?
-        # this is a list of dicts that have s 'slices' field
-        nm_d_s = mf_result['value']
-        slices = [ nm for nm_d in nm_d_s for nm in nm_d['slices'] ]
+        # this is a list of dicts that have a 'slices' field
+        val_d_s = mf_result['value']
+        slices = [ nm for val_d in val_d_s for nm in val_d['slices'] ]
+        # in fact there is only one of these dicts because we have specified myslice:user
+        hrns = [ val_d['user_hrn'] for val_d in val_d_s ]
+        hrn = hrns[0]
+        # add hrn in person
+        person['hrn'] = hrn
     except Exception as e:
         import traceback
         logger.error("mfdetails: Could not retrieve user's slices\n{}"
                      .format(traceback.format_exc()))
         slices = []
 
-    return session, auth, person, slices
+    # synthesize our own user structure
+    import json
+    person_config = json.loads(person['config'])
+    user = { 'email' : person['email'],
+             'hrn' : hrn,
+             'authority' : person_config['authority'],
+             'firstname' : person_config['firstname'],
+             'lastname' : person_config['lastname'],
+             }
+
+    return session, auth, user, slices
 
 ####################
 if __name__ == '__main__':
@@ -99,12 +112,12 @@ if __name__ == '__main__':
         print(10*'=', "testing {} / {}".format(email, password))
         import time
         beg = time.time()
-        tuple = get_details(test_manifold_url, email, password, logger)
+        tuple = manifold_details(test_manifold_url, email, password, logger)
         end = time.time()
         if tuple[0]:
-            print("get_details: OK")
+            print("manifold_details: OK")
             for elem in tuple:
                 print("\t{}".format(elem))
         else:
-            print("NOPE - get_details authenticated KO".format(email, password))
-        print("total duration for get_details = {}s".format(end-beg))
+            print("NOPE - manifold_details authenticated KO".format(email, password))
+        print("total duration for manifold_details = {}s".format(end-beg))
