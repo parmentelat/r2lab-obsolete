@@ -1,4 +1,4 @@
-title: Welcome to R2Lab
+title: R2lab - Welcome
 tab: index
 login_widget_template: r2lab/login_widget.html
 ---
@@ -19,7 +19,7 @@ login_widget_template: r2lab/login_widget.html
     <div class="col-lg-4">
       <span style="font-size:6em;" class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
       <h2>Open Tools</h2>
-      <p>Deploy and run your experiments using Nepi: Network Experiment Programming Interface</p>
+      <p>Deploy and run your experiments using NEPI: Network Experiment Programming Interface</p>
       <p><a class="btn btn-default" href="tools.md#main" role="button">view details »</a></p>
     </div><!-- /.col-lg-4 -->
   </div><!-- /.row -->
@@ -48,7 +48,7 @@ login_widget_template: r2lab/login_widget.html
     </p></div>
     <div class="col-md-3">
     <h4>4. Submit your experiment</h4>
-    <p>Deploy your own experiment as you desire or launch Nepi tool and simplify your experience.
+    <p>Deploy your own experiment as you desire or launch NEPI tool and simplify your experience.
     </p>
   </div>
   </div>
