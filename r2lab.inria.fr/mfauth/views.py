@@ -54,8 +54,7 @@ class Login(View):
             login(request, user)
             env['login_message'] = "Logged in as user {}".format(user)
             env['r2lab_context'] = request.session['r2lab_context']
-            redirect_url = "/status.md#livemap"
-            return HttpResponseRedirect(redirect_url)
+            return md.views.markdown_page(request, 'run', env)
 
     def http_method_not_allowed(self, request):
         env = {'login_message' : 'HTTP method not allowed'}

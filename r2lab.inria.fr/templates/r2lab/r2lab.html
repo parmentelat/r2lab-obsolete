@@ -48,11 +48,14 @@
      </div>
      <div class="col-xs-12 col-sm-7 col-md-7 navigation">
       <ul>
-        <li><a id="tab-overview" tab="{{tab}}" class="sites" href="overview.md">Overview</a></li>
-        <li><a id="tab-status" tab="{{tab}}" class="sites" href="status.md">Status</a></li>
-        <li ><a id="tab-platform" tab="{{tab}}" class="sites" href="hardware.md">Hardware</a></li>
-        <li><a id="tab-blog" tab="{{tab}}" class="sites" href="blog.md">Infos</a></li>
-        <li><a id="tab-tutorial" tab="{{tab}}" class="sites" href="tutorial.md">Tutorials</a></li>
+        <li><a id="tab-overview" tab="{{tab}}" class="sites" href="/overview.md">Overview</a></li>
+        <li><a id="tab-status" tab="{{tab}}" class="sites" href="/status.md">Status</a></li>
+        <li><a id="tab-platform" tab="{{tab}}" class="sites" href="/hardware.md">Hardware</a></li>
+        <li><a id="tab-blog" tab="{{tab}}" class="sites" href="/blog.md">Infos</a></li>
+        <li><a id="tab-tutorial" tab="{{tab}}" class="sites" href="/tutorial.md">Tutorials</a></li>
+{% if r2lab_context %}
+        <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">Run</a></li>
+{% endif %}
       </ul>
      </div>
      <div class="col-xs-12 col-sm-2 col-md-3 secondary">
@@ -73,12 +76,12 @@
    </div>
   </div>
 
+{% if float_menu_template %}{% include float_menu_template %}{% endif %}
+
+{% if not skip_header %}
   <div class="container-fluid personal" id="background">
    {% if login_widget_template %}{% include login_widget_template %}{% endif %}
   </div>
-
-  {% if float_menu_template %}{% include float_menu_template %}{% endif %}
-
   <br>
   <br>
   <div class="container">
@@ -86,12 +89,15 @@
     stay tuned about the last news, infos and incidents about R2lab, check out our <a href="blog.md">info blog</a>
    </div>
   </div>
+{% endif %}
+
   <div class="container">
    <div class="row">
     <div class="col-md-10 col-md-offset-1 fit">
      <h2><span class="blue bold">{{title}}</span></h2>
      {% if subtitle %} <p class="subtitle">{{subtitle}}</p>{% endif %}
 {# temporary #}
+{% if skip_header %}
      {% if login_message %} <p>login_message = {{login_message}}</p> {% endif %}
      {% if previous_message %} <p>previous_message = {{previous_message}}</p> {% endif %}
      {% if r2lab_context.mfuser.email %} <p>mail = {{r2lab_context.mfuser.email}}@{{r2lab_context.manifold_url}}</p> {% endif %}
@@ -99,6 +105,7 @@
      {% for slice in r2lab_context.slices %}
         <p> in slice {{slice}}</p>
      {% endfor %}
+{% endif %}
 {# temporary #}
     </div>
    </div>
