@@ -10,15 +10,23 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-import logging
-
-logger = logging.getLogger('r2lab')
-
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+#################### figure out if in production mode or not
+import socket
+PRODUCTION = 'r2lab' in socket.gethostname()
+
+# the directory where we have write access to store the db and other logs
+RUNTIME_DIR = '/var/lib/r2lab.inria.fr' if PRODUCTION else BASE_DIR
+
+# xxx need to redirect this to RUNTIME_DIR/r2lab.log in production
+import logging
+logger = logging.getLogger('r2lab')
+
+####################
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -89,7 +97,7 @@ WSGI_APPLICATION = 'r2lab.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(RUNTIME_DIR, 'db.sqlite3'),
     }
 }
 
