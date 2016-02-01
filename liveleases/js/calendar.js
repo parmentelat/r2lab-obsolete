@@ -86,11 +86,13 @@ $(document).ready(function() {
       // this allows things to be dropped onto the calendar
       drop: function(date) {
         //set the current color after use one slice
-        var last_drag_color = $(this).css("background-color");
-        var last_drag_name  = $.trim($(this).text());
+        var element = $(this);
+        var last_drag_color = element.css("background-color");
+        var last_drag_name  = $.trim(element.text());
 
         setCurrentSliceColor(last_drag_color);
         setCurrentSliceName(last_drag_name);
+        setCurrentSliceBox(element);
 			},
       //Remove leases with double click
       eventRender: function(event, element) {
@@ -225,6 +227,11 @@ $(document).ready(function() {
   }
 
 
+  function setCurrentSliceBox(element){
+    console.log(element);
+  }
+
+
   function buildSlicesBox(leases) {
     var knew = [];
     var slices = $("#external-events");
@@ -243,7 +250,6 @@ $(document).ready(function() {
 
   function main () {
     var leasesbooked  = parseLease('/leasesbooked');
-
     buildCalendar(leasesbooked);
     updateLeases();
   }
