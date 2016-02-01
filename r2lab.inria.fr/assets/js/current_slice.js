@@ -17,7 +17,6 @@ var current_slice = {
     init_from_storage : function(avail_slices) {
 	current_slice.name = current_slice.get(avail_slices);
 	current_slice.store(current_slice.name);
-	console.log("restored -> " + current_slice.name);
     },
 
     get : function(avail_slices) {
@@ -40,7 +39,6 @@ var current_slice = {
     },
 
     store : function(slice) {
-	console.log('storing ' + slice);
 	if (typeof(Storage) === "undefined") {
 	    console.log("WARNING: current_slice.store : no local storage");
 	} else {
@@ -50,7 +48,6 @@ var current_slice = {
 
     // highlight the item corresponding to current slice
     update_selectors : function() {
-	console.log("updating selectors : " + current_slice.name);
 	$('.set_current_slice').each(function(index){
             if ($(this).attr('slicename') == current_slice.name){
 		$(this).addClass(current_slice.klass);
@@ -65,7 +62,6 @@ var current_slice = {
     arm_selectors : function() {
 	$('.set_current_slice').on("click", function(){
 	    var new_slice = $(this).attr("slicename");
-	    console.log('new slice ' + new_slice);
 	    current_slice.store(new_slice);
 	    current_slice.name = new_slice;
 	    current_slice.update_selectors();
@@ -74,11 +70,8 @@ var current_slice = {
 
     // stuff to call on page load
     init : function(){
-	console.log("0.1 " + current_slice.name);
 	current_slice.update_selectors();
 	current_slice.arm_selectors();
-	console.log("0.2 " + current_slice.name);
-	console.log("0.3 " + current_slice.name);
     }
 };
 $(current_slice.init)
