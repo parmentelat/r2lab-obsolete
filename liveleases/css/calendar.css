@@ -17,13 +17,13 @@ body {
 }
 
 #wrap {
-  width: 150px;
+  width: 200px;
   margin: 0 auto;
 }
 
 #external-events {
   float: left;
-  width: 150px;
+  width: 200px;
   padding: 0 10px;
   border: 1px solid #ccc;
   background: #eee;
