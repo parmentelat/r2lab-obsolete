@@ -1,1 +1,13 @@
+/*
+ * a placeholder for miscell stuff before its gets stored
+ * at a more suitble location - if ever
+ */
+
+/* logout button */
 a.button.logout { background-color: #f69a97; }
+
+/* the slices menu fromfloat_menu-slices.html */
+#float_menu div.menu a.set_current_slice {
+    font-size: x-small;
+    font-weight: normal;
+}

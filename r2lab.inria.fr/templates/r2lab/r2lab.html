@@ -80,7 +80,7 @@
 
 {% if not skip_header %}
   <div class="container-fluid personal" id="background">
-   {% if widget_login_template %}{% include widget_login_template %}{% endif %}
+   {% if not r2lab_context and widget_login_template %}{% include widget_login_template %}{% endif %}
   </div>
   <br>
   <br>
