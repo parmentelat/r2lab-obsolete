@@ -2,8 +2,10 @@
 {% load jsonify %}
 <script type="text/javascript" src="{% static 'js/current_slice.js' %}"></script>
 <script type="text/javascript">
-/* globals that describe logged in user */
+// globals that describe logged in user 
 r2lab_user = {{r2lab_context.mfuser|jsonify|safe}};
+// shortcuts
+r2lab_email = {{r2lab_context.mfuser.email|jsonify|safe}};
 r2lab_hrn = {{r2lab_context.mfuser.hrn|jsonify|safe}};
 r2lab_slices = {{r2lab_context.slices|jsonify|safe}};
 // initialize current_slice - set of slices is needed there
