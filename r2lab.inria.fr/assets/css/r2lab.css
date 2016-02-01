@@ -11,3 +11,10 @@ a.button.logout { background-color: #f69a97; }
     font-size: x-small;
     font-weight: normal;
 }
+
+#float_menu div.menu a.current_slice {
+    background-color: #c0c0d6;
+}
+#float_menu div.menu a.current_slice:hover {
+    background-color: #c0c0d6;
+}
