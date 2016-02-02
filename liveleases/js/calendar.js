@@ -1,5 +1,9 @@
 $(document).ready(function() {
 
+  var list_of_my_slices   = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
+  var current_slice_name  = 'onelab.inria.mario.script';
+  var current_slice_color = '#ddd';
+
   function buildCalendar(events) {
 
     var socket  = io();
@@ -7,7 +11,7 @@ $(document).ready(function() {
     var path_to_leases_complete = events;
     var date = new Date();
 
-    $('#external-events .fc-event').each(function(start, end, event, view) {
+    $('#my-slices .fc-event').each(function() {
       // store data so the calendar knows to render an event upon drop
       var last_drag_color = $(this).css("background-color");
       var last_drag_name  = $.trim($(this).text());
@@ -199,35 +203,43 @@ $(document).ready(function() {
 
 
   function getCurrentSliceName(){
-    var current_slice_name = $('#current-slice').attr('data-current-slice-name');
+    // var current_slice_name = $('#current-slice').attr('data-current-slice-name');
     return shortName(current_slice_name);
   }
 
 
   function getCurrentSliceColor(){
-    var current_slice_color = $('#current-slice').attr('data-current-slice-color');
+    // var current_slice_color = $('#current-slice').attr('data-current-slice-color');
     return current_slice_color;
   }
 
 
   function setCurrentSliceColor(color){
-    $('#current-slice').attr('data-current-slice-color', color);
+    // $('#current-slice').attr('data-current-slice-color', color);
+    current_slice_color = color;
     return true;
   }
 
 
   function setCurrentSliceName(name){
-    $('#current-slice').attr('data-current-slice-name', name);
+    // $('#current-slice').attr('data-current-slice-name', name);
+    current_slice_name = name;
     return true;
   }
 
 
   function setColorLease(leases, lease){
-    var lease_color = getRandomColor();
+    var lease_color = '#d0d0d0'; //color for other slices that not yours
+
     $.each(leases, function(key,val){
-      if (val.title == lease){
-        lease_color = val.color;
-        return false;
+      if (isMySlice(val.title)){
+        if (val.title == lease){ //set the same lease color for the slice
+          lease_color = val.color;
+          return false;
+        }
+      }
+      else {
+        lease_color = getRandomColor();
       }
     });
     return lease_color;
@@ -247,19 +259,38 @@ $(document).ready(function() {
   }
 
 
+  function isMySlice(slice){
+    var is_my = false;
+    if ($.inArray(fullName(slice), getMySlices()) > -1){
+      is_my = true;
+    }
+    return is_my
+  }
+
+
   function buildSlicesBox(leases){
     var knew = [];
-    var slices = $("#external-events");
+    var slices = $("#my-slices");
 
     $.each(leases, function(key,val){
-      if ($.inArray(val.title, knew) === -1) {
-        if(val.title === getCurrentSliceName()){
-          setCurrentSliceColor(val.color);
+      if ($.inArray(val.title, knew) === -1) { //already present?
+        if (isMySlice(val.title)) {
+          if(val.title === getCurrentSliceName()){
+            setCurrentSliceColor(val.color);
+          }
+          knew.push(val.title);
+          slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ val.color +"").text(val.title)).append($("<div />").attr("id", idFormat(val.title)).addClass('noactive'));
+        } else{
+          slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ val.color +"").text(val.title));
         }
-        knew.push(val.title);
-        slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ val.color +"").text(val.title)).append($("<div />").attr("id", idFormat(val.title)).addClass('noactive'));
       }
     });
+  }
+
+
+  function getMySlices(){
+    // list_of_my_slices = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script']
+    return list_of_my_slices;
   }
 
 
@@ -288,6 +319,8 @@ $(document).ready(function() {
 
     console.log(leases);
     console.log(leases.length);
+    alert('The objects are in the console... yet');
+
   });
 
 
