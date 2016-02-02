@@ -49,6 +49,7 @@ body {
 
 #my-slices .fc-event {
   margin: 10px 0;
+  cursor: move;
 }
 
 #my-slices p {
@@ -73,7 +74,6 @@ body {
 	border: 0px solid #3a87ad; /* default BORDER color */
 	background-color: #3a87ad; /* default BACKGROUND color */
 	font-weight: normal; /* undo jqui's ui-widget-header bold */
-  cursor: move;
 }
 
 .fc-event-not-mine {

@@ -101,7 +101,7 @@ $(document).ready(function() {
       //Remove leases with double click
       eventRender: function(event, element) {
         element.bind('dblclick', function() {
-          if (event.title == getCurrentSliceName()) {
+          if (isMySlice(event.title)) {
             socket.emit('dellease', event._id);
           }
         });
@@ -128,7 +128,7 @@ $(document).ready(function() {
             newLease.start = v.valid_from;
             newLease.end   = v.valid_until;
             newLease.color = setColorLease(leases, newLease.title);
-            newLease.editable = false;
+            newLease.editable = isMySlice(shortName(v.account.name));
             newLease.overlap = false;
             leases.push(newLease);
           });
