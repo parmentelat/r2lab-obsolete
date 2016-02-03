@@ -51,6 +51,24 @@ So in a nutshell, this is something we should not care too much about at this po
 
 ## Task 4 - write leases
 
-Start thinking about how to actually write leases with the authenticated user (slice actually)
+* arrow 1: I need more details on what Mario expects (what is behind the *Confirm your booking* thing)
+* arrow 2: should be reasonably straightforward 
 
+## Task 5 - integrate visually
+
+* my proposal would be to create a new page 'scheduler' - or maybe 'plan' for the tab name - before the 'run' page
+* the 'plan' page would then only have the whole page to display the scheduler which could be on a week or more
+* the 'run' page would only show the current day with a layout as narrow as possible, ideally on the side like something of that kind:
+
+```
+-------------
+l  |
+i  | livemap
+v  | 
+e  +---------
+l  |
+e  | livetable
+a  |
+-------------
+```
 
