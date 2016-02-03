@@ -319,6 +319,21 @@ $(document).ready(function() {
   }
 
 
+  function sendConfirm(leases){
+    $.ajax({
+      url: '/leasesbooked',
+      type: 'POST',
+      data: JSON.stringify(leases),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      async: false,
+      success: function(msg) {
+          alert('Done, booked successfully!');
+      }
+    });
+  }
+
+
   function main (){
     var leasesbooked  = parseLease('/leasesbooked');
     buildCalendar(leasesbooked);
@@ -344,10 +359,7 @@ $(document).ready(function() {
       }
     });
 
-    console.log(leases);
-    console.log(leases.length);
-    alert('The objects are in the console... yet');
-
+    sendConfirm(leases);
   });
 
 
