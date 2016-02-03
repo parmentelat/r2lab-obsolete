@@ -224,7 +224,8 @@ function nodes-restore () {
 }
 doc-alt nodes-restore "use previously named selection"
 
-bemol && export _all_nodes=38-42 || export _all_nodes=1-37
+#bemol && export _all_nodes=38-42 || export _all_nodes=1-37
+bemol && export _all_nodes="27 38-41" || export _all_nodes=1-37
 
 function all-nodes () { nodes $_all_nodes; }
 function nodes-all () { all-nodes; }
@@ -300,13 +301,16 @@ doc-nodes load-ubuntu "upload latest ubuntu image on all nodes"
 doc-nodes load-fedora "... latest fedora image"
 doc-nodes load-gnuradio "... latest recommended gnuradio image"
 
+function prefix () {
+    token="$1"; shift
+    sed -e "s/^/$token/"
+}
 # utility; run curl
 function -curl () {
     mode="$1"; shift
     [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
     for node in $(normreboot $nodes); do
-	# make sure we echo a newline even if curl returns nothing
-	echo -n $node " " ; echo $(curl --silent http://$node/$mode)
+	curl --silent http://$node/$mode | prefix $node:
     done
 }
 
@@ -663,3 +667,7 @@ doc-admin rhubarbe-update alias
 
 alias pull-bashrc="su faraday /home/faraday/r2lab/auto-update.sh"
 doc-admin pull-bashrc alias
+
+########## check nodes info
+function info () { -curl info "$@" }
+doc-admin info "\tget info from CMC"
