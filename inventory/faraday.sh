@@ -310,7 +310,7 @@ function -curl () {
     mode="$1"; shift
     [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
     for node in $(normreboot $nodes); do
-	curl --silent http://$node/$mode | prefix $node:
+	curl --silent http://$node/$mode | prefix "$node:"
     done
 }
 
@@ -669,5 +669,5 @@ alias pull-bashrc="su faraday /home/faraday/r2lab/auto-update.sh"
 doc-admin pull-bashrc alias
 
 ########## check nodes info
-function info () { -curl info "$@" }
+function info () { -curl info "$@"; }
 doc-admin info "\tget info from CMC"
