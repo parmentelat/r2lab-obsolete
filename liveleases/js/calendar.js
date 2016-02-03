@@ -1,5 +1,9 @@
 $(document).ready(function() {
 
+  var list_of_my_slices   = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
+  var current_slice_name  = 'onelab.inria.mario.script';
+  var current_slice_color = '#ddd';
+
   function buildCalendar(events) {
 
     var socket  = io();
@@ -7,14 +11,13 @@ $(document).ready(function() {
     var path_to_leases_complete = events;
     var date = new Date();
 
-    $('#external-events .fc-event').each(function() {
+    $('#my-slices .fc-event').each(function() {
       // store data so the calendar knows to render an event upon drop
       var last_drag_color = $(this).css("background-color");
       var last_drag_name  = $.trim($(this).text());
 
       $(this).data('event', {
         title: last_drag_name,
-        stick: true,
         color: last_drag_color,
         overlap: false,
         selectable: true,
@@ -45,6 +48,7 @@ $(document).ready(function() {
         }
       },
       defaultTimedEventDuration: '00:30:00',
+      forceEventDuration: true,
       defaultView: 'agendaThreeDay',
       timezone: 'Europe/Paris',
       defaultDate: today,
@@ -56,7 +60,7 @@ $(document).ready(function() {
       droppable: true,
 
       //Events
-      select: function(start, end, jsEvent, view) {
+      select: function(start, end, event, view) {
         //Avoid past dates when try to book a lease
         if (moment().diff(start, 'days') > 0) {
           $('#calendar').fullCalendar('unselect');
@@ -71,7 +75,7 @@ $(document).ready(function() {
             title: my_title,
             start: start,
             end: end,
-            // end: start+ ((3600*1000)*0.5),
+            //end: start+ ((3600*1000)*1),
             overlap: false,
             editable: true,
             allDaySlot: false,
@@ -84,7 +88,7 @@ $(document).ready(function() {
         $('#calendar').fullCalendar('unselect');
       },
       // this allows things to be dropped onto the calendar
-      drop: function(date) {
+      drop: function(start, end, event, date) {
         //set the current color after use one slice
         var element = $(this);
         var last_drag_color = element.css("background-color");
@@ -92,13 +96,12 @@ $(document).ready(function() {
 
         setCurrentSliceColor(last_drag_color);
         setCurrentSliceName(last_drag_name);
-        setCurrentSliceBox(element);
+        setCurrentSliceBox(element.text());
 			},
       //Remove leases with double click
       eventRender: function(event, element) {
         element.bind('dblclick', function() {
-
-          if (event.title == getCurrentSliceName()) {
+          if (isMySlice(event.title)) {
             socket.emit('dellease', event._id);
           }
         });
@@ -125,7 +128,7 @@ $(document).ready(function() {
             newLease.start = v.valid_from;
             newLease.end   = v.valid_until;
             newLease.color = setColorLease(leases, newLease.title);
-            newLease.editable = false;
+            newLease.editable = isMySlice(shortName(v.account.name));
             newLease.overlap = false;
             leases.push(newLease);
           });
@@ -136,6 +139,7 @@ $(document).ready(function() {
         //Nightly routine fixed in each nigth from 3AM to 5PM
         newLease = new Object();
         newLease.title = "nightly routine";
+        newLease.id = "nightly";
         newLease.start = " T03:00:00Z";
         newLease.end   = " T05:00:00Z";
         newLease.color = "#616161";
@@ -148,7 +152,7 @@ $(document).ready(function() {
         newLease = new Object();
         newLease.id = "pastDate";
         newLease.start = "2016-01-01T00:00:00Z";
-        newLease.end   = "2016-01-28T00:00:00Z";
+        newLease.end   = "2016-02-02T00:00:00Z";
         newLease.overlap = false;
         newLease.editable = false;
         newLease.rendering = "background",
@@ -184,6 +188,13 @@ $(document).ready(function() {
   }
 
 
+  function fullName(name){
+    var new_name;
+    new_name = 'onelab.inria.'+name;
+    return new_name
+  }
+
+
   function shortName(name){
     var new_name;
     new_name = name.replace('onelab.inria.', '');
@@ -192,67 +203,125 @@ $(document).ready(function() {
 
 
   function getCurrentSliceName(){
-    var current_slice_name = $('#current-slice').attr('data-current-slice-name');
+    // var current_slice_name = $('#current-slice').attr('data-current-slice-name');
     return shortName(current_slice_name);
   }
 
 
   function getCurrentSliceColor(){
-    var current_slice_color = $('#current-slice').attr('data-current-slice-color');
+    // var current_slice_color = $('#current-slice').attr('data-current-slice-color');
     return current_slice_color;
   }
 
 
   function setCurrentSliceColor(color){
-    $('#current-slice').attr('data-current-slice-color', color);
+    // $('#current-slice').attr('data-current-slice-color', color);
+    current_slice_color = color;
     return true;
   }
 
 
   function setCurrentSliceName(name){
-    $('#current-slice').attr('data-current-slice-name', name);
+    // $('#current-slice').attr('data-current-slice-name', name);
+    current_slice_name = name;
     return true;
   }
 
 
   function setColorLease(leases, lease){
-    var lease_color = getRandomColor();
+    var lease_color = '#d0d0d0'; //color for other slices that not yours
+
     $.each(leases, function(key,val){
-      if (val.title == lease){
-        lease_color = val.color;
-        return false;
+      if (isMySlice(val.title)){
+        if (val.title == lease){ //set the same lease color for the slice
+          lease_color = val.color;
+          return false;
+        }
+      }
+      else {
+        lease_color = getRandomColor();
       }
     });
     return lease_color;
   }
 
 
-  function setCurrentSliceBox(element){
-    console.log(element);
+  function idFormat(id){
+    new_id = id.replace('.', '');
+    return new_id;
   }
 
 
-  function buildSlicesBox(leases) {
+  function setCurrentSliceBox(element){
+    id = idFormat(element);
+    $(".noactive").removeClass('sactive');
+    $("#"+id).addClass('sactive');
+  }
+
+
+  function isMySlice(slice){
+    var is_my = false;
+    if ($.inArray(fullName(slice), getMySlices()) > -1){
+      is_my = true;
+    }
+    return is_my
+  }
+
+
+  function buildSlicesBox(leases){
     var knew = [];
-    var slices = $("#external-events");
+    var slices = $("#my-slices");
 
     $.each(leases, function(key,val){
-      if ($.inArray(val.title, knew) === -1) {
-        if(val.title === getCurrentSliceName()){
-          setCurrentSliceColor(val.color);
+      if ($.inArray(val.title, knew) === -1) { //already present?
+        if (isMySlice(val.title)) {
+          if(val.title === getCurrentSliceName()){
+            setCurrentSliceColor(val.color);
+          }
+          knew.push(val.title);
+          slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ val.color +"").text(val.title)).append($("<div />").attr("id", idFormat(val.title)).addClass('noactive'));
+        } else{
+          slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ val.color +"").text(val.title));
         }
-        knew.push(val.title);
-        slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ val.color +"").text(val.title));
       }
     });
   }
 
 
-  function main () {
+  function getMySlices(){
+    // list_of_my_slices = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script']
+    return list_of_my_slices;
+  }
+
+
+  function main (){
     var leasesbooked  = parseLease('/leasesbooked');
     buildCalendar(leasesbooked);
+    setCurrentSliceBox(getCurrentSliceName());
     updateLeases();
   }
+
+
+  $('#confirm').click(function() {
+    calendar = $('#calendar').fullCalendar('clientEvents')
+    leases = [];
+    leases_avoid = ['nightly', 'pastDate'];
+    $.each(calendar, function(key,obj){
+      var lease = new Object();
+
+      lease.name  = fullName(obj.title);
+      lease.start = obj.start._d;
+      lease.end   = obj.end._d;
+      if ($.inArray(obj.id, leases_avoid) === -1) {
+        leases.push(lease);
+      }
+    });
+
+    console.log(leases);
+    console.log(leases.length);
+    alert('The objects are in the console... yet');
+
+  });
 
 
   Slice = function (name, color) {
@@ -265,7 +334,6 @@ $(document).ready(function() {
     this.setColor = function(color) {
       this.color = color;
     }
-
   };
 
 
