@@ -3,10 +3,10 @@ $(document).ready(function() {
   var list_of_my_slices   = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
   var current_slice_name  = 'onelab.inria.mario.script';
   var current_slice_color = '#ddd';
+  var broadcastActions    = false;
 
   function buildCalendar(events) {
 
-    var socket  = io();
     var today   = moment().format("YYYY-MM-DD");
     var path_to_leases_complete = events;
     var date = new Date();
@@ -83,7 +83,7 @@ $(document).ready(function() {
           };
 
           //receive the event information when click
-          socket.emit('addlease', eventData);
+          updateLeases('addLease', eventData, broadcastActions);
         }
         $('#calendar').fullCalendar('unselect');
       },
@@ -102,7 +102,7 @@ $(document).ready(function() {
       eventRender: function(event, element) {
         element.bind('dblclick', function() {
           if (isMySlice(event.title)) {
-            socket.emit('dellease', event._id);
+            updateLeases('delLease', event._id, broadcastActions);
           }
         });
       },
@@ -166,14 +166,39 @@ $(document).ready(function() {
   }
 
 
-  function updateLeases(){
+  function sendBroadcast(action, data){
     var socket = io();
-    socket.on('addlease', function(msg){
+    if (action == 'addLease'){
+      socket.emit('addLease', data);
+    }
+    else if (action == 'delLease'){
+      socket.emit('delLease', data);
+    }
+  }
+
+
+  function listenBroadcast(){
+    var socket = io();
+    socket.on('addLease', function(msg){
       $('#calendar').fullCalendar('renderEvent', msg, true );
     });
-    socket.on('dellease', function(msg){
+    socket.on('delLease', function(msg){
       $('#calendar').fullCalendar('removeEvents',msg);
     });
+  }
+
+
+  function updateLeases(action, data, broadcast){
+    if (broadcast){
+      sendBroadcast(action, data);
+    } else{
+      if (action == 'addLease') {
+        $('#calendar').fullCalendar('renderEvent', data, true );
+      }
+      if (action == 'delLease'){
+        $('#calendar').fullCalendar('removeEvents',data);
+      }
+    }
   }
 
 
@@ -298,7 +323,9 @@ $(document).ready(function() {
     var leasesbooked  = parseLease('/leasesbooked');
     buildCalendar(leasesbooked);
     setCurrentSliceBox(getCurrentSliceName());
-    updateLeases();
+    if (broadcastActions){
+      listenBroadcast();
+    }
   }
 
 

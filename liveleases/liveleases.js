@@ -17,14 +17,14 @@ app.get('/leasesbooked', function(req, res){
 
 io.on('connection', function(socket){
   // ADD SLICE MESSAGE
-  socket.on('addlease', function(msg){
+  socket.on('addLease', function(msg){
     // console.log(msg);
-    io.emit('addlease', msg);
+    io.emit('addLease', msg);
   });
   // REMOVE SLICE MESSAGE BY ID
-  socket.on('dellease', function(msg){
+  socket.on('delLease', function(msg){
     // console.log(msg);
-    io.emit('dellease', msg);
+    io.emit('delLease', msg);
   });
 });
 
