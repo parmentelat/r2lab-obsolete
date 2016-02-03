@@ -1,4 +1,4 @@
-![Overview](AA-overview.png)
+![Overview](AA-1-statusflow.png)
 
 # faraday
 
@@ -41,3 +41,10 @@
 * run `sudo sidecar.js -l` when running locally on a devel box; this will use json files in current directory as opposed to in `/var/lib/sidecar/`; also `sudo` is required to bind to privileged port `443`
 
 * run `sudo sidecar.js -l -v` for verbose output
+
+## JSON files
+
+  * the 2 `json` files are essentially second-order and do not matter at all 
+  * `complete.json` essentially is a way to store stuff across a restart of the sidecar (which is done every 10 minutes)
+  * `news.json` was a first attempt at providing an easy way to post new things, but this is not needed **at all* anymore
+  * 
