@@ -1,0 +1,261 @@
+[
+  {
+    "resource_response": {
+      "resources": [
+        {
+          "urn": "urn:publicid:IDN+r2lab+lease+cfb949e9-1ad1-4a52-9e8a-4abd05142b1b",
+          "uuid": "cfb949e9-1ad1-4a52-9e8a-4abd05142b1b",
+          "resource_type": "lease",
+          "valid_from": "2016-02-01T11:00:00Z",
+          "valid_until": "2016-02-01T22:30:00Z",
+          "status": "active",
+          "client_id": "c47d9f24-c875-4a42-89d4-9ef5d8c5190f",
+          "components": [
+
+          ],
+          "account": {
+            "name": "onelab.inria.r2lab.naoufal",
+            "urn": "urn:publicid:IDN+onelab:inria:r2lab+slice+naoufal",
+            "uuid": "374f1211-03cd-4880-80d3-67c7806ef8fe",
+            "resource_type": "account",
+            "created_at": "2016-01-25T09:40:06Z",
+            "valid_until": "2016-02-17T10:30:52Z"
+          }
+        },
+        {
+          "urn": "urn:publicid:IDN+r2lab+lease+b7104ca8-5f8d-4018-8f6f-908e9b9e3f95",
+          "uuid": "b7104ca8-5f8d-4018-8f6f-908e9b9e3f95",
+          "resource_type": "lease",
+          "valid_from": "2016-02-04T13:00:00Z",
+          "valid_until": "2016-02-04T14:00:00Z",
+          "status": "accepted",
+          "client_id": "9e60544e-6a05-4803-8fc6-0ebffdc20592",
+          "components": [
+            {
+              "name": "37nodes",
+              "urn": "urn:publicid:IDN+r2lab+node+37nodes",
+              "uuid": "c2051315-e1d6-4650-9511-47a4de7443b2",
+              "resource_type": "node",
+              "domain": "r2lab",
+              "available": true,
+              "status": "unknown",
+              "exclusive": true
+            }
+          ],
+          "account": {
+            "name": "onelab.inria.mario.tutorial",
+            "urn": "urn:publicid:IDN+onelab:inria:mario+slice+tutorial",
+            "uuid": "ec118f9a-f3f4-43a8-ac04-e74fc7b67741",
+            "resource_type": "account",
+            "created_at": "2016-02-01T14:25:19Z",
+            "valid_until": "2016-02-10T13:46:31Z"
+          }
+        },
+        {
+          "urn": "urn:publicid:IDN+r2lab+lease+dd4305b8-0b46-4160-a1c8-32fb454c6432",
+          "uuid": "dd4305b8-0b46-4160-a1c8-32fb454c6432",
+          "resource_type": "lease",
+          "valid_from": "2016-02-02T13:30:00Z",
+          "valid_until": "2016-02-02T15:00:00Z",
+          "status": "accepted",
+          "client_id": "7d30440a-69e7-4eb4-ab15-a59206ec61c0",
+          "components": [
+            {
+              "name": "37nodes",
+              "urn": "urn:publicid:IDN+r2lab+node+37nodes",
+              "uuid": "c2051315-e1d6-4650-9511-47a4de7443b2",
+              "resource_type": "node",
+              "domain": "r2lab",
+              "available": true,
+              "status": "unknown",
+              "exclusive": true
+            }
+          ],
+          "account": {
+            "name": "onelab.inria.mario.tutorial",
+            "urn": "urn:publicid:IDN+onelab:inria:mario+slice+tutorial",
+            "uuid": "ec118f9a-f3f4-43a8-ac04-e74fc7b67741",
+            "resource_type": "account",
+            "created_at": "2016-02-01T14:25:19Z",
+            "valid_until": "2016-02-10T13:46:31Z"
+          }
+        },
+        {
+          "urn": "urn:publicid:IDN+r2lab+lease+a2066c8a-ed49-44ca-8950-3843dc0bda2c",
+          "uuid": "a2066c8a-ed49-44ca-8950-3843dc0bda2c",
+          "resource_type": "lease",
+          "valid_from": "2016-02-02T16:00:00Z",
+          "valid_until": "2016-02-02T17:00:00Z",
+          "status": "accepted",
+          "client_id": "9e05ffc0-88ee-4d06-bcfc-fad6c4253b25",
+          "components": [
+            {
+              "name": "37nodes",
+              "urn": "urn:publicid:IDN+r2lab+node+37nodes",
+              "uuid": "3f9b19c7-c015-4300-9a03-b8f9306798ab",
+              "resource_type": "node",
+              "domain": "r2lab",
+              "available": true,
+              "status": "unknown",
+              "exclusive": true
+            }
+          ],
+          "account": {
+            "name": "onelab.inria.mario.script",
+            "urn": "urn:publicid:IDN+onelab:inria:mario+slice+script",
+            "uuid": "6476b81a-91ad-420c-8313-845a9451963b",
+            "resource_type": "account",
+            "created_at": "2016-01-27T10:48:56Z",
+            "valid_until": "2016-02-10T13:46:31Z"
+          }
+        },
+        {
+          "urn": "urn:publicid:IDN+r2lab+lease+3f27ae94-42f9-440b-8297-ef1a82bf636f",
+          "uuid": "3f27ae94-42f9-440b-8297-ef1a82bf636f",
+          "resource_type": "lease",
+          "valid_from": "2016-02-04T08:00:00Z",
+          "valid_until": "2016-02-04T09:00:00Z",
+          "status": "accepted",
+          "client_id": "73a8be88-1623-402b-a349-d0f3f28a8b09",
+          "components": [
+            {
+              "name": "37nodes",
+              "urn": "urn:publicid:IDN+r2lab+node+37nodes",
+              "uuid": "c2051315-e1d6-4650-9511-47a4de7443b2",
+              "resource_type": "node",
+              "domain": "r2lab",
+              "available": true,
+              "status": "unknown",
+              "exclusive": true
+            }
+          ],
+          "account": {
+            "name": "onelab.inria.mario.tutorial",
+            "urn": "urn:publicid:IDN+onelab:inria:mario+slice+tutorial",
+            "uuid": "ec118f9a-f3f4-43a8-ac04-e74fc7b67741",
+            "resource_type": "account",
+            "created_at": "2016-02-01T14:25:19Z",
+            "valid_until": "2016-02-10T13:46:31Z"
+          }
+        },
+        {
+          "urn": "urn:publicid:IDN+r2lab+lease+bdad1449-7a37-46d7-8d6a-f4be20fe9773",
+          "uuid": "bdad1449-7a37-46d7-8d6a-f4be20fe9773",
+          "resource_type": "lease",
+          "valid_from": "2016-02-03T15:30:00Z",
+          "valid_until": "2016-02-03T17:00:00Z",
+          "status": "accepted",
+          "client_id": "dd9302dc-7aa1-4b6b-abd3-ce27e6163778",
+          "components": [
+            {
+              "name": "37nodes",
+              "urn": "urn:publicid:IDN+r2lab+node+37nodes",
+              "uuid": "c2051315-e1d6-4650-9511-47a4de7443b2",
+              "resource_type": "node",
+              "domain": "r2lab",
+              "available": true,
+              "status": "unknown",
+              "exclusive": true
+            }
+          ],
+          "account": {
+            "name": "onelab.inria.mario.tutorial",
+            "urn": "urn:publicid:IDN+onelab:inria:mario+slice+tutorial",
+            "uuid": "ec118f9a-f3f4-43a8-ac04-e74fc7b67741",
+            "resource_type": "account",
+            "created_at": "2016-02-01T14:25:19Z",
+            "valid_until": "2016-02-10T13:46:31Z"
+          }
+        },
+        {
+          "urn": "urn:publicid:IDN+r2lab+lease+8128f8f1-b7c8-4c1f-8f10-b3dd51f7b30d",
+          "uuid": "8128f8f1-b7c8-4c1f-8f10-b3dd51f7b30d",
+          "resource_type": "lease",
+          "valid_from": "2016-02-03T17:30:00Z",
+          "valid_until": "2016-02-03T19:00:00Z",
+          "status": "accepted",
+          "client_id": "3e9879f2-90f5-42e5-a8c5-a04699d09909",
+          "components": [
+            {
+              "name": "37nodes",
+              "urn": "urn:publicid:IDN+r2lab+node+37nodes",
+              "uuid": "3f9b19c7-c015-4300-9a03-b8f9306798ab",
+              "resource_type": "node",
+              "domain": "r2lab",
+              "available": true,
+              "status": "unknown",
+              "exclusive": true
+            }
+          ],
+          "account": {
+            "name": "onelab.inria.mario.script",
+            "urn": "urn:publicid:IDN+onelab:inria:mario+slice+script",
+            "uuid": "6476b81a-91ad-420c-8313-845a9451963b",
+            "resource_type": "account",
+            "created_at": "2016-01-27T10:48:56Z",
+            "valid_until": "2016-02-10T13:46:31Z"
+          }
+        },
+        {
+          "urn": "urn:publicid:IDN+r2lab+lease+b85be0b7-8ec6-4dcf-ae4d-5d2366b05876",
+          "uuid": "b85be0b7-8ec6-4dcf-ae4d-5d2366b05876",
+          "resource_type": "lease",
+          "valid_from": "2016-02-03T14:00:00Z",
+          "valid_until": "2016-02-03T15:00:00Z",
+          "status": "accepted",
+          "client_id": "6cbf49da-5ece-4223-8df7-32d1d91fe58f",
+          "components": [
+            {
+              "name": "37nodes",
+              "urn": "urn:publicid:IDN+r2lab+node+37nodes",
+              "uuid": "e10f9a92-8726-45d1-b30e-5d8983997f08",
+              "resource_type": "node",
+              "domain": "r2lab",
+              "available": true,
+              "status": "unknown",
+              "exclusive": true
+            }
+          ],
+          "account": {
+            "name": "onelab.inria.r2lab.mario_test",
+            "urn": "urn:publicid:IDN+onelab:inria:r2lab+slice+mario_test",
+            "uuid": "13345879-2321-400d-b01b-c0a79db1ecad",
+            "resource_type": "account",
+            "created_at": "2016-02-01T14:49:16Z",
+            "valid_until": "2016-02-10T13:46:31Z"
+          }
+        },
+        {
+          "urn": "urn:publicid:IDN+r2lab+lease+239e752d-2f14-456f-801e-61ea3a864abc",
+          "uuid": "239e752d-2f14-456f-801e-61ea3a864abc",
+          "resource_type": "lease",
+          "valid_from": "2016-02-02T15:00:00Z",
+          "valid_until": "2016-02-02T16:00:00Z",
+          "status": "accepted",
+          "client_id": "6b4f6205-d859-41b0-90aa-82a9d2ca2ec6",
+          "components": [
+            {
+              "name": "37nodes",
+              "urn": "urn:publicid:IDN+r2lab+node+37nodes",
+              "uuid": "e10f9a92-8726-45d1-b30e-5d8983997f08",
+              "resource_type": "node",
+              "domain": "r2lab",
+              "available": true,
+              "status": "unknown",
+              "exclusive": true
+            }
+          ],
+          "account": {
+            "name": "onelab.inria.r2lab.mario_test",
+            "urn": "urn:publicid:IDN+onelab:inria:r2lab+slice+mario_test",
+            "uuid": "13345879-2321-400d-b01b-c0a79db1ecad",
+            "resource_type": "account",
+            "created_at": "2016-02-01T14:49:16Z",
+            "valid_until": "2016-02-10T13:46:31Z"
+          }
+        }
+      ],
+      "about": "/resources/leases"
+    }
+  }
+]

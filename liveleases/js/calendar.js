@@ -320,6 +320,7 @@ $(document).ready(function() {
 
 
   function sendConfirm(leases){
+    console.log(JSON.stringify(leases));
     $.ajax({
       url: '/leasesbooked',
       type: 'POST',
