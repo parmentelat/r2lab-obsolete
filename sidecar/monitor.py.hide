@@ -46,9 +46,9 @@ from socketIO_client import SocketIO, LoggingNamespace
 from sshclient_noauth import SSHClient_noauth
 
 # the channel to use when talking to the sidecar server
-channel_news = 'r2lab-news'
+channel_news = 'chan:status'
 # this one is not used here but 
-channel_signalling = 'r2lab-signalling'
+channel_signalling = 'chan:status-request'
 
 def hostname(node_id, prefix="fit"):
     return "{prefix}{node_id:02d}".format(**locals())

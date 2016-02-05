@@ -378,7 +378,7 @@ def set_node_status(nodes, status='ok'):
 
     socketio = SocketIO(hostname, port, LoggingNamespace)
     # print("Sending {infos} onto {hostname}:{port}".format(**locals()))
-    socketio.emit('r2lab-news', json.dumps(infos), None)
+    socketio.emit('chan:status', json.dumps(infos), None)
 
 
 

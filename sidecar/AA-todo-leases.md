@@ -17,8 +17,8 @@ At this point:
   2. the way the django service will interact with the `omf_sfa` service is - at this point - through a ssh connection. I will open a dedicated access so that apache on `r2lab.inria.fr` can actually issue ssh commands on faraday; even though this is probably a little coarse-grained; we will need the ability for root to set leases on someone else's behalf
   3. it's easy to extend rmonitor so that it gathers all the leases from omf-sfa (actually rhubarbe already has leases-oriented featured like `rleases`)
   4. as far as sidecar, my suggestion is to use a dedicated socket.io channel (or pair of channels) to propagate the orange flow. As a reminder at this point we are using
-    * `r2lab-news` for sending node-oriented status
-    * `r2lab-signalling` as a channel for requesting to broadcast the complete status (essentially at browser startup) (actual content is ignored, it's just a trigger channel)
+    * `chan:status` for sending node-oriented status
+    * `chan:status-request` as a channel for requesting to broadcast the complete status (essentially at browser startup) (actual content is ignored, it's just a trigger channel)
 
     So we will probably want to rename these into something more expressive (referring to 'status') and define other channels for exposing leases
   5. the fifth line would IMHO be of the exact same nature as 4. and sidecar will just do the basic forwarding stuff that it already does about status.

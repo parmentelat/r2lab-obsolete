@@ -131,7 +131,7 @@ def main():
                           [ (info['id'], len(info)-1) for info in news_infos]))
             print(news_infos[0])
         news_string = json.dumps(news_infos)
-        socketIO.emit('r2lab-news', news_string, io_callback)
+        socketIO.emit('chan:status', news_string, io_callback)
         counter += 1
         if args.runs and counter >= args.runs:
             break

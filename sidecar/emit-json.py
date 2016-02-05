@@ -28,7 +28,7 @@ def e(infos):
     # can work only one dict -> wrap it in a list
     if isinstance(infos, dict):
         infos = [infos]
-    socketio.emit('r2lab-news', json.dumps(infos), io_callback)
+    socketio.emit('chan:status', json.dumps(infos), io_callback)
 
 print("Run e({'id':4, 'cmc_on_off': 'on'}) to send a message")
 

@@ -1,9 +1,9 @@
 ////////// must be in sync with r2lab-sidecar.js 
 // the 2 socket.io channels that are used
 // (1) this is where actual JSON status is sent
-var channel = 'r2lab-news';
+var channel = 'chan:status';
 // (2) this one is used for triggering a broadcast of the complete status
-var signalling = 'r2lab-signalling';
+var signalling = 'chan:status-request';
 // port number
 var sidecar_port_number = 443;
 
