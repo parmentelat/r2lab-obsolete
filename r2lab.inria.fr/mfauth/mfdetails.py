@@ -49,6 +49,15 @@ def manifold_details(url, email, password, logger):
     # get related slices
     query = Query.get('myslice:user').filter_by('user_hrn', '==', '$user_hrn').select(['user_hrn', 'slices'])
     mf_result = api.forward(query.to_dict())
+    # xxx - needs more work
+    # for now if hrn is not properly filled we want to proceed
+    # however this is wrong; it can happen for example
+    # when credentials upstream have expired and
+    # need to be uploaded again to the manifold end
+    # so it would be best to refuse logging in and to provide this kind of hint
+    # we don't report login_message properly yet though...
+    hrn = "<unknown_hrn>"
+    slices = []
     try:
         # xxx use ManifoldResult ?
         # this is a list of dicts that have a 'slices' field
@@ -56,15 +65,17 @@ def manifold_details(url, email, password, logger):
         slices = [ nm for val_d in val_d_s for nm in val_d['slices'] ]
         # in fact there is only one of these dicts because we have specified myslice:user
         hrns = [ val_d['user_hrn'] for val_d in val_d_s ]
-        hrn = hrns[0]
-        # add hrn in person
-        person['hrn'] = hrn
+        if hrns:
+            hrn = hrns[0]
+            
     except Exception as e:
         import traceback
         logger.error("mfdetails: Could not retrieve user's slices\n{}"
                      .format(traceback.format_exc()))
-        slices = []
 
+    # add hrn in person
+    person['hrn'] = hrn
+    
     # synthesize our own user structure
     import json
     person_config = json.loads(person['config'])
