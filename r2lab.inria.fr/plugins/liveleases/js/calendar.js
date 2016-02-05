@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
-  var list_of_my_slices   = r2lab_slices;//['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
-  var current_slice_name  = current_slice.name; //'onelab.inria.mario.script';
+  var list_of_my_slices   = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
+  var current_slice_name  = 'onelab.inria.mario.script';
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
 
@@ -36,20 +36,20 @@ $(document).ready(function() {
     $('#calendar').fullCalendar({
       header: {
         left: 'prev,next today',
-        center: 'title',
-        right: 'agendaDay,agendaThreeDay,agendaWeek',
+        // center: 'title',
+        right: 'agendaDay,agendaTwoDay',
       },
 
       views: {
-        agendaThreeDay: {
+        agendaTwoDay: {
           type: 'agenda',
-          duration: { days: 3 },
-          buttonText: '3 days'
+          duration: { days: 2 },
+          buttonText: '2 days'
         }
       },
       defaultTimedEventDuration: '00:30:00',
       forceEventDuration: true,
-      defaultView: 'agendaThreeDay',
+      defaultView: 'agendaTwoDay',
       timezone: 'Europe/Paris',
       defaultDate: today,
       selectable: true,
@@ -335,7 +335,8 @@ $(document).ready(function() {
 
 
   function main (){
-    var leasesbooked  = parseLease('https://faraday.inria.fr:12346/resources/leases');
+    // var leasesbooked  = parseLease('https://faraday.inria.fr:12346/resources/leases');
+    var leasesbooked  = parseLease('/plugins/liveleases/leasesbooked.json');
     buildCalendar(leasesbooked);
     setCurrentSliceBox(getCurrentSliceName());
     if (broadcastActions){

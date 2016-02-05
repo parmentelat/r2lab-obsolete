@@ -1,4 +1,4 @@
-////////// must be in sync with r2lab-sidecar.js 
+////////// must be in sync with r2lab-sidecar.js
 // the 2 socket.io channels that are used
 // (1) this is where actual JSON status is sent
 var channel = 'r2lab-news';
@@ -12,13 +12,13 @@ var sidecar_port_number = 443;
 // * cmc_on_off: 'on' or 'off' - nodes that fail will be treated as 'ko', better use 'available' instead
 // * control_ping: 'on' or 'off'
 // * control_ssh: 'on' or 'off'
-// * os_release: fedora* ubuntu* with/without gnuradio, .... or 'other' 
+// * os_release: fedora* ubuntu* with/without gnuradio, .... or 'other'
 // * wlan0_rx_rate: and similar with wlan1 and tx: bit rate in Mbps, expected to be in the [0, 20] range a priori
 
 // ready to fly as soon as the data comes in from monitor
 var livemap_show_rxtx_rates = false;
 
-////////// originally output from livemap-prep.py 
+////////// originally output from livemap-prep.py
 mapnode_specs = [
 { id: 1, i:0, j:4 },
 { id: 2, i:0, j:3 },
@@ -78,7 +78,7 @@ var padding_x = 40, padding_y = 40;
 // total number of rows and columns
 var steps_x = 8, steps_y = 4;
 
-//// static area 
+//// static area
 // walls and inside
 var walls_radius = 30;
 
@@ -107,7 +107,7 @@ function grid_to_canvas (i, j) {
 }
 
 //////////////////////////////
-// our mental model is y increase to the top, not to the bottom 
+// our mental model is y increase to the top, not to the bottom
 // also, using l (relative) instead of L (absolute) is simpler
 // but it keeps roundPathCorners from rounding.js from working fine
 // keep it this way from now, a class would help keep track here
@@ -144,14 +144,14 @@ function walls_style(selection) {
 // their visual rep. get created through d3 enter mechanism
 var MapNode = function (node_spec) {
     this.id = node_spec['id'];
-    // i and j refer to a logical grid 
+    // i and j refer to a logical grid
     this.i = node_spec['i'];
     this.j = node_spec['j'];
     // compute actual coordinates
     var coords = grid_to_canvas (this.i, this.j);
     this.x = coords[0];
     this.y = coords[1];
-    
+
     // status details are filled upon reception of news
 
     // node_info is a dict coming through socket.io in JSON
@@ -192,15 +192,15 @@ var MapNode = function (node_spec) {
 	var radius = this.op_status_radius();
 	var delta = this.text_offset(radius);
 	return this.x + ((radius == 0) ? 0 : (radius + delta));
-    }	    
+    }
     this.text_y = function() {
 	if ( ! this.is_available()) return this.y;
 	var radius = this.op_status_radius();
 	var delta = this.text_offset(radius);
 	return this.y + ((radius == 0) ? 0 : (radius + delta));
-    }	    
+    }
 
-    
+
     this.cst_radius_unavailable = 24;
     this.cst_radius_ok = 18;
     this.cst_radius_pinging = 12;
@@ -259,7 +259,7 @@ var MapNode = function (node_spec) {
 	    filter_name = 'fedora-logo';
 	else if (this.os_release.indexOf('ubuntu') >= 0)
 	    filter_name = 'ubuntu-logo';
-	else 
+	else
 	    return undefined;
 	return "url(#" + filter_name + ")";
     }
@@ -335,7 +335,7 @@ function LiveMap() {
     }
 
     this.init_nodes = function () {
-	for (var i=0; i < mapnode_specs.length; i++) { 
+	for (var i=0; i < mapnode_specs.length; i++) {
 	    this.nodes[i] = new MapNode(mapnode_specs[i]);
 	}
     }
@@ -347,7 +347,7 @@ function LiveMap() {
 		return this.nodes[i];
 /*	console.log("ERROR: livemap: locate_node_by_id: id=" + id + " was not found"); */
     }
-    
+
     this.handle_json_status = function(json) {
 	// xxx somehow we get noise in the mix
 	if (json == "") {
@@ -428,7 +428,7 @@ function LiveMap() {
 	    .duration(1000)
 	    .attr('display', function(node){return node.unavailable_display();})
 	;
-	
+
 	if (livemap_show_rxtx_rates) {
 	    var ticks_groups = svg.selectAll('g.ticks')
 		.data(this.nodes, get_node_id);
@@ -459,7 +459,7 @@ function LiveMap() {
 	    ticks
 		.transition()
 		.duration(100)
-	    // this might be undefined, but should still work 
+	    // this might be undefined, but should still work
 		.attr('height', rxtx_height)
 	    // each rxtx tick is included in a <g> already at the right position
 	    // we set a rotate angle to get the desired effect
@@ -511,7 +511,7 @@ function LiveMap() {
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
 	if (debug) console.log("livemap is connecting to sidecar server at " + url);
 	this.sidecar_socket = io(url);
-	// what to do when receiving news from sidecar 
+	// what to do when receiving news from sidecar
 	var lab = this;
 	this.sidecar_socket.on(channel, function(json){
             lab.handle_json_status(json);
