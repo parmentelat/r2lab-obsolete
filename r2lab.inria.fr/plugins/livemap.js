@@ -1,12 +1,37 @@
-////////// must be in sync with r2lab-sidecar.js 
-// the 2 socket.io channels that are used
+// xxx todo
+// there are way too many globals in this code..
+// we should have a single livemap object with everything else shoved in there
+
+////////// configurable 
+// set this to true if you want to see radio traffic
+var livemap_show_rxtx_rates = false;
+
+// the space around the walls in the canvas
+var livemap_margin_x = 50, livemap_margin_y = 50;
+
+// distance between nodes
+var livemap_space_x = 80, livemap_space_y = 80;
+// distance between nodes and walls
+var livemap_padding_x = 40, livemap_padding_y = 40;
+
+// size for rendering nodes status
+livemap_radius_unavailable = 24;
+livemap_radius_ok = 18;
+livemap_radius_pinging = 12;
+livemap_radius_warming = 6;
+livemap_radius_ko = 0;
+
+////////// must be in sync with sidecar.js 
+// the socket.io channels that are used
 // (1) this is where actual JSON status is sent
-var channel = 'chan:status';
+var chan_status = 'chan:status';
 // (2) this one is used for requesting a broadcast of the complete status
-var signalling = 'chan:status-request';
+var chan_status_request = 'chan:status-request';
+
 // port number
 var sidecar_port_number = 443;
 
+////////// status details
 // fields that this widget knows about concerning each node
 // * available: missing, or 'ok' : node is expected to be usable; if 'ko' a very visible red circle shows up
 // * cmc_on_off: 'on' or 'off' - nodes that fail will be treated as 'ko', better use 'available' instead
@@ -15,10 +40,7 @@ var sidecar_port_number = 443;
 // * os_release: fedora* ubuntu* with/without gnuradio, .... or 'other' 
 // * wlan0_rx_rate: and similar with wlan1 and tx: bit rate in Mbps, expected to be in the [0, 20] range a priori
 
-// ready to fly as soon as the data comes in from monitor
-var livemap_show_rxtx_rates = false;
-
-////////// originally output from livemap-prep.py 
+////////// nodes positions - originally output from livemap-prep.py 
 mapnode_specs = [
 { id: 1, i:0, j:4 },
 { id: 2, i:0, j:3 },
@@ -68,13 +90,6 @@ var pillar_specs = [
 var the_livemap;
 
 //////////////////// configuration
-// the space around the walls in the canvas
-var margin_x = 50, margin_y = 50;
-
-// distance between nodes
-var space_x = 80, space_y = 80;
-// distance between nodes and walls
-var padding_x = 40, padding_y = 40;
 // total number of rows and columns
 var steps_x = 8, steps_y = 4;
 
@@ -93,17 +108,16 @@ var rxtx_scale = d3.scale.linear()
     .range([0,20]);
 
 
-//
 var debug = false;
 
 //////////////////////////////////////// nodes
 // the overall room size
-var room_x = steps_x*space_x + 2*padding_x, room_y = steps_y*space_y + 2*padding_y;
+var room_x = steps_x*livemap_space_x + 2*livemap_padding_x, room_y = steps_y*livemap_space_y + 2*livemap_padding_y;
 
 // translate i, j into actual coords
 function grid_to_canvas (i, j) {
-    return [i*space_x + margin_x + padding_x,
-	    (steps_y-j)*space_y + margin_y + padding_y];
+    return [i*livemap_space_x + livemap_margin_x + livemap_padding_x,
+	    (steps_y-j)*livemap_space_y + livemap_margin_y + livemap_padding_y];
 }
 
 //////////////////////////////
@@ -116,16 +130,16 @@ function line_y(y) {return "l 0 " + -y + " ";}
 
 function walls_path() {
     var path="";
-    path += "M " + (room_x+margin_x) + " " + (room_y+margin_y) + " ";
-    path += line_x(-(7*space_x+2*padding_x));
-    path += line_y(3*space_y);
-    path += line_x(-1*space_x);
-    path += line_y(space_y+2*padding_y);
-    path += line_x(2*space_x+2*padding_x);
-    path += line_y(-space_y);
-    path += line_x(4*space_x-2*padding_x);
-    path += line_y(space_y);
-    path += line_x(2*space_x+2*padding_x);
+    path += "M " + (room_x+livemap_margin_x) + " " + (room_y+livemap_margin_y) + " ";
+    path += line_x(-(7*livemap_space_x+2*livemap_padding_x));
+    path += line_y(3*livemap_space_y);
+    path += line_x(-1*livemap_space_x);
+    path += line_y(livemap_space_y+2*livemap_padding_y);
+    path += line_x(2*livemap_space_x+2*livemap_padding_x);
+    path += line_y(-livemap_space_y);
+    path += line_x(4*livemap_space_x-2*livemap_padding_x);
+    path += line_y(livemap_space_y);
+    path += line_x(2*livemap_space_x+2*livemap_padding_x);
     path += "Z";
     return path;
 }
@@ -201,12 +215,6 @@ var MapNode = function (node_spec) {
     }	    
 
     
-    this.cst_radius_unavailable = 24;
-    this.cst_radius_ok = 18;
-    this.cst_radius_pinging = 12;
-    this.cst_radius_warming = 6;
-    this.cst_radius_ko = 0;
-
     ////////// node radius
     // this is how we convey most of the info
     // when turned off, the node's circle vanishes
@@ -217,16 +225,16 @@ var MapNode = function (node_spec) {
     this.op_status_radius = function() {
 	// completely off
 	if (this.cmc_on_off != 'on')
-	    return this.cst_radius_ko;
+	    return livemap_radius_ko;
 	// does not even ping
 	else if (this.control_ping != 'on')
-	    return this.cst_radius_warming;
+	    return livemap_radius_warming;
 	// pings but cannot get ssh
 	else if (this.control_ssh != 'on')
-	    return this.cst_radius_pinging;
+	    return livemap_radius_pinging;
 	// ssh is answering
 	else
-	    return this.cst_radius_ok;
+	    return livemap_radius_ok;
     }
 
     // right now this is visible only for intermediate radius
@@ -238,8 +246,8 @@ var MapNode = function (node_spec) {
     // luckily this is not rendered when a filter is at work
     this.op_status_color = function() {
 	var radius = this.op_status_radius();
-	return (radius == this.cst_radius_pinging) ? d3.rgb('#71edb0').darker() :
-	    (radius == this.cst_radius_warming) ? d3.rgb('#f7d8dd').darker() :
+	return (radius == livemap_radius_pinging) ? d3.rgb('#71edb0').darker() :
+	    (radius == livemap_radius_warming) ? d3.rgb('#f7d8dd').darker() :
 	    '#bbb';
     }
 
@@ -279,8 +287,8 @@ var get_node_id = function(node) {return node.id;}
 
 //////////////////////////////
 function LiveMap() {
-    var canvas_x = room_x + 2 * margin_x;
-    var canvas_y = room_y + 2 * margin_y;
+    var canvas_x = room_x + 2 * livemap_margin_x;
+    var canvas_y = room_y + 2 * livemap_margin_y;
     var svg =
 	d3.select('div#livemap_container')
 	.append('svg')
@@ -513,17 +521,17 @@ function LiveMap() {
 	this.sidecar_socket = io(url);
 	// what to do when receiving news from sidecar 
 	var lab = this;
-	this.sidecar_socket.on(channel, function(json){
+	this.sidecar_socket.on(chan_status, function(json){
             lab.handle_json_status(json);
 	});
 	this.request_complete_from_sidecar();
     }
 
-    // request sidecar for initial status on the signalling channel
+    // request sidecar for initial status on chan_status_request
     // content is not actually used by sidecar server
     // could maybe send some client id instead
     this.request_complete_from_sidecar = function() {
-	this.sidecar_socket.emit(signalling, 'INIT');
+	this.sidecar_socket.emit(chan_status_request, 'INIT');
     }
 
 }
