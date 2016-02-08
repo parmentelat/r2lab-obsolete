@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
-  var list_of_my_slices   = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
-  var current_slice_name  = 'onelab.inria.mario.script';
+  var list_of_my_slices   = r2lab_slices;//['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
+  var current_slice_name  = current_slice.name;//'onelab.inria.mario.script';
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
 
