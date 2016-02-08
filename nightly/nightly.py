@@ -22,9 +22,9 @@ from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
 
 parser = ArgumentParser()
-parser.add_argument("-N", "--nodes", dest="nodes", 
+parser.add_argument("-N", "--nodes", dest="nodes",
                     help="Comma separated list of nodes")
-parser.add_argument("-V", "--version", default=None, dest="version", 
+parser.add_argument("-V", "--version", default=None, dest="version",
                     help="O.S version to load")
 parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
                     help="Directory to save text file")
@@ -56,7 +56,7 @@ def main(args):
     print "-- INFO: {}".format(now())
     # print "-- INFO: Restarting services"
     # execute(RESTART_ALL)
-    
+
 
     #=========================================
     # TURN ON ALL NODES ======================
@@ -66,14 +66,14 @@ def main(args):
     #------------------------------------------
     # Uncomment the two lines below to use OMF format "on" command
     #all_nodes = stringfy_list(all_nodes)
-    #cmd = "omf6 tell -t {} -a on".format(all_nodes)    
-    
+    #cmd = "omf6 tell -t {} -a on".format(all_nodes)
+
     # OR
 
-    #------------------------------------------ 
+    #------------------------------------------
     # Uncomment the line below to use CURL format "on" command
     cmd = command_in_curl(all_nodes, 'on')
-    
+
     results = execute(cmd)
 
     if error_presence(results):
@@ -90,11 +90,11 @@ def main(args):
     bug_node   = []
     old_os = {}
     results    = {}
-    
+
     for node in all_nodes:
         host = name_node(node)
         user = 'root'
-        cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
+        cmd = "cat /etc/*-release | uniq -u | awk '(/PRETTY_NAME=/)||(/DISTRIB_DESCRIPTION=/)' | awk -F= '{print $2}'"
         result = execute(cmd, host_name=host, key=node)
         results.update(result)
 
@@ -105,28 +105,28 @@ def main(args):
         else:
             os = name_os(result[node]['stdout'])
             old_os.update( {node : {'os' : os}} )
-    
-  
+
+
     #=========================================
     # LOAD THE NEW OS ON NODES ===============
     print "-- INFO: execute load on nodes"
     results    = {}
     versions_names = VERSIONS_NAMES
     grouped_os_list = build_grouped_os_list(old_os)
-    cmds= []    
+    cmds= []
     do_execute = False
     executions = 38 #(divide from the total nodes - 1 means total_nodes/1)
 
     # in case of have the version specified in the command line - do it for all
     if not None is version:
         do_execute = True
-        
+
         splited_group = split(nodes, executions)
         for sub_list_nodes in splited_group:
             all_nodes = name_node(sub_list_nodes)
             all_nodes = stringfy_list(all_nodes)
             real_version = named_version(version)
-            
+
             cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
     else:
         for k, v in grouped_os_list.iteritems():
@@ -138,7 +138,7 @@ def main(args):
                 splited_group = split(list_nodes, executions)
                 for sub_list_nodes in splited_group:
                     all_nodes = name_node(sub_list_nodes)
-                    all_nodes = stringfy_list(all_nodes)            
+                    all_nodes = stringfy_list(all_nodes)
                     new_version = which_version(os)
                     real_version = named_version(new_version)
 
@@ -156,7 +156,7 @@ def main(args):
         for cmd in cmds:
             #-------------------------------------
             # CONTROL BY THE MONITORING Thread
-            
+
             omf_load = Parallel(cmd)
             omf_load.start()
 
@@ -165,7 +165,7 @@ def main(args):
 
             for i in range(check_number_times+1):
                 print "-- INFO: monitoring check #{}".format(i)
-                
+
                 wait_and_update_progress_bar(delay_before_kill)
 
                 if omf_load.alive():
@@ -181,7 +181,7 @@ def main(args):
                     results = omf_load.output
                     break
             #-------------------------------------
-            
+
             if error_presence(results):
                 print "** ERROR: one or more node were not loaded correctly"
             else:
@@ -195,11 +195,11 @@ def main(args):
     all_nodes = to_str(nodes)
     new_os     = {}
     results    = {}
-    
+
     for node in all_nodes:
         host = name_node(node)
         user = 'root'
-        cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
+        cmd = "cat /etc/*-release | uniq -u | awk '(/PRETTY_NAME=/)||(/DISTRIB_DESCRIPTION=/)' | awk -F= '{print $2}'"
         result = execute(cmd, host_name=host, key=node)
         results.update(result)
 
@@ -218,9 +218,9 @@ def main(args):
     for node in old_os:
         go = True
 
-        try: 
+        try:
             new_os[node]['os']
-        except: 
+        except:
             loaded_nodes.update( { node : {'old_os' : 'not found', 'new_os' : 'not found', 'changed' : 'no'}} )
             go = False
 
@@ -234,7 +234,7 @@ def main(args):
                     isok = 'yes'
                 else:
                     isok = 'no'
-            else: # A VERSION WAS GIVEN  
+            else: # A VERSION WAS GIVEN
                 if named_version(newos) == named_version(version):
                     if node in bug_node: bug_node.remove(node)
                     isok = 'yes'
@@ -243,7 +243,7 @@ def main(args):
 
             loaded_nodes.update( { node : {'old_os' : oldos, 'new_os' : newos, 'changed' : isok}} )
 
-   
+
     #=========================================
     # TURN OFF ALL NODES ======================
     print "-- INFO: turn off nodes"
@@ -253,13 +253,13 @@ def main(args):
     # Uncomment the two lines below to use OMF format "on" command
     #all_nodes = stringfy_list(all_nodes)
     # cmd = "omf6 tell -t {} -a off".format(all_nodes)
-    
+
     # OR
-    
-    #------------------------------------------ 
+
+    #------------------------------------------
     # Uncomment the line below to use CURL format "on" command
     cmd = command_in_curl(all_nodes, 'off')
-    
+
     results = execute(cmd)
 
     if error_presence(results):
@@ -275,7 +275,7 @@ def main(args):
     all_nodes   = to_str(nodes)
     zumbie_nodes= []
     results     = {}
-    
+
     for node in all_nodes:
         wait_and_update_progress_bar(2)
         cmd = "curl reboot{}/status;".format(node)
@@ -290,7 +290,7 @@ def main(args):
             if status.lower() not in ['already off', 'off']:
                 zumbie_nodes.append(node)
 
-    
+
     #=========================================
     # RESULTS  ===============================
     print "** WARNING: possible zumbie nodes"
@@ -315,7 +315,7 @@ def main(args):
     set_node_status(range(1,38), 'ok')
     #set_node_status(zumbie_nodes, 'ko')
     set_node_status(bug_node, 'ko')
-    
+
     print "-- INFO: send email"
     summary_in_mail(list(set(bug_node)))
     print "-- INFO: write in file"
@@ -337,7 +337,7 @@ def write_in_file(text):
 
     dir_name  = args.text_dir
     file_name = "nightly.txt"
-    
+
     text = ', '.join(str(x) for x in text)
 
     with open(os.path.join(dir_name, file_name), "a") as fl:
@@ -373,7 +373,7 @@ def set_node_status(nodes, status='ok'):
 
     hostname = 'r2lab.inria.fr'
     port     = 443
-    
+
     infos = [{'id': arg, 'available' : status} for arg in nodes]
 
     socketio = SocketIO(hostname, port, LoggingNamespace)
@@ -385,7 +385,7 @@ def set_node_status(nodes, status='ok'):
 
 def command_in_curl(nodes, action='status'):
     """ Transform the command to execute in CURL format """
-    
+
     nodes = number_node(nodes)
 
     in_curl = map(lambda x:'curl reboot'+str('0'+str(x) if x<10 else x)+'/'+action, nodes)
@@ -401,7 +401,7 @@ def build_grouped_os_list(list):
     """ INPUT  -> {'12': {'os': 'fedora 21'}, '11': {'os': 'fedora 21'}, '10': {'os': 'ubuntu 14.04'}} """
     """ OUTPUT -> {'ubuntu 14.04': ['10'], 'fedora 21': ['11', '12']} """
     grouped_os_list = {}
-    
+
     for k, v in list.iteritems():
         grouped_os_list.setdefault(v['os'], []).append(k)
 
@@ -414,7 +414,7 @@ def which_version(version):
     """ Return the version to install """
     versions_alias = VERSIONS_ALIAS
     versions_names = VERSIONS_NAMES
-    
+
     new_version_idx = 0
 
     if version in versions_names:
@@ -426,7 +426,7 @@ def which_version(version):
         new_version_idx = 0
     else:
         new_version_idx = old_version_idx + 1
-    
+
     return versions_names[new_version_idx]
 
 
@@ -466,7 +466,7 @@ def named_version(version):
 
 def to_str(list_items):
     """ Change the integer array to string array """
-    
+
     if not type(list_items) is list:
         raise Exception("invalid parameter: {}, must be a list".format(list_items))
         return False
@@ -535,7 +535,7 @@ def error_presence(results):
         if set(err_words).intersection(stdout.split()) or int(exitcode) > 0:
             error = True
             break
-        
+
     return error
 
 
@@ -543,7 +543,7 @@ def error_presence(results):
 
 def stringfy_list(list):
     """ Return the list in a string comma separated ['a,'b','c'] will be a,b,c """
-    
+
     stringfy_list = ','.join(list)
 
     return stringfy_list
@@ -554,7 +554,7 @@ def stringfy_list(list):
 def name_os(os):
     """ Format the O.S. names """
     versions_names = VERSIONS_NAMES
-    
+
     os = os.strip()
 
     if os == "":
@@ -582,7 +582,7 @@ def remove_special_char(str):
 
 def number_node(nodes):
     """ Returns the number from the node alias [fitXX] """
-    
+
     if type(nodes) is list:
         ans = []
         for node in nodes:
@@ -590,7 +590,7 @@ def number_node(nodes):
             ans.append(node_temp)
     else:
         ans = int(nodes.lower().replace('fit', ''))
-    
+
     return ans
 
 
@@ -604,14 +604,14 @@ def name_node(nodes):
         for node in nodes:
             if int(node) < 10:
                 node = str(node).rjust(2, '0')
-            
+
             ans.append('fit'+str(node))
     else:
         if int(nodes) < 10:
             nodes = str(nodes).rjust(2, '0')
-       
+
         ans = 'fit'+str(nodes)
-    
+
     return ans
 
 
@@ -619,13 +619,13 @@ def name_node(nodes):
 
 def all_nodes():
     """Range of all nodes in faraday """
-    
+
     nodes = range(1,38)
     nodes = map(str, nodes)
     for k, v in enumerate(nodes):
         if int(v) < 10:
             nodes[k] = v.rjust(2, '0')
-    
+
     return nodes
 
 
@@ -653,7 +653,7 @@ def format_nodes(nodes):
 
 def save_in_json(results, file_name):
     """ Save the result in a json file """
-    
+
     dir = args.text_dir
     file_name = "{}.ext".format(file_name)
 
