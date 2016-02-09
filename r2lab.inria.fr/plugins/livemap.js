@@ -24,9 +24,9 @@ livemap_radius_ko = 0;
 ////////// must be in sync with sidecar.js 
 // the socket.io channels that are used
 // (1) this is where actual JSON status is sent
-var chan_status = 'chan:status';
+var chan_status = 'chan-status';
 // (2) this one is used for requesting a broadcast of the complete status
-var chan_status_request = 'chan:status-request';
+var chan_status_request = 'chan-status-request';
 
 // port number
 var sidecar_port_number = 443;
@@ -108,7 +108,7 @@ var rxtx_scale = d3.scale.linear()
     .range([0,20]);
 
 
-var debug = false;
+var livemap_debug = false;
 
 //////////////////////////////////////// nodes
 // the overall room size
@@ -364,7 +364,7 @@ function LiveMap() {
 	}
 	try {
 	    var nodes_info = JSON.parse(json);
-	    if (debug) {
+	    if (livemap_debug) {
 		console.log("*** " + new Date() + " DBG Received info about " + nodes_info.length + " nodes");
 		console.log(nodes_info);
 		console.log("*** DBG end");
@@ -517,7 +517,7 @@ function LiveMap() {
 	if ( ! sidecar_hostname)
 	    sidecar_hostname = 'localhost';
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
-	if (debug) console.log("livemap is connecting to sidecar server at " + url);
+	if (livemap_debug) console.log("livemap is connecting to sidecar server at " + url);
 	this.sidecar_socket = io(url);
 	// what to do when receiving news from sidecar 
 	var lab = this;

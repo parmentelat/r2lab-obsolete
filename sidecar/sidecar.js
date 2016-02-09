@@ -8,11 +8,11 @@ var path = require('path');
 
 //// names for the channels used
 // sending deltas; json is flying on this channel
-var channel_news = 'chan:status';
+var channel_news = 'chan-status';
 // requesting a whole status; anything arriving
 // on this channel causes a full status to be exposed
-// on chan:status
-var channel_signalling = 'chan:status-request';
+// on chan-status
+var channel_signalling = 'chan-status-request';
 //// filenames
 // the file that is watched for changes
 // when another program writes this file, we send its contents
@@ -21,7 +21,7 @@ var channel_signalling = 'chan:status-request';
 var filename_news = '/var/lib/sidecar/news.json';
 // this is where we read and write current complete status
 // it typically is expected to be written by an outside program
-// but any changes seen in chan:status.json are merged and stored
+// but any changes seen in chan-status.json are merged and stored
 // in this file, so that it should always contain a consistent
 // global view
 var filename_complete = '/var/lib/sidecar/complete.json';
@@ -74,6 +74,7 @@ io.on('connection', function(socket){
     // this can also be useful for debugging / tuning
     // so we can send JSON messages manually (e.g. using a chat app)
     socket.on(channel_news, function(news_string){
+	vdisplay("received on channel " + channel_news + ": " + news_string)
 	update_complete_file_from_news(news_string);
 	io.emit(channel_news, news_string);
     });
@@ -249,6 +250,7 @@ function run_server() {
     try {
 	http.listen(port_number, function(){
 	    display('listening on *:' + port_number);
+	    display('verbose mode is ' + verbose_flag);
 	});
     } catch (err) {
 	console.log("Could not run http server on port " + port_number);

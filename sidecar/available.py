@@ -29,12 +29,20 @@ parser = ArgumentParser()
 parser.add_argument("nodes", nargs='+', type=int)
 args = parser.parse_args()
 
-infos = [{'id': arg, 'available' : available_value} for arg in args.nodes]
+def check_valid(node):
+    return 1 <= node <= 37
+
+invalid_nodes = [ node for node in args.nodes if not check_valid(node) ]
+if invalid_nodes:
+    print("Invalid inputs {} - exiting".format(invalid_nodes))
+    exit(1)
+
+infos = [{'id': node, 'available' : available_value} for node in args.nodes]
 
 
 socketio = SocketIO(hostname, port, LoggingNamespace)
 print("Sending {infos} onto {hostname}:{port}".format(**locals()))
-socketio.emit('chan:status', json.dumps(infos), None)
+socketio.emit('chan-status', json.dumps(infos), None)
 
 
 
