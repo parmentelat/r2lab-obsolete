@@ -45,6 +45,11 @@ float_menu_template: r2lab/float_menu-slices.html
     livemap_radius_pinging = 9;
     livemap_radius_warming = 4.5;
     livemap_radius_ko = 0;
+    livemap_margin_x = 5;
+    livemap_margin_y = 5;
+
+    livemap_padding_x = 40;
+    livemap_padding_y = 40;
     </script>
     <style type="text/css"> @import url("/plugins/livemap.css"); </style>
     </div>

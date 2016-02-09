@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
-  var list_of_my_slices   = r2lab_slices;//['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
-  var current_slice_name  = current_slice.name;//'onelab.inria.mario.script';
+  var list_of_my_slices   = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
+  var current_slice_name  = 'onelab.inria.mario.script';
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
 
@@ -36,7 +36,7 @@ $(document).ready(function() {
     $('#calendar').fullCalendar({
       header: {
         left: 'prev,next today',
-        // center: 'title',
+        center: 'title',
         right: 'agendaDay,agendaTwoDay',
       },
 
@@ -58,6 +58,7 @@ $(document).ready(function() {
       editable: true,
       allDaySlot: false,
       droppable: true,
+      height: 970,
 
       //Events
       select: function(start, end, event, view) {
@@ -117,6 +118,9 @@ $(document).ready(function() {
     $.ajax({
       url: url,
       async: false,
+      error: function() {
+        console.log(arguments);
+      },
       success: function(data) {
         var leases = [];
 

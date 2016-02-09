@@ -64,6 +64,11 @@ body {
   vertical-align: middle;
 }
 
+.fc-toolbar h2 {
+    font-size: 12px;
+    white-space: normal !important;
+}
+
 .fc-event {
 	position: relative; /* for resize handle and other inner positioning */
 	display: block; /* make the <a> tag block */
