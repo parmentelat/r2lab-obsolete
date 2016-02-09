@@ -73,12 +73,15 @@ io.on('connection', function(socket){
     // and forward the news as-is
     // this can also be useful for debugging / tuning
     // so we can send JSON messages manually (e.g. using a chat app)
+    vdisplay("arming callback for channel "+ channel_news);
     socket.on(channel_news, function(news_string){
 	vdisplay("received on channel " + channel_news + ": " + news_string)
 	update_complete_file_from_news(news_string);
+	vdisplay("emitting on "+ channel_news + " chunk " + news_string);
 	io.emit(channel_news, news_string);
     });
     // this is more crucial, this is how complete status gets transmitted initially
+    vdisplay("arming callback for channel "+ channel_signalling);
     socket.on(channel_signalling, function(msg){
 	display("Received " + msg + " on channel " + channel_signalling);
 	emit_file(filename_complete);

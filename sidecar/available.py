@@ -19,6 +19,7 @@ from socketIO_client import SocketIO, LoggingNamespace
 # globals
 hostname = 'r2lab.inria.fr'
 port = 443
+channel = "chan-status"
 
 # check if run as 'available.py' or 'unavailable.py'
 import sys
@@ -41,8 +42,8 @@ infos = [{'id': node, 'available' : available_value} for node in args.nodes]
 
 
 socketio = SocketIO(hostname, port, LoggingNamespace)
-print("Sending {infos} onto {hostname}:{port}".format(**locals()))
-socketio.emit('chan-status', json.dumps(infos), None)
+print("Sending {infos} onto {hostname}:{port} on channel {channel}".format(**locals()))
+socketio.emit(channel, json.dumps(infos), None)
 
 
 
