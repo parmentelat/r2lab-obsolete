@@ -26,20 +26,27 @@ float_menu_template: r2lab/float_menu-slices.html
     </div>
     <div class="col-md-4">
       <div id="calendar"></div>
-        <style type="text/css"> @import url("/plugins/liveleases/css/fullcalendar.css"); </style>
-        <script type="text/javascript" src="/plugins/liveleases/js/moment.min.js"></script>
-        <script type="text/javascript" src="/plugins/liveleases/js/jquery-ui.custom.min.js"></script>
-        <script type="text/javascript" src="/plugins/liveleases/js/fullcalendar.min.js"></script>
-        <style type="text/css"> @import url("/plugins/liveleases/css/calendar.css"); </style>
-        <script type="text/javascript" src="/plugins/liveleases/js/calendar.js"></script>
-        <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
-      </div>
+      <style type="text/css"> @import url("/plugins/liveleases/css/fullcalendar.css"); </style>
+      <script type="text/javascript" src="/plugins/liveleases/js/moment.min.js"></script>
+      <script type="text/javascript" src="/plugins/liveleases/js/jquery-ui.custom.min.js"></script>
+      <script type="text/javascript" src="/plugins/liveleases/js/fullcalendar.min.js"></script>
+      <style type="text/css"> @import url("/plugins/liveleases/css/calendar.css"); </style>
+      <script type="text/javascript" src="/plugins/liveleases/js/calendar.js"></script>
+      <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
     </div>
     <div class="col-md-4">
-      <div id="livemap_container"></div>
-      <script type="text/javascript" src="/plugins/livemap.js"></script>
-      <script>livemap_show_rxtx_rates = true;</script>
-      <style type="text/css"> @import url("/plugins/livemap.css"); </style>
+    <div id="livemap_container"></div>
+    <script type="text/javascript" src="/plugins/livemap.js"></script>
+    <script>
+    livemap_show_rxtx_rates = true;
+    livemap_space_x = livemap_space_y = 60;
+    livemap_radius_unavailable = 18;
+    livemap_radius_ok = 13.5;
+    livemap_radius_pinging = 9;
+    livemap_radius_warming = 4.5;
+    livemap_radius_ko = 0;
+    </script>
+    <style type="text/css"> @import url("/plugins/livemap.css"); </style>
     </div>
   </div>
 </div>
