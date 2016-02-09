@@ -77,7 +77,23 @@ def random_status(id, index=0):
         if field in node_info:
             del node_info[field]
     return node_info
-    
+
+# too lazy to get this properly (need to turn off server auth)
+leases_url = "https://faraday.inria.fr:12346/resources/leases";
+leases_file = "LEASES"
+
+def get_leases():
+    try:
+        with open(leases_file) as input:
+            string = input.read()
+            obj = json.loads(string)
+            resources = obj['resource_response']['resources']
+            return resources
+    except:
+        print("unable to read {}".format(leases_file))
+        import traceback
+        traceback/print_exc()
+
 def main():
     parser = ArgumentParser()
     parser.add_argument('-c', '--cycle', dest='cycle', default=default_cycle,
@@ -130,13 +146,16 @@ def main():
                   .format(counter, len(news_infos),
                           [ (info['id'], len(info)-1) for info in news_infos]))
             print(news_infos[0])
-        news_string = json.dumps(news_infos)
-        socketIO.emit('chan-status', news_string, io_callback)
+        socketIO.emit('chan-status', json.dumps(news_infos), io_callback)
+
+        leases = get_leases()
+        socketIO.emit('chan-leases', json.dumps(leases), io_callback)
         counter += 1
         if args.runs and counter >= args.runs:
             break
         time.sleep(cycle)
 
+        
     # xxx should probably clean up the socket io client
     pass
 

@@ -15,29 +15,33 @@
   </head>
   <body>
     <ul id="messages"></ul>
-    <form action="" id="form-chat">
+    <form action="" id="form-status">
       <input id="chat" autocomplete="off" /><button>Chat</button>
     </form>
-    <form action="" id="form-json">
+    <form action="" id="form-leases">
       <input id="json" autocomplete="off" /><button> Send
       json</button>
     </form>
-<script src="https://cdn.socket.io/socket.io-1.3.6.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script src="http://code.jquery.com/jquery-2.1.4.js"></script>
 <script>
-  var socket = io();
-  $('#form-chat').submit(function(){
-    socket.emit('chat message', $('#chat').val());
+//  var socket = io();
+  var socket = io.connect('http://localhost:443/');
+  $('#form-status').submit(function(){
+    socket.emit('chan-status', $('#chat').val());
     $('#chat').val('');
     return false;
   });
-  $('#form-json').submit(function(){
-    socket.emit('r2lab status', $('#json').val());
+  $('#form-leases').submit(function(){
+    socket.emit('chan-leases', $('#json').val());
 /*    $('#json').val('');*/
     return false;
   });
-  socket.on('chat message', function(msg){
-    $('#messages').append($('<li>').text(msg));
+  socket.on('chan-status', function(msg){
+    $('#messages').append($('<li> status').text(msg));
+  });
+  socket.on('chan-leases', function(msg){
+    $('#messages').append($('<li> leases').text(msg));
   });
 </script>
   </body>

@@ -8,29 +8,27 @@ var path = require('path');
 
 //// names for the channels used
 // sending deltas; json is flying on this channel
-var channel_news = 'chan-status';
+var chan_status = 'chan-status';
 // requesting a whole status; anything arriving
 // on this channel causes a full status to be exposed
 // on chan-status
-var channel_signalling = 'chan-status-request';
+var chan_status_request = 'chan-status-request';
+
+var chan_leases = 'chan-leases';
+var chan_leases_request = 'chan_leases_request';
+
 //// filenames
-// the file that is watched for changes
-// when another program writes this file, we send its contents
-// to all clients
-// use -l command line option to use files in local dir
-var filename_news = '/var/lib/sidecar/news.json';
-// this is where we read and write current complete status
-// it typically is expected to be written by an outside program
-// but any changes seen in chan-status.json are merged and stored
-// in this file, so that it should always contain a consistent
-// global view
+// this is where we write current complete status
+// essentially for smooth restart
+// it is fine to delete, it will just take some while to rebuild itself
+// from the outcome of monitor
 var filename_complete = '/var/lib/sidecar/complete.json';
 
 ////
 var port_number = 443;
 
 // use -v to turn on
-var verbose_flag=false;
+var verbose_flag = false;
 
 // always display
 function display(args){
@@ -73,19 +71,27 @@ io.on('connection', function(socket){
     // and forward the news as-is
     // this can also be useful for debugging / tuning
     // so we can send JSON messages manually (e.g. using a chat app)
-    vdisplay("arming callback for channel "+ channel_news);
-    socket.on(channel_news, function(news_string){
-	vdisplay("received on channel " + channel_news + ": " + news_string)
+    vdisplay("arming callback for channel " + chan_status);
+    socket.on(chan_status, function(news_string){
+	vdisplay("received on channel " + chan_status + ": " + news_string)
 	update_complete_file_from_news(news_string);
-	vdisplay("emitting on "+ channel_news + " chunk " + news_string);
-	io.emit(channel_news, news_string);
+	vdisplay("emitting on "+ chan_status + " chunk " + news_string);
+	io.emit(chan_status, news_string);
     });
     // this is more crucial, this is how complete status gets transmitted initially
-    vdisplay("arming callback for channel "+ channel_signalling);
-    socket.on(channel_signalling, function(msg){
-	display("Received " + msg + " on channel " + channel_signalling);
+    vdisplay("arming callback for channel " + chan_status_request);
+    socket.on(chan_status_request, function(msg){
+	display("Received " + msg + " on channel " + chan_status_request);
 	emit_file(filename_complete);
     });
+
+    // leases stuff: it's simpler, we always propagate a complete list of leases
+    vdisplay("arming callback for channel " + chan_leases);
+    socket.on(chan_leases, function(leases){
+	vdisplay("Forwarding leases message " + leases);
+	io.emit(chan_leases, leases);
+    });
+    
 });
 
 // convenience function to synchroneously read a file as a string
@@ -161,12 +167,12 @@ function merge_news_into_complete(complete_infos, news_infos){
 }
 
 
-// utility to open a file and broadcast its contents on channel_news
+// utility to open a file and broadcast its contents on chan_status
 function emit_file(filename){
     var complete_string = sync_read_file_as_string(filename);
     if (complete_string != "") {
-//	vdisplay("emit_file: sending on channel " + channel_news + ":" + complete_string);
-	io.emit(channel_news, complete_string);
+//	vdisplay("emit_file: sending on channel " + chan_status + ":" + complete_string);
+	io.emit(chan_status, complete_string);
     } else {
 	display("OOPS - empty contents in " + filename)
     }
@@ -210,39 +216,11 @@ function parse_args() {
 	    verbose_flag=true;
 	// local dev (use json files in .)
 	if (arg == "-l") {
-	    filename_news = path.basename(filename_news);
 	    filename_complete = path.basename(filename_complete);
-	    console.log("local mode : watching " + filename_news);
+	    console.log("local mode : using " + filename_complete);
 	}
     });
-    vdisplay("news file = " + filename_news,
-	    "complete file = " + filename_complete);
-}
-
-function init_watcher() {
-    var touch_if_missing = function(filename) {
-	try {
-	    fs.statSync(filename);
-	} catch (err) {
-	    sync_save_infos_in_file(filename, []);
-	}
-    }
-    touch_if_missing(filename_news);
-    touch_if_missing(filename_complete);
-
-    // watch news file and attach callback
-    var watcher = fs.watch(
-	filename_news,
-	function(event, filename){
-	    vdisplay("watch -> event=" + event);
-	    // read news file as a string
-	    var news_string = sync_read_file_as_string(filename_news, true);
-	    // update complete from news_string
-	    var complete_infos = update_complete_file_from_news(news_string);
-	    // should do emit_file but we already have the data at hand
-	    vdisplay("NEWS: sending on channel " + channel_news + ":" + news_string);
-	    io.emit(channel_news, news_string);
-	});
+    vdisplay("complete file = " + filename_complete);
 }
 
 // run http server
@@ -263,7 +241,6 @@ function run_server() {
 
 function main() {
     parse_args();
-    init_watcher();
     run_server();
 }
 
