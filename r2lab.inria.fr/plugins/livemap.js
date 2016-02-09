@@ -429,7 +429,7 @@ function LiveMap() {
 	    .attr('class', 'unavailable')
 	    .attr('cx', function(node){return node.x;})
 	    .attr('cy', function(node){return node.y;})
-	    .attr('r', function(node){return node.cst_radius_unavailable;})
+	    .attr('r', function(node){return livemap_radius_unavailable;})
 	;
 	unavailables
 	    .transition()
@@ -521,6 +521,7 @@ function LiveMap() {
 	this.sidecar_socket = io(url);
 	// what to do when receiving news from sidecar 
 	var lab = this;
+	if (livemap_debug) console.log("arming callback on channel " + chan_status);
 	this.sidecar_socket.on(chan_status, function(json){
             lab.handle_json_status(json);
 	});
@@ -531,6 +532,7 @@ function LiveMap() {
     // content is not actually used by sidecar server
     // could maybe send some client id instead
     this.request_complete_from_sidecar = function() {
+	if (livemap_debug) console.log("requesting complete status on channel " + chan_status_request);
 	this.sidecar_socket.emit(chan_status_request, 'INIT');
     }
 
