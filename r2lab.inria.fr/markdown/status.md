@@ -9,7 +9,8 @@ R2lab testbed project offers a high quality anechoic room for your experiments. 
 **Important note!**
 
 R2lab platform is reset every night. A time slot from **3AM** until
-**4AM** (GMT +1) is reserved to execute this routine.
+**4AM** is reserved to execute this routine.
+All times on this website are expressed wrt the CET timezone, which is UTC+1 in winter, and UTC+2 in summer.
 
 Please, make sure all your experiments are saved before. You can check
 [here](tuto-02-shell-tools.md#main) how to do it.
