@@ -5,9 +5,16 @@ $(document).ready(function() {
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
 
+  function newId(){
+    var date  = new Date();
+    var newId = date.getSeconds()+''+date.getMilliseconds()+''+Math.round((Math.random() * 10000));
+    return newId;
+  }
+
+
   function buildCalendar(events) {
 
-    var today   = moment().format("YYYY-MM-DD");
+    var today = moment().format("YYYY-MM-DD");
     var path_to_leases_complete = events;
     var date = new Date();
 
@@ -17,11 +24,13 @@ $(document).ready(function() {
       var last_drag_name  = $.trim($(this).text());
 
       $(this).data('event', {
-        title: last_drag_name,
+        title: last_drag_name + ' (pending)',
         color: last_drag_color,
         overlap: false,
-        selectable: true,
-        editable: true,
+        selectable: false,
+        editable: false,
+        textColor: '#000000',
+        id: newId(),
       });
 
       // make the event draggable using jQuery UI
@@ -52,9 +61,9 @@ $(document).ready(function() {
       defaultView: 'agendaTwoDay',
       timezone: 'Europe/Paris',
       defaultDate: today,
-      selectable: true,
       selectHelper: false,
       overlap: false,
+      selectable: true,
       editable: true,
       allDaySlot: false,
       droppable: true,
@@ -73,14 +82,16 @@ $(document).ready(function() {
         var eventData;
         if (my_title) {
           eventData = {
-            title: my_title,
+            title: my_title+' (pending)',
             start: start,
             end: end,
             //end: start+ ((3600*1000)*1),
             overlap: false,
-            editable: true,
-            allDaySlot: false,
-            color: getCurrentSliceColor()
+            editable: false,
+            selectable: false,
+            color: getCurrentSliceColor(),
+            textColor: '#000000',
+            id: newId(),
           };
 
           //receive the event information when click
@@ -89,7 +100,7 @@ $(document).ready(function() {
         $('#calendar').fullCalendar('unselect');
       },
       // this allows things to be dropped onto the calendar
-      drop: function(start, end, event, date) {
+      drop: function(date, jsEvent, ui, resourceId ) {
         //set the current color after use one slice
         var element = $(this);
         var last_drag_color = element.css("background-color");
@@ -198,6 +209,8 @@ $(document).ready(function() {
     } else{
       if (action == 'addLease') {
         $('#calendar').fullCalendar('renderEvent', data, true );
+        console.log(data.id);
+        alert('send lease')
       }
       if (action == 'delLease'){
         $('#calendar').fullCalendar('removeEvents',data);

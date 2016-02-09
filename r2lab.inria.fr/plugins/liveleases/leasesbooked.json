@@ -6,8 +6,8 @@
           "urn": "urn:publicid:IDN+r2lab+lease+cfb949e9-1ad1-4a52-9e8a-4abd05142b1b",
           "uuid": "cfb949e9-1ad1-4a52-9e8a-4abd05142b1b",
           "resource_type": "lease",
-          "valid_from": "2016-02-01T11:00:00Z",
-          "valid_until": "2016-02-01T22:30:00Z",
+          "valid_from": "2016-02-10T11:00:00Z",
+          "valid_until": "2016-02-10T22:30:00Z",
           "status": "active",
           "client_id": "c47d9f24-c875-4a42-89d4-9ef5d8c5190f",
           "components": [
@@ -26,8 +26,8 @@
           "urn": "urn:publicid:IDN+r2lab+lease+b7104ca8-5f8d-4018-8f6f-908e9b9e3f95",
           "uuid": "b7104ca8-5f8d-4018-8f6f-908e9b9e3f95",
           "resource_type": "lease",
-          "valid_from": "2016-02-04T13:00:00Z",
-          "valid_until": "2016-02-04T14:00:00Z",
+          "valid_from": "2016-02-09T13:00:00Z",
+          "valid_until": "2016-02-09T14:00:00Z",
           "status": "accepted",
           "client_id": "9e60544e-6a05-4803-8fc6-0ebffdc20592",
           "components": [
@@ -55,8 +55,8 @@
           "urn": "urn:publicid:IDN+r2lab+lease+dd4305b8-0b46-4160-a1c8-32fb454c6432",
           "uuid": "dd4305b8-0b46-4160-a1c8-32fb454c6432",
           "resource_type": "lease",
-          "valid_from": "2016-02-02T13:30:00Z",
-          "valid_until": "2016-02-02T15:00:00Z",
+          "valid_from": "2016-02-11T13:30:00Z",
+          "valid_until": "2016-02-11T15:00:00Z",
           "status": "accepted",
           "client_id": "7d30440a-69e7-4eb4-ab15-a59206ec61c0",
           "components": [
@@ -84,8 +84,8 @@
           "urn": "urn:publicid:IDN+r2lab+lease+a2066c8a-ed49-44ca-8950-3843dc0bda2c",
           "uuid": "a2066c8a-ed49-44ca-8950-3843dc0bda2c",
           "resource_type": "lease",
-          "valid_from": "2016-02-02T16:00:00Z",
-          "valid_until": "2016-02-02T17:00:00Z",
+          "valid_from": "2016-02-11T16:00:00Z",
+          "valid_until": "2016-02-11T17:00:00Z",
           "status": "accepted",
           "client_id": "9e05ffc0-88ee-4d06-bcfc-fad6c4253b25",
           "components": [
