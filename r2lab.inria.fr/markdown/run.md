@@ -12,10 +12,13 @@ float_menu_template: r2lab/float_menu-slices.html
         <strong>Ooops!</strong> This is a past date!
         <a class="close" onclick="$('.alert').hide()">×</a>
       </div>
+      <div id='loading' style="display: none" class="alert alert-info" role="alert">
+        <strong>Be patient!</strong> Loading informations from server...
+      </div>
     </div>
   </div>
   <br />
-  <div class="row">
+  <div class="row" id="all" style="display: none">
     <div class="col-md-2">
       <div id="wrap">
         <div id="my-slices">

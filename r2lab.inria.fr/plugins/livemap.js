@@ -512,9 +512,12 @@ function LiveMap() {
     ////////// socket.io business
     this.init_sidecar_socket_io = function() {
 	// try to figure hostname to get in touch with
-	var sidecar_hostname = ""
-	sidecar_hostname = new URL(window.location.href).hostname;
-	if ( ! sidecar_hostname)
+	var sidecar_hostname = "http://r2lab.inria.fr"
+  sidecar_hostname = new URL(sidecar_hostname).hostname;
+  console.log(sidecar_hostname);
+  // sidecar_hostname = new URL(sidecar_hostname);
+  // console.log('a'+sidecar_hostname);
+  if ( ! sidecar_hostname)
 	    sidecar_hostname = 'localhost';
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
 	if (debug) console.log("livemap is connecting to sidecar server at " + url);

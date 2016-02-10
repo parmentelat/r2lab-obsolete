@@ -4,6 +4,8 @@ $(document).ready(function() {
   var current_slice_name  = 'onelab.inria.mario.script';
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
+  var current_leases      = null;
+  var color_pending       = '#000';
 
   function newId(){
     var date  = new Date();
@@ -19,21 +21,6 @@ $(document).ready(function() {
     var date = new Date();
 
     $('#my-slices .fc-event').each(function() {
-      // store data so the calendar knows to render an event upon drop
-      var last_drag_color = $(this).css("background-color");
-      var last_drag_name  = $.trim($(this).text());
-
-      $(this).data('event', {
-        title: last_drag_name + ' (pending)',
-        color: last_drag_color,
-        overlap: false,
-        selectable: false,
-        editable: false,
-        textColor: '#000000',
-        id: newId(),
-      });
-
-      // make the event draggable using jQuery UI
       $(this).draggable({
         zIndex: 999,
         revert: true,      // will cause the event to go back to its
@@ -70,6 +57,7 @@ $(document).ready(function() {
       height: 970,
 
       //Events
+      // this is fired when a selection is made
       select: function(start, end, event, view) {
         //Avoid past dates when try to book a lease
         if (moment().diff(start, 'days') > 0) {
@@ -82,7 +70,7 @@ $(document).ready(function() {
         var eventData;
         if (my_title) {
           eventData = {
-            title: my_title+' (pending)',
+            title: pendingName(my_title),
             start: start,
             end: end,
             //end: start+ ((3600*1000)*1),
@@ -90,18 +78,16 @@ $(document).ready(function() {
             editable: false,
             selectable: false,
             color: getCurrentSliceColor(),
-            textColor: '#000000',
+            textColor: color_pending,
             id: newId(),
           };
-
-          //receive the event information when click
           updateLeases('addLease', eventData, broadcastActions);
         }
         $('#calendar').fullCalendar('unselect');
       },
+
       // this allows things to be dropped onto the calendar
-      drop: function(date, jsEvent, ui, resourceId ) {
-        //set the current color after use one slice
+      drop: function(start, end, event, view) {
         var element = $(this);
         var last_drag_color = element.css("background-color");
         var last_drag_name  = $.trim(element.text());
@@ -109,7 +95,26 @@ $(document).ready(function() {
         setCurrentSliceColor(last_drag_color);
         setCurrentSliceName(last_drag_name);
         setCurrentSliceBox(element.text());
+
+        var my_title = getCurrentSliceName();
+        var eventData;
+        if (my_title) {
+          eventData = {
+            title: pendingName(my_title),
+            start: start,
+            end: end,
+            //end: start+ ((3600*1000)*1),
+            overlap: false,
+            editable: false,
+            selectable: false,
+            color: getCurrentSliceColor(),
+            textColor: color_pending,
+            id: newId(),
+          };
+          updateLeases('addLease', eventData, broadcastActions);
+        }
 			},
+
       //Remove leases with double click
       eventRender: function(event, element) {
         element.bind('dblclick', function() {
@@ -124,59 +129,52 @@ $(document).ready(function() {
   }
 
 
-  function parseLease(url){
+  function parseLease(data){
+    var parsedData = $.parseJSON(data);
     var all_leases_for_calendar;
-    $.ajax({
-      url: url,
-      async: false,
-      error: function() {
-        console.log(arguments);
-      },
-      success: function(data) {
-        var leases = [];
+    var leases = [];
 
-        $.each(data, function(key,val){
-          $.each(val.resource_response.resources, function(k,v){
-
-            newLease = new Object();
-            newLease.title = shortName(v.account.name);
-            newLease.start = v.valid_from;
-            newLease.end   = v.valid_until;
-            newLease.color = setColorLease(leases, newLease.title);
-            newLease.editable = isMySlice(shortName(v.account.name));
-            newLease.overlap = false;
-            leases.push(newLease);
-          });
-        });
-
-        buildSlicesBox(leases);
-
-        //Nightly routine fixed in each nigth from 3AM to 5PM
+    $.each(parsedData, function(key,val){
+      $.each(val, function(k,v){
         newLease = new Object();
-        newLease.title = "nightly routine";
-        newLease.id = "nightly";
-        newLease.start = " T03:00:00Z";
-        newLease.end   = " T05:00:00Z";
-        newLease.color = "#616161";
+        newLease.title = shortName(v.account.name);
+        newLease.id    = String(v.uuid);
+        newLease.start = v.valid_from;
+        newLease.end   = v.valid_until;
+        newLease.color = setColorLease(leases, newLease.title);
+        newLease.editable = isMySlice(shortName(v.account.name));
         newLease.overlap = false;
-        newLease.editable = false;
-        newLease.dow = [0,1,2,3,4,5,6,7,8];
         leases.push(newLease);
-
-        //Past dates
-        newLease = new Object();
-        newLease.id = "pastDate";
-        newLease.start = "2016-01-01T00:00:00Z";
-        newLease.end   = "2016-02-02T00:00:00Z";
-        newLease.overlap = false;
-        newLease.editable = false;
-        newLease.rendering = "background",
-        newLease.color = "#ffe5e5";
-        leases.push(newLease);
-
-        all_leases_for_calendar = leases;
-      }
+      });
     });
+
+    buildSlicesBox(leases);
+
+    //Nightly routine fixed in each nigth from 3AM to 5PM
+    newLease = new Object();
+    newLease.title = "nightly routine";
+    newLease.id = "nightly";
+    newLease.start = " T03:00:00Z";
+    newLease.end   = " T05:00:00Z";
+    newLease.color = "#616161";
+    newLease.overlap = false;
+    newLease.editable = false;
+    newLease.dow = [0,1,2,3,4,5,6,7,8];
+    leases.push(newLease);
+
+    //Past dates
+    newLease = new Object();
+    newLease.id = "pastDate";
+    newLease.start = "2016-01-01T00:00:00Z";
+    newLease.end   = "2016-02-02T00:00:00Z";
+    newLease.overlap = false;
+    newLease.editable = false;
+    newLease.rendering = "background",
+    newLease.color = "#ffe5e5";
+    leases.push(newLease);
+
+    all_leases_for_calendar = leases;
+
     return all_leases_for_calendar;
   }
 
@@ -189,6 +187,16 @@ $(document).ready(function() {
     else if (action == 'delLease'){
       socket.emit('delLease', data);
     }
+  }
+
+
+  function listenBroadcastFromServer(){
+    var socket = io.connect("http://r2lab.inria.fr:443");
+
+    socket.on('chan-leases', function(msg){
+      current_leases = msg;
+      // console.log(current_leases);
+    });
   }
 
 
@@ -209,13 +217,30 @@ $(document).ready(function() {
     } else{
       if (action == 'addLease') {
         $('#calendar').fullCalendar('renderEvent', data, true );
-        console.log(data.id);
-        alert('send lease')
+        alert('add lease');
       }
       if (action == 'delLease'){
         $('#calendar').fullCalendar('removeEvents',data);
       }
     }
+  }
+
+
+  function eventPresentbyDate(start, end, title) {
+    var title = noPendingName(shortName(title)); //'onelab.inria.mario.tutorial';
+    var start = new Date(start); //new Date("2016-02-11T13:00:00Z");
+    var end   = new Date(end); //new Date("2016-02-11T14:30:00Z");
+
+    calendar = $('#calendar').fullCalendar('clientEvents');
+
+    $.each(calendar, function(key,obj){
+      if ((new Date(obj.start._d) - start == 0) && (new Date(obj.end._d) - end == 0) && (obj.title == title)){
+        obj.title = noPendingName(title);
+        obj.textColor = "#000"
+        // console.log(obj.id);
+        $('#calendar').fullCalendar( 'rerenderEvents', obj.id);
+      }
+    });
   }
 
 
@@ -240,6 +265,20 @@ $(document).ready(function() {
   function shortName(name){
     var new_name;
     new_name = name.replace('onelab.inria.', '');
+    return new_name
+  }
+
+
+  function pendingName(name){
+    var new_name;
+    new_name = name + ' (pending)';
+    return new_name
+  }
+
+
+  function noPendingName(name){
+    var new_name;
+    new_name = name.replace(' (pending)', '');
     return new_name
   }
 
@@ -271,17 +310,16 @@ $(document).ready(function() {
 
 
   function setColorLease(leases, lease){
-    var lease_color = '#d0d0d0'; //color for other slices that not yours
+    var lease_color = getRandomColor(); //color for other slices that not yours
 
     $.each(leases, function(key,val){
       if (isMySlice(val.title)){
         if (val.title == lease){ //set the same lease color for the slice
           lease_color = val.color;
-          return false;
         }
       }
       else {
-        lease_color = getRandomColor();
+        lease_color = '#d0d0d0';
       }
     });
     return lease_color;
@@ -335,6 +373,39 @@ $(document).ready(function() {
     return list_of_my_slices;
   }
 
+  function ok(){
+    eventPresentbyDate("2016-02-11T13:00:00Z","2016-02-11T14:30:00Z",'onelab.inria.mario.tutorial');
+    remover o noPendingName para pendingName
+  }
+  function waitForLeases(){
+    if(current_leases !== null){
+      var leasesbooked  = parseLease(current_leases);
+      // var leasesbooked  = parseLease('/plugins/liveleases/leasesbooked.json');
+      $('#loading').delay(100).fadeOut();
+      $('#all').fadeIn(100);
+      buildCalendar(leasesbooked);
+      setCurrentSliceBox(getCurrentSliceName());
+      if (broadcastActions){
+        listenBroadcast();
+      }
+
+      window.setTimeout( ok, 5000 ); // 5 seconds
+
+    }
+    else{
+      $('#loading').fadeIn(100);
+      setTimeout(function(){
+        waitForLeases();
+      },250);
+    }
+  }
+
+
+  function main (){
+    listenBroadcastFromServer();
+    waitForLeases();
+  }
+
 
   function sendConfirm(leases){
     $.ajax({
@@ -348,17 +419,6 @@ $(document).ready(function() {
           alert('Done, booked successfully!');
       }
     });
-  }
-
-
-  function main (){
-    // var leasesbooked  = parseLease('https://faraday.inria.fr:12346/resources/leases');
-    var leasesbooked  = parseLease('/plugins/liveleases/leasesbooked.json');
-    buildCalendar(leasesbooked);
-    setCurrentSliceBox(getCurrentSliceName());
-    if (broadcastActions){
-      listenBroadcast();
-    }
   }
 
 
@@ -379,20 +439,6 @@ $(document).ready(function() {
 
     sendConfirm(leases);
   });
-
-
-  Slice = function (name, color) {
-    this.name  = name;
-    this.color = color;
-
-    this.getColor = function() {
-      return this.color;
-    }
-    this.setColor = function(color) {
-      this.color = color;
-    }
-  };
-
 
   main();
 });
