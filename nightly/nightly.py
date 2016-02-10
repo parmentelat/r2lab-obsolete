@@ -31,9 +31,9 @@ parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
 
 args = parser.parse_args()
 
-VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21',          'f-22']
-VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21',     'fedora 22']
-VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz']
+VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21',          'f-22',          'f-23']
+VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21',     'fedora 22',     'fedora 23']
+VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz', 'fedora-23.ndz']
 #RESTART_ALL    = "service omf-sfa stop; stop ntrc; service dnsmasq stop; service dnsmasq start; start ntrc; service omf-sfa start; "
 
 
@@ -128,6 +128,7 @@ def main(args):
             real_version = named_version(version)
 
             cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
+            print "-- 1 INFO: rhubarbe-load {} -i {}".format(all_nodes, real_version)
     else:
         for k, v in grouped_os_list.iteritems():
             do_execute = True
@@ -143,7 +144,7 @@ def main(args):
                     real_version = named_version(new_version)
 
                     cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
-
+                    print "-- 2 INFO: rhubarbe-load {} -i {}".format(all_nodes, real_version)
             # IN CASE OF RETURN A unknown OS NAME
             else:
                 for node in list_nodes:
