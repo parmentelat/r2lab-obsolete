@@ -83,6 +83,7 @@ body {
 }
 
 .fc-event-not-mine {
+  margin: 10px 0;
 	position: relative; /* for resize handle and other inner positioning */
 	display: block; /* make the <a> tag block */
   color: #fff;

@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  var list_of_my_slices   = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
+  var list_of_my_slices   = ['onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
   var current_slice_name  = 'onelab.inria.mario.script';
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
@@ -141,8 +141,8 @@ $(document).ready(function() {
         newLease.id    = String(v.uuid);
         newLease.start = v.valid_from;
         newLease.end   = v.valid_until;
-        newLease.color = setColorLease(leases, newLease.title);
-        newLease.editable = isMySlice(shortName(v.account.name));
+        newLease.color = setColorLease(newLease.title);
+        newLease.editable = isMySlice(newLease.title);
         newLease.overlap = false;
         leases.push(newLease);
       });
@@ -245,7 +245,6 @@ $(document).ready(function() {
 
 
   function getRandomColor() {
-    var predefinied = ['#Cf625F','#A58BD3','#ff9fB5','#A1D490','#9099D4']
     var letters = '0123456789ABCDEF'.split('');
     var color = '#';
     for (var i = 0; i < 6; i++ ) {
@@ -309,19 +308,12 @@ $(document).ready(function() {
   }
 
 
-  function setColorLease(leases, lease){
-    var lease_color = getRandomColor(); //color for other slices that not yours
+  function setColorLease(slice){
+    var lease_color = '#d0d0d0';
 
-    $.each(leases, function(key,val){
-      if (isMySlice(val.title)){
-        if (val.title == lease){ //set the same lease color for the slice
-          lease_color = val.color;
-        }
-      }
-      else {
-        lease_color = '#d0d0d0';
-      }
-    });
+    if ($.inArray(fullName(slice), getMySlices()) > -1){
+      lease_color = getRandomColor();
+    }
     return lease_color;
   }
 
@@ -344,7 +336,7 @@ $(document).ready(function() {
     if ($.inArray(fullName(slice), getMySlices()) > -1){
       is_my = true;
     }
-    return is_my
+    return is_my;
   }
 
 
@@ -375,7 +367,7 @@ $(document).ready(function() {
 
   function ok(){
     eventPresentbyDate("2016-02-11T13:00:00Z","2016-02-11T14:30:00Z",'onelab.inria.mario.tutorial');
-    remover o noPendingName para pendingName
+    //remover o noPendingName para pendingName
   }
   function waitForLeases(){
     if(current_leases !== null){
