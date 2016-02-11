@@ -1,11 +1,12 @@
 $(document).ready(function() {
 
-  var list_of_my_slices   = ['onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
+  var list_of_my_slices   = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
   var current_slice_name  = 'onelab.inria.mario.script';
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
   var current_leases      = null;
   var color_pending       = '#000';
+  var keepOldEvent        = null;
 
   function newId(){
     var date  = new Date();
@@ -14,10 +15,9 @@ $(document).ready(function() {
   }
 
 
-  function buildCalendar(events) {
+  function buildCalendar(theEvents) {
 
     var today = moment().format("YYYY-MM-DD");
-    var path_to_leases_complete = events;
     var date = new Date();
 
     $('#my-slices .fc-event').each(function() {
@@ -115,40 +115,71 @@ $(document).ready(function() {
         }
 			},
 
-      //Remove leases with double click
+      eventDrop: function(event, delta, revertFunc) {
+        if (!confirm("Are you sure about this change?")) {
+            revertFunc();
+        }
+        else {
+          event.title = pendingName(event.title);
+          event.textColor = color_pending;
+          event.editable = false;
+          updateLeases('moveLease', event, broadcastActions);
+        }
+      },
+
+      eventDragStart: function( event, jsEvent, ui, view ) {
+        keepOldEvent = event;
+      },
+
       eventRender: function(event, element) {
         element.bind('dblclick', function() {
           if (isMySlice(event.title)) {
-            updateLeases('delLease', event._id, broadcastActions);
+            updateLeases('delLease', event, broadcastActions);
           }
         });
       },
+
+      eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) {
+        alert('partiu');
+      },
       //Events from Json file
-      events: path_to_leases_complete,
+      events: theEvents,
     });
   }
 
 
-  function parseLease(data){
+  function isR2lab(name){
+    var r2lab = false;
+    if (name.substring(0, 13) == 'onelab.inria.'){
+      r2lab = true;
+    }
+    return r2lab;
+  }
+
+
+  function parseLease(data, slicesBox){
     var parsedData = $.parseJSON(data);
-    var all_leases_for_calendar;
     var leases = [];
 
     $.each(parsedData, function(key,val){
       $.each(val, function(k,v){
-        newLease = new Object();
-        newLease.title = shortName(v.account.name);
-        newLease.id    = String(v.uuid);
-        newLease.start = v.valid_from;
-        newLease.end   = v.valid_until;
-        newLease.color = setColorLease(newLease.title);
-        newLease.editable = isMySlice(newLease.title);
-        newLease.overlap = false;
-        leases.push(newLease);
+        // if (isR2lab(v.account.name)){
+          newLease = new Object();
+          newLease.title = shortName(v.account.name);
+          newLease.id    = String(v.uuid);
+          newLease.start = v.valid_from;
+          newLease.end   = v.valid_until;
+          newLease.color = setColorLease(newLease.title);
+          newLease.editable = isMySlice(newLease.title);
+          newLease.overlap = false;
+          leases.push(newLease);
+        // }
       });
     });
 
-    buildSlicesBox(leases);
+    if (slicesBox){
+      buildSlicesBox(leases);
+    }
 
     //Nightly routine fixed in each nigth from 3AM to 5PM
     newLease = new Object();
@@ -173,9 +204,7 @@ $(document).ready(function() {
     newLease.color = "#ffe5e5";
     leases.push(newLease);
 
-    all_leases_for_calendar = leases;
-
-    return all_leases_for_calendar;
+    return leases;
   }
 
 
@@ -185,18 +214,24 @@ $(document).ready(function() {
       socket.emit('addLease', data);
     }
     else if (action == 'delLease'){
-      socket.emit('delLease', data);
+      socket.emit('delLease', data._id);
     }
   }
 
 
-  function listenBroadcastFromServer(){
-    var socket = io.connect("http://r2lab.inria.fr:443");
+  function setCurrentLeases(leases){
+    current_leases = leases;
+  }
 
-    socket.on('chan-leases', function(msg){
-      current_leases = msg;
-      // console.log(current_leases);
-    });
+
+  function getCurrentLeases(){
+    return current_leases;
+  }
+
+
+  function refreshCalendar(events){
+    $('#calendar').fullCalendar('removeEvents');
+    $('#calendar').fullCalendar('addEventSource', parseLease(events, false));
   }
 
 
@@ -208,6 +243,9 @@ $(document).ready(function() {
     socket.on('delLease', function(msg){
       $('#calendar').fullCalendar('removeEvents',msg);
     });
+    socket.on('moveLease', function(msg){
+      alert('not yet');
+    });
   }
 
 
@@ -217,30 +255,30 @@ $(document).ready(function() {
     } else{
       if (action == 'addLease') {
         $('#calendar').fullCalendar('renderEvent', data, true );
-        alert('add lease');
+        actionsLeases('add', data);
       }
       if (action == 'delLease'){
-        $('#calendar').fullCalendar('removeEvents',data);
+        $('#calendar').fullCalendar('removeEvents',data._id);
+        actionsLeases('del', data)
+      }
+      if (action == 'moveLease'){
+        actionsLeases('move', data)
       }
     }
   }
 
 
-  function eventPresentbyDate(start, end, title) {
-    var title = noPendingName(shortName(title)); //'onelab.inria.mario.tutorial';
-    var start = new Date(start); //new Date("2016-02-11T13:00:00Z");
-    var end   = new Date(end); //new Date("2016-02-11T14:30:00Z");
-
-    calendar = $('#calendar').fullCalendar('clientEvents');
-
-    $.each(calendar, function(key,obj){
-      if ((new Date(obj.start._d) - start == 0) && (new Date(obj.end._d) - end == 0) && (obj.title == title)){
-        obj.title = noPendingName(title);
-        obj.textColor = "#000"
-        // console.log(obj.id);
-        $('#calendar').fullCalendar( 'rerenderEvents', obj.id);
-      }
-    });
+  function actionsLeases(action, data){
+    if(action == 'add'){
+      $('#actions').append('ADD: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
+    }
+    else if (action == 'move'){
+      $('#actions').append('DEL: '+fullName(noPendingName(keepOldEvent.title)) +' ['+ keepOldEvent.start +'-'+ keepOldEvent.end+']').append('<br>');
+      $('#actions').append('ADD: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
+    }
+    else if (action == 'del'){
+      $('#actions').append('DEL: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
+    }
   }
 
 
@@ -255,28 +293,29 @@ $(document).ready(function() {
 
 
   function fullName(name){
-    var new_name;
+    var new_name = name;
     new_name = 'onelab.inria.'+name;
     return new_name
   }
 
 
   function shortName(name){
-    var new_name;
+    var new_name = name;
     new_name = name.replace('onelab.inria.', '');
+    new_name = new_name.replace('onelab.upmc.', '');
     return new_name
   }
 
 
   function pendingName(name){
-    var new_name;
+    var new_name = name;
     new_name = name + ' (pending)';
     return new_name
   }
 
 
   function noPendingName(name){
-    var new_name;
+    var new_name = name;
     new_name = name.replace(' (pending)', '');
     return new_name
   }
@@ -361,28 +400,47 @@ $(document).ready(function() {
 
 
   function getMySlices(){
-    // list_of_my_slices = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script']
     return list_of_my_slices;
   }
 
-  function ok(){
-    eventPresentbyDate("2016-02-11T13:00:00Z","2016-02-11T14:30:00Z",'onelab.inria.mario.tutorial');
-    //remover o noPendingName para pendingName
+
+  function eventPresentbyDate(start, end, title) {
+    var title = pendingName(shortName(title)); //'onelab.inria.mario.tutorial';
+    var start = new Date(start); //new Date("2016-02-11T13:00:00Z");
+    var end   = new Date(end); //new Date("2016-02-11T14:30:00Z");
+
+    calendar = $('#calendar').fullCalendar('clientEvents');
+
+    $.each(calendar, function(key,obj){
+      if ((new Date(obj.start._d) - start == 0) && (new Date(obj.end._d) - end == 0) && (obj.title == title)){
+        obj.title = noPendingName(title);
+        obj.textColor = "#ffffff";
+        obj.editable = true;
+        // console.log(obj.id);
+        $('#calendar').fullCalendar( 'rerenderEvents', obj.id);
+      }
+    });
   }
+
+
+  function callBack(){
+    $('#calendar').fullCalendar('removeEvents');
+    // listenBroadcastFromServer();
+    $('#calendar').fullCalendar('addEventSource', parseLease(current_leases, false));
+  }
+
+
   function waitForLeases(){
     if(current_leases !== null){
-      var leasesbooked  = parseLease(current_leases);
-      // var leasesbooked  = parseLease('/plugins/liveleases/leasesbooked.json');
+      var leasesbooked  = parseLease(current_leases, true);
       $('#loading').delay(100).fadeOut();
       $('#all').fadeIn(100);
       buildCalendar(leasesbooked);
       setCurrentSliceBox(getCurrentSliceName());
+      // in case of receiving live booking
       if (broadcastActions){
         listenBroadcast();
       }
-
-      window.setTimeout( ok, 5000 ); // 5 seconds
-
     }
     else{
       $('#loading').fadeIn(100);
@@ -394,43 +452,49 @@ $(document).ready(function() {
 
 
   function main (){
-    listenBroadcastFromServer();
     waitForLeases();
   }
 
 
-  function sendConfirm(leases){
-    $.ajax({
-      url: '/leasesbooked',
-      type: 'POST',
-      data: JSON.stringify(leases),
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      async: false,
-      success: function(msg) {
-          alert('Done, booked successfully!');
-      }
-    });
-  }
-
-
-  $('#confirm').click(function() {
-    calendar = $('#calendar').fullCalendar('clientEvents')
-    leases = [];
-    leases_avoid = ['nightly', 'pastDate'];
-    $.each(calendar, function(key,obj){
-      var lease = new Object();
-
-      lease.name  = fullName(obj.title);
-      lease.start = obj.start._d;
-      lease.end   = obj.end._d;
-      if ($.inArray(obj.id, leases_avoid) === -1) {
-        leases.push(lease);
-      }
-    });
-
-    sendConfirm(leases);
+  var socket = io.connect("http://r2lab.inria.fr:443");
+  socket.on('chan-leases', function(msg){
+    setCurrentLeases(msg);
+    refreshCalendar(getCurrentLeases());
   });
+
+
+  // function sendConfirm(leases){
+  //   $.ajax({
+  //     url: '/leasesbooked',
+  //     type: 'POST',
+  //     data: JSON.stringify(leases),
+  //     contentType: 'application/json; charset=utf-8',
+  //     dataType: 'json',
+  //     async: false,
+  //     success: function(msg) {
+  //         alert('Done, booked successfully!');
+  //     }
+  //   });
+  // }
+  //
+  //
+  // $('#confirm').click(function() {
+  //   calendar = $('#calendar').fullCalendar('clientEvents')
+  //   leases = [];
+  //   leases_avoid = ['nightly', 'pastDate'];
+  //   $.each(calendar, function(key,obj){
+  //     var lease = new Object();
+  //
+  //     lease.name  = fullName(obj.title);
+  //     lease.start = obj.start._d;
+  //     lease.end   = obj.end._d;
+  //     if ($.inArray(obj.id, leases_avoid) === -1) {
+  //       leases.push(lease);
+  //     }
+  //   });
+  //
+  //   sendConfirm(leases);
+  // });
 
   main();
 });

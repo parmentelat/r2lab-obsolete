@@ -37,7 +37,7 @@ float_menu_template: r2lab/float_menu-slices.html
       <script type="text/javascript" src="/plugins/liveleases/js/calendar.js"></script>
       <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
     <div id="livemap_container"></div>
     <script type="text/javascript" src="/plugins/livemap.js"></script>
     <script>
@@ -55,11 +55,7 @@ float_menu_template: r2lab/float_menu-slices.html
     livemap_padding_y = 40;
     </script>
     <style type="text/css"> @import url("/plugins/livemap.css"); </style>
+    <div id="actions"></div>
     </div>
   </div>
 </div>
-
-<table class="table table-condensed" id="livetable_container"> </table>
-<script type="text/javascript" src="/plugins/livetable.js"></script>
-<script>livetable_show_rxtx_rates = true;</script>
-<style type="text/css"> @import url("/plugins/livetable.css"); </style>
