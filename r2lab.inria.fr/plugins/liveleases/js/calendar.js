@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
-  var list_of_my_slices   = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
+  var my_slices_name      = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
+  var my_slices_color     = [];
   var current_slice_name  = 'onelab.inria.mario.script';
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
@@ -19,14 +20,6 @@ $(document).ready(function() {
 
     var today = moment().format("YYYY-MM-DD");
     var date = new Date();
-
-    $('#my-slices .fc-event').each(function() {
-      $(this).draggable({
-        zIndex: 999,
-        revert: true,      // will cause the event to go back to its
-        revertDuration: 0  //  original position after the drag
-      });
-    });
 
     //Create the calendar
     $('#calendar').fullCalendar({
@@ -102,8 +95,8 @@ $(document).ready(function() {
           eventData = {
             title: pendingName(my_title),
             start: start,
-            end: end,
-            //end: start+ ((3600*1000)*1),
+            // end: end,
+            end: start+ ((3600*1000)*0.5),
             overlap: false,
             editable: false,
             selectable: false,
@@ -157,7 +150,7 @@ $(document).ready(function() {
   }
 
 
-  function parseLease(data, slicesBox){
+  function parseLease(data){
     var parsedData = $.parseJSON(data);
     var leases = [];
 
@@ -169,7 +162,7 @@ $(document).ready(function() {
           newLease.id    = String(v.uuid);
           newLease.start = v.valid_from;
           newLease.end   = v.valid_until;
-          newLease.color = setColorLease(newLease.title);
+          newLease.color = getColorLease(newLease.title);
           newLease.editable = isMySlice(newLease.title);
           newLease.overlap = false;
           leases.push(newLease);
@@ -177,9 +170,7 @@ $(document).ready(function() {
       });
     });
 
-    if (slicesBox){
-      buildSlicesBox(leases);
-    }
+    buildSlicesBox(leases);
 
     //Nightly routine fixed in each nigth from 3AM to 5PM
     newLease = new Object();
@@ -231,7 +222,7 @@ $(document).ready(function() {
 
   function refreshCalendar(events){
     $('#calendar').fullCalendar('removeEvents');
-    $('#calendar').fullCalendar('addEventSource', parseLease(events, false));
+    $('#calendar').fullCalendar('addEventSource', parseLease(events));
   }
 
 
@@ -347,11 +338,19 @@ $(document).ready(function() {
   }
 
 
-  function setColorLease(slice){
+  function setColorLeases(){
+    $.each(my_slices_name, function(key,obj){
+      my_slices_color[key] = getRandomColor();
+    });
+    return my_slices_color;
+  }
+
+
+  function getColorLease(slice_title){
     var lease_color = '#d0d0d0';
 
-    if ($.inArray(fullName(slice), getMySlices()) > -1){
-      lease_color = getRandomColor();
+    if ($.inArray(fullName(slice_title), getMySlicesName()) > -1){
+      lease_color = my_slices_color[my_slices_name.indexOf(fullName(slice_title))];
     }
     return lease_color;
   }
@@ -372,7 +371,7 @@ $(document).ready(function() {
 
   function isMySlice(slice){
     var is_my = false;
-    if ($.inArray(fullName(slice), getMySlices()) > -1){
+    if ($.inArray(fullName(slice), getMySlicesName()) > -1){
       is_my = true;
     }
     return is_my;
@@ -382,6 +381,8 @@ $(document).ready(function() {
   function buildSlicesBox(leases){
     var knew = [];
     var slices = $("#my-slices");
+
+    slices.html('<h4 align="center">drag & drop slices</h4>');
 
     $.each(leases, function(key,val){
       if ($.inArray(val.title, knew) === -1) { //already present?
@@ -396,11 +397,24 @@ $(document).ready(function() {
         }
       }
     });
+
+    $('#my-slices .fc-event').each(function() {
+      $(this).draggable({
+        zIndex: 999,
+        revert: true,      // will cause the event to go back to its
+        revertDuration: 0  //  original position after the drag
+      });
+    });
   }
 
 
-  function getMySlices(){
-    return list_of_my_slices;
+  function getMySlicesName(){
+    return my_slices_name;
+  }
+
+
+  function getMySlicesColor(){
+    return my_slices_color;
   }
 
 
@@ -426,15 +440,16 @@ $(document).ready(function() {
   function callBack(){
     $('#calendar').fullCalendar('removeEvents');
     // listenBroadcastFromServer();
-    $('#calendar').fullCalendar('addEventSource', parseLease(current_leases, false));
+    $('#calendar').fullCalendar('addEventSource', parseLease(current_leases));
   }
 
 
   function waitForLeases(){
     if(current_leases !== null){
-      var leasesbooked  = parseLease(current_leases, true);
+      var leasesbooked  = parseLease(current_leases);
       $('#loading').delay(100).fadeOut();
       $('#all').fadeIn(100);
+
       buildCalendar(leasesbooked);
       setCurrentSliceBox(getCurrentSliceName());
       // in case of receiving live booking
@@ -453,14 +468,19 @@ $(document).ready(function() {
 
   function main (){
     waitForLeases();
+    setColorLeases();
+
+    var socket = io.connect("http://r2lab.inria.fr:443");
+    socket.on('chan-leases', function(msg){
+      setCurrentLeases(msg);
+      refreshCalendar(getCurrentLeases());
+      setCurrentSliceBox(getCurrentSliceName());
+    });
+
   }
 
 
-  var socket = io.connect("http://r2lab.inria.fr:443");
-  socket.on('chan-leases', function(msg){
-    setCurrentLeases(msg);
-    refreshCalendar(getCurrentLeases());
-  });
+
 
 
   // function sendConfirm(leases){
