@@ -82,6 +82,29 @@ after the update this will also create `/home/account_name/.ssh/authorized_keys`
 
 # leases 
 
-    curl -k https://localhost:12346/resources/leases
+```
+curl -k https://localhost:12346/resources/leases
+```
 
-    
+There are 5 statuses for leases "Pending, Accepted, Cancelled, Active, Past"
+
+* Pending means that it couldn't be completed so it does not contain any resources for the moment
+* Accepted means that it was created successfully and the corresponding resources have been reserved
+* Cancelled means that this lease was cancelled by the user or an admin
+* Active means that its timespan has started
+* Past means that its timespan has ended
+
+
+**Notes**
+
+* this returns all leases in the future
+* including the active ones, but not the past ones
+* when a creation request fails, a 'dummy' lease object does get created in the db and is marked 'pending' (as opposed to being trashed altogether); it has no component attached (at least in the r2lab context)
+* and so some care must be taken to ignore such leases
+  * one should consider only leases marked as accepted or active provided that they have some component inside. 
+* One could think of using something like the following; it's not a good idea; when 'now' is in the middle of a lease lifespan, it is marked 'active' even if is was 'pending' before.
+
+~~```
+curl -k https://localhost:12346/resources/leases?status=accepted
+```~~
+
