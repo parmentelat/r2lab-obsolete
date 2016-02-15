@@ -2,15 +2,11 @@ import os.path
 import re
 import traceback
 
-from django.shortcuts import render
-
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
-#from django.template import loader
-
-# not using the DB
-#from .models import Page
-
 import markdown2
+
+from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.views.decorators.csrf import csrf_protect
 from django.utils.safestring import mark_safe
 
 from django.conf import settings
@@ -107,6 +103,7 @@ def resolve_codediff(markdown):
     return resolved
                       
 
+@csrf_protect
 def markdown_page(request, markdown_file, extra_metavars={}):
     """
     the view to render a URL that points at a markdown source
@@ -120,7 +117,8 @@ def markdown_page(request, markdown_file, extra_metavars={}):
     try:
         markdown_file = normalize(markdown_file)
         metavars, markdown = parse(markdown_file)
-        ### fill in metavars: 'title', 'html_from_markdown', and any other defined in header
+        ### fill in metavars: 'title', 'html_from_markdown',
+        # and any other defined in header
         # convert and mark safe to prevent further escaping
         html = markdown2.markdown(markdown, extras=['markdown-in-html'])
         metavars['html_from_markdown'] = mark_safe(html)
@@ -132,7 +130,8 @@ def markdown_page(request, markdown_file, extra_metavars={}):
         metavars.update(extra_metavars)
         return render(request, 'r2lab/r2lab.html', metavars)
     except Exception as e:
-        previous_message = "<h1> Oops - could not render markdown_file = {}</h1>".format(markdown_file)
+        previous_message = "<h1> Oops - could not render markdown_file = {}</h1>"\
+            .format(markdown_file)
         if isinstance(e, FileNotFoundError):
             previous_message += str(e)
         else:

@@ -22,6 +22,7 @@ from django.views.generic.base import RedirectView
 
 import md.views
 import mfauth.views
+import leases.views
 
 urlpatterns = [
     # default: empty or just / -> md/index.md
@@ -31,6 +32,7 @@ urlpatterns = [
     url(r'^md/(?P<markdown_file>.*)$', md.views.markdown_page),
     url(r'^login/', mfauth.views.Login.as_view()),
     url(r'^logout/', mfauth.views.Logout.as_view()),
+    url(r'^leases/', leases.views.LeasesProxy.as_view()),
     # probably not useful
 #    url(r'^admin/', admin.site.urls),
 ] \
