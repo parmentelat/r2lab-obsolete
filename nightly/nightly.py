@@ -31,9 +31,9 @@ parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
 
 args = parser.parse_args()
 
-VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21',          'f-22',          'f-23']
-VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21',     'fedora 22',     'fedora 23']
-VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz', 'fedora-23.ndz']
+VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21',          'f-22']
+VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21',     'fedora 22']
+VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz']
 #RESTART_ALL    = "service omf-sfa stop; stop ntrc; service dnsmasq stop; service dnsmasq start; start ntrc; service omf-sfa start; "
 
 
@@ -94,7 +94,7 @@ def main(args):
     for node in all_nodes:
         host = name_node(node)
         user = 'root'
-        cmd = "cat /etc/*-release | uniq -u | awk '(/PRETTY_NAME=/)||(/DISTRIB_DESCRIPTION=/)' | awk -F= '{print $2}'"
+        cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
         result = execute(cmd, host_name=host, key=node)
         results.update(result)
 
@@ -128,7 +128,6 @@ def main(args):
             real_version = named_version(version)
 
             cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
-            print "-- 1 INFO: rhubarbe-load {} -i {}".format(all_nodes, real_version)
     else:
         for k, v in grouped_os_list.iteritems():
             do_execute = True
@@ -144,7 +143,7 @@ def main(args):
                     real_version = named_version(new_version)
 
                     cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
-                    print "-- 2 INFO: rhubarbe-load {} -i {}".format(all_nodes, real_version)
+
             # IN CASE OF RETURN A unknown OS NAME
             else:
                 for node in list_nodes:
@@ -200,7 +199,7 @@ def main(args):
     for node in all_nodes:
         host = name_node(node)
         user = 'root'
-        cmd = "cat /etc/*-release | uniq -u | awk '(/PRETTY_NAME=/)||(/DISTRIB_DESCRIPTION=/)' | awk -F= '{print $2}'"
+        cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
         result = execute(cmd, host_name=host, key=node)
         results.update(result)
 
@@ -223,6 +222,7 @@ def main(args):
             new_os[node]['os']
         except:
             loaded_nodes.update( { node : {'old_os' : 'not found', 'new_os' : 'not found', 'changed' : 'no'}} )
+            bug_node.append(node)
             go = False
 
         if go:
@@ -235,12 +235,14 @@ def main(args):
                     isok = 'yes'
                 else:
                     isok = 'no'
+                    bug_node.append(node)
             else: # A VERSION WAS GIVEN
                 if named_version(newos) == named_version(version):
                     if node in bug_node: bug_node.remove(node)
                     isok = 'yes'
                 else:
                     isok = 'no'
+                    bug_node.append(node)
 
             loaded_nodes.update( { node : {'old_os' : oldos, 'new_os' : newos, 'changed' : isok}} )
 
@@ -379,7 +381,7 @@ def set_node_status(nodes, status='ok'):
 
     socketio = SocketIO(hostname, port, LoggingNamespace)
     # print("Sending {infos} onto {hostname}:{port}".format(**locals()))
-    socketio.emit('chan-status', json.dumps(infos), None)
+    socketio.emit('r2lab-news', json.dumps(infos), None)
 
 
 
