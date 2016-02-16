@@ -2,12 +2,15 @@ $(document).ready(function() {
 
   var my_slices_name      = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
   var my_slices_color     = [];
+  var actionsQueue        = [];
+  var actionsQueued       = [];
   var current_slice_name  = 'onelab.inria.mario.script';
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
   var current_leases      = null;
   var color_pending       = '#000';
   var keepOldEvent        = null;
+  var refreshCicle        = 0;
 
 
   function buildCalendar(theEvents) {
@@ -66,7 +69,7 @@ $(document).ready(function() {
             selectable: false,
             color: getCurrentSliceColor(),
             textColor: color_pending,
-            id: getId(my_title, start, end),
+            id: getLocalId(my_title, start, end),
           };
           updateLeases('addLease', eventData, broadcastActions);
         }
@@ -96,7 +99,7 @@ $(document).ready(function() {
             selectable: false,
             color: getCurrentSliceColor(),
             textColor: color_pending,
-            id: getId(my_title, start, end),
+            id: getLocalId(my_title, start, end),
           };
           updateLeases('addLease', eventData, broadcastActions);
         }
@@ -160,6 +163,8 @@ $(document).ready(function() {
           newLease.editable = isMySlice(newLease.title);
           newLease.overlap = false;
           leases.push(newLease);
+
+          actionsQueued.push(getLocalId(newLease.title, newLease.start, newLease.end));
         // }
       });
     });
@@ -214,12 +219,6 @@ $(document).ready(function() {
   }
 
 
-  function refreshCalendar(events){
-    $('#calendar').fullCalendar('removeEvents');
-    $('#calendar').fullCalendar('addEventSource', events);
-  }
-
-
   function listenBroadcast(){
     var socket = io();
     socket.on('addLease', function(msg){
@@ -241,19 +240,22 @@ $(document).ready(function() {
       if (action == 'addLease') {
         $('#calendar').fullCalendar('renderEvent', data, true );
         actionsLeases('add', data);
+        setActionsQueue('add', data);
       }
       if (action == 'delLease'){
         $('#calendar').fullCalendar('removeEvents',data._id);
-        actionsLeases('del', data)
+        actionsLeases('del', data);
+        setActionsQueue('del', data);
       }
       if (action == 'moveLease'){
-        actionsLeases('move', data)
+        actionsLeases('move', data);
+        setActionsQueue('move', data);
       }
     }
   }
 
 
-  function getId(title, start, end){
+  function getLocalId(title, start, end){
     var id = null;
 
     String.prototype.hash = function() {
@@ -270,24 +272,75 @@ $(document).ready(function() {
   }
 
 
-  function actionsLeases(action, data){
-    var actionsQueue = [];
+  function getActionsQueue(){
+    return actionsQueue;
+  }
 
+
+  function getActionsQueued(){
+    return actionsQueued;
+  }
+
+
+  function setActionsQueue(action, data){
     if(action == 'add'){
-      actionsQueue.push('ADD', data.id);
+      actionsQueue.push(data.id);
+      console.log(data.id);
+    }
+    else if (action == 'move'){
+      actionsQueue.push(data.id);
+      actionsQueue.push(data.id);
+    }
+    else if (action == 'del'){
+      actionsQueue.push(data.id);
+    }
+    else {
+      alert ('Someting went wrong in map actions.');
+      return false;
+    }
+  }
+
+
+  function refreshCalendar(events){
+    refreshCicle = refreshCicle + 1;
+
+    if(refreshCicle == 3){
+      var diffLeases = $(getActionsQueue()).not(getActionsQueued()).get();
+      var failedEvents = [];
+      $.each(diffLeases, function(key,obj){
+        var each = $("#calendar").fullCalendar( 'clientEvents', obj );
+        each.color = '#000';
+        each.title = '** failed **';
+        failedEvents.push(each);
+      });
+
+      $('#calendar').fullCalendar('removeEvents');
+      $('#calendar').fullCalendar('addEventSource', events);
+
+      console.log(failedEvents[0]);
+      $('#calendar').fullCalendar('renderEvent', failedEvents[0], true );
+
+      refreshCicle = 1;
+    } else {
+      console.log('waiting...'+refreshCicle);
+    }
+    // console.log(actionsQueued);
+    // console.log(actionsQueued.length);
+
+  }
+
+
+  function actionsLeases(action, data){
+    if(action == 'add'){
       $('#actions').append('ADD: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
     else if (action == 'move'){
-      actionsQueue.push('DEL', data.id);
-      actionsQueue.push('ADD', data.id);
       $('#actions').append('DEL: '+fullName(noPendingName(keepOldEvent.title)) +' ['+ keepOldEvent.start +'-'+ keepOldEvent.end+']').append('<br>');
       $('#actions').append('ADD: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
     else if (action == 'del'){
-      actionsQueue.push('ADD', data.id);
       $('#actions').append('DEL: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
-
   }
 
 
@@ -333,6 +386,11 @@ $(document).ready(function() {
   function getCurrentSliceName(){
     // var current_slice_name = $('#current-slice').attr('data-current-slice-name');
     return shortName(current_slice_name);
+  }
+
+
+  function resetActionsQueued(){
+    actionsQueued = [];
   }
 
 
@@ -408,11 +466,11 @@ $(document).ready(function() {
           if(val.title === getCurrentSliceName()){
             setCurrentSliceColor(val.color);
           }
-          knew.push(val.title);
           slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ val.color +"").text(val.title)).append($("<div />").attr("id", idFormat(val.title)).addClass('noactive'));
         } else{
           slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ val.color +"").text(val.title));
         }
+        knew.push(val.title);
       }
     });
 
@@ -448,7 +506,6 @@ $(document).ready(function() {
         obj.title = noPendingName(title);
         obj.textColor = "#ffffff";
         obj.editable = true;
-        // console.log(obj.id);
         $('#calendar').fullCalendar( 'rerenderEvents', obj.id);
       }
     });
@@ -468,6 +525,7 @@ $(document).ready(function() {
 
   function waitForLeases(){
     if(getCurrentLeases() !== null){
+      resetActionsQueued();
       var leases = getCurrentLeases();
       var leasesbooked  = parseLease(leases);
       loadEfects();
@@ -493,7 +551,8 @@ $(document).ready(function() {
 
     var socket = io.connect("http://r2lab.inria.fr:443");
     socket.on('chan-leases', function(msg){
-      setCurrentLeases(msg);
+      setCurrentLeases(msg)
+      resetActionsQueued();;
       var leases = getCurrentLeases();
       var leasesbooked = parseLease(leases);
 
