@@ -9,12 +9,6 @@ $(document).ready(function() {
   var color_pending       = '#000';
   var keepOldEvent        = null;
 
-  function newId(){
-    var date  = new Date();
-    var newId = date.getSeconds()+''+date.getMilliseconds()+''+Math.round((Math.random() * 10000));
-    return newId;
-  }
-
 
   function buildCalendar(theEvents) {
 
@@ -38,7 +32,7 @@ $(document).ready(function() {
       },
       defaultTimedEventDuration: '00:30:00',
       forceEventDuration: true,
-      defaultView: 'agendaTwoDay',
+      defaultView: 'agendaDay',
       timezone: 'Europe/Paris',
       defaultDate: today,
       selectHelper: false,
@@ -72,7 +66,7 @@ $(document).ready(function() {
             selectable: false,
             color: getCurrentSliceColor(),
             textColor: color_pending,
-            id: newId(),
+            id: getId(my_title, start, end),
           };
           updateLeases('addLease', eventData, broadcastActions);
         }
@@ -102,7 +96,7 @@ $(document).ready(function() {
             selectable: false,
             color: getCurrentSliceColor(),
             textColor: color_pending,
-            id: newId(),
+            id: getId(my_title, start, end),
           };
           updateLeases('addLease', eventData, broadcastActions);
         }
@@ -222,7 +216,7 @@ $(document).ready(function() {
 
   function refreshCalendar(events){
     $('#calendar').fullCalendar('removeEvents');
-    $('#calendar').fullCalendar('addEventSource', parseLease(events));
+    $('#calendar').fullCalendar('addEventSource', events);
   }
 
 
@@ -259,17 +253,41 @@ $(document).ready(function() {
   }
 
 
+  function getId(title, start, end){
+    var id = null;
+
+    String.prototype.hash = function() {
+      var self = this, range = Array(this.length);
+      for(var i = 0; i < this.length; i++) {
+        range[i] = i;
+      }
+      return Array.prototype.map.call(range, function(i) {
+        return self.charCodeAt(i).toString(16);
+      }).join('');
+    }
+    id = (title+start+end).hash();
+    return id;
+  }
+
+
   function actionsLeases(action, data){
+    var actionsQueue = [];
+
     if(action == 'add'){
+      actionsQueue.push('ADD', data.id);
       $('#actions').append('ADD: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
     else if (action == 'move'){
+      actionsQueue.push('DEL', data.id);
+      actionsQueue.push('ADD', data.id);
       $('#actions').append('DEL: '+fullName(noPendingName(keepOldEvent.title)) +' ['+ keepOldEvent.start +'-'+ keepOldEvent.end+']').append('<br>');
       $('#actions').append('ADD: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
     else if (action == 'del'){
+      actionsQueue.push('ADD', data.id);
       $('#actions').append('DEL: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
+
   }
 
 
@@ -437,19 +455,22 @@ $(document).ready(function() {
   }
 
 
-  function callBack(){
-    $('#calendar').fullCalendar('removeEvents');
-    // listenBroadcastFromServer();
-    $('#calendar').fullCalendar('addEventSource', parseLease(current_leases));
+  function loadEfects(opt){
+    if(opt == 'in'){
+      $('#loading').fadeIn(100);
+    }
+    else {
+      $('#loading').delay(100).fadeOut();
+      $('#all').fadeIn(100);
+    }
   }
 
 
   function waitForLeases(){
-    if(current_leases !== null){
-      var leasesbooked  = parseLease(current_leases);
-      $('#loading').delay(100).fadeOut();
-      $('#all').fadeIn(100);
-
+    if(getCurrentLeases() !== null){
+      var leases = getCurrentLeases();
+      var leasesbooked  = parseLease(leases);
+      loadEfects();
       buildCalendar(leasesbooked);
       setCurrentSliceBox(getCurrentSliceName());
       // in case of receiving live booking
@@ -458,7 +479,7 @@ $(document).ready(function() {
       }
     }
     else{
-      $('#loading').fadeIn(100);
+      loadEfects('in');
       setTimeout(function(){
         waitForLeases();
       },250);
@@ -473,14 +494,14 @@ $(document).ready(function() {
     var socket = io.connect("http://r2lab.inria.fr:443");
     socket.on('chan-leases', function(msg){
       setCurrentLeases(msg);
-      refreshCalendar(getCurrentLeases());
+      var leases = getCurrentLeases();
+      var leasesbooked = parseLease(leases);
+
+      refreshCalendar(leasesbooked);
       setCurrentSliceBox(getCurrentSliceName());
     });
 
   }
-
-
-
 
 
   // function sendConfirm(leases){
