@@ -17,9 +17,9 @@ function getCookie(name) {
 
 // callback will be called on the xhttp object upon ready state change
 // see http://www.w3schools.com/ajax/ajax_xmlhttprequest_onreadystatechange.asp
-function post_lease_request(request, callback) {
+function post_lease_request(verb, request, callback) {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "/leases/", true);
+    xhttp.open("POST", "/leases/"+verb, true);
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     // this is where we retrieve the CSRF token from the context
     var csrftoken = getCookie('csrftoken');
