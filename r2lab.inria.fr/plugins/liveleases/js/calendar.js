@@ -8,7 +8,7 @@ $(document).ready(function() {
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
   var current_leases      = null;
-  var color_pending       = '#000';
+  var color_pending       = '#000000';
   var keepOldEvent        = null;
   var refreshCicle        = 0;
 
@@ -130,7 +130,7 @@ $(document).ready(function() {
       },
 
       eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) {
-        alert('partiu');
+        alert('not yet');
       },
       //Events from Json file
       events: theEvents,
@@ -156,15 +156,15 @@ $(document).ready(function() {
         // if (isR2lab(v.account.name)){
           newLease = new Object();
           newLease.title = shortName(v.account.name);
-          newLease.id    = String(v.uuid);
+          newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);//String(v.uuid);
           newLease.start = v.valid_from;
-          newLease.end   = v.valid_until;
+          newLease.end = v.valid_until;
           newLease.color = getColorLease(newLease.title);
           newLease.editable = isMySlice(newLease.title);
           newLease.overlap = false;
           leases.push(newLease);
 
-          actionsQueued.push(getLocalId(newLease.title, newLease.start, newLease.end));
+          setActionsQueued(newLease.title, newLease.start, newLease.end);
         // }
       });
     });
@@ -195,6 +195,23 @@ $(document).ready(function() {
     leases.push(newLease);
 
     return leases;
+  }
+
+
+  function resetActionsQueued(){
+    actionsQueued = [];
+  }
+
+
+  function getActionsQueued(){
+    return actionsQueued;
+  }
+
+
+  function setActionsQueued(title, start, end){
+    var local_id = null;
+    local_id = getLocalId(title+start+end);
+    actionsQueued.push(local_id);
   }
 
 
@@ -243,9 +260,14 @@ $(document).ready(function() {
         setActionsQueue('add', data);
       }
       if (action == 'delLease'){
-        $('#calendar').fullCalendar('removeEvents',data._id);
-        actionsLeases('del', data);
-        setActionsQueue('del', data);
+        if( ($.inArray(data._id, getActionsQueue()) == -1) && (data.title.indexOf('* failed *') > -1) ){
+          $('#calendar').fullCalendar('removeEvents',data._id);
+        }
+        else if(data.title.indexOf('(pending)') == -1) {
+          $('#calendar').fullCalendar('removeEvents',data._id);
+          actionsLeases('del', data);
+          setActionsQueue('del', data);
+        }
       }
       if (action == 'moveLease'){
         actionsLeases('move', data);
@@ -277,21 +299,15 @@ $(document).ready(function() {
   }
 
 
-  function getActionsQueued(){
-    return actionsQueued;
-  }
-
-
   function setActionsQueue(action, data){
     if(action == 'add'){
       actionsQueue.push(data.id);
-      console.log(data.id);
     }
     else if (action == 'move'){
       actionsQueue.push(data.id);
       actionsQueue.push(data.id);
     }
-    else if (action == 'del'){
+    else if (action == 'del'){ //include to not consider when this have failed in text
       actionsQueue.push(data.id);
     }
     else {
@@ -301,55 +317,89 @@ $(document).ready(function() {
   }
 
 
+  function delActionQueue(id){
+    var idx = actionsQueue.indexOf(id);
+    actionsQueue.splice(idx,1);
+  }
+
+
+  function resetActionQueue(){
+    actionsQueue = [];
+  }
+
+
+  function resetCalendar(){
+    $('#calendar').fullCalendar('removeEvents');
+  }
+
+
+  function diffArrays(first, second){
+    var diff_array = null;
+    diff_array = $(first).not(second).get()
+    return diff_array;
+  }
+
+
   function refreshCalendar(events){
     refreshCicle = refreshCicle + 1;
 
-    if(refreshCicle == 3){
-      var diffLeases = $(getActionsQueue()).not(getActionsQueued()).get();
+    if(refreshCicle == 2){
+      var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
       var failedEvents = [];
       $.each(diffLeases, function(key,obj){
         var each = $("#calendar").fullCalendar( 'clientEvents', obj );
-        each.color = '#000';
-        each.title = '** failed **';
-        failedEvents.push(each);
+        $.each(each, function(k,o){
+          newLease = new Object();
+          newLease.title = failedName(o.title);
+          newLease.id = o.id;
+          newLease.start = o.start;
+          newLease.end   = o.end;
+          newLease.color = "#FF0000";
+          newLease.overlap = false;
+          newLease.editable = false;
+          failedEvents.push(newLease);
+        });
       });
 
-      $('#calendar').fullCalendar('removeEvents');
+      resetActionQueue();
+      resetCalendar();
       $('#calendar').fullCalendar('addEventSource', events);
+      $('#calendar').fullCalendar('addEventSource', failedEvents);
 
-      console.log(failedEvents[0]);
-      $('#calendar').fullCalendar('renderEvent', failedEvents[0], true );
+      refreshCicle = 0;
 
-      refreshCicle = 1;
     } else {
       console.log('waiting...'+refreshCicle);
     }
-    // console.log(actionsQueued);
-    // console.log(actionsQueued.length);
-
   }
 
 
   function actionsLeases(action, data){
     if(action == 'add'){
-      $('#actions').append('ADD: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
+      $('#actions').append('ADD: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
     else if (action == 'move'){
-      $('#actions').append('DEL: '+fullName(noPendingName(keepOldEvent.title)) +' ['+ keepOldEvent.start +'-'+ keepOldEvent.end+']').append('<br>');
-      $('#actions').append('ADD: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
+      $('#actions').append('DEL: '+fullName(resetName(keepOldEvent.title)) +' ['+ keepOldEvent.start +'-'+ keepOldEvent.end+']').append('<br>');
+      $('#actions').append('ADD: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
     else if (action == 'del'){
-      $('#actions').append('DEL: '+fullName(noPendingName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
+      $('#actions').append('DEL: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
   }
 
 
   function getRandomColor() {
+    var reserved_colors = ["#D0D0D0", "#FF0000", "#000000"];
     var letters = '0123456789ABCDEF'.split('');
     var color = '#';
     for (var i = 0; i < 6; i++ ) {
         color += letters[Math.round(Math.random() * 15)];
     }
+
+    if ($.inArray(color.toUpperCase(), reserved_colors) > -1){
+      getRandomColor();
+    }
+
     return color;
   }
 
@@ -371,14 +421,22 @@ $(document).ready(function() {
 
   function pendingName(name){
     var new_name = name;
-    new_name = name + ' (pending)';
+    new_name = resetName(name) + ' (pending)';
     return new_name
   }
 
 
-  function noPendingName(name){
+  function resetName(name){
     var new_name = name;
     new_name = name.replace(' (pending)', '');
+    new_name = new_name.replace(' * failed *', '');
+    return new_name
+  }
+
+
+  function failedName(name){
+    var new_name = name;
+    new_name = resetName(name) + ' * failed *';
     return new_name
   }
 
@@ -386,11 +444,6 @@ $(document).ready(function() {
   function getCurrentSliceName(){
     // var current_slice_name = $('#current-slice').attr('data-current-slice-name');
     return shortName(current_slice_name);
-  }
-
-
-  function resetActionsQueued(){
-    actionsQueued = [];
   }
 
 
@@ -447,7 +500,7 @@ $(document).ready(function() {
 
   function isMySlice(slice){
     var is_my = false;
-    if ($.inArray(fullName(slice), getMySlicesName()) > -1){
+    if ($.inArray(fullName(resetName(slice)), getMySlicesName()) > -1){
       is_my = true;
     }
     return is_my;
@@ -503,7 +556,7 @@ $(document).ready(function() {
 
     $.each(calendar, function(key,obj){
       if ((new Date(obj.start._d) - start == 0) && (new Date(obj.end._d) - end == 0) && (obj.title == title)){
-        obj.title = noPendingName(title);
+        obj.title = resetName(title);
         obj.textColor = "#ffffff";
         obj.editable = true;
         $('#calendar').fullCalendar( 'rerenderEvents', obj.id);
