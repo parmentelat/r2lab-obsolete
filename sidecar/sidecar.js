@@ -1,30 +1,35 @@
 #!/usr/bin/env node
-// deps
+
+// dependencies
 var express_app = require('express')();
 var http = require('http').Server(express_app);
 var io = require('socket.io')(http);
 var fs = require('fs');
 var path = require('path');
 
-//// names for the channels used
-// sending deltas; json is flying on this channel
+//////// names for the channels used
+
+//// status
+// (*) sending deltas; json is flying on this channel
 var chan_status = 'chan-status';
-// requesting a whole status; anything arriving
+
+// (*) requesting a whole status; anything arriving
 // on this channel causes a full status to be exposed
 // on chan-status
 var chan_status_request = 'chan-status-request';
 
-// the channel where the current state of leases is published
+//// leases
+// (*) the channel where the current state of leases is published
 var chan_leases = 'chan-leases';
 
-// likewise: anything arriving on this channel requires
+// (*) likewise: anything arriving on this channel requires
 // the leases status to be refreshed
 // in practical terms this will trigger an event sent back to
 // the monitor, asking it to short-circuit its loop
 // and to immediately refresh leases
 var chan_leases_request = 'chan-leases-request';
 
-//// filenames
+//////// filenames
 // this is where we write current complete status
 // essentially for smooth restart
 // it is fine to delete, it will just take some while to rebuild itself
