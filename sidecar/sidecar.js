@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // deps
-var app = require('express')();
-var http = require('http').Server(app);
+var express_app = require('express')();
+var http = require('http').Server(express_app);
 var io = require('socket.io')(http);
 var fs = require('fs');
 var path = require('path');
@@ -14,8 +14,15 @@ var chan_status = 'chan-status';
 // on chan-status
 var chan_status_request = 'chan-status-request';
 
+// the channel where the current state of leases is published
 var chan_leases = 'chan-leases';
-var chan_leases_request = 'chan_leases_request';
+
+// likewise: anything arriving on this channel requires
+// the leases status to be refreshed
+// in practical terms this will trigger an event sent back to
+// the monitor, asking it to short-circuit its loop
+// and to immediately refresh leases
+var chan_leases_request = 'chan-leases-request';
 
 //// filenames
 // this is where we write current complete status
@@ -42,20 +49,13 @@ function vdisplay(args){
 	display.apply(this, arguments);
 }
 
-// program this webserver so that a GET to /
-// exposes the complete json status
-// + triggers a broadcast on all clients
-// only for debugging
-app.get('/', function(req, res){
-    // answer something
-    res.sendFile(__dirname + '/r2lab-complete.json');
-    // and emit the complete status
-    display("Received request on / : sending " + filename_complete);
-    emit_file(filename_complete);
-});
+//// historical
+// at some point in time, this server would answer
+// GET requests on /
+// this feature was unused so it's now turned off
 
-// remainings of a socket.io example, we don't react
-// to these events as of now
+// remainings of a socket.io example; this is only
+// marginally helpful to check for the server sanity
 io.on('connection', function(socket){
     display('user connect');
     socket.on('disconnect', function(){
@@ -63,14 +63,16 @@ io.on('connection', function(socket){
     });
 });
 
-// arm callbacks for the 2 channels we use
+// arm callbacks for the channels we use
 io.on('connection', function(socket){
+    //////////////////// status
     // preferred method is to send a news chunk through socket.io
-    // in this case we
-    // update complete.json (i.e, read the file, apply changes, store again)
-    // and forward the news as-is
-    // this can also be useful for debugging / tuning
-    // so we can send JSON messages manually (e.g. using a chat app)
+    // on chan-status
+    // in this case we:
+    // * update complete.json (i.e, read the file, apply changes, store again)
+    // * and forward the news as-is
+    // NOTE that this can also be used for debugging / tuning
+    // by sending JSON messages manually (e.g. using a chat app)
     vdisplay("arming callback for channel " + chan_status);
     socket.on(chan_status, function(news_string){
 	vdisplay("received on channel " + chan_status + ": " + news_string)
@@ -85,13 +87,19 @@ io.on('connection', function(socket){
 	emit_file(filename_complete);
     });
 
-    // leases stuff: it's simpler, we always propagate a complete list of leases
+    //////////////////// leases
+    // it's simpler, we always propagate a complete list of leases
     vdisplay("arming callback for channel " + chan_leases);
     socket.on(chan_leases, function(leases){
 	vdisplay("Forwarding leases message " + leases);
 	io.emit(chan_leases, leases);
     });
-    
+
+    vdisplay("arming callback for channel " + chan_leases_request);
+    socket.on(chan_leases_request, function(anything){
+	vdisplay("Forwarding trigger message " + anything);
+	io.emit(chan_leases_request, anything);
+    });
 });
 
 // convenience function to synchroneously read a file as a string
@@ -225,8 +233,10 @@ function parse_args() {
 
 // run http server
 function run_server() {
-    process.on('SIGINT', function(){ display("Received SIGINT - exiting"); process.exit(1);});
-    process.on('SIGTERM', function(){ display("Received SIGTERM - exiting"); process.exit(1);});
+    process.on('SIGINT', function(){
+	display("Received SIGINT - exiting"); process.exit(1);});
+    process.on('SIGTERM', function(){
+	display("Received SIGTERM - exiting"); process.exit(1);});
 
     try {
 	http.listen(port_number, function(){
