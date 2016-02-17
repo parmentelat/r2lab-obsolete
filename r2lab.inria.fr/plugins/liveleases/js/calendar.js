@@ -307,7 +307,7 @@ $(document).ready(function() {
       actionsQueue.push(data.id);
       actionsQueue.push(data.id);
     }
-    else if (action == 'del'){ //include to not consider when this have failed in text
+    else if (action == 'del'){
       actionsQueue.push(data.id);
     }
     else {
@@ -442,26 +442,22 @@ $(document).ready(function() {
 
 
   function getCurrentSliceName(){
-    // var current_slice_name = $('#current-slice').attr('data-current-slice-name');
     return shortName(current_slice_name);
   }
 
 
   function getCurrentSliceColor(){
-    // var current_slice_color = $('#current-slice').attr('data-current-slice-color');
     return current_slice_color;
   }
 
 
   function setCurrentSliceColor(color){
-    // $('#current-slice').attr('data-current-slice-color', color);
     current_slice_color = color;
     return true;
   }
 
 
   function setCurrentSliceName(name){
-    // $('#current-slice').attr('data-current-slice-name', name);
     current_slice_name = name;
     return true;
   }
@@ -477,7 +473,6 @@ $(document).ready(function() {
 
   function getColorLease(slice_title){
     var lease_color = '#d0d0d0';
-
     if ($.inArray(fullName(slice_title), getMySlicesName()) > -1){
       lease_color = my_slices_color[my_slices_name.indexOf(fullName(slice_title))];
     }
@@ -530,8 +525,8 @@ $(document).ready(function() {
     $('#my-slices .fc-event').each(function() {
       $(this).draggable({
         zIndex: 999,
-        revert: true,      // will cause the event to go back to its
-        revertDuration: 0  //  original position after the drag
+        revert: true,
+        revertDuration: 0
       });
     });
   }
