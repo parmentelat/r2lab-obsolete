@@ -6,3 +6,7 @@
 chain.c32
 pxelinux.0
 linux-notis
+__pycache__
+*.pyc
+*.log
+db.sqlite3
