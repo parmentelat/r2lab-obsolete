@@ -11,8 +11,10 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
+### the standard way to use rhubarbe is to have it installed separately
 try:
     from rhubarbe.omfsfaproxy import OmfSfaProxy
+# in a standalone environment however
 except:
     from .omfsfaproxy import OmfSfaProxy
 
@@ -34,7 +36,6 @@ class LeasesProxy(View):
         # otherwise
         utf8 = request.body.decode()
         record = json.loads(utf8);
-        print("/leases/ received verb={} and record {}".format(verb, record))
         if verb == 'add':
             return self.add_lease(record)
         elif verb == 'update':
@@ -74,7 +75,6 @@ class LeasesProxy(View):
         """
         missing = { k for k in mandatory if k not in record }
         known = set(mandatory) | set(optional)
-        print("known = ", known)
         unknown = { k for k in record if k not in known }
         error = ""
         if missing:
