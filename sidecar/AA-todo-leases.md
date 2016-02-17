@@ -2,63 +2,77 @@
 
 ## Task 1 - communication design
 
-We need to close the loop 
+![data flow](AA-3-leasesflow.png)
 
-![data flow](../sidecar/AA-2-leasesflow.png)
+*Update on Feb. 17*
 
 At this point:
 
 * the black arrows are in place
-* the orange arrows is what we need to do first
-* the purple arrows may be considered later on
+* the orange traffic is in place too, although scattered between the 2 devel branches (`master` and `leases`) 
+* I am considering to add a green traffic, to avoid the gap in time that users need to wait until their lease gets confirmed
+* I am not quite sure if the purple traffic makes sense or not; or rather, I believe that once we have the green thing in place, we won't need the purple traffic at all. So : it's urgent to ***not do anything*** about this one.
 
 #### orange traffic
-  1. the django interface will offer POST ajax-like URL's to actually add/delete leases; not quite sure yet how this should look like exactly: this should map to the list of actions that need to be triggered when one hits the '*Confirm Booking button*', so it might make sense that the URL can deal with several actions at a time; to be described in more details.
-  2. the way the django service will interact with the `omf_sfa` service is - at this point - through a ssh connection. I will open a dedicated access so that apache on `r2lab.inria.fr` can actually issue ssh commands on faraday; even though this is probably a little coarse-grained; we will need the ability for root to set leases on someone else's behalf
-  3. it's easy to extend rmonitor so that it gathers all the leases from omf-sfa (actually rhubarbe already has leases-oriented featured like `rleases`)
-  4. as far as sidecar, my suggestion is to use a dedicated socket.io channel (or pair of channels) to propagate the orange flow. As a reminder at this point we are using
-    * `chan-status` for sending node-oriented status
-    * `chan-status-request` as a channel for requesting to broadcast the complete status (essentially at browser startup) (actual content is ignored, it's just a trigger channel)
 
-    So we will probably want to rename these into something more expressive (referring to 'status') and define other channels for exposing leases
-  5. the fifth line would IMHO be of the exact same nature as 4. and sidecar will just do the basic forwarding stuff that it already does about status.
+**DONE.** Here's a summary of how things work
 
-#### orange traffic 4. and 5.
+* 1. the django interface offers POST ajax-like URL's to actually add/delete leases
+* 2. the way the django service interacts with the `omf_sfa` service is using a SSL connnection; the root certificate of `faraday` is duplicated on `r2lab` (in `/etc/rhubarbe` so that `apache` can read it); it's our way to delegate root rights to the django server
+* 3. and 4. `rhubarbe monitor` is extended to send a full picture of future leases on the `chan-leases` channel on a cyclic basis (default 10s)
+* 5. `sidecar` simply propagates that traffic to all connected users
 
-Keep in mind that the 'status' traffic is very different in nature from the 'leases' traffic. 
-As far as nodes, the universe contains a fixed and finite 37 number of objects. With leases it's quite different, we need a way to describe that leases may have been created, modified or deleted. 
+#### green traffic
 
-The first naive idea is of course to just send the complete list of leases. Is it safe to assume that the calendar widget is able to cope with this format ?
+**STANDBY.** I've started to craft this, but it requires monitor to use a more recent library for talking websocket.
+
+Without the green traffic, users have to wait for the next monitor cycle (default is every 10 s) until they can see the confirmation of their action.
+That's not quite true for the browser who emitted the API call, but the other ones indeed are in the dark.
+
+So one proposal is
+* 7. the django code that sends REST calls to omf-sfa also triggers a signal on the `chan-leases-request` channel towards sidecar
+* 7. and 8. `sidecar` propagates this traffic to all connected clients - this aims only monitor as a matter of fact
+* 8. `monitor` reacts on receinving this signal by short-fusing its monitoring loop. 
 
 #### purple traffic
 
-Mario has pointed out that it would be convenient for 2 instances of browsers interacting at the same time to exchange 'intentions' to book; as I tried to outline, this is a very different kind if information than the orange traffic, because it's only intentions and has never been confirmed.
+**As stated above, I suspect that purple traffic is superfluous. Let's wait and see.**
 
+*Mario has pointed out that it would be convenient for 2 instances of browsers interacting at the same time to exchange 'intentions' to book; as I tried to outline, this is a very different kind if information than the orange traffic, because it's only intentions and has never been confirmed.
 My take on this is that it will probably be a nice addition to add the purple traffic at some point, i.e. once we have the orange thing in place, and it's a good thing to keep this in mind. However we also need to bear in mind that the 2 things should be very clearly separated, and this is why I foresee we will use a separate sidecar channel to propagate this information. 
-
-So in a nutshell, this is something we should not care too much about at this point IMHO.
+So in a nutshell, this is something we should not care too much about at this point IMHO.*
 
 ## Task 2 - leases vizualization
 
+Ongoing
+
 * This is what Mario is working on right now
+* There is something to play with in the `leases` branch; still needs to be integrated in `master`
 * I suggest we come up with a plugin named liveleases (much like we already have livemap and livetable)
 
 ## Task 3 - retrieve (read) leases live
 
-* I (Thierry) will do this; it covers arrows 3-4-5, and in terms of code it is twofold
-  * extend sidecar to create 2 channels (like for status, there will be one for the current status, and one for requesting the data)
-  * extend rhubarbe monitor so that this data is fetched at `omf_sfa` and sent in the proper channel as well.
+Done
 
 ## Task 4 - write leases
 
-* arrow 1: I need more details on what Mario expects (what is behind the *Confirm your booking* thing)
-* arrow 2: should be reasonably straightforward 
+Done
 
 ## Task 5 - integrate visually
 
-* my proposal would be to create a new page 'scheduler' - or maybe 'plan' for the tab name - before the 'run' page
-* the 'plan' page would then only have the whole page to display the scheduler which could be on a week or more
-* the 'run' page would only show the current day with a layout as narrow as possible, ideally on the side like something of that kind:
+* This IMHO still needs more work
+* The layout proposed by Mario: I don't like it too much because of too much wasted space
+* I sent another proposal (the slices vlist below livemap)
+* But reading this again I realize this does not leave much room for livetable
+
+* Would it make sense to let the user arrange their widgets as they want ?
+
+* Mental model at this point is still that
+  * the 'status page' comes with the leases displayed
+  * a specific 'scheduler' (or 'plan') page (only when logged in) would show only the scheduler in full page
+  * the 'run' page (also only when logged in) would be smart and show the scheduler for the current day, but with as small a footprint as possible
+
+Remaining from previous release : 
 
 ```
 -------------
