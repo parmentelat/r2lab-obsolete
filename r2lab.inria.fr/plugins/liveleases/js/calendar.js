@@ -113,7 +113,7 @@ $(document).ready(function() {
           event.title = pendingName(event.title);
           event.textColor = color_pending;
           event.editable = false;
-          updateLeases('moveLease', event, broadcastActions);
+          updateLeases('editLease', event, broadcastActions);
         }
       },
 
@@ -156,6 +156,7 @@ $(document).ready(function() {
         // if (isR2lab(v.account.name)){
           newLease = new Object();
           newLease.title = shortName(v.account.name);
+          newLease.uuid = String(v.uuid);
           newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);//String(v.uuid);
           newLease.start = v.valid_from;
           newLease.end = v.valid_until;
@@ -186,12 +187,12 @@ $(document).ready(function() {
     //Past dates
     newLease = new Object();
     newLease.id = "pastDate";
-    newLease.start = "2016-01-01T00:00:00Z";
-    newLease.end   = "2016-02-02T00:00:00Z";
+    newLease.start = moment().format("YYYY-01-01T00:00:00Z");
+    newLease.end   = moment().format("YYYY-MM-DD");
     newLease.overlap = false;
     newLease.editable = false;
     newLease.rendering = "background",
-    newLease.color = "#ffe5e5";
+    newLease.color = "#FFE5E5";
     leases.push(newLease);
 
     return leases;
@@ -221,7 +222,7 @@ $(document).ready(function() {
       socket.emit('addLease', data);
     }
     else if (action == 'delLease'){
-      socket.emit('delLease', data._id);
+      socket.emit('delLease', data.id);
     }
   }
 
@@ -244,7 +245,7 @@ $(document).ready(function() {
     socket.on('delLease', function(msg){
       $('#calendar').fullCalendar('removeEvents',msg);
     });
-    socket.on('moveLease', function(msg){
+    socket.on('editLease', function(msg){
       alert('not yet');
     });
   }
@@ -256,22 +257,28 @@ $(document).ready(function() {
     } else{
       if (action == 'addLease') {
         $('#calendar').fullCalendar('renderEvent', data, true );
-        actionsLeases('add', data);
         setActionsQueue('add', data);
+        logLeases('add', data);
       }
       if (action == 'delLease'){
-        if( ($.inArray(data._id, getActionsQueue()) == -1) && (data.title.indexOf('* failed *') > -1) ){
-          $('#calendar').fullCalendar('removeEvents',data._id);
+        if( ($.inArray(data.id, getActionsQueue()) == -1) && (data.title.indexOf('* failed *') > -1) ){
+          $('#calendar').fullCalendar('removeEvents',data.id);
         }
         else if(data.title.indexOf('(pending)') == -1) {
-          $('#calendar').fullCalendar('removeEvents',data._id);
-          actionsLeases('del', data);
+          $('#calendar').fullCalendar('removeEvents',data.id);
           setActionsQueue('del', data);
+          logLeases('del', data);
         }
       }
-      if (action == 'moveLease'){
-        actionsLeases('move', data);
-        setActionsQueue('move', data);
+      if (action == 'editLease'){
+        if( ($.inArray(data.id, getActionsQueue()) == -1) && (data.title.indexOf('* failed *') > -1) ){
+          $('#calendar').fullCalendar('removeEvents',data.id);
+        }
+        else if(data.title.indexOf('(pending)') == -1) {
+          $('#calendar').fullCalendar('removeEvents',data.id);
+          setActionsQueue('edit', data);
+          logLeases('edit', data);
+        }
       }
     }
   }
@@ -301,9 +308,19 @@ $(document).ready(function() {
 
   function setActionsQueue(action, data){
     if(action == 'add'){
+      var request = {
+        "slicename"  : fullName(resetName(data.title)),
+        "valid_from" : data.start.toISOString(),
+        "valid_until": data.end.toISOString()
+      };
+      post_lease_request('add', request, function(xhttp) {
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
+          console.log(request);
+        }
+      });
       actionsQueue.push(data.id);
     }
-    else if (action == 'move'){
+    else if (action == 'edit'){
       actionsQueue.push(data.id);
       actionsQueue.push(data.id);
     }
@@ -374,11 +391,11 @@ $(document).ready(function() {
   }
 
 
-  function actionsLeases(action, data){
+  function logLeases(action, data){
     if(action == 'add'){
       $('#actions').append('ADD: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
-    else if (action == 'move'){
+    else if (action == 'edit'){
       $('#actions').append('DEL: '+fullName(resetName(keepOldEvent.title)) +' ['+ keepOldEvent.start +'-'+ keepOldEvent.end+']').append('<br>');
       $('#actions').append('ADD: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
@@ -389,7 +406,7 @@ $(document).ready(function() {
 
 
   function getRandomColor() {
-    var reserved_colors = ["#D0D0D0", "#FF0000", "#000000"];
+    var reserved_colors = ["#D0D0D0", "#FF0000", "#000000", "#FFE5E5", "#616161"];
     var letters = '0123456789ABCDEF'.split('');
     var color = '#';
     for (var i = 0; i < 6; i++ ) {
@@ -610,39 +627,35 @@ $(document).ready(function() {
 
   }
 
+  //from https://docs.djangoproject.com/en/1.9/ref/csrf/
+  function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie != '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = jQuery.trim(cookies[i]);
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
 
-  // function sendConfirm(leases){
-  //   $.ajax({
-  //     url: '/leasesbooked',
-  //     type: 'POST',
-  //     data: JSON.stringify(leases),
-  //     contentType: 'application/json; charset=utf-8',
-  //     dataType: 'json',
-  //     async: false,
-  //     success: function(msg) {
-  //         alert('Done, booked successfully!');
-  //     }
-  //   });
-  // }
-  //
-  //
-  // $('#confirm').click(function() {
-  //   calendar = $('#calendar').fullCalendar('clientEvents')
-  //   leases = [];
-  //   leases_avoid = ['nightly', 'pastDate'];
-  //   $.each(calendar, function(key,obj){
-  //     var lease = new Object();
-  //
-  //     lease.name  = fullName(obj.title);
-  //     lease.start = obj.start._d;
-  //     lease.end   = obj.end._d;
-  //     if ($.inArray(obj.id, leases_avoid) === -1) {
-  //       leases.push(lease);
-  //     }
-  //   });
-  //
-  //   sendConfirm(leases);
-  // });
+  // callback will be called on the xhttp object upon ready state change
+  // see http://www.w3schools.com/ajax/ajax_xmlhttprequest_onreadystatechange.asp
+  function post_lease_request(verb, request, callback) {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", "/leases/"+verb, true);
+      xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      // this is where we retrieve the CSRF token from the context
+      var csrftoken = getCookie('csrftoken');
+      xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+      xhttp.send(JSON.stringify(request));
+      xhttp.onreadystatechange = function(){callback(xhttp);};
+  }
 
   main();
 });
