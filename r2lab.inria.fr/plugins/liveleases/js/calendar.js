@@ -1,10 +1,10 @@
 $(document).ready(function() {
 
-  var my_slices_name      = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];
+  var my_slices_name      = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];//r2lab_slices
   var my_slices_color     = [];
   var actionsQueue        = [];
   var actionsQueued       = [];
-  var current_slice_name  = 'onelab.inria.mario.script';
+  var current_slice_name  = 'onelab.inria.mario.script';//current_slice.name
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
   var current_leases      = null;
@@ -627,6 +627,7 @@ $(document).ready(function() {
 
   }
 
+  //STOLEN FROM THIERRY
   //from https://docs.djangoproject.com/en/1.9/ref/csrf/
   function getCookie(name) {
       var cookieValue = null;
