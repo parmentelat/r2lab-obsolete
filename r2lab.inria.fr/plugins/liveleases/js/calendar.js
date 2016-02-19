@@ -304,7 +304,7 @@ $(document).ready(function() {
       if (action == 'addLease') {
         $('#calendar').fullCalendar('renderEvent', event, true );
         setActionsQueue('add', event);
-        logLeases('add', event);
+        // logLeases('add', event);
       }
       if (action == 'delLease'){
         if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
@@ -313,12 +313,12 @@ $(document).ready(function() {
         else if(event.title.indexOf('(pending)') == -1) {
           $('#calendar').fullCalendar('removeEvents',event.id);
           setActionsQueue('del', event);
-          logLeases('del', event);
+          // logLeases('del', event);
         }
       }
       if (action == 'editLease'){
         setActionsQueue('edit', event);
-        logLeases('edit', event);
+        // logLeases('edit', event);
       }
     }
   }
@@ -379,7 +379,6 @@ $(document).ready(function() {
       console.log('Someting went wrong in map actions.');
       return false;
     }
-    console.log(request);
     post_lease_request(shiftAction, request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
         console.log(request);
@@ -445,17 +444,17 @@ $(document).ready(function() {
   }
 
 
-  function logLeases(action, data){
-    if(action == 'add'){
-      $('#actions').append('ADD: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
-    }
-    else if (action == 'edit'){
-      $('#actions').append('EDIT: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
-    }
-    else if (action == 'del'){
-      $('#actions').append('DEL: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
-    }
-  }
+  // function logLeases(action, data){
+  //   if(action == 'add'){
+  //     $('#actions').append('ADD: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
+  //   }
+  //   else if (action == 'edit'){
+  //     $('#actions').append('EDIT: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
+  //   }
+  //   else if (action == 'del'){
+  //     $('#actions').append('DEL: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
+  //   }
+  // }
 
 
   function getRandomColor() {
