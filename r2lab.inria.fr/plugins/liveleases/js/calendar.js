@@ -50,10 +50,9 @@ $(document).ready(function() {
       // this is fired when a selection is made
       select: function(start, end, event, view) {
         //Avoid past dates when try to book a lease
-        if (moment().diff(start, 'days') > 0) {
+        if (isPastDate(start)) {
           $('#calendar').fullCalendar('unselect');
-          $('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
-          $('#messages').delay(2000).fadeOut();
+          sendMessage('This is the past date/time!');
           return false;
         }
         var my_title = getCurrentSliceName();
@@ -145,6 +144,36 @@ $(document).ready(function() {
       //Events from Json file
       events: theEvents,
     });
+  }
+
+
+  function sendMessage(msg, type){
+    var cls   = 'danger';
+    var title = 'Ooops!'
+
+    if(type == 'info'){
+      cls   = 'info';
+      title = 'Info:'
+    }
+    if(type == 'success'){
+      cls   = 'success';
+      title = 'Yep!'
+    }
+
+    $('html,body').animate({'scrollTop' : 0},400);
+    $('#messages').removeClass().addClass('alert alert-'+cls);
+    $('#messages').html("<strong>"+title+"</strong> "+msg);
+    $('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
+    $('#messages').delay(2000).fadeOut();
+  }
+
+
+  function isPastDate(start){
+    var past = false;
+    if(moment().diff(start, 'minutes') > 0){
+      past = true;
+    }
+    return past;
   }
 
 
