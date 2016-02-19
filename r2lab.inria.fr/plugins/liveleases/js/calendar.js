@@ -307,30 +307,45 @@ $(document).ready(function() {
 
 
   function setActionsQueue(action, data){
+    var shiftAction = null;
+
     if(action == 'add'){
       var request = {
         "slicename"  : fullName(resetName(data.title)),
         "valid_from" : data.start.toISOString(),
         "valid_until": data.end.toISOString()
       };
-      post_lease_request('add', request, function(xhttp) {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
-          console.log(request);
-        }
-      });
+      shiftAction = 'add';
       actionsQueue.push(data.id);
     }
     else if (action == 'edit'){
+      var request = {
+        "uuid     "  : fullName(resetName(data.uuid)),
+        "valid_from" : data.start.toISOString(),
+        "valid_until": data.end.toISOString()
+      };
+      shiftAction = 'update';
       actionsQueue.push(data.id);
       actionsQueue.push(data.id);
     }
     else if (action == 'del'){
+      var request = {
+        "uuid     "  : fullName(resetName(data.uuid)),
+      };
+      shiftAction = 'delete';
       actionsQueue.push(data.id);
     }
     else {
-      alert ('Someting went wrong in map actions.');
+      console.log('Someting went wrong in map actions.');
       return false;
     }
+
+    console.log(request);
+    post_lease_request(shiftAction, request, function(xhttp) {
+      if (xhttp.readyState == 4 && xhttp.status == 200) {
+        console.log(request);
+      }
+    });
   }
 
 
