@@ -106,7 +106,7 @@ $(document).ready(function() {
 			},
 
       eventDrop: function(event, delta, revertFunc) {
-        if (!confirm("Are you sure about this change?")) {
+        if (!confirm("Confirm this change?")) {
             revertFunc();
         }
         else {
@@ -117,7 +117,7 @@ $(document).ready(function() {
         }
       },
 
-      eventDragStart: function( event, jsEvent, ui, view ) {
+      eventDragStart: function(event, jsEvent, ui, view) {
         keepOldEvent = event;
       },
 
@@ -129,8 +129,18 @@ $(document).ready(function() {
         });
       },
 
-      eventResize: function( event, delta, revertFunc, jsEvent, ui, view ) {
-        alert('not yet');
+      eventResize: function(event, jsEvent, ui, view) {
+        if (!confirm("Confirm this change?")) {
+          return;
+        }
+        else {
+          if (isMySlice(event.title)) {
+            event.title = pendingName(event.title);
+            event.textColor = color_pending;
+            event.editable = false;
+            updateLeases('editLease', event, broadcastActions);
+          }
+        }
       },
       //Events from Json file
       events: theEvents,
@@ -246,34 +256,33 @@ $(document).ready(function() {
       $('#calendar').fullCalendar('removeEvents',msg);
     });
     socket.on('editLease', function(msg){
-      alert('not yet');
+      $('#calendar').fullCalendar('renderEvent', msg, true );
     });
   }
 
 
-  function updateLeases(action, data, broadcast){
+  function updateLeases(action, event, broadcast){
     if (broadcast){
-      sendBroadcast(action, data);
+      sendBroadcast(action, event);
     } else{
       if (action == 'addLease') {
-        $('#calendar').fullCalendar('renderEvent', data, true );
-        setActionsQueue('add', data);
-        logLeases('add', data);
+        $('#calendar').fullCalendar('renderEvent', event, true );
+        setActionsQueue('add', event);
+        logLeases('add', event);
       }
       if (action == 'delLease'){
-        if( ($.inArray(data.id, getActionsQueue()) == -1) && (data.title.indexOf('* failed *') > -1) ){
-          $('#calendar').fullCalendar('removeEvents',data.id);
+        if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
+          $('#calendar').fullCalendar('removeEvents',event.id);
         }
-        else if(data.title.indexOf('(pending)') == -1) {
-          $('#calendar').fullCalendar('removeEvents',data.id);
-          setActionsQueue('del', data);
-          logLeases('del', data);
+        else if(event.title.indexOf('(pending)') == -1) {
+          $('#calendar').fullCalendar('removeEvents',event.id);
+          setActionsQueue('del', event);
+          logLeases('del', event);
         }
       }
       if (action == 'editLease'){
-        // $('#calendar').fullCalendar('removeEvents',data.id);
-        setActionsQueue('edit', data);
-        logLeases('edit', data);
+        setActionsQueue('edit', event);
+        logLeases('edit', event);
       }
     }
   }
@@ -405,8 +414,7 @@ $(document).ready(function() {
       $('#actions').append('ADD: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
     else if (action == 'edit'){
-      $('#actions').append('DEL: '+fullName(resetName(keepOldEvent.title)) +' ['+ keepOldEvent.start +'-'+ keepOldEvent.end+']').append('<br>');
-      $('#actions').append('ADD: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
+      $('#actions').append('EDIT: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
     }
     else if (action == 'del'){
       $('#actions').append('DEL: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
