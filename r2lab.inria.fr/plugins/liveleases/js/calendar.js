@@ -4,7 +4,7 @@ $(document).ready(function() {
   var my_slices_color     = [];
   var actionsQueue        = [];
   var actionsQueued       = [];
-  var current_slice_name  = 'onelab.inria.mario.script';//current_slice.name
+  var current_slice_name  = 'onelab.inria.mario.tutorial';//current_slice.name
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
   var current_leases      = null;
@@ -14,10 +14,7 @@ $(document).ready(function() {
 
 
   function buildCalendar(theEvents) {
-
     var today = moment().format("YYYY-MM-DD");
-    var date = new Date();
-
     //Create the calendar
     $('#calendar').fullCalendar({
       header: {
@@ -62,7 +59,6 @@ $(document).ready(function() {
             title: pendingName(my_title),
             start: start,
             end: end,
-            //end: start+ ((3600*1000)*1),
             overlap: false,
             editable: false,
             selectable: false,
@@ -76,7 +72,14 @@ $(document).ready(function() {
       },
 
       // this allows things to be dropped onto the calendar
-      drop: function(start, end, event, view) {
+      drop: function(date, event, view) {
+        var start = date;
+        var end   = moment(date).add(30, 'minutes');
+        if (isPastDate(start)) {
+          $('#calendar').fullCalendar('unselect');
+          sendMessage('This is the past date/time!');
+          return false;
+        }
         var element = $(this);
         var last_drag_color = element.css("background-color");
         var last_drag_name  = $.trim(element.text());
@@ -91,8 +94,7 @@ $(document).ready(function() {
           eventData = {
             title: pendingName(my_title),
             start: start,
-            // end: end,
-            end: start+ ((3600*1000)*0.5),
+            end: end,
             overlap: false,
             editable: false,
             selectable: false,
@@ -109,10 +111,15 @@ $(document).ready(function() {
             revertFunc();
         }
         else {
-          event.title = pendingName(event.title);
-          event.textColor = color_pending;
-          event.editable = false;
-          updateLeases('editLease', event, broadcastActions);
+          if (isPastDate(event.start)) {
+            revertFunc();
+            sendMessage('This is the past date/time!');
+          } else {
+            event.title = pendingName(event.title);
+            event.textColor = color_pending;
+            event.editable = false;
+            updateLeases('editLease', event, broadcastActions);
+          }
         }
       },
 
@@ -347,7 +354,7 @@ $(document).ready(function() {
       var request = {
         "slicename"  : fullName(resetName(data.title)),
         "valid_from" : data.start.toISOString(),
-        "valid_until": data.end.toISOString()
+        "valid_until": data.end._d.toISOString()
       };
       actionsQueue.push(data.id);
     }
@@ -372,7 +379,7 @@ $(document).ready(function() {
       console.log('Someting went wrong in map actions.');
       return false;
     }
-
+    console.log(request);
     post_lease_request(shiftAction, request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
         console.log(request);
