@@ -271,14 +271,9 @@ $(document).ready(function() {
         }
       }
       if (action == 'editLease'){
-        if( ($.inArray(data.id, getActionsQueue()) == -1) && (data.title.indexOf('* failed *') > -1) ){
-          $('#calendar').fullCalendar('removeEvents',data.id);
-        }
-        else if(data.title.indexOf('(pending)') == -1) {
-          $('#calendar').fullCalendar('removeEvents',data.id);
-          setActionsQueue('edit', data);
-          logLeases('edit', data);
-        }
+        // $('#calendar').fullCalendar('removeEvents',data.id);
+        setActionsQueue('edit', data);
+        logLeases('edit', data);
       }
     }
   }
@@ -310,37 +305,36 @@ $(document).ready(function() {
     var shiftAction = null;
 
     if(action == 'add'){
+      shiftAction = 'add';
       var request = {
         "slicename"  : fullName(resetName(data.title)),
         "valid_from" : data.start.toISOString(),
         "valid_until": data.end.toISOString()
       };
-      shiftAction = 'add';
       actionsQueue.push(data.id);
     }
     else if (action == 'edit'){
+      shiftAction = 'update';
       var request = {
         "uuid     "  : fullName(resetName(data.uuid)),
         "valid_from" : data.start.toISOString(),
         "valid_until": data.end.toISOString()
       };
-      shiftAction = 'update';
-      actionsQueue.push(data.id);
-      actionsQueue.push(data.id);
+      //delActionQueue(data.id); //seems not reflect
+      //actionsQueue.push(data.id); //present fail message but have a bug when deleted because the same id as the original event
     }
     else if (action == 'del'){
+      shiftAction = 'delete';
       var request = {
         "uuid     "  : fullName(resetName(data.uuid)),
       };
-      shiftAction = 'delete';
-      actionsQueue.push(data.id);
+      delActionQueue(data.id);
     }
     else {
       console.log('Someting went wrong in map actions.');
       return false;
     }
 
-    console.log(request);
     post_lease_request(shiftAction, request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
         console.log(request);
