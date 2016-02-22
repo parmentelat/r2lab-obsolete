@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nightly Routine</title>
+
+    <link rel="icon" type="image/png" href="http://r2lab.inria.fr/assets/img/r2lab-icon.png"/>
+    <!---------------------------------------->
+    <!-- bootstrap and jquery are all over the place -->
+    <link type="text/css" rel="stylesheet" href="http://r2lab.inria.fr/assets/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="http://r2lab.inria.fr/assets/js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="http://r2lab.inria.fr/assets/js/bootstrap.min.js"></script>
+    <!---------------------------------------->
+    <!-- openlab layout -->
+    <!-- <link rel="stylesheet" type="text/css" media="screen" href="http://r2lab.inria.fr/assets/css/r2lab.css" /> -->
+    <link type="text/css" rel="stylesheet" href="http://r2lab.inria.fr/assets/font-awesome-4.4.0/css/font-awesome.min.css"/>
+    <!---------------------------------------->
+    <style>
+    .numberCircle {
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        width: 25px;
+        padding: 8px;
+        font-size: 13px;
+        line-height: 1em;
+        border: 2px solid #909090;
+        position: relative;
+
+    }
+    .numberCircle .height_fix {
+        margin-top: 100%;
+    }
+    .numberCircle .content {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        color: #909090;
+        margin-top: -7px; /* Note, this must be half the font size */
+    }
+    .gi-2x{font-size: 18px; padding: 2px;}
+
+    </style>
+  </head>
+  <body>
+
+  <div class="container-fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<h5>
+				<span class="label label-default">01/01/2016</span>
+			</h5>
+			<p>
+				The nightly routine summary.
+			</p>
+			<table class="table table-hover table-condensed">
+				<thead>
+					<tr>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class=""><div class="numberCircle"><div class="height_fix"></div><div class="content">30</div></div></td>
+						<td class=""><span class="glyphicon glyphicon-off text-success gi-2x" aria-hidden="true"></span></td>
+						<td class=""><span class="glyphicon glyphicon-off text-success gi-2x" aria-hidden="true"></span></td>
+						<td class=""><span class="glyphicon glyphicon-off text-success gi-2x" aria-hidden="true"></span></td>
+					</tr>
+          <tr>
+						<td class=""><div class="numberCircle"><div class="height_fix"></div><div class="content">33</div></div></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+          <tr>
+						<td><div class="numberCircle"><div class="height_fix"></div><div class="content">1</div></div></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+  </div>
+  </body>
+</html>
