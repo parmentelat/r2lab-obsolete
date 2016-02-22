@@ -18,3 +18,29 @@ a.button.logout { background-color: #f69a97; }
 #float_menu div.menu a.current_slice:hover {
     background-color: #c0c0d6;
 }
+
+.numberCircle {
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    width: 25px;
+    padding: 8px;
+    font-size: 13px;
+    line-height: 1em;
+    border: 2px solid #909090;
+    position: relative;
+
+}
+.numberCircle .height_fix {
+    margin-top: 100%;
+}
+.numberCircle .content {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    color: #909090;
+    margin-top: -7px; /* Note, this must be half the font size */
+}
