@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
+    <title>Socket.IO status and leases debug</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
@@ -16,11 +16,13 @@
   <body>
     <ul id="messages"></ul>
     <form action="" id="form-status">
-      <input id="chat" autocomplete="off" /><button>Chat</button>
+      <input id="status" autocomplete="off" /><button>Status</button>
     </form>
     <form action="" id="form-leases">
-      <input id="json" autocomplete="off" /><button> Send
-      json</button>
+      <input id="leases" autocomplete="off" /><button>Leases</button>
+    </form>
+    <form action="" id="form-leases-request">
+      <input id="leases-request" autocomplete="off" /><button>L Request</button>
     </form>
 <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
 <script src="http://code.jquery.com/jquery-2.1.4.js"></script>
@@ -28,21 +30,26 @@
 //  var socket = io();
   var socket = io.connect('http://localhost:443/');
   $('#form-status').submit(function(){
-    socket.emit('chan-status', $('#chat').val());
-    $('#chat').val('');
+    socket.emit('chan-status', $('#status').val());
+/*    $('#status').val(''); */
     return false;
   });
   $('#form-leases').submit(function(){
-    socket.emit('chan-leases', $('#json').val());
-/*    $('#json').val('');*/
+    socket.emit('chan-leases', $('#leases').val());
+/*    $('#leases').val('');*/
+    return false;
+  });
+  $('#form-leases-request').submit(function(){
+    socket.emit('chan-leases-request', $('#leases-request').val());
+/*    $('#leases-request').val('');*/
     return false;
   });
   socket.on('chan-status', function(msg){
-    $('#messages').append($('<li> status').text(msg));
-  });
+    $('#messages').append($('<li>').text('status: ' + msg));});
   socket.on('chan-leases', function(msg){
-    $('#messages').append($('<li> leases').text(msg));
-  });
+    $('#messages').append($('<li>').text('leases: ' + msg));});
+  socket.on('chan-leases-request', function(msg){
+    $('#messages').append($('<li>').text('leases-request: ' + msg));});
 </script>
   </body>
 </html>
