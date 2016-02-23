@@ -56,9 +56,13 @@ float_menu_template: r2lab/float_menu-slices.html
     <div id="actions"></div>
     </div>
   </div>
+  <div class="row">
+    <div class="col-md-12">
+      <br/>
+      <table class="table table-condensed" id='livetable_container'> </table>
+      <script type="text/javascript" src="/plugins/livetable.js"></script>
+      <script>livetable_show_rxtx_rates = true;</script>
+      <style type="text/css"> @import url("/plugins/livetable.css"); </style>
+    </div>
+  </div>    
 </div>
----
-<table class="table table-condensed" id='livetable_container'> </table>
-<script type="text/javascript" src="/plugins/livetable.js"></script>
-<script>livetable_show_rxtx_rates = true;</script>
-<style type="text/css"> @import url("/plugins/livetable.css"); </style>
