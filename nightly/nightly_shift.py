@@ -31,11 +31,11 @@ parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
 
 args = parser.parse_args()
 
-VERSIONS_ALIAS = ['u-1410',             'u-1504',           'f-21',          'f-22']
-VERSIONS_NAMES = ['ubuntu 14.10',       'ubuntu 15.04',     'fedora 21',     'fedora 22']
-VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz']
-#RESTART_ALL    = "service omf-sfa stop; stop ntrc; service dnsmasq stop; service dnsmasq start; start ntrc; service omf-sfa start; "
+VERSIONS_ALIAS  = ['u-1410',           'u-1504',           'f-21',          'f-22',           'f-23']
+VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',     'fedora 21',     'fedora 22',      'fedora 23']
+VERSIONS        = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
 
+SEND_RESULTS_TO = ['mario.zancanaro@inria.fr', 'thierry.parmentelat@inria.fr', 'thierry.turletti@inria.fr', 'walid.dabbous@inria.fr']
 
 
 
@@ -63,12 +63,6 @@ def main(args):
     print "-- INFO: turn on nodes"
     all_nodes = name_node(nodes)
 
-    #------------------------------------------
-    # Uncomment the two lines below to use OMF format "on" command
-    #all_nodes = stringfy_list(all_nodes)
-    #cmd = "omf6 tell -t {} -a on".format(all_nodes)
-
-    # OR
 
     #------------------------------------------
     # Uncomment the line below to use CURL format "on" command
@@ -87,11 +81,15 @@ def main(args):
     print "-- INFO: check OS version for each node"
     wait_and_update_progress_bar(20)
     all_nodes = to_str(nodes)
-    bug_node   = []
-    old_os = {}
-    results    = {}
+    bug_node  = []
+    old_os    = {}
+    results   = {}
+    phases    = {}
 
     for node in all_nodes:
+        create_phases_db(node)
+        build_grouped_os_list
+
         host = name_node(node)
         user = 'root'
         cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
@@ -102,6 +100,7 @@ def main(args):
             # UPDATE NODES WHERE SOME BUG IS PRESENT
             bug_node.append(node)
             old_os.update( {node : {'os' : 'unknown'}} )
+            update_phases_db(node)
         else:
             os = name_os(result[node]['stdout'])
             old_os.update( {node : {'os' : os}} )
@@ -333,11 +332,25 @@ def main(args):
     # execute(RESTART_ALL)
 
 
+def update_phases_db(node, phase):
+    """ set fail for the node n in the phase """
+    phases.update({ node : {"ph{}".format(phase) : 'x'} })
 
+
+
+def create_phases_db(node):
+    """ create the phases to register each step of nightly routine """
+    number_of_phases = 5
+    all_phases = {}
+    for n in range(number_of_phases):
+        all_phases["ph{}".format(n+1)] = 'o'
+
+    phases.update({node : all_phases})
+
+update_phases_db
 
 def write_in_file(text):
     """save the results in a file for posterior use of it """
-
     dir_name  = args.text_dir
     file_name = "nightly.txt"
 
@@ -347,14 +360,13 @@ def write_in_file(text):
         fl.write("{}: {}\n".format(date(),text))
 
 
+
 def summary_in_mail(content):
     """send a summary output of the routine"""
-
     list_of_bug_nodes = content
-
     title = ''
     body  = ''
-    to    = 'mario.zancanaro@inria.fr, thierry.parmentelat@inria.fr, thierry.turletti@inria.fr, walid.dabbous@inria.fr'
+    to    = SEND_RESULTS_TO
     #to    = 'mario.zancanaro@inria.fr'
 
     if len(list_of_bug_nodes) < 1:
@@ -373,7 +385,6 @@ def summary_in_mail(content):
 def set_node_status(nodes, status='ok'):
     """ Inform status page in r2lab.inria.fr the nodes with problem """
     from socketIO_client import SocketIO, LoggingNamespace
-
     hostname = 'r2lab.inria.fr'
     port     = 443
 
@@ -388,7 +399,6 @@ def set_node_status(nodes, status='ok'):
 
 def command_in_curl(nodes, action='status'):
     """ Transform the command to execute in CURL format """
-
     nodes = number_node(nodes)
 
     in_curl = map(lambda x:'curl reboot'+str('0'+str(x) if x<10 else x)+'/'+action, nodes)
@@ -469,7 +479,6 @@ def named_version(version):
 
 def to_str(list_items):
     """ Change the integer array to string array """
-
     if not type(list_items) is list:
         raise Exception("invalid parameter: {}, must be a list".format(list_items))
         return False
@@ -494,7 +503,6 @@ def wait_and_update_progress_bar(wait_for):
 
 def execute(command, host_name='localhost', host_user='root', key='node'):
     """ Execute the command in host """
-
     ec = ExperimentController()
 
     node = ec.register_resource("linux::Node")
@@ -525,7 +533,6 @@ def execute(command, host_name='localhost', host_user='root', key='node'):
 def error_presence(results):
     """ Check error mentions in output or 1 in exit code """
     err_words = ['error', 'errors', 'fail']
-
     error = False
 
     for result in results:
@@ -546,20 +553,16 @@ def error_presence(results):
 
 def stringfy_list(list):
     """ Return the list in a string comma separated ['a,'b','c'] will be a,b,c """
-
     stringfy_list = ','.join(list)
 
     return stringfy_list
 
 
 
-
 def name_os(os):
     """ Format the O.S. names """
     versions_names = VERSIONS_NAMES
-
     os = os.strip()
-
     if os == "":
         os = 'undefined'
     # Search in the list the 9th first characters
@@ -585,7 +588,6 @@ def remove_special_char(str):
 
 def number_node(nodes):
     """ Returns the number from the node alias [fitXX] """
-
     if type(nodes) is list:
         ans = []
         for node in nodes:
@@ -601,7 +603,6 @@ def number_node(nodes):
 
 def name_node(nodes):
     """ Returns the name from the node alias [fitXX] """
-
     if type(nodes) is list:
         ans = []
         for node in nodes:
@@ -622,7 +623,6 @@ def name_node(nodes):
 
 def all_nodes():
     """Range of all nodes in faraday """
-
     nodes = range(1,38)
     nodes = map(str, nodes)
     for k, v in enumerate(nodes):
@@ -636,7 +636,6 @@ def all_nodes():
 
 def format_nodes(nodes):
     """Correct format when inserted 'all' in -N nodes parameter """
-
     if 'all' in nodes:
         nodes = all_nodes()
     else:
@@ -656,7 +655,6 @@ def format_nodes(nodes):
 
 def save_in_json(results, file_name):
     """ Save the result in a json file """
-
     dir = args.text_dir
     file_name = "{}.ext".format(file_name)
 
@@ -667,7 +665,6 @@ def save_in_json(results, file_name):
 
 def split(array, size):
     """ split one array in n (size) other parts """
-
     splited_arrays = []
 
     while len(array) > size:
