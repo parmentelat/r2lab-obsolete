@@ -553,7 +553,7 @@ $(document).ready(function() {
 
 
   function buildSlicesBox(leases){
-    var knew = [];
+    var knew = getMySlicesinShortName();
     var slices = $("#my-slices");
 
     $.each(leases, function(key,val){
@@ -582,14 +582,15 @@ $(document).ready(function() {
 
 
   function buildInitialSlicesBox(leases){
+    setColorLeases();
     var knew = [];
     var slices = $("#my-slices");
 
     slices.html('<h4 align="center">drag & drop slices</h4>');
 
     $.each(leases, function(key,val){
-      var color = getRandomColor();
       val = shortName(val);
+      var color = getColorLease(val);
       if ($.inArray(val, knew) === -1) { //already present?
         if (isMySlice(val)) {
           if(val === getCurrentSliceName()){
@@ -615,6 +616,15 @@ $(document).ready(function() {
 
   function getMySlicesName(){
     return my_slices_name;
+  }
+
+
+  function getMySlicesinShortName(){
+    var new_short_names = [];
+    $.each(getMySlicesName(), function(key,val){
+      new_short_names.push(shortName(val));
+    });
+    return new_short_names;
   }
 
 
@@ -649,13 +659,13 @@ $(document).ready(function() {
     // });
 
     resetActionsQueued();
-    setColorLeases();
     buildInitialSlicesBox(getMySlicesName());
     buildCalendar(setNightlyAndPast());
     setCurrentSliceBox(getCurrentSliceName());
 
     var socket = io.connect("http://r2lab.inria.fr:443");
     socket.on('chan-leases', function(msg){
+      console.log('chan answer...');
       setCurrentLeases(msg);
       resetActionsQueued();
       var leases = getCurrentLeases();
