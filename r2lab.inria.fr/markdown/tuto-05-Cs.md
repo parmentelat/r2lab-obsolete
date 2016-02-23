@@ -3,7 +3,7 @@ tab: tutorial
 float_menu_template: r2lab/float_menu-tutorials.html
 ---
 
-Below we present an experiment which will conduct a load image usgin [NEPI](http://nepi.inria.fr/Install/WebHome) network tool at R2lab simulation testbed. 
+Below we present an experiment which will conduct a load image using [NEPI](http://nepi.inria.fr/Install/WebHome) network tool at R2lab simulation testbed. 
 
 You will be able load and control the most common Linux distros at R2lab testbed as root user. We provide the most recent Ubuntus and Fedoras for all users.
 
