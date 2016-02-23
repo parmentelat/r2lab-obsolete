@@ -17,7 +17,7 @@ float_menu_template: r2lab/float_menu-slices.html
     </div>
   </div>
   <br />
-  <div class="row" id="all" style="display: none">
+  <div class="row" id="all">
     <div class="col-md-2">
       <div id="wrap">
         <div id="my-slices">

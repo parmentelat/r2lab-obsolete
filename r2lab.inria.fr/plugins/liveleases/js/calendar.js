@@ -1,16 +1,16 @@
 $(document).ready(function() {
 
-  var my_slices_name      = ['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];//r2lab_slices
+  var my_slices_name      = r2lab_slices;//['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];//r2lab_slices
   var my_slices_color     = [];
   var actionsQueue        = [];
   var actionsQueued       = [];
-  var current_slice_name  = 'onelab.inria.mario.tutorial';//current_slice.name
+  var current_slice_name  = current_slice.name;//'onelab.inria.mario.tutorial';//current_slice.name
   var current_slice_color = '#ddd';
   var broadcastActions    = false;
   var current_leases      = null;
   var color_pending       = '#000000';
   var keepOldEvent        = null;
-  var refreshCicle        = 0;
+  // var refreshCicle        = 0;
 
 
   function buildCalendar(theEvents) {
@@ -218,30 +218,38 @@ $(document).ready(function() {
 
     buildSlicesBox(leases);
 
-    //Nightly routine fixed in each nigth from 3AM to 5PM
-    newLease = new Object();
-    newLease.title = "nightly routine";
-    newLease.id = "nightly";
-    newLease.start = " T03:00:00Z";
-    newLease.end   = " T05:00:00Z";
-    newLease.color = "#616161";
-    newLease.overlap = false;
-    newLease.editable = false;
-    newLease.dow = [0,1,2,3,4,5,6,7,8];
-    leases.push(newLease);
-
-    //Past dates
-    newLease = new Object();
-    newLease.id = "pastDate";
-    newLease.start = moment().format("YYYY-01-01T00:00:00Z");
-    newLease.end   = moment().format("YYYY-MM-DD");
-    newLease.overlap = false;
-    newLease.editable = false;
-    newLease.rendering = "background",
-    newLease.color = "#FFE5E5";
-    leases.push(newLease);
+    $.merge(leases, setNightlyAndPast());
 
     return leases;
+  }
+
+
+  function setNightlyAndPast(){
+    var notAllowedEvents = []
+    //Nightly routine fixed in each nigth from 3AM to 5PM
+    newEvent = new Object();
+    newEvent.title = "nightly routine";
+    newEvent.id = "nightly";
+    newEvent.start = " T03:00:00Z";
+    newEvent.end   = " T05:00:00Z";
+    newEvent.color = "#616161";
+    newEvent.overlap = false;
+    newEvent.editable = false;
+    newEvent.dow = [0,1,2,3,4,5,6,7,8];
+    notAllowedEvents.push(newEvent);
+
+    //Past dates
+    newEvent = new Object();
+    newEvent.id = "pastDate";
+    newEvent.start = moment().format("YYYY-01-01T00:00:00Z");
+    newEvent.end   = moment().format("YYYY-MM-DD");
+    newEvent.overlap = false;
+    newEvent.editable = false;
+    newEvent.rendering = "background",
+    newEvent.color = "#FFE5E5";
+    notAllowedEvents.push(newEvent);
+
+    return notAllowedEvents;
   }
 
 
@@ -411,9 +419,9 @@ $(document).ready(function() {
 
 
   function refreshCalendar(events){
-    refreshCicle = refreshCicle + 1;
+    // refreshCicle = refreshCicle + 1;
 
-    if(refreshCicle == 2){
+    // if(refreshCicle == 2){
       var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
       var failedEvents = [];
       $.each(diffLeases, function(key,obj){
@@ -436,11 +444,11 @@ $(document).ready(function() {
       $('#calendar').fullCalendar('addEventSource', events);
       $('#calendar').fullCalendar('addEventSource', failedEvents);
 
-      refreshCicle = 0;
+      // refreshCicle = 0;
 
-    } else {
-      console.log('waiting...'+refreshCicle);
-    }
+    // } else {
+    //   console.log('waiting...'+refreshCicle);
+    // }
   }
 
 
@@ -575,7 +583,7 @@ $(document).ready(function() {
     var knew = [];
     var slices = $("#my-slices");
 
-    slices.html('<h4 align="center">drag & drop slices</h4>');
+    // slices.html('<h4 align="center">drag & drop slices</h4>');
 
     $.each(leases, function(key,val){
       if ($.inArray(val.title, knew) === -1) { //already present?
@@ -585,9 +593,42 @@ $(document).ready(function() {
           }
           slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ val.color +"").text(val.title)).append($("<div />").attr("id", idFormat(val.title)).addClass('noactive'));
         } else{
+          $("div.fc-event-not-mine").remove();
           slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ val.color +"").text(val.title));
         }
         knew.push(val.title);
+      }
+    });
+
+    $('#my-slices .fc-event').each(function() {
+      $(this).draggable({
+        zIndex: 999,
+        revert: true,
+        revertDuration: 0
+      });
+    });
+  }
+
+
+  function buildInitialSlicesBox(leases){
+    var knew = [];
+    var slices = $("#my-slices");
+
+    slices.html('<h4 align="center">drag & drop slices</h4>');
+
+    $.each(leases, function(key,val){
+      var color = getRandomColor();
+      val = shortName(val);
+      if ($.inArray(val, knew) === -1) { //already present?
+        if (isMySlice(val)) {
+          if(val === getCurrentSliceName()){
+            setCurrentSliceColor(color);
+          }
+          slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ color +"").text(val)).append($("<div />").attr("id", idFormat(val)).addClass('noactive'));
+        } else{
+          slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ color +"").text(val));
+        }
+        knew.push(val);
       }
     });
 
@@ -629,47 +670,37 @@ $(document).ready(function() {
   }
 
 
-  function loadEfects(opt){
-    if(opt == 'in'){
-      $('#loading').fadeIn(100);
-    }
-    else {
-      $('#loading').delay(100).fadeOut();
-      $('#all').fadeIn(100);
-    }
-  }
+  // function loadEfects(opt){
+  //   if(opt == 'in'){
+  //     $('#loading').fadeIn(100);
+  //   }
+  //   else {
+  //     $('#loading').delay(100).fadeOut();
+  //     $('#all').fadeIn(100);
+  //   }
+  // }
 
-
-  function waitForLeases(){
-    if(getCurrentLeases() !== null){
-      resetActionsQueued();
-      var leases = getCurrentLeases();
-      var leasesbooked  = parseLease(leases);
-      loadEfects();
-      buildCalendar(leasesbooked);
-      setCurrentSliceBox(getCurrentSliceName());
-      // in case of receiving live booking
-      if (broadcastActions){
-        listenBroadcast();
-      }
-    }
-    else{
-      loadEfects('in');
-      setTimeout(function(){
-        waitForLeases();
-      },250);
-    }
-  }
 
 
   function main (){
-    waitForLeases();
+    // var socket = io.connect("http://r2lab.inria.fr:443");
+    // socket.emit('chan-leases-request', current_slice_name);
+    // socket.on('chan-leases-request', function(msg){
+    //   console.log(msg);
+    // });
+
+    resetActionsQueued();
     setColorLeases();
+    buildInitialSlicesBox(getMySlicesName());
+    buildCalendar(setNightlyAndPast());
+    setCurrentSliceBox(getCurrentSliceName());
+
+    // setColorLeases();
 
     var socket = io.connect("http://r2lab.inria.fr:443");
     socket.on('chan-leases', function(msg){
-      setCurrentLeases(msg)
-      resetActionsQueued();;
+      setCurrentLeases(msg);
+      resetActionsQueued();
       var leases = getCurrentLeases();
       var leasesbooked = parseLease(leases);
 
