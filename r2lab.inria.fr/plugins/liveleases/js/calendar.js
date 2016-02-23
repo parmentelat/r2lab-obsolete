@@ -10,7 +10,6 @@ $(document).ready(function() {
   var current_leases      = null;
   var color_pending       = '#000000';
   var keepOldEvent        = null;
-  // var refreshCicle        = 0;
 
 
   function buildCalendar(theEvents) {
@@ -46,7 +45,6 @@ $(document).ready(function() {
       //Events
       // this is fired when a selection is made
       select: function(start, end, event, view) {
-        //Avoid past dates when try to book a lease
         if (isPastDate(start)) {
           $('#calendar').fullCalendar('unselect');
           sendMessage('This is the past date/time!');
@@ -106,6 +104,7 @@ $(document).ready(function() {
         }
 			},
 
+      // this happens when the event is dropped
       eventDrop: function(event, delta, revertFunc) {
         if (!confirm("Confirm this change?")) {
             revertFunc();
@@ -123,10 +122,12 @@ $(document).ready(function() {
         }
       },
 
+      // this fires when one event starts to be dragged
       eventDragStart: function(event, jsEvent, ui, view) {
         keepOldEvent = event;
       },
 
+      // this fires when an event is rendered
       eventRender: function(event, element) {
         element.bind('dblclick', function() {
           if (isMySlice(event.title)) {
@@ -135,6 +136,7 @@ $(document).ready(function() {
         });
       },
 
+      // this is fired when an event is resized
       eventResize: function(event, jsEvent, ui, view) {
         if (!confirm("Confirm this change?")) {
           return;
@@ -157,7 +159,6 @@ $(document).ready(function() {
   function sendMessage(msg, type){
     var cls   = 'danger';
     var title = 'Ooops!'
-
     if(type == 'info'){
       cls   = 'info';
       title = 'Info:'
@@ -166,7 +167,6 @@ $(document).ready(function() {
       cls   = 'success';
       title = 'Yep!'
     }
-
     $('html,body').animate({'scrollTop' : 0},400);
     $('#messages').removeClass().addClass('alert alert-'+cls);
     $('#messages').html("<strong>"+title+"</strong> "+msg);
@@ -312,7 +312,6 @@ $(document).ready(function() {
       if (action == 'addLease') {
         $('#calendar').fullCalendar('renderEvent', event, true );
         setActionsQueue('add', event);
-        // logLeases('add', event);
       }
       if (action == 'delLease'){
         if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
@@ -321,12 +320,10 @@ $(document).ready(function() {
         else if(event.title.indexOf('(pending)') == -1) {
           $('#calendar').fullCalendar('removeEvents',event.id);
           setActionsQueue('del', event);
-          // logLeases('del', event);
         }
       }
       if (action == 'editLease'){
         setActionsQueue('edit', event);
-        // logLeases('edit', event);
       }
     }
   }
@@ -373,8 +370,6 @@ $(document).ready(function() {
         "valid_from" : data.start.toISOString(),
         "valid_until": data.end.toISOString()
       };
-      //delActionQueue(data.id); //seems not reflect
-      //actionsQueue.push(data.id); //present fail message but have a bug when deleted because the same id as the original event
     }
     else if (action == 'del'){
       shiftAction = 'delete';
@@ -419,50 +414,28 @@ $(document).ready(function() {
 
 
   function refreshCalendar(events){
-    // refreshCicle = refreshCicle + 1;
-
-    // if(refreshCicle == 2){
-      var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
-      var failedEvents = [];
-      $.each(diffLeases, function(key,obj){
-        var each = $("#calendar").fullCalendar( 'clientEvents', obj );
-        $.each(each, function(k,o){
-          newLease = new Object();
-          newLease.title = failedName(o.title);
-          newLease.id = o.id;
-          newLease.start = o.start;
-          newLease.end   = o.end;
-          newLease.color = "#FF0000";
-          newLease.overlap = false;
-          newLease.editable = false;
-          failedEvents.push(newLease);
-        });
+    var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
+    var failedEvents = [];
+    $.each(diffLeases, function(key,obj){
+      var each = $("#calendar").fullCalendar( 'clientEvents', obj );
+      $.each(each, function(k,o){
+        newLease = new Object();
+        newLease.title = failedName(o.title);
+        newLease.id = o.id;
+        newLease.start = o.start;
+        newLease.end   = o.end;
+        newLease.color = "#FF0000";
+        newLease.overlap = false;
+        newLease.editable = false;
+        failedEvents.push(newLease);
       });
+    });
 
-      resetActionQueue();
-      resetCalendar();
-      $('#calendar').fullCalendar('addEventSource', events);
-      $('#calendar').fullCalendar('addEventSource', failedEvents);
-
-      // refreshCicle = 0;
-
-    // } else {
-    //   console.log('waiting...'+refreshCicle);
-    // }
+    resetActionQueue();
+    resetCalendar();
+    $('#calendar').fullCalendar('addEventSource', events);
+    $('#calendar').fullCalendar('addEventSource', failedEvents);
   }
-
-
-  // function logLeases(action, data){
-  //   if(action == 'add'){
-  //     $('#actions').append('ADD: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
-  //   }
-  //   else if (action == 'edit'){
-  //     $('#actions').append('EDIT: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
-  //   }
-  //   else if (action == 'del'){
-  //     $('#actions').append('DEL: '+fullName(resetName(data.title)) +' ['+ data.start +'-'+ data.end+']').append('<br>');
-  //   }
-  // }
 
 
   function getRandomColor() {
@@ -583,8 +556,6 @@ $(document).ready(function() {
     var knew = [];
     var slices = $("#my-slices");
 
-    // slices.html('<h4 align="center">drag & drop slices</h4>');
-
     $.each(leases, function(key,val){
       if ($.inArray(val.title, knew) === -1) { //already present?
         if (isMySlice(val.title)) {
@@ -670,18 +641,6 @@ $(document).ready(function() {
   }
 
 
-  // function loadEfects(opt){
-  //   if(opt == 'in'){
-  //     $('#loading').fadeIn(100);
-  //   }
-  //   else {
-  //     $('#loading').delay(100).fadeOut();
-  //     $('#all').fadeIn(100);
-  //   }
-  // }
-
-
-
   function main (){
     // var socket = io.connect("http://r2lab.inria.fr:443");
     // socket.emit('chan-leases-request', current_slice_name);
@@ -694,8 +653,6 @@ $(document).ready(function() {
     buildInitialSlicesBox(getMySlicesName());
     buildCalendar(setNightlyAndPast());
     setCurrentSliceBox(getCurrentSliceName());
-
-    // setColorLeases();
 
     var socket = io.connect("http://r2lab.inria.fr:443");
     socket.on('chan-leases', function(msg){
@@ -713,32 +670,32 @@ $(document).ready(function() {
   //STOLEN FROM THIERRY
   //from https://docs.djangoproject.com/en/1.9/ref/csrf/
   function getCookie(name) {
-      var cookieValue = null;
-      if (document.cookie && document.cookie != '') {
-          var cookies = document.cookie.split(';');
-          for (var i = 0; i < cookies.length; i++) {
-              var cookie = jQuery.trim(cookies[i]);
-              // Does this cookie string begin with the name we want?
-              if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                  break;
-              }
-          }
-      }
-      return cookieValue;
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
   }
 
   // callback will be called on the xhttp object upon ready state change
   // see http://www.w3schools.com/ajax/ajax_xmlhttprequest_onreadystatechange.asp
   function post_lease_request(verb, request, callback) {
-      var xhttp = new XMLHttpRequest();
-      xhttp.open("POST", "/leases/"+verb, true);
-      xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      // this is where we retrieve the CSRF token from the context
-      var csrftoken = getCookie('csrftoken');
-      xhttp.setRequestHeader("X-CSRFToken", csrftoken);
-      xhttp.send(JSON.stringify(request));
-      xhttp.onreadystatechange = function(){callback(xhttp);};
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", "/leases/"+verb, true);
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    // this is where we retrieve the CSRF token from the context
+    var csrftoken = getCookie('csrftoken');
+    xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+    xhttp.send(JSON.stringify(request));
+    xhttp.onreadystatechange = function(){callback(xhttp);};
   }
 
   main();
