@@ -12,7 +12,7 @@ body {
 	border-bottom: 6px solid transparent;
 	border-left: 6px solid black;
   margin-left: -8px;
-  margin-top: -28px;
+  margin-top: -25px;
   float: left;
 }
 
@@ -22,19 +22,20 @@ body {
 }
 
 #messages {
-  max-width: 1100px;
+  max-width: 1000px;
   margin: 0 auto;
   align-self: center;
 }
 
 #wrap {
-  width: 200px;
+  width: 100%;
   margin: 0 auto;
 }
 
 #my-slices {
   float: left;
-  width: 200px;
+  width: 100%;
+  height: 285px;
   padding: 0 10px;
   border: 1px solid #ccc;
   background: #eee;
@@ -42,7 +43,7 @@ body {
 }
 
 #my-slices h4 {
-  font-size: 16px;
+  font-size: 12px;
   margin-top: 0;
   padding-top: 1em;
 }
@@ -63,6 +64,11 @@ body {
   vertical-align: middle;
 }
 
+.fc-toolbar h2 {
+    font-size: 12px;
+    white-space: normal !important;
+}
+
 .fc-event {
 	position: relative; /* for resize handle and other inner positioning */
 	display: block; /* make the <a> tag block */
@@ -77,6 +83,7 @@ body {
 }
 
 .fc-event-not-mine {
+  margin: 10px 0;
 	position: relative; /* for resize handle and other inner positioning */
 	display: block; /* make the <a> tag block */
   color: #fff;

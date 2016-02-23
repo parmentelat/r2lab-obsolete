@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leases Booking</title>
+  <meta charset='utf-8' />
+  <link href='css/fullcalendar.css' rel='stylesheet' />
+  <link href='css/fullcalendar.print.css' rel='stylesheet' media='print' />
+  <script src='js/moment.min.js'></script>
+  <script src='js/jquery.min.js'></script>
+  <script src='js/jquery-ui.custom.min.js'></script>
+  <script src='js/fullcalendar.min.js'></script>
+  <link href='css/calendar.css' rel='stylesheet'/>
+  <script src="js/calendar.js"></script>
+  <script src="../../../assets/js/d3.min.js"></script>
+  <script src="../../../assets/js/jquery-2.1.4.min.js"></script>
+  <script src="../../../assets/js/socket.io-1.3.6.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div id='messages' style="display: none" class="" role="alert">
+          <a class="close" onclick="$('.alert').hide()">×</a>
+        </div>
+        <div id='loading' style="display: none" class="alert alert-info" role="alert">
+          <strong>Be patient!</strong> Loading informations from server...
+        </div>
+      </div>
+    </div>
+    <br />
+    <div class="row" id="all" style="display: none">
+      <div class="col-md-2">
+        <div id="wrap">
+          <div id="my-slices">
+            <h4 align="center">drag & drop slices</h4>
+          </div>
+          <div style="clear:both"></div>
+        </div>
+      </div>
+      <div class="col-md-10">
+        <div id="calendar"></div>
+        <style type="text/css"> @import url("/plugins/liveleases/css/fullcalendar.css"); </style>
+        <script type="text/javascript" src="/plugins/liveleases/js/moment.min.js"></script>
+        <script type="text/javascript" src="/plugins/liveleases/js/jquery-ui.custom.min.js"></script>
+        <script type="text/javascript" src="/plugins/liveleases/js/fullcalendar.min.js"></script>
+        <style type="text/css"> @import url("/plugins/liveleases/css/calendar.css"); </style>
+        <script type="text/javascript" src="/plugins/liveleases/js/calendar.js"></script>
+        <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
+      </div>
+    </div>
+  </div>
+  <!--  HERE ENDS THE SLICES AND LEASES BOOKING -->
+  <br />
+</body>
+</html>
