@@ -10,7 +10,7 @@ $(document).ready(function() {
   var current_leases      = null;
   var color_pending       = '#000000';
   var keepOldEvent        = null;
-  var version             = 1.3;
+  var version             = 1.4;
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -353,10 +353,11 @@ $(document).ready(function() {
 
   function setActionsQueue(action, data){
     var shiftAction = null;
+    var request = null;
 
     if(action == 'add'){
       shiftAction = 'add';
-      var request = {
+      request = {
         "slicename"  : fullName(resetName(data.title)),
         "valid_from" : data.start._d.toISOString(),
         "valid_until": data.end._d.toISOString()
@@ -365,16 +366,16 @@ $(document).ready(function() {
     }
     else if (action == 'edit'){
       shiftAction = 'update';
-      var request = {
-        "uuid     "  : data.uuid,
+      request = {
+        "uuid" : data.uuid,
         "valid_from" : data.start._d.toISOString(),
         "valid_until": data.end._d.toISOString()
       };
     }
     else if (action == 'del'){
       shiftAction = 'delete';
-      var request = {
-        "uuid     "  : data.uuid,
+      request = {
+        "uuid" : data.uuid,
       };
       delActionQueue(data.id);
     }
