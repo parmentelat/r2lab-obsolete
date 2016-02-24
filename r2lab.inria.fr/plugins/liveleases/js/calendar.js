@@ -10,7 +10,7 @@ $(document).ready(function() {
   var current_leases      = null;
   var color_pending       = '#000000';
   var keepOldEvent        = null;
-  var version             = 1.1;
+  var version             = 1.2;
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -415,6 +415,7 @@ $(document).ready(function() {
 
   function refreshCalendar(events){
     var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
+    console.log(diffLeases);
     var failedEvents = [];
     $.each(diffLeases, function(key,obj){
       var each = $("#calendar").fullCalendar( 'clientEvents', obj );
@@ -434,6 +435,7 @@ $(document).ready(function() {
     resetActionQueue();
     resetCalendar();
     $('#calendar').fullCalendar('addEventSource', events);
+    console.log(failedEvents);
     $('#calendar').fullCalendar('addEventSource', failedEvents);
   }
 
@@ -653,7 +655,7 @@ $(document).ready(function() {
 
   function main (){
     console.log(version);
-    
+
     // var socket = io.connect("http://r2lab.inria.fr:443");
     // socket.emit('chan-leases-request', current_slice_name);
     // socket.on('chan-leases-request', function(msg){
