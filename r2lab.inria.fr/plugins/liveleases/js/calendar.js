@@ -10,7 +10,7 @@ $(document).ready(function() {
   var current_leases      = null;
   var color_pending       = '#000000';
   var keepOldEvent        = null;
-  var version             = 1.2;
+  var version             = 1.3;
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -210,7 +210,6 @@ $(document).ready(function() {
           newLease.editable = isMySlice(newLease.title);
           newLease.overlap = false;
           leases.push(newLease);
-
           setActionsQueued(newLease.title, newLease.start, newLease.end);
         // }
       });
@@ -265,7 +264,7 @@ $(document).ready(function() {
 
   function setActionsQueued(title, start, end){
     var local_id = null;
-    local_id = getLocalId(title+start+end);
+    local_id = getLocalId(title, start, end);
     actionsQueued.push(local_id);
   }
 
@@ -331,7 +330,8 @@ $(document).ready(function() {
 
   function getLocalId(title, start, end){
     var id = null;
-
+    var m_start = moment(start)._d.toISOString();
+    var m_end   = moment(end)._d.toISOString();
     String.prototype.hash = function() {
       var self = this, range = Array(this.length);
       for(var i = 0; i < this.length; i++) {
@@ -341,7 +341,7 @@ $(document).ready(function() {
         return self.charCodeAt(i).toString(16);
       }).join('');
     }
-    id = (title+start+end).hash();
+    id = (title+m_start+m_end).hash();
     return id;
   }
 
@@ -358,7 +358,7 @@ $(document).ready(function() {
       shiftAction = 'add';
       var request = {
         "slicename"  : fullName(resetName(data.title)),
-        "valid_from" : data.start.toISOString(),
+        "valid_from" : data.start._d.toISOString(),
         "valid_until": data.end._d.toISOString()
       };
       actionsQueue.push(data.id);
@@ -367,8 +367,8 @@ $(document).ready(function() {
       shiftAction = 'update';
       var request = {
         "uuid     "  : data.uuid,
-        "valid_from" : data.start.toISOString(),
-        "valid_until": data.end.toISOString()
+        "valid_from" : data.start._d.toISOString(),
+        "valid_until": data.end._d.toISOString()
       };
     }
     else if (action == 'del'){
@@ -415,7 +415,7 @@ $(document).ready(function() {
 
   function refreshCalendar(events){
     var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
-    console.log(diffLeases);
+
     var failedEvents = [];
     $.each(diffLeases, function(key,obj){
       var each = $("#calendar").fullCalendar( 'clientEvents', obj );
@@ -435,7 +435,7 @@ $(document).ready(function() {
     resetActionQueue();
     resetCalendar();
     $('#calendar').fullCalendar('addEventSource', events);
-    console.log(failedEvents);
+
     $('#calendar').fullCalendar('addEventSource', failedEvents);
   }
 
