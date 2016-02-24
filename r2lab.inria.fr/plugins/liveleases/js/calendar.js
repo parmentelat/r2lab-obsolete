@@ -212,7 +212,7 @@ $(document).ready(function() {
           // if (! isPresent(newLease.id, getActionsQueued() )){
             leases.push(newLease);
           // }
-          setActionsQueued(newLease.title+, newLease.start, newLease.end);
+          setActionsQueued(newLease.title, newLease.start, newLease.end);
         // }
       });
     });
