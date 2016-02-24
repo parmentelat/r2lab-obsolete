@@ -10,7 +10,7 @@ $(document).ready(function() {
   var current_leases      = null;
   var color_pending       = '#000000';
   var keepOldEvent        = null;
-  var version             = 1.5;
+  var version             = 1.6;
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -210,7 +210,7 @@ $(document).ready(function() {
           newLease.editable = isMySlice(newLease.title);
           newLease.overlap = false;
           leases.push(newLease);
-          setActionsQueued(newLease.title+"*", newLease.start, newLease.end);
+          setActionsQueued(newLease.title, newLease.start, newLease.end);
         // }
       });
     });
@@ -418,21 +418,22 @@ $(document).ready(function() {
     var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
 
     var failedEvents = [];
-    $.each(diffLeases, function(key,obj){
-      var each = $("#calendar").fullCalendar( 'clientEvents', obj );
-      $.each(each, function(k,o){
-        newLease = new Object();
-        newLease.title = failedName(o.title);
-        newLease.id = o.id;
-        newLease.start = o.start;
-        newLease.end   = o.end;
-        newLease.color = "#FF0000";
-        newLease.overlap = false;
-        newLease.editable = false;
-        failedEvents.push(newLease);
+    $.each(diffLeases, function(key,event_id){
+      if (! isPresent(event_id, getActionsQueued() )){
+        var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
+        $.each(each, function(k,o){
+          newLease = new Object();
+          newLease.title = failedName(o.title);
+          newLease.id = o.id;
+          newLease.start = o.start;
+          newLease.end   = o.end;
+          newLease.color = "#FF0000";
+          newLease.overlap = false;
+          newLease.editable = false;
+          failedEvents.push(newLease);
+        });
+      }
       });
-    });
-
     resetActionQueue();
     resetCalendar();
     $('#calendar').fullCalendar('addEventSource', events);
@@ -552,6 +553,16 @@ $(document).ready(function() {
       is_my = true;
     }
     return is_my;
+  }
+
+
+  function isPresent(element, list){
+    var present = false;
+
+    if ($.inArray(element, list) > -1){
+      present = true;
+    }
+    return present;
   }
 
 
