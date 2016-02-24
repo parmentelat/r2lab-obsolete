@@ -203,9 +203,9 @@ $(document).ready(function() {
           newLease = new Object();
           newLease.title = shortName(v.account.name);
           newLease.uuid = String(v.uuid);
-          newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);//String(v.uuid);
           newLease.start = v.valid_from;
           newLease.end = v.valid_until;
+          newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);//String(v.uuid);
           newLease.color = getColorLease(newLease.title);
           newLease.editable = isMySlice(newLease.title);
           newLease.overlap = false;
