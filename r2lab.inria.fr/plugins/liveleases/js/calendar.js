@@ -10,7 +10,7 @@ $(document).ready(function() {
   var current_leases      = null;
   var color_pending       = '#000000';
   var keepOldEvent        = null;
-  var version             = 1.8;
+  var version             = 1.9;
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -209,10 +209,10 @@ $(document).ready(function() {
           newLease.color = getColorLease(newLease.title);
           newLease.editable = isMySlice(newLease.title);
           newLease.overlap = false;
-          if (! isPresent(newLease.id, getActionsQueued() )){
+          // if (! isPresent(newLease.id, getActionsQueued() )){
             leases.push(newLease);
-          }
-          setActionsQueued(newLease.title, newLease.start, newLease.end);
+          // }
+          setActionsQueued(newLease.title+"*", newLease.start, newLease.end);
         // }
       });
     });
