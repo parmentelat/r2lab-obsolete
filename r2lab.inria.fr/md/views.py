@@ -120,9 +120,6 @@ def markdown_page(request, markdown_file, extra_metavars={}):
     """
     try:
         markdown_file = normalize(markdown_file)
-        print("checking for {} in {}".format(markdown_file, require_login_views))
-        if markdown_file in require_login_views:
-            return HttpResponseRedirect("/index.md")
         metavars, markdown = parse(markdown_file)
         ### fill in metavars: 'title', 'html_from_markdown',
         # and any other defined in header
@@ -133,7 +130,10 @@ def markdown_page(request, markdown_file, extra_metavars={}):
         if 'title' not in metavars:
             metavars['title'] = markdown_file.replace(".md", "")
         # define the 'r2lab_context' metavar from current session
-        metavars['r2lab_context'] = request.session.get('r2lab_context', {})
+        r2lab_context = request.session.get('r2lab_context', {})
+        if not r2lab_context and markdown_file in require_login_views:
+                return HttpResponseRedirect("/index.md")
+        metavars['r2lab_context'] = r2lab_context
         metavars.update(extra_metavars)
         return render(request, 'r2lab/r2lab.html', metavars)
     except Exception as e:
