@@ -11,7 +11,7 @@ $(document).ready(function() {
   var color_pending       = '#000000';
   var keepOldEvent        = null;
   var theZombieLeases     = [];
-  var version             = '1.10';
+  var version             = '1.11';
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -473,7 +473,7 @@ $(document).ready(function() {
 
   function zombieLease(lease){
     newLease = new Object();
-    newLease.title = failedName(lease.title);
+    newLease.title = failedName(resetName(lease.title));
     newLease.id = lease.uuid;
     newLease.start = lease.start;
     newLease.end   = lease.end;
