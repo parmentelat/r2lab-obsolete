@@ -11,6 +11,10 @@ from django.utils.safestring import mark_safe
 
 from django.conf import settings
 
+# these markdown views require to be logged in
+# xxx ugly hack for now
+require_login_views = [ 'run.md' ]
+
 # search for markdown input in the markdown/ subdir
 # and code in the "code/" subdir
 # xxx should be configurable
@@ -126,7 +130,10 @@ def markdown_page(request, markdown_file, extra_metavars={}):
         if 'title' not in metavars:
             metavars['title'] = markdown_file.replace(".md", "")
         # define the 'r2lab_context' metavar from current session
-        metavars['r2lab_context'] = request.session.get('r2lab_context', {})
+        r2lab_context = request.session.get('r2lab_context', {})
+        if not r2lab_context and markdown_file in require_login_views:
+                return HttpResponseRedirect("/index.md")
+        metavars['r2lab_context'] = r2lab_context
         metavars.update(extra_metavars)
         return render(request, 'r2lab/r2lab.html', metavars)
     except Exception as e:
