@@ -11,7 +11,7 @@ $(document).ready(function() {
   var color_pending       = '#000000';
   var keepOldEvent        = null;
   var theZombieLeases     = [];
-  var version             = '1.11';
+  var version             = '1.12';
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -197,7 +197,7 @@ $(document).ready(function() {
   function parseLease(data){
     var parsedData = $.parseJSON(data);
     var leases = [];
-    theZombieLeases = [];
+    resetZombieLeases();
 
     $.each(parsedData, function(key,val){
       $.each(val, function(k,v){
@@ -416,6 +416,11 @@ $(document).ready(function() {
   }
 
 
+  function resetZombieLeases(){
+    theZombieLeases = [];
+  }
+
+
   function resetActionQueue(){
     actionsQueue = [];
   }
@@ -452,7 +457,7 @@ $(document).ready(function() {
     $.each(theZombieLeases, function(k,obj){
       failedEvents.push(zombieLease(obj));
     });
-
+    resetZombieLeases();
     $('#calendar').fullCalendar('addEventSource', failedEvents);
   }
 
@@ -473,11 +478,11 @@ $(document).ready(function() {
 
   function zombieLease(lease){
     newLease = new Object();
-    newLease.title = failedName(resetName(lease.title));
+    newLease.title = failedName(lease.title);
     newLease.id = lease.uuid;
     newLease.start = lease.start;
     newLease.end   = lease.end;
-    newLease.color = "#FF0000";
+    newLease.color = "#FF0000";``
     newLease.overlap = false;
     newLease.editable = false;
 
