@@ -11,7 +11,7 @@ $(document).ready(function() {
   var color_pending       = '#000000';
   var keepOldEvent        = null;
   var theZombieLeases     = [];
-  var version             = 1.10;
+  var version             = '1.10';
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -450,7 +450,7 @@ $(document).ready(function() {
     $('#calendar').fullCalendar('addEventSource', events);
 
     $.each(theZombieLeases, function(k,obj){
-      failedEvents.push(failedLease(obj));
+      failedEvents.push(zombieLease(obj));
     });
 
     $('#calendar').fullCalendar('addEventSource', failedEvents);
@@ -461,6 +461,20 @@ $(document).ready(function() {
     newLease = new Object();
     newLease.title = failedName(lease.title);
     newLease.id = lease.id;
+    newLease.start = lease.start;
+    newLease.end   = lease.end;
+    newLease.color = "#FF0000";
+    newLease.overlap = false;
+    newLease.editable = false;
+
+    return newLease;
+  }
+
+
+  function zombieLease(lease){
+    newLease = new Object();
+    newLease.title = failedName(lease.title);
+    newLease.id = lease.uuid;
     newLease.start = lease.start;
     newLease.end   = lease.end;
     newLease.color = "#FF0000";
