@@ -10,6 +10,7 @@ $(document).ready(function() {
   var current_leases      = null;
   var color_pending       = '#000000';
   var keepOldEvent        = null;
+  var theZumbieLeases     = [];
   var version             = 1.9;
 
   function buildCalendar(theEvents) {
@@ -196,32 +197,48 @@ $(document).ready(function() {
   function parseLease(data){
     var parsedData = $.parseJSON(data);
     var leases = [];
+    theZumbieLeases = [];
 
     $.each(parsedData, function(key,val){
       $.each(val, function(k,v){
-        // if (isR2lab(v.account.name)){
-          newLease = new Object();
-          newLease.title = shortName(v.account.name);
-          newLease.uuid = String(v.uuid);
-          newLease.start = v.valid_from;
-          newLease.end = v.valid_until;
-          newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);//String(v.uuid);
-          newLease.color = getColorLease(newLease.title);
-          newLease.editable = isMySlice(newLease.title);
-          newLease.overlap = false;
-          // if (! isPresent(newLease.id, getActionsQueued() )){
-            leases.push(newLease);
-          // }
+        newLease = new Object();
+        newLease.title = shortName(v.account.name);
+        newLease.uuid = String(v.uuid);
+        newLease.start = v.valid_from;
+        newLease.end = v.valid_until;
+        newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);
+        newLease.color = getColorLease(newLease.title);
+        newLease.editable = isMySlice(newLease.title);
+        newLease.overlap = false;
+
+        if(isZumbie(v)){
+          theZumbieLeases.push(newLease);
+          var request = {"uuid" : newLease.uuid};
+          post_lease_request('delete', request, function(xhttp) {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+              console.log(request);
+            }
+          });
+        }
+        else {
+          leases.push(newLease);
           setActionsQueued(newLease.title, newLease.start, newLease.end);
-        // }
+        }
+
       });
     });
-
     buildSlicesBox(leases);
-
     $.merge(leases, setNightlyAndPast());
-
     return leases;
+  }
+
+
+  function isZumbie(obj){
+    var is_zumbie = false;
+    if(obj.resource_type == 'lease' && obj.status == 'pending' && isMySlice(shortName(obj.account.name))){
+      is_zumbie = true;
+    }
+    return is_zumbie;
   }
 
 
@@ -423,16 +440,8 @@ $(document).ready(function() {
     $.each(diffLeases, function(key,event_id){
       if (! isPresent(event_id, getActionsQueued() )){
         var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
-        $.each(each, function(k,o){
-          newLease = new Object();
-          newLease.title = failedName(o.title);
-          newLease.id = o.id;
-          newLease.start = o.start;
-          newLease.end   = o.end;
-          newLease.color = "#FF0000";
-          newLease.overlap = false;
-          newLease.editable = false;
-          failedEvents.push(newLease);
+        $.each(each, function(k,obj){
+          failedEvents.push(failedLease(obj));
         });
       }
       });
@@ -440,7 +449,25 @@ $(document).ready(function() {
     resetCalendar();
     $('#calendar').fullCalendar('addEventSource', events);
 
+    $.each(theZumbieLeases, function(k,obj){
+      failedEvents.push(failedLease(obj));
+    });
+
     $('#calendar').fullCalendar('addEventSource', failedEvents);
+  }
+
+
+  function failedLease(lease){
+    newLease = new Object();
+    newLease.title = failedName(lease.title);
+    newLease.id = lease.id;
+    newLease.start = lease.start;
+    newLease.end   = lease.end;
+    newLease.color = "#FF0000";
+    newLease.overlap = false;
+    newLease.editable = false;
+
+    return newLease;
   }
 
 
@@ -684,11 +711,11 @@ $(document).ready(function() {
     var socket = io.connect("http://r2lab.inria.fr:443");
     socket.on('chan-leases', function(msg){
       console.log('chan answer...');
+
       setCurrentLeases(msg);
       resetActionsQueued();
       var leases = getCurrentLeases();
       var leasesbooked = parseLease(leases);
-
       refreshCalendar(leasesbooked);
       setCurrentSliceBox(getCurrentSliceName());
     });
