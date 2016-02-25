@@ -10,8 +10,8 @@ $(document).ready(function() {
   var current_leases      = null;
   var color_pending       = '#000000';
   var keepOldEvent        = null;
-  var theZumbieLeases     = [];
-  var version             = 1.9;
+  var theZombieLeases     = [];
+  var version             = 1.10;
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -197,7 +197,7 @@ $(document).ready(function() {
   function parseLease(data){
     var parsedData = $.parseJSON(data);
     var leases = [];
-    theZumbieLeases = [];
+    theZombieLeases = [];
 
     $.each(parsedData, function(key,val){
       $.each(val, function(k,v){
@@ -211,8 +211,8 @@ $(document).ready(function() {
         newLease.editable = isMySlice(newLease.title);
         newLease.overlap = false;
 
-        if(isZumbie(v)){
-          theZumbieLeases.push(newLease);
+        if(isZombie(v)){
+          theZombieLeases.push(newLease);
           var request = {"uuid" : newLease.uuid};
           post_lease_request('delete', request, function(xhttp) {
             if (xhttp.readyState == 4 && xhttp.status == 200) {
@@ -233,12 +233,12 @@ $(document).ready(function() {
   }
 
 
-  function isZumbie(obj){
-    var is_zumbie = false;
+  function isZombie(obj){
+    var is_zombie = false;
     if(obj.resource_type == 'lease' && obj.status == 'pending' && isMySlice(shortName(obj.account.name))){
-      is_zumbie = true;
+      is_zombie = true;
     }
-    return is_zumbie;
+    return is_zombie;
   }
 
 
@@ -449,7 +449,7 @@ $(document).ready(function() {
     resetCalendar();
     $('#calendar').fullCalendar('addEventSource', events);
 
-    $.each(theZumbieLeases, function(k,obj){
+    $.each(theZombieLeases, function(k,obj){
       failedEvents.push(failedLease(obj));
     });
 
