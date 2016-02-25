@@ -30,7 +30,7 @@ float_menu_template: r2lab/float_menu-slices.html
       <div id="calendar"></div>
       <style type="text/css"> @import url("/plugins/liveleases/css/fullcalendar.css"); </style>
       <script type="text/javascript" src="/plugins/liveleases/js/moment.min.js"></script>
-      <script type="text/javascript" src="/plugins/liveleases/js/jquery-ui.custom.min.js"></script>
+      <script type="text/javascript" src="/plugins/liveleases/js/jquery-ui.fullcalendar-custom.min.js"></script>
       <script type="text/javascript" src="/plugins/liveleases/js/fullcalendar.min.js"></script>
       <style type="text/css"> @import url("/plugins/liveleases/css/calendar.css"); </style>
       <script type="text/javascript" src="/plugins/liveleases/js/calendar.js"></script>
