@@ -330,7 +330,7 @@ $(document).ready(function() {
       if (action == 'addLease') {
         $('#calendar').fullCalendar('renderEvent', event, true );
         setActionsQueue('add', event);
-        var socket = io();
+        var socket = io.connect("http://r2lab.inria.fr:443");
         socket.emit('chan-leases-request', event);
       }
       if (action == 'delLease'){
