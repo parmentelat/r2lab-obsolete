@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.safestring import mark_safe
 
 from django.conf import settings
+from r2lab.settings import logger
 
 # these markdown views require to be logged in
 # xxx ugly hack for now
@@ -118,6 +119,7 @@ def markdown_page(request, markdown_file, extra_metavars={}):
      * and expand markdown to html - passed to the template as 'html_from_markdown'
     additional metavars can be passed along as well if needed
     """
+    logger.info("Rendering markdown page {}".format(markdown_file))
     try:
         markdown_file = normalize(markdown_file)
         metavars, markdown = parse(markdown_file)

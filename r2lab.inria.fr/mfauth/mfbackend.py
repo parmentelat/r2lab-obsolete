@@ -10,8 +10,6 @@ from .mfdetails import manifold_details
 from r2lab.settings import manifold_url as config_manifold_url
 from r2lab.settings import logger
 
-#from myslice.settings import config, logger, DEBUG
-
 class ManifoldBackend:
     """
     Authenticate against the onelab portal user accounts
@@ -64,7 +62,7 @@ class ManifoldBackend:
             # Check if the user exists in Django's local database
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            logger.debug("Creating django user object")
+            logger.info("Creating django user object {}".format(email))
             # Create a user in Django's local database
             # first arg is a name, second an email
             user = User.objects.create_user(email, email, 'passworddoesntmatter')

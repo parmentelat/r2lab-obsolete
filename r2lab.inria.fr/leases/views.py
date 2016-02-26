@@ -11,6 +11,8 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
+from r2lab.settings import logger
+
 ### the standard way to use rhubarbe is to have it installed separately
 try:
     from rhubarbe.omfsfaproxy import OmfSfaProxy
@@ -125,7 +127,10 @@ class LeasesProxy(View):
             'account_attributes' : { 'name' : record['slicename'] },
             'components' : [ {'uuid' : node_uuid } ],
             }
+        
+        logger.info("-> omf_sfa POST request {}".format(lease_request))
         result = yield from self.omf_sfa_proxy.REST_as_json("leases", "POST", lease_request)
+        logger.info("omf_sfa POST -> {}".format(result))
         return result
 
     #################### UPDATE
@@ -152,7 +157,9 @@ class LeasesProxy(View):
     @asyncio.coroutine
     def co_update_lease(self, record):
         lease_request = record
+        logger.info("-> omf_sfa PUT request {}".format(lease_request))
         result = yield from self.omf_sfa_proxy.REST_as_json("leases", "PUT", lease_request)
+        logger.info("omf_sfa PUT -> {}".format(result))
         return result
 
         
@@ -179,7 +186,7 @@ class LeasesProxy(View):
     @asyncio.coroutine
     def co_delete_lease(self, record):
         lease_request = record
+        logger.info("-> omf_sfa DELETE request {}".format(lease_request))
         result = yield from self.omf_sfa_proxy.REST_as_json("leases", "DELETE", lease_request)
+        logger.info("omf_sfa DELETE -> {}".format(result))
         return result
-
-        

@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-import os
+import os, os.path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,9 +22,12 @@ PRODUCTION = 'r2lab' in socket.gethostname()
 # the directory where we have write access to store the db and other logs
 RUNTIME_DIR = '/var/lib/r2lab.inria.fr' if PRODUCTION else BASE_DIR
 
-# xxx need to redirect this to RUNTIME_DIR/r2lab.log in production
-import logging
-logger = logging.getLogger('r2lab')
+# log file: in /var/log/r2lab.log in production, else ./r2lab.log
+LOG_DIR = "/var/log" if PRODUCTION else BASE_DIR
+LOG_FILE = os.path.join(LOG_DIR, "r2lab.log")
+
+from .logger import init_logger
+logger = init_logger(LOG_FILE)
 
 ####################
 
