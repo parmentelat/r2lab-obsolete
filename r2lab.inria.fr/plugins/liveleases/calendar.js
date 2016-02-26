@@ -11,7 +11,7 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
-  var version             = '1.14';
+  var version             = '1.15';
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -216,7 +216,7 @@ $(document).ready(function() {
           var request = {"uuid" : newLease.uuid};
           post_lease_request('delete', request, function(xhttp) {
             if (xhttp.readyState == 4 && xhttp.status == 200) {
-              console.log(request);
+              ;//console.log(request);
             }
           });
         }
@@ -304,7 +304,8 @@ $(document).ready(function() {
       socket.emit('chan-leases-request', msg);
     }
     else if (action == 'edit'){
-      ;
+      var msg = [action, data];
+      socket.emit('chan-leases-request', msg);
     }
     else if (action == 'del'){
       ;
@@ -314,9 +315,18 @@ $(document).ready(function() {
 
   function listenBroadcast(){
     socket.on('chan-leases-request', function(msg){
-      if (msg[0] == 'add'){
+      if (msg[0] == 'add' || msg[0] == 'edit'){
         $('#calendar').fullCalendar('renderEvent', msg[1], true );
       }
+    });
+
+    socket.on('chan-leases', function(msg){
+      setCurrentLeases(msg);
+      resetActionsQueued();
+      var leases = getCurrentLeases();
+      var leasesbooked = parseLease(leases);
+      refreshCalendar(leasesbooked);
+      setCurrentSliceBox(getCurrentSliceName());
     });
   }
 
@@ -338,6 +348,7 @@ $(document).ready(function() {
     }
     else if (action == 'editLease'){
       setActionsQueue('edit', event);
+      sendBroadcast('edit', event);
     }
   }
 
@@ -399,7 +410,7 @@ $(document).ready(function() {
     }
     post_lease_request(shiftAction, request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
-        console.log(request);
+        ;//console.log(request);
       }
     });
   }
@@ -717,18 +728,6 @@ $(document).ready(function() {
     setCurrentSliceBox(getCurrentSliceName());
 
     listenBroadcast();
-
-    socket.on('chan-leases', function(msg){
-      console.log('chan answer...');
-
-      setCurrentLeases(msg);
-      resetActionsQueued();
-      var leases = getCurrentLeases();
-      var leasesbooked = parseLease(leases);
-      refreshCalendar(leasesbooked);
-      setCurrentSliceBox(getCurrentSliceName());
-    });
-
   }
 
   //STOLEN FROM THIERRY
