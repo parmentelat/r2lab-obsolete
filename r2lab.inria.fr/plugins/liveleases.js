@@ -140,6 +140,8 @@ $(document).ready(function() {
       // this is fired when an event is resized
       eventResize: function(event, jsEvent, ui, view) {
         if (!confirm("Confirm this change?")) {
+          //some bug in revertFunc
+          //must take the last date time and set manually
           return;
         }
         else {
@@ -316,15 +318,15 @@ $(document).ready(function() {
   function listenBroadcast(){
     socket.on('chan-leases-request', function(msg){
       var action = msg[0];
-      var event  = msg[1];
+      var lease  = msg[1];
 
       if (action == 'add'){
-        $('#calendar').fullCalendar('renderEvent', event, true );
+        $('#calendar').fullCalendar('renderEvent', lease, true );
       }
       if (action == 'edit'){
-        ;
-        // $('#calendar').fullCalendar('removeEvents', event.id );
-        // $('#calendar').fullCalendar('renderEvent', event, true );
+        console.log(lease);
+        // $('#calendar').fullCalendar('removeEvents', lease.id );
+        // $('#calendar').fullCalendar('renderEvent', lease, true );
       }
     });
 
@@ -356,7 +358,7 @@ $(document).ready(function() {
     }
     else if (action == 'editLease'){
       setActionsQueue('edit', event);
-      // sendBroadcast('edit', event);
+      sendBroadcast('edit', event);
     }
   }
 
