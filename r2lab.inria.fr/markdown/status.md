@@ -40,9 +40,9 @@ For accurate dimensions of the room, please see the [static blueprint
 at the bottom of this page](#accurate-layout).
 
 <div id="livemap_container"></div>
-<script type="text/javascript" src="/plugins/livemap.js"></script>
+<script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
 <script>livemap_show_rxtx_rates = true;</script>
-<style type="text/css"> @import url("/plugins/livemap.css"); </style>
+<style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
 
 ***
 
@@ -69,9 +69,9 @@ Also please note that
 <br />
 
 <table class="table table-condensed" id='livetable_container'> </table>
-<script type="text/javascript" src="/plugins/livetable.js"></script>
+<script type="text/javascript" src="/assets/r2lab/livetable.js"></script>
 <script>livetable_show_rxtx_rates = true;</script>
-<style type="text/css"> @import url("/plugins/livetable.css"); </style>
+<style type="text/css"> @import url("/assets/r2lab/livetable.css"); </style>
 
 <br />
 

@@ -1,7 +1,7 @@
 title: R2lab Experimenter Page
 tab: run
 skip_header: yes
-<!--float_menu_template: r2lab/float_menu-slices.html-->
+<!--float_menu_template: r2lab/float-menu-slices.html-->
 
 <div class="container">
   <div class="row">
@@ -31,14 +31,14 @@ skip_header: yes
       <script type="text/javascript" src="/assets/js/fullcalendar.min.js"></script>
       <style type="text/css"> @import url("/assets/css/fullcalendar.css"); </style>
 
-      <style type="text/css"> @import url("/plugins/liveleases.css"); </style>
-      <script type="text/javascript" src="/plugins/liveleases.js"></script>
+      <style type="text/css"> @import url("/assets/r2lab/liveleases.css"); </style>
+      <script type="text/javascript" src="/assets/r2lab/liveleases.js"></script>
       <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
     </div>
     <div class="col-md-6">
     <div id="livemap_container"></div>
-    <script type="text/javascript" src="/plugins/livemap.js"></script>
-    <style type="text/css"> @import url("/plugins/livemap.css"); </style>
+    <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
+    <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
     <script>
     livemap_show_rxtx_rates = true;
     livemap_space_x = livemap_space_y = 60;
@@ -59,9 +59,9 @@ skip_header: yes
     <div class="col-md-12">
       <br/>
       <table class="table table-condensed" id='livetable_container'> </table>
-      <script type="text/javascript" src="/plugins/livetable.js"></script>
+      <script type="text/javascript" src="/assets/r2lab/livetable.js"></script>
       <script>livetable_show_rxtx_rates = true;</script>
-      <style type="text/css"> @import url("/plugins/livetable.css"); </style>
+      <style type="text/css"> @import url("/assets/r2lab/livetable.css"); </style>
     </div>
   </div>    
 </div>
