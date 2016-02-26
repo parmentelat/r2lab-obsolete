@@ -6,7 +6,7 @@ This is a unit test; all data is hard-coded in the page itself
 See also `leases/view.py`
 
 <!-- this exposes the getCookie function -->
-<script type="text/javascript" src="/plugins/ajax-leases.js"></script>
+<script type="text/javascript" src="/assets/r2lab/ajax-leases.js"></script>
 
 ---
 <div id="add-lease"><p>Click this paragraph to add a lease</p>
