@@ -102,7 +102,7 @@ io.on('connection', function(socket){
 
     vdisplay("arming callback for channel " + chan_leases_request);
     socket.on(chan_leases_request, function(anything){
-	vdisplay("Forwarding trigger message " + anything);
+	display("Forwarding trigger message " + anything + " on channel "+ chan_leases_request);
 	io.emit(chan_leases_request, anything);
     });
 });
