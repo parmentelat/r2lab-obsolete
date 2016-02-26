@@ -1,6 +1,5 @@
-{% load staticfiles %}
 {% load jsonify %}
-<script type="text/javascript" src="{% static 'js/current_slice.js' %}"></script>
+<script type="text/javascript" src="/assets/js/current_slice.js"></script>
 <script type="text/javascript">
 // globals that describe logged in user 
 r2lab_user = {{r2lab_context.mfuser|jsonify|safe}};
