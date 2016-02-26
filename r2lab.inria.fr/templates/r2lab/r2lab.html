@@ -21,35 +21,36 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>{{title}}</title>
   <link rel="icon" type="image/png" href="/assets/img/r2lab-icon.png"/>
-  <!---------------------------------------->
+  <!---------------------------------------- third-party -->
   <!-- bootstrap and jquery are all over the place -->
-  <link type="text/css" rel="stylesheet" href="/assets/css/bootstrap.min.css"/>
   <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
   <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="/assets/css/bootstrap.min.css"/>
+
   <!-- used to source codes text -->
   <link type="text/css" rel="stylesheet" href="/assets/css/hljs-github.min.css"/>
-  <!---------------------------------------->
-  <!-- openlab layout -->
-  <link rel="stylesheet" type="text/css" media="screen" href="/assets/css/r2lab.css" />
-  <link rel="stylesheet" type="text/css" media="screen" href="/assets/css/bootstrap-fit.min.css" />
-  <link rel="stylesheet" type="text/css" media="screen" href="/assets/css/openlab-fit-layout.css" />
-  <link rel="stylesheet" type="text/css" href="/assets/font-awesome-4.4.0/css/font-awesome.min.css" />
-  <!---------------------------------------->
-  <!-- openlab overrides layout -->
-  <link rel="stylesheet" type="text/css" href="/assets/css/openlab-fit-layout_overrides.css" />
-  <!---------------------------------------->
-  <!-- d3 for livetable/livemap-->
-  <script src="/assets/js/d3.min.js"></script>
-  <!-- socket.io for livetable/livemap-->
-  <script src="/assets/js/socket.io-1.3.6.js"></script>
-  <!---------------------------------------->
-  <!-- our script for setting the active tabs right -->
-  <script type="text/javascript" src="/assets/js/active-tab.js"></script>
   <!-- color text in python codes -->
   <script type="text/javascript" src="/assets/js/prism-default.js"></script>
   <link rel="stylesheet" type="text/css" href="/assets/css/prism-default.css" />
+
+  <!-- d3 for livetable/livemap-->
+  <script src="/assets/js/d3.min.js"></script>
+
+  <!-- socket.io for livetable/livemap-->
+  <script src="/assets/js/socket.io-1.3.6.js"></script>
+  <!---------------------------------------- openlab/fit -->
+  <!-- overrides of bootstrap -->
+  <link rel="stylesheet" type="text/css" media="screen" href="/assets/fit/css/bootstrap-fit.min.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="/assets/fit/css/openlab-fit-layout.css" />
+  <link rel="stylesheet" type="text/css" href="/assets/font-awesome-4.4.0/css/font-awesome.min.css" />
+  <!---------------------------------------- r2lab specifics -->
+  <link rel="stylesheet" type="text/css" media="screen" href="/assets/r2lab/r2lab.css" />
+  <!-- override fit layout -->
+  <link rel="stylesheet" type="text/css"                href="/assets/r2lab/openlab-fit-layout_overrides.css" />
+  <!-- our script for setting the active tabs right -->
+  <script type="text/javascript" src="/assets/r2lab/active-tab.js"></script>
   <!-- random background images -->
-  <script type="text/javascript" src="/assets/js/random_image.js"></script>
+  <script type="text/javascript" src="/assets/r2lab/random-image.js"></script>
   <!-- details on current session -->
   {% include 'r2lab/r2lab_user.js' %}
  </head>
