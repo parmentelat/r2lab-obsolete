@@ -1,6 +1,6 @@
 title: NEPI - Pings
 tab: tutorial
-float_menu_template: r2lab/float_menu-tutorials.html
+float_menu_template: r2lab/float-menu-tutorials.html
 ---
 
 Below are a couple of experiments to get started with

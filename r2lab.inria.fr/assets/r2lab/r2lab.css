@@ -6,7 +6,7 @@
 /* logout button */
 a.button.logout { background-color: #f69a97; }
 
-/* the slices menu fromfloat_menu-slices.html */
+/* the slices menu from float-menu-slices.html */
 #float_menu div.menu a.set_current_slice {
     font-size: x-small;
     font-weight: normal;

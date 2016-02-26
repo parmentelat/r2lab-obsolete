@@ -1,7 +1,7 @@
 title: R2lab Experimenter Page
 tab: run
 skip_header: yes
-<!--float_menu_template: r2lab/float_menu-slices.html-->
+<!--float_menu_template: r2lab/float-menu-slices.html-->
 
 <div class="container">
   <div class="row">
