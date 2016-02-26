@@ -3,6 +3,8 @@
  */
 
 var current_slice = {
+    debug : true,
+
     // the value of interest
     name : "",
 
@@ -33,8 +35,10 @@ var current_slice = {
 	stored = localStorage.getItem(current_slice.key);
 	// check it's still current
 	if (avail_slices.indexOf(stored) >= 0) {
+	    if (current_slice.debug) console.log("Retrieved current_slice:"+stored);
 	    return stored;
 	}
+	if (current_slice.debug) console.log("Returning default:"+default_slice);
 	return default_slice;
     },
 
@@ -42,6 +46,7 @@ var current_slice = {
 	if (typeof(Storage) === "undefined") {
 	    console.log("WARNING: current_slice.store : no local storage");
 	} else {
+	    if (current_slice.debug) console.log("Storing current_slice:"+slice);
 	    localStorage.setItem(current_slice.key, slice);
 	}
     },

@@ -106,6 +106,8 @@
     stay tuned about the last news, infos and incidents about R2lab, check out our <a href="blog.md">info blog</a>
    </div>
   </div>
+{% else %}
+<div class="alert alert-info text-center"></div>
 {% endif %}
 
   <div class="container">
@@ -114,9 +116,9 @@
      <h2><span class="blue bold">{{title}}</span></h2>
      {% if subtitle %} <p class="subtitle">{{subtitle}}</p>{% endif %}
 {# temporary #}
-{% if skip_header %}
-{% include 'r2lab/widget_id.html' %}
-{% endif %}
+{#{% if skip_header %}#}
+{#{% include 'r2lab/widget_id.html' %}#}
+{#{% endif %}#}
 {# temporary #}
     </div>
    </div>

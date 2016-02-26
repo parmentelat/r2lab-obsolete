@@ -3,8 +3,6 @@ tab: run
 skip_header: yes
 float_menu_template: r2lab/float_menu-slices.html
 
-# Warning : this page is work in progress !
-
 <div class="container">
   <div class="row">
     <div class="col-md-12">
