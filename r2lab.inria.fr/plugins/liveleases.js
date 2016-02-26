@@ -11,7 +11,7 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
-  var version             = '1.15';
+  var version             = '1.16';
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -315,8 +315,15 @@ $(document).ready(function() {
 
   function listenBroadcast(){
     socket.on('chan-leases-request', function(msg){
-      if (msg[0] == 'add' || msg[0] == 'edit'){
-        $('#calendar').fullCalendar('renderEvent', msg[1], true );
+      var action = msg[0];
+      var event  = msg[1];
+
+      if (action == 'add'){
+        $('#calendar').fullCalendar('renderEvent', event, true );
+      }
+      if (action == 'edit'){
+        $('#calendar').fullCalendar('removeEvents', event.id );
+        $('#calendar').fullCalendar('renderEvent', event, true );
       }
     });
 
