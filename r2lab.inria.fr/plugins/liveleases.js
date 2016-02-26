@@ -11,7 +11,7 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
-  var version             = '1.16';
+  var version             = '1.17';
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -322,8 +322,9 @@ $(document).ready(function() {
         $('#calendar').fullCalendar('renderEvent', event, true );
       }
       if (action == 'edit'){
-        $('#calendar').fullCalendar('removeEvents', event.id );
-        $('#calendar').fullCalendar('renderEvent', event, true );
+        ;
+        // $('#calendar').fullCalendar('removeEvents', event.id );
+        // $('#calendar').fullCalendar('renderEvent', event, true );
       }
     });
 
@@ -355,7 +356,7 @@ $(document).ready(function() {
     }
     else if (action == 'editLease'){
       setActionsQueue('edit', event);
-      sendBroadcast('edit', event);
+      // sendBroadcast('edit', event);
     }
   }
 
