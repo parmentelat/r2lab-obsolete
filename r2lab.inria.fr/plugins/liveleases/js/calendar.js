@@ -328,7 +328,7 @@ $(document).ready(function() {
       sendBroadcast(action, event);
     } else{
       if (action == 'addLease') {
-        $('#calendar').fullCalendar('renderEvent', event, true );
+        // $('#calendar').fullCalendar('renderEvent', event, true );
         setActionsQueue('add', event);
         var socket = io.connect("http://r2lab.inria.fr:443");
         socket.emit('chan-leases-request', event);
