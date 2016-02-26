@@ -11,7 +11,7 @@ $(document).ready(function() {
   var color_pending       = '#000000';
   var keepOldEvent        = null;
   var theZombieLeases     = [];
-  var version             = '1.12';
+  var version             = '1.13';
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -330,6 +330,8 @@ $(document).ready(function() {
       if (action == 'addLease') {
         $('#calendar').fullCalendar('renderEvent', event, true );
         setActionsQueue('add', event);
+        var socket = io();
+        socket.emit('chan-leases-request', event);
       }
       if (action == 'delLease'){
         if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
@@ -716,18 +718,18 @@ $(document).ready(function() {
   function main (){
     console.log(version);
 
-    // var socket = io.connect("http://r2lab.inria.fr:443");
-    // socket.emit('chan-leases-request', current_slice_name);
-    // socket.on('chan-leases-request', function(msg){
-    //   console.log(msg);
-    // });
-
     resetActionsQueued();
     buildInitialSlicesBox(getMySlicesName());
     buildCalendar(setNightlyAndPast());
     setCurrentSliceBox(getCurrentSliceName());
 
     var socket = io.connect("http://r2lab.inria.fr:443");
+
+    socket.on('chan-leases-request', function(msg){
+      $('#calendar').fullCalendar('renderEvent', msg, true );
+      console.log(msg);
+    });
+
     socket.on('chan-leases', function(msg){
       console.log('chan answer...');
 
