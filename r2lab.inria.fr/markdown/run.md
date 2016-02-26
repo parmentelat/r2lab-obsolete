@@ -26,17 +26,19 @@ skip_header: yes
     </div>
     <div class="col-md-4">
       <div id="calendar"></div>
-      <style type="text/css"> @import url("/plugins/liveleases/css/fullcalendar.css"); </style>
-      <script type="text/javascript" src="/plugins/liveleases/js/moment.min.js"></script>
-      <script type="text/javascript" src="/plugins/liveleases/js/jquery-ui.fullcalendar-custom.min.js"></script>
-      <script type="text/javascript" src="/plugins/liveleases/js/fullcalendar.min.js"></script>
-      <style type="text/css"> @import url("/plugins/liveleases/css/calendar.css"); </style>
-      <script type="text/javascript" src="/plugins/liveleases/js/calendar.js"></script>
+      <script type="text/javascript" src="/assets/js/moment.min.js"></script>
+      <script type="text/javascript" src="/assets/js/jquery-ui.fullcalendar-custom.min.js"></script>
+      <script type="text/javascript" src="/assets/js/fullcalendar.min.js"></script>
+      <style type="text/css"> @import url("/assets/css/fullcalendar.css"); </style>
+
+      <style type="text/css"> @import url("/plugins/liveleases/calendar.css"); </style>
+      <script type="text/javascript" src="/plugins/liveleases/calendar.js"></script>
       <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
     </div>
     <div class="col-md-6">
     <div id="livemap_container"></div>
     <script type="text/javascript" src="/plugins/livemap.js"></script>
+    <style type="text/css"> @import url("/plugins/livemap.css"); </style>
     <script>
     livemap_show_rxtx_rates = true;
     livemap_space_x = livemap_space_y = 60;
@@ -50,7 +52,6 @@ skip_header: yes
     livemap_padding_x = 40;
     livemap_padding_y = 40;
     </script>
-    <style type="text/css"> @import url("/plugins/livemap.css"); </style>
     <div id="actions"></div>
     </div>
   </div>
