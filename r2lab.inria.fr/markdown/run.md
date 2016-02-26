@@ -31,8 +31,8 @@ skip_header: yes
       <script type="text/javascript" src="/assets/js/fullcalendar.min.js"></script>
       <style type="text/css"> @import url("/assets/css/fullcalendar.css"); </style>
 
-      <style type="text/css"> @import url("/plugins/liveleases/calendar.css"); </style>
-      <script type="text/javascript" src="/plugins/liveleases/calendar.js"></script>
+      <style type="text/css"> @import url("/plugins/liveleases.css"); </style>
+      <script type="text/javascript" src="/plugins/liveleases.js"></script>
       <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
     </div>
     <div class="col-md-6">
