@@ -118,6 +118,7 @@ $(document).ready(function() {
           } else {
             newLease = new Object();
             newLease.id = event.id;
+            newLease.uuid = event.uuid;
             newLease.title = pendingName(event.title);
             newLease.start = event.start;
             newLease.end   = event.end;
@@ -127,9 +128,7 @@ $(document).ready(function() {
             newLease.color = event.color;
             newLease.textColor = event.textColor;
             $('#calendar').fullCalendar('removeEvents', event.id );
-            // event.title = pendingName(event.title);
-            // event.textColor = color_pending;
-            // event.editable = false;
+
             updateLeases('editLease', newLease);
           }
         }
@@ -167,6 +166,7 @@ $(document).ready(function() {
           if (isMySlice(event.title)) {
             newLease = new Object();
             newLease.id = event.id;
+            newLease.uuid = event.uuid;
             newLease.title = pendingName(event.title);
             newLease.start = event.start;
             newLease.end   = event.end;
@@ -306,6 +306,7 @@ $(document).ready(function() {
 
     newLease = new Object();
     newLease.id = lease['id'];
+    newLease.uuid = lease['uuid'];
     newLease.title = lease['title'];
     newLease.start = lease['start'];
     newLease.end   = lease['end'];
@@ -355,17 +356,17 @@ $(document).ready(function() {
   function listenBroadcast(){
     socket.on('chan-leases-request', function(msg){
       var action = msg[0];
-      var lease  = extractLease(msg[1]);
 
       if (action == 'add'){
+        var lease  = extractLease(msg[1]);
         $('#calendar').fullCalendar('renderEvent', lease, true );
       }
-      if (action == 'edit'){
-        console.log(lease.id);
+      else if (action == 'edit'){
+        var lease  = extractLease(msg[1]);
+        $('#calendar').fullCalendar('removeEvents', lease.id );
         $('#calendar').fullCalendar('renderEvent', lease, true );
-        // $('#calendar').fullCalendar('removeEvents', lease.id );
-        // $('#calendar').fullCalendar('renderEvent', lease, true );
       }
+
     });
 
     socket.on('chan-leases', function(msg){
