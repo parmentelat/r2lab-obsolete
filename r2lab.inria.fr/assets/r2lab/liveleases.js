@@ -11,7 +11,8 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
-  var version             = '1.18';
+  var version             = '1.19';
+  var refresh             = true;
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -107,7 +108,7 @@ $(document).ready(function() {
 
       // this happens when the event is dropped
       eventDrop: function(event, delta, revertFunc) {
-        if (!confirm("Confirm this change?")) {
+        if (!confirm("Confirm this change s?")) {
             revertFunc();
         }
         else {
@@ -115,10 +116,21 @@ $(document).ready(function() {
             revertFunc();
             sendMessage('This is the past date/time!');
           } else {
-            event.title = pendingName(event.title);
-            event.textColor = color_pending;
-            event.editable = false;
-            updateLeases('editLease', event);
+            newLease = new Object();
+            newLease.id = event.id;
+            newLease.title = pendingName(event.title);
+            newLease.start = event.start;
+            newLease.end   = event.end;
+            newLease.overlap = event.overlap;
+            newLease.editable = false;
+            newLease.selectable = event.selectable;
+            newLease.color = event.color;
+            newLease.textColor = event.textColor;
+            $('#calendar').fullCalendar('removeEvents', event.id );
+            // event.title = pendingName(event.title);
+            // event.textColor = color_pending;
+            // event.editable = false;
+            updateLeases('editLease', newLease);
           }
         }
       },
@@ -126,6 +138,13 @@ $(document).ready(function() {
       // this fires when one event starts to be dragged
       eventDragStart: function(event, jsEvent, ui, view) {
         keepOldEvent = event;
+        refresh = false;
+      },
+
+      // this fires when one event starts to be dragged
+      eventDragStop: function(event, jsEvent, ui, view) {
+        keepOldEvent = event;
+        refresh = true;
       },
 
       // this fires when an event is rendered
@@ -138,7 +157,7 @@ $(document).ready(function() {
       },
 
       // this is fired when an event is resized
-      eventResize: function(event, jsEvent, ui, view) {
+      eventResize: function(event, jsEvent, ui, view, revertFunc) {
         if (!confirm("Confirm this change?")) {
           //some bug in revertFunc
           //must take the last date time and set manually
@@ -146,10 +165,19 @@ $(document).ready(function() {
         }
         else {
           if (isMySlice(event.title)) {
-            event.title = pendingName(event.title);
-            event.textColor = color_pending;
-            event.editable = false;
-            updateLeases('editLease', event);
+            newLease = new Object();
+            newLease.id = event.id;
+            newLease.title = pendingName(event.title);
+            newLease.start = event.start;
+            newLease.end   = event.end;
+            newLease.overlap = event.overlap;
+            newLease.editable = false;
+            newLease.selectable = event.selectable;
+            newLease.color = event.color;
+            newLease.textColor = event.textColor;
+            $('#calendar').fullCalendar('removeEvents', event.id );
+
+            updateLeases('editLease', newLease);
           }
         }
       },
@@ -210,7 +238,7 @@ $(document).ready(function() {
         newLease.end = v.valid_until;
         newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);
         newLease.color = getColorLease(newLease.title);
-        newLease.editable = false;//isMySlice(newLease.title);
+        newLease.editable = isMySlice(newLease.title);
         newLease.overlap = false;
 
         if(isZombie(v)){
@@ -272,6 +300,7 @@ $(document).ready(function() {
     return notAllowedEvents;
   }
 
+
   function extractLease(data){
     var lease = $.parseJSON(data);
 
@@ -288,6 +317,7 @@ $(document).ready(function() {
 
     return newLease;
   }
+
 
   function resetActionsQueued(){
     actionsQueued = [];
@@ -332,6 +362,7 @@ $(document).ready(function() {
       }
       if (action == 'edit'){
         console.log(lease.id);
+        $('#calendar').fullCalendar('renderEvent', lease, true );
         // $('#calendar').fullCalendar('removeEvents', lease.id );
         // $('#calendar').fullCalendar('renderEvent', lease, true );
       }
@@ -462,6 +493,7 @@ $(document).ready(function() {
 
 
   function refreshCalendar(events){
+    if(refresh){
     var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
 
     var failedEvents = [];
@@ -482,6 +514,7 @@ $(document).ready(function() {
     });
     resetZombieLeases();
     $('#calendar').fullCalendar('addEventSource', failedEvents);
+  }
   }
 
 
