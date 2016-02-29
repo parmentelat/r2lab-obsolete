@@ -11,7 +11,7 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
-  var version             = '1.17';
+  var version             = '1.18';
 
   function buildCalendar(theEvents) {
     var today = moment().format("YYYY-MM-DD");
@@ -210,7 +210,7 @@ $(document).ready(function() {
         newLease.end = v.valid_until;
         newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);
         newLease.color = getColorLease(newLease.title);
-        newLease.editable = isMySlice(newLease.title);
+        newLease.editable = false;//isMySlice(newLease.title);
         newLease.overlap = false;
 
         if(isZombie(v)){
@@ -272,6 +272,22 @@ $(document).ready(function() {
     return notAllowedEvents;
   }
 
+  function extractLease(data){
+    var lease = $.parseJSON(data);
+
+    newLease = new Object();
+    newLease.id = lease['id'];
+    newLease.title = lease['title'];
+    newLease.start = lease['start'];
+    newLease.end   = lease['end'];
+    newLease.overlap = lease['overlap'];;
+    newLease.editable = lease['editable'];;
+    newLease.selectable = lease['rendering'];
+    newLease.color = lease['color'];
+    newLease.textColor = lease['textColor'];
+
+    return newLease;
+  }
 
   function resetActionsQueued(){
     actionsQueued = [];
@@ -301,30 +317,21 @@ $(document).ready(function() {
 
 
   function sendBroadcast(action, data){
-    if (action == 'add'){
-      var msg = [action, data];
-      socket.emit('chan-leases-request', msg);
-    }
-    else if (action == 'edit'){
-      var msg = [action, data];
-      socket.emit('chan-leases-request', msg);
-    }
-    else if (action == 'del'){
-      ;
-    }
+    var msg = [action, JSON.stringify(data)];
+    socket.emit('chan-leases-request', msg);
   }
 
 
   function listenBroadcast(){
     socket.on('chan-leases-request', function(msg){
       var action = msg[0];
-      var lease  = msg[1];
+      var lease  = extractLease(msg[1]);
 
       if (action == 'add'){
         $('#calendar').fullCalendar('renderEvent', lease, true );
       }
       if (action == 'edit'){
-        console.log(lease);
+        console.log(lease.id);
         // $('#calendar').fullCalendar('removeEvents', lease.id );
         // $('#calendar').fullCalendar('renderEvent', lease, true );
       }
