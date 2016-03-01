@@ -24,6 +24,8 @@ from nepi.util.sshfuncs import logger
 parser = ArgumentParser()
 parser.add_argument("-N", "--nodes", dest="nodes",
                     help="Comma separated list of nodes")
+parser.add_argument("-a", "--avoid", dest="avoid_nodes",
+                    help="Comma separated list of nodes to avoid")
 parser.add_argument("-V", "--version", default=None, dest="version",
                     help="O.S version to load")
 parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
@@ -42,14 +44,19 @@ VERSIONS       = ['ubuntu-14.10.ndz',   'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fe
 def main(args):
     """ Execute the load for all nodes in Faraday. """
 
-    nodes    = args.nodes
-    version  = args.version
+    nodes       = args.nodes
+    version     = args.version
+    avoid_nodes = args.avoid_nodes
 
     if version is not None:
         valid_version(version)
 
-    nodes    = format_nodes(nodes)
+    nodes    = format_nodes(nodes, avoid_nodes)
     all_nodes = name_node(nodes)
+
+    print avoid_nodes
+    print nodes
+    exit();
 
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
@@ -634,20 +641,38 @@ def all_nodes():
 
 
 
-def format_nodes(nodes):
+def new_list_nodes(nodes):
+    """Put nodes in string list format with zero left """
+
+    if not type(nodes) is list:
+        if ',' in nodes:
+            nodes = nodes.split(',')
+        elif '-' in nodes:
+            nodes = nodes.strip("[]").split('-')
+            nodes = range(int(nodes[0]), int(nodes[1])+1)
+
+    new_list_nodes = map(str, nodes)
+    for k, v in enumerate(new_list_nodes):
+        if int(v) < 10:
+            new_list_nodes[k] = v.rjust(2, '0')
+
+    return new_list_nodes
+
+
+
+
+def format_nodes(nodes, avoid=None):
     """Correct format when inserted 'all' in -N nodes parameter """
+    to_remove = avoid
 
     if 'all' in nodes:
         nodes = all_nodes()
     else:
-        if not type(nodes) is list:
-            if ',' in nodes:
-                nodes = nodes.split(',')
-            elif '-' in nodes:
-                nodes = nodes.strip("[]").split('-')
-                nodes = range(int(nodes[0]), int(nodes[1])+1)
-            else:
-                nodes = nodes.split()
+        nodes = new_list_nodes(nodes)
+
+    if to_remove:
+        to_remove = new_list_nodes(to_remove)
+        nodes = [item for item in nodes if item not in to_remove]
 
     return nodes
 
