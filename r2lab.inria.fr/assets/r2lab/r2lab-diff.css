@@ -6,10 +6,16 @@ pre.r2lab-diff > del {
 /*    text-decoration: none; */
     background: #e6c6ed;
     color: #b30000;
+    text-shadow: none;
 }
 /* added chunks; default is underline and it's not nice */
 pre.r2lab-diff > ins {
     text-decoration: none;
     background: #caedc4;
     color: #406619;
+    text-shadow: none;
+}
+
+pre.r2lab-diff > code {
+    text-shadow: none;
 }
