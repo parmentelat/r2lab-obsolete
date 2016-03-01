@@ -15,7 +15,9 @@ $(document).ready(function() {
   var refresh             = true;
 
   function buildCalendar(theEvents) {
-    var today = moment().format("YYYY-MM-DD");
+    var today  = moment().format("YYYY-MM-DD");
+    var showAt = moment().subtract(1, 'hour').format("HH:mm");
+
     //Create the calendar
     $('#calendar').fullCalendar({
       header: {
@@ -31,7 +33,8 @@ $(document).ready(function() {
           buttonText: '2 days'
         }
       },
-      defaultTimedEventDuration: '00:30:00',
+      defaultTimedEventDuration: '01:00:00',
+      slotDuration: "01:00:00",
       forceEventDuration: true,
       defaultView: 'agendaDay',
       timezone: 'Europe/Paris',
@@ -42,7 +45,9 @@ $(document).ready(function() {
       editable: true,
       allDaySlot: false,
       droppable: true,
-      height: 970,
+      height: 405,
+      nowIndicator: true,
+      scrollTime: showAt,
 
       //Events
       // this is fired when a selection is made
@@ -74,7 +79,7 @@ $(document).ready(function() {
       // this allows things to be dropped onto the calendar
       drop: function(date, event, view) {
         var start = date;
-        var end   = moment(date).add(30, 'minutes');
+        var end   = moment(date).add(60, 'minutes');
         if (isPastDate(start)) {
           $('#calendar').fullCalendar('unselect');
           sendMessage('This is the past date/time!');

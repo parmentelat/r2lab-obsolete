@@ -48,9 +48,9 @@ skip_header: yes
     livemap_radius_warming = 4.5;
     livemap_radius_ko = 0;
     livemap_margin_x = 5;
-    livemap_margin_y = 5;
-    livemap_padding_x = 40;
-    livemap_padding_y = 40;
+    livemap_margin_y = 45;
+    livemap_padding_x = 50;
+    livemap_padding_y = 50;
     </script>
     <div id="actions"></div>
     </div>
