@@ -66,47 +66,87 @@ def parse(markdown_file):
                 else:
                     in_header = False
             markdown += line
-    markdown = resolve_codediff(markdown)
+    markdown = resolve_codediffs(markdown)
     return metavars, markdown
 
 # could not figure out how to do this with the template engine system....
-re_codediff = re.compile(r'<<\s*codediff\s+(?P<file1>\S+)(\s+(?P<file2>\S+))?\s*>>\s*\n')
-def resolve_codediff(markdown):
+re_codediff = re.compile(r'<<\s*codediff\s+(?P<id>\S+)\s+(?P<file1>\S+)(\s+(?P<file2>\S+))?\s*>>\s*\n')
+def resolve_codediffs(markdown):
     """
-    looks for << codediff file1 file2 >> for inline inclusion and differences
+    looks for << codediff id file1 file2 >> for inline inclusion and differences
+
+    id is mandatory; it chould be unique identifier for that codediff, and
+       will be used to attach ids to the DOM elements, and link them with the js code
+
+    file1 is mandatory too; this is the 'previous' code, and only code in
+       the first code for one series of experiments
+
+    file2 is optional
+       when provided, the diffs between file2 and file2 are highlighted
+       otherwise, it's just file1 that is shown standalone
+
+    this fetaures relies on 
+      * diff.js from http://kpdecker.github.io/jsdiff/diff.js
+      * related style
+      * our own wrapper r2lab-diff.js     
     """
     end = 0
     resolved = ""
     for match in re_codediff.finditer(markdown):
-        f1, f2 = match.group('file1'), match.group('file2')
-        # bool(f1) is always True
-        included1 = ""
-        if f1:
-            path1 = os.path.join(settings.BASE_DIR, code_subdir, f1)
-            try:
-                with open(path1) as input1:
-                    included1 += input1.read()
-            except:
-                resolved += "codediff: mandatory included file {} not found".format(path1)
-                traceback.print_exc()
-        # this OTOH is optional
-        included2 = ""
-        if f2:
-            path2 = os.path.join(settings.BASE_DIR, code_subdir, f2)
-            try:
-                with open(path2) as input2:
-                    included2 += input2.read()
-            except:
-                resolved += "codediff: mandatory included file {} not found".format(path2)
-                traceback.print_exc()
+        id, f1, f2 = match.group('id'), match.group('file1'), match.group('file2')
         resolved = resolved + markdown[end:match.start()]
-        ### should compute diff
-        # insert included text
-        resolved += included2 if f2 else included1
+        resolved += resolve_codediff(id, f1, f2)
         end = match.end()
     resolved = resolved + markdown[end:]
     return resolved
                       
+def resolve_codediff(id, f1, f2, lang='python'):
+    """
+    the html code to generate for one codediff
+    """
+
+    # by design of re_codediff, bool(f1) is always True
+    # while OTOH f2 is optional
+
+    def get_included_file(f):
+        if not f:
+            return ""
+        p = os.path.join(settings.BASE_DIR, code_subdir, f)
+        try:
+            with open(p) as i:
+                return i.read()
+        except:
+            return "codediff: mandatory included file {} not found".format(p)
+            
+    i1, i2 = get_included_file(f1), get_included_file(f2)
+
+    ########## one file : the simple case - simply use prism
+    # for highlighting the code in python with line numbers
+    if not f2:
+        return \
+'''<pre class="line-numbers">
+<code class="language-{lang}">
+{i1}
+</code>
+</pre>'''.format(**locals())
+
+    ########## else : two files are provided
+    resolved = ""
+    # create 2 invisible <pres> for storing both contents
+    resolved += '<pre id="{id}_a" style="display:none">{i1}</pre>\n'\
+                .format(id=id, i1=i1)
+    resolved += '<pre id="{id}_b" style="display:none">{i2}</pre>\n'\
+                 .format(id=id, i2=i2)
+    # create a <pre> to receive the result
+    resolved += '<pre id="{id}_diff" class="r2lab-diff"></pre>\n'\
+                .format(id=id)
+    # arm a callback for when the document is fully loaded
+    # this callback with populate the <pre> tag with elements
+    # tagges either <code>, <ins> or <del> 
+    resolved += '<script>$(function(){{r2lab_diff("{id}", "{lang}");}})</script>\n'\
+                .format(id=id, lang=lang)
+    
+    return resolved
 
 @csrf_protect
 def markdown_page(request, markdown_file, extra_metavars={}):

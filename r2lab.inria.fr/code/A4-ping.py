@@ -7,7 +7,7 @@ from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
 import os
 
-# setting up the default host, onelab user and shh key credential
+# setting up the default host, onelab user and ssh key credential
 host_gateway  = 'faraday.inria.fr'
 user_gateway  = '[your_onelab_user]'
 user_identity = '~/.ssh/[your_public_ssh_key]'
@@ -33,27 +33,25 @@ ec = ExperimentController(exp_id="A4-ping")
 
 # creating the fit01 node
 fit01 = ec.register_resource("linux::Node",
-                            username = user01,
-                            hostname = host01,
-# to reach the fit01 node it must go through the gateway, so let's assign the gateway infos
-                            gateway = host_gateway,
-                            gatewayUser = user_gateway,
-                            identity = user_identity,
-                            cleanExperiment = True,
-                            cleanProcesses = True)
+                             username = user01,
+                             hostname = host01,
+                             gateway = host_gateway,
+                             gatewayUser = user_gateway,
+                             identity = user_identity,
+                             cleanExperiment = True,
+                             cleanProcesses = True)
 # deploying the fit01 node
 ec.deploy(fit01)
 
 # creating the fit02 node
 fit02 = ec.register_resource("linux::Node",
-                            username = user02,
-                            hostname = host02,
-# to reach the fit02 node it must go through the gateway, so let's assign the gateway infos
-                            gateway = host_gateway,
-                            gatewayUser = user_gateway,
-                            identity = user_identity,
-                            cleanExperiment = True,
-                            cleanProcesses = True)
+                             username = user02,
+                             hostname = host02,
+                             gateway = host_gateway,
+                             gatewayUser = user_gateway,
+                             identity = user_identity,
+                             cleanExperiment = True,
+                             cleanProcesses = True)
 # deploying the fit02 node
 ec.deploy(fit02)
 
@@ -91,7 +89,7 @@ ec.register_connection(app_fit02, fit02)
 ec.deploy(app_fit02)
 ec.wait_finished(app_fit02)
 
-# ping fit02 inteface from fit01
+# ping fit02 interface from fit01
 app_ping_from_fit01_to_fit02 = ec.register_resource("linux::Application")
 cmd = 'ping -c5 -I {} {}'.format(wifi_interface, wifi_ip_fit02)
 ec.set(app_ping_from_fit01_to_fit02, "command", cmd)
@@ -99,7 +97,7 @@ ec.register_connection(app_ping_from_fit01_to_fit02, fit01)
 ec.deploy(app_ping_from_fit01_to_fit02)
 ec.wait_finished(app_ping_from_fit01_to_fit02)
 
-# ping fit01 inteface from fit02
+# ping fit01 interface from fit02
 app_ping_from_fit02_to_fit01 = ec.register_resource("linux::Application")
 cmd = 'ping -c5 -I {} {}'.format(wifi_interface, wifi_ip_fit01)
 ec.set(app_ping_from_fit02_to_fit01, "command", cmd)

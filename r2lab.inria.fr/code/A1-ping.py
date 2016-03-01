@@ -8,18 +8,18 @@ from nepi.util.sshfuncs import logger
 import os
 
 # setting up the default host, onelab user and ssh key credential
-host  = 'faraday.inria.fr'
-user  = '[your_onelab_user]'
-key   = '~/.ssh/[your_public_ssh_key]'
+host_gateway  = 'faraday.inria.fr'
+user_gateway  = '[your_onelab_user]'
+user_identity = '~/.ssh/[your_public_ssh_key]'
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="A1-ping")
 
 # creating a node using the already filled credentials
 node = ec.register_resource("linux::Node",
-                            username = user,
-                            hostname = host,
-                            identity = key,
+                            username = user_gateway,
+                            hostname = host_gateway,
+                            identity = user_identity,
                             cleanExperiment = True,
                             cleanProcesses = True)
 # deploying the node
