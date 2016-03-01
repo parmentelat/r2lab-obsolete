@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # for using print() in python3-style even in python2
 from __future__ import print_function
@@ -20,28 +20,24 @@ gateway_hostname  = 'faraday.inria.fr'
 gateway_username  = 'onelab.inria.mario.tutorial'
 gateway_key       = '~/.ssh/onelab.private'
 
-# setting up the credentials for the nodes 
-host01 = 'fit01'
-user01 = 'root'
-
-host02 = 'fit02'
-user02 = 'root'
-
+# the names used for configuring the wireless network
 wifi_interface = 'wlan0' 
-wifi_channel 	 = '4'
+wifi_channel   = '4'
 wifi_name      = 'ad-hoc'
 wifi_key       = '1234567890'
 
+# this time we cannot use DHCP, so we provide all the details
+# of the IP subnet manually
 wifi_net_mask  = '/24'
-wifi_ip_fit01	 = '172.16.1.1'
-wifi_ip_fit02	 = '172.16.1.2'
+wifi_ip_fit01  = '172.16.1.1'
+wifi_ip_fit02  = '172.16.1.2'
 
 fit01 = ec.register_resource("linux::Node",
                             username = 'root',
                             hostname = 'fit01',
-                            gateway = host_gateway,
-                            gatewayUser = user_gateway,
-                            identity = user_identity,
+                            gateway = gateway_hostname,
+                            gatewayUser = gateway_username,
+                            identity = gateway_key,
                             cleanExperiment = True,
                             cleanProcesses = True)
 ec.deploy(fit01)
@@ -49,9 +45,9 @@ ec.deploy(fit01)
 fit02 = ec.register_resource("linux::Node",
                              username = 'root',
                              hostname = 'fit02',
-                             gateway = host_gateway,
-                             gatewayUser = user_gateway,
-                             identity = user_identity,
+                             gateway = gateway_hostname,
+                             gatewayUser = gateway_username,
+                             identity = gateway_key,
                              cleanExperiment = True,
                              cleanProcesses = True)
 ec.deploy(fit02)

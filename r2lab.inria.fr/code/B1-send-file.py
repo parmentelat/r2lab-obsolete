@@ -1,17 +1,24 @@
 #!/usr/bin/env python
 
-# including nepi library and other required packages
+# for using print() in python3-style even in python2
 from __future__ import print_function
+
+# import nepi library and other required packages
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
-import os
 
-# setting up the default host, onelab user and shh key credential
-host_gateway  = 'faraday.inria.fr'
-user_gateway  = '[your_onelab_user]'
-user_identity = '~/.ssh/[your_public_ssh_key]'
-gateway_dir 	= '/home/[your_onelab_user]/'
+# creating an ExperimentController (EC) to manage the experiment
+# the exp_id name should be unique for your experiment
+# it will be used on the various resources
+# to store results and similar functions
+ec = ExperimentController(exp_id="B1-send-file")
+
+# we want to run a command right in the r2lab gateway
+# so we need to define ssh-related details for doing so
+gateway_hostname  = 'faraday.inria.fr'
+gateway_username  = 'onelab.inria.mario.tutorial'
+gateway_key       = '~/.ssh/onelab.private'
 
 # setting up the credentials for the nodes 
 host01 = 'fit01'
@@ -23,8 +30,7 @@ user02 = 'root'
 host02_dir = '/home/'
 port   = 1234
 
-local_file = '[some_file.txt]'
-local_dir  = '[some_file_path]'
+local_file_path = '~/bigfile'
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="B1-send-file")

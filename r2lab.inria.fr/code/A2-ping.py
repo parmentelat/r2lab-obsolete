@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # for using print() in python3-style even in python2
 from __future__ import print_function
@@ -29,9 +29,9 @@ node = ec.register_resource("linux::Node",
                             hostname = 'fit01',
                             # credentials to use for logging into the gateway
                             # in the first place
-                            gateway = host_gateway,
-                            gatewayUser = user_gateway,
-                            identity = user_identity,
+                            gateway = gateway_hostname,
+                            gatewayUser = gateway_username,
+                            identity = gateway_key,
                             # recommended settings
                             cleanExperiment = True,
                             cleanProcesses = True)

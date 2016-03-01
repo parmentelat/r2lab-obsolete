@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # for using print() in python3-style even in python2
 from __future__ import print_function
@@ -23,9 +23,9 @@ gateway_key       = '~/.ssh/onelab.private'
 fit01 = ec.register_resource("linux::Node",
                             username = 'root',
                             hostname = 'fit01',
-                            gateway = host_gateway,
-                            gatewayUser = user_gateway,
-                            identity = user_identity,
+                            gateway = gateway_hostname,
+                            gatewayUser = gateway_username,
+                            identity = gateway_key,
                             cleanExperiment = True,
                             cleanProcesses = True)
 ec.deploy(fit01)
@@ -33,18 +33,17 @@ ec.deploy(fit01)
 fit02 = ec.register_resource("linux::Node",
                              username = 'root',
                              hostname = 'fit02',
-                             gateway = host_gateway,
-                             gatewayUser = user_gateway,
-                             identity = user_identity,
+                             gateway = gateway_hostname,
+                             gatewayUser = gateway_username,
+                             identity = gateway_key,
                              cleanExperiment = True,
                              cleanProcesses = True)
 ec.deploy(fit02)
 
 # creating an application
-# application to setup (wired) data interface on fit01 node
-cmd = 'ip link set dev data down; dhclient data;'
+# bring up (wired) data interface on fit01 node
 app_fit01 = ec.register_resource("linux::Application",
-                                 command=cmd)
+                                 command='ifup data')
 ec.deploy(app_fit01)
 
 # connect app to node
@@ -53,21 +52,19 @@ ec.register_connection(app_fit01, fit01)
 ec.wait_finished(app_fit01)
 
 # application to setup data interface on fit02 node
-cmd = 'ip link set dev data down; dhclient data;'
 app_fit02 = ec.register_resource("linux::Application",
-                                 command=cmd)
+                                 command='ifup data')
 ec.deploy(app_fit02)
 
 ec.register_connection(app_fit02, fit02)
 # execute this bit and wait for completion
 ec.wait_finished(app_fit02)
 
-# creating an application to ping the wired
-# data interface of fit02 from the fit01
+# ping the wired data interface of fit02 from fit01
+# you can use hostname data02 
 # FYI the actual IP here would be 192.168.2.2
-cmd = 'ping -c1 data02 ; '
 app = ec.register_resource("linux::Application",
-                           command=cmd)
+                           command='ping -c1 data02')
 ec.register_connection(app, fit01)
 ec.deploy(app)
 ec.wait_finished(app)

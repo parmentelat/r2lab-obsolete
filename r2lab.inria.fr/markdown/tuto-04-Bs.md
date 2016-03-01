@@ -12,8 +12,7 @@ Below are a couple of experiments as a second level of learning
 simulation testbed.
 
 The experiments were made with an increment level from **B1** to
-**B2** to allow better subject understanding.  Feel free to skip to
-the level that fits your knowledge.
+**B2** to allow better subject understanding.
 
 From one experiment to other, like git style, we highlight the
 modifications, insert and delete actions by different colors to
@@ -21,17 +20,16 @@ improve the user experience learning. In most of the experiments cases
 a picture explaining the scenario are presented to help the experiment
 comprehension.
 
-Note that in these examples, differently from the previous experiments
-(A1-A4), we introduced two skills of NEPI.
+In addition to what we have seen in the previous experiments (A1-A4), we will now see two other features of NEPI.
 
-You will use **dependent** and **condition** NEPI
-instructions. Respectively lines **80/87** and **98/101/104/107**,
-highlighted in the code at **B1** experiment.
+* the `register_condition` is going to help us model dependencies
+  between the various pieces of an experiment, for example in our
+  scenario, to ensure that **fit01** sends traffic only when **fit02**
+  is ready to receive it;
 
-The dependent condition will install for us NC (`netcat`) tool
-prerequisites and the condition instruction will ensure that the
-**fit01** node will send the file only after **fit02** is done and
-listening on it.
+* and the `depends` tag of an application will help us deal with
+  software dependencies, so that e.g. `netcat` gets installed before
+  we can use it.
 
 <br/>
 

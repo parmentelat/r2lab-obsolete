@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # for using print() in python3-style even in python2
 from __future__ import print_function
