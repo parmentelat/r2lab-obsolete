@@ -41,12 +41,18 @@ tutorial.
 <!------------ A1 ------------>
 <div role="tabpanel" class="tab-pane fade active in" id="A1" aria-labelledby="home-tab">
   <br/>
-  In this experiment example, from your computer, you will create and
-  deploy an application to connect to the R2lab
+  In this experiment example, from your computer, you will run a simple command on the R2lab 
   <strong>gateway</strong> (faraday.inria.fr).
   <br/><br/>
-  Once there, from the <strong>gateway</strong>, you will ping a
-  <strong>google server</strong> and recover its answer.
+  In this example, we will ping a <strong>google server</strong>
+  and retrieve its answer.
+  <br/><br/>
+  Before you run this code, you might wish to check that you indeed have access to the gateway. Assuming your slice name is <code>onelab.inria.mario.tutorial</code>, you should be able to run the following command&nbsp;: <br/><br/>
+  <pre><code>
+  ssh -i ~/.ssh/onelab.private onelab.inria.mario.tutorial@faraday.inria.fr hostname
+  </code></pre>
+  <p>If this command fails, then you need to check again the steps described in the previous tutorials</p>
+
   <center>
     <img src="/assets/img/A1.png" alt="a1"> <br/>
     Download the <a href="/code/A1-ping.py" download target="_blank">A1 experiment</a> code
@@ -57,16 +63,13 @@ tutorial.
 <!------------ A2 ------------>
 <div role="tabpanel" class="tab-pane fade" id="A2" aria-labelledby="profile-tab">
   <br/>
-  In this experiment example, from your computer, you will create and
-  deploy two application nodes.  The first one to connect to the R2lab
-  gateway (faraday.inria.fr) and, from there, reach the
-  <strong>fit01</strong> node.
+  This time we want to run some command from inside a node, and not from
+  inside the gateway. Since there is no way to log into a node directly, we will need to
+  define our node object a little differently.
   <br/><br/>
-  Once connected at the R2lab gateway, you will ping the
-  <strong>fit01</strong> node at its <strong>control
-  interface</strong> (available as the <code>control</code> device
-  under linux).  At the end you will retrieve the answer of the
-  experiment.
+  In this example, the command that we run from the node is simply to
+  ping the gateway (we ould not ping the outside world from a node
+  anymore).
   <center>
     <img src="/assets/img/A2.png" alt="a2"><br/>
     Download the <a href="/code/A2-ping.py" download target="_blank">A2 experiment</a> code
@@ -77,13 +80,11 @@ tutorial.
 <!------------ A3 ------------>
 <div role="tabpanel" class="tab-pane fade" id="A3" aria-labelledby="profile-tab">
   <br/>
-  The experiment below uses two wireless nodes. From your computer you
-  will create and deploy <strong>fit01</strong> and
-  <strong>fit02</strong> nodes. You will configure in both nodes the
+  The experiment below now uses two wireless nodes. We will configure in both nodes the
   wired <strong>experiment interface</strong> (available as
   <code>data</code> under linux) using DHCP.
   <br/><br/>
-  Once configured the interface in both nodes, you will be able to ping
+  Once this is done, we will be able to ping
   the <strong>experiment interface</strong> at </strong>fit02</strong>
   from <strong>fit01</strong>.
   <center>
