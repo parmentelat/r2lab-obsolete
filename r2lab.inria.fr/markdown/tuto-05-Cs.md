@@ -3,6 +3,10 @@ tab: tutorial
 float_menu_template: r2lab/float-menu-tutorials.html
 ---
 
+<script src="/assets/js/diff.js"></script>
+<script src="/assets/r2lab/r2lab-diff.js"></script>
+<style>@import url("/assets/r2lab/r2lab-diff.css")</style>
+
 Below we present an experiment which will conduct a load image using [NEPI](http://nepi.inria.fr/Install/WebHome) network tool at R2lab simulation testbed. 
 
 You will be able load and control the most common Linux distros at R2lab testbed as root user. We provide the most recent Ubuntus and Fedoras for all users.
@@ -17,21 +21,18 @@ You will be able load and control the most common Linux distros at R2lab testbed
 
 <div id="contents" class="tab-content">
 
+<!------------ C1 ------------>
 <div role="tabpanel" class="tab-pane fade active in" id="C1" aria-labelledby="home-tab">
   <br/>
-  From your computer you will create and deploy <strong>gateway</strong> and <strong>fit01</strong> nodes. Once in R2lab <strong>gateway</strong> node you launch the code to load a fresh distro at <strong>fit01</strong> node. 
-  <br><br>
+  From your computer you will create and deploy <strong>gateway</strong> and <strong>fit01</strong> nodes.
+  Once in R2lab <strong>gateway</strong> node you launch the code to load a fresh distro at <strong>fit01</strong> node. 
+  <br/><br/>
   At the end, you will create also an application at the <strong>fit01</strong> node to check if the version corresponds as expected.
-
   <center>
     <img src="/assets/img/C1.png" alt="c1"><br>
     Download the <a href="/code/C1-load.py" download target="_blank">C1 experiment</a> code
   </center>
-  
-
-<pre data-src="prism.js"  data-line="" class="line-numbers"><code class="language-python">
-<< codediff C1-load.py >>
-</code></pre>
-</div>
+<< codediff c1 C1-load.py >>
 </div>
 
+</div> <!-- end div contents -->

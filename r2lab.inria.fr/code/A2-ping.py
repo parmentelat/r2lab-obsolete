@@ -1,62 +1,57 @@
 #!/usr/bin/env python
 
-# including nepi library and other required packages
+# for using print() in python3-style even in python2
 from __future__ import print_function
+
+# import nepi library and other required packages
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
-import os
 
-# setting up the default host, onelab user and shh key credential
-host_gateway  = 'faraday.inria.fr'
-user_gateway  = '[your_onelab_user]'
-user_identity = '~/.ssh/[your_public_ssh_key]'
-
-# setting up the credentials for one fit01 node 
-host01 = 'fit01'
-user01 = 'root'
-
-# creating a new ExperimentController (EC) to manage the experiment
+# creating an ExperimentController (EC) to manage the experiment
+# the exp_id name should be unique for your experiment
+# it will be used on the various resources
+# to store results and similar functions
 ec = ExperimentController(exp_id="A2-ping")
 
-# creating the gateway node
-gateway = ec.register_resource("linux::Node",
-                                username = user_gateway,
-                                hostname = host_gateway,
-                                identity = user_identity,
-                                cleanExperiment = True,
-                                cleanProcesses = True)
-# deploying the gateway node
-ec.deploy(gateway)
+# we want to run a command right in the r2lab gateway
+# so we need to define ssh-related details for doing so
+gateway_hostname  = 'faraday.inria.fr'
+gateway_username  = 'onelab.inria.mario.tutorial'
+gateway_key       = '~/.ssh/onelab.private'
 
-# creating the fit01 node
-fit01   = ec.register_resource("linux::Node",
-                                username = user01,
-                                hostname = host01,
-                                # to reach the fit01 node it must go through the gateway, so let's assign the gateway infos
-                                gateway = host_gateway,
-                                gatewayUser = user_gateway,
-                                identity = user_identity,
-                                cleanExperiment = True,
-                                cleanProcesses = True)
-# deploying the fit01 node
-ec.deploy(fit01)
+# creating a node object using our credentials
+# this time we want to reach a node in R2lab through the gateway
+node = ec.register_resource("linux::Node",
+                            # from the gateway, anyone can reach any node
+                            # using the root account
+                            username = 'root',
+                            hostname = 'fit01',
+                            # credentials to use for logging into the gateway
+                            # in the first place
+                            gateway = host_gateway,
+                            gatewayUser = user_gateway,
+                            identity = user_identity,
+                            # recommended settings
+                            cleanExperiment = True,
+                            cleanProcesses = True)
+ec.deploy(node)
 
-# creating an application to ping the control inteface of fit01 node from the gateway
-app = ec.register_resource("linux::Application")
-cmd = 'ping -c1 192.168.03.01'
-# given to the application a command to execute
-ec.set(app, "command", cmd)
-# registering the application to be executed in the fit01 node
-ec.register_connection(app, gateway)
-# deploying the application
+# creating an application
+app = ec.register_resource("linux::Application",
+                           # the command to execute
+                           command='ping -c1 faraday.inria.fr')
 ec.deploy(app)
-# waiting the app finish its job
+
+# connect app to node
+ec.register_connection(app, node)
+
+# and finally waiting for the app to finish its job
 ec.wait_finished(app)
 
 # recovering the results
-print ("\n--- INFO: output:")
-print (ec.trace(app, "stdout"))
+print ("--- INFO : experiment output:",
+       ec.trace(app, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()

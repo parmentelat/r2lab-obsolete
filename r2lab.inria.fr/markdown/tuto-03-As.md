@@ -3,18 +3,22 @@ tab: tutorial
 float_menu_template: r2lab/float-menu-tutorials.html
 ---
 
-Below are a couple of experiments to get started with
+<script src="/assets/js/diff.js"></script>
+<script src="/assets/r2lab/r2lab-diff.js"></script>
+<style>@import url("/assets/r2lab/r2lab-diff.css")</style>
+
+Below are a couple of experiments to get started with the
 [NEPI](http://nepi.inria.fr/Install/WebHome) experiment orchestration
-tool, and with R2lab simulation testbed.
+tool, and with the R2lab experimental testbed.
 
 This suite of experiments, labelled **A1** to **A4**, are designed as
-a suite of small incremental changes, to allow better subject
-understanding. Feel free to skip to the level that fits your
-knowledge.
+a series of small incremental changes, so we can illustrate various
+concepts one at a time.
 
-From one experiment to the other, we highlight the required changes in
-a git-like style: inserted and deleted lines are shown with a
-different color, so readers can see what is new in this tutorial. 
+To this end, from one experiment to the other, we highlight the
+required changes in a git-like style: inserted and deleted lines are
+shown with a different color, so readers can see what is new in this
+tutorial.
 
 <br/>
 
@@ -37,68 +41,76 @@ different color, so readers can see what is new in this tutorial.
 <!------------ A1 ------------>
 <div role="tabpanel" class="tab-pane fade active in" id="A1" aria-labelledby="home-tab">
   <br/>
-  In this experiment example, from your computer, you will create and deploy an application to connect to the R2lab
+  In this experiment example, from your computer, you will run a simple command on the R2lab 
   <strong>gateway</strong> (faraday.inria.fr).
   <br/><br/>
-  Once there, from the <strong>gateway</strong>, you will ping a <strong>google server</strong> and recover its answer.
-<center>
-  <img src="/assets/img/A1.png" alt="a1"> <br/>
-  Download the <a href="/code/A1-ping.py" download target="_blank">A1 experiment</a> code
-</center>
-<pre data-src="prism.js" class="line-numbers"><code class="language-python">
-<< codediff A1-ping.py >>
-</code></pre>
-</div>
-<!------------ A2 ------------>
-<div role="tabpanel" class="tab-pane fade" id="A2" aria-labelledby="profile-tab">
-    <br/>
-    In this experiment example, from your computer, you will create and deploy two application nodes. The first one to connect to the R2lab gateway (faraday.inria.fr) and, from there, reach the <strong>fit01</strong> node. 
-    <br/><br/>
-    Once connected at the R2lab gateway, you will ping the <strong>fit01</strong> node at its <strong>control interface</strong> (available as the <code>control</code> device under linux).
-    At the end you will retrieve the answer of the experiment.
-<center>
-  <img src="/assets/img/A2.png" alt="a2"><br/>
-  Download the <a href="/code/A2-ping.py" download target="_blank">A2 experiment</a> code
-</center>
-<pre data-src="prism.js" data-line-edit-line="10-13,20,22-30,47,51" data-line-inlcude-line="15-17,32-43" class="line-numbers">
-<code class="language-python">
-<< codediff A1-ping.py A2-ping.py>>
-</code></pre>
-</div>
-<!------------ A3 ------------>
-  <div role="tabpanel" class="tab-pane fade" id="A3" aria-labelledby="profile-tab">
-    <br/>
-    The experiment below uses two wireless nodes. From your computer you will create and deploy <strong>fit01</strong> and <strong>fit02</strong> nodes. You will configure in both nodes the wired <strong>experiment interface</strong> (available as <code>data</code> under linux) using DHCP.
-    <br/><br/>
-    Once configured the interface in both nodes, you will be able to ping the <strong>experiment interface</strong> at </strong>fit02</strong> from <strong>fit01</strong>.
-<center>
-   <img src="/assets/img/A3.png" alt="a3"><br/>
-    Download the <a href="/code/A3-ping.py" download target="_blank">A3 experiment</a> code
-</center>
-<pre data-src="prism.js" data-line-remove-line="25-33"  data-line-edit-line="23,77-83,87" data-line-inlcude-line="19,20,48-59,61-67,69-75" class="line-numbers">
-<code class="language-python">
-<< codediff A2-ping.py A3-ping.py >>
-</code></pre>
+  In this example, we will ping a <strong>google server</strong>
+  and retrieve its answer.
+  <br/><br/>
+  Before you run this code, you might wish to check that you indeed have access to the gateway. Assuming your slice name is <code>onelab.inria.mario.tutorial</code>, you should be able to run the following command&nbsp;: <br/><br/>
+  <pre><code>
+  ssh -i ~/.ssh/onelab.private onelab.inria.mario.tutorial@faraday.inria.fr hostname
+  </code></pre>
+  <p>If this command fails, then you need to check again the steps described in the previous tutorials</p>
+
+  <center>
+    <img src="/assets/img/A1.png" alt="a1"> <br/>
+    Download the <a href="/code/A1-ping.py" download target="_blank">A1 experiment</a> code
+  </center>
+<< codediff a1 A1-ping.py >>
 </div>
 
+<!------------ A2 ------------>
+<div role="tabpanel" class="tab-pane fade" id="A2" aria-labelledby="profile-tab">
+  <br/>
+  This time we want to run some command from inside a node, and not from
+  inside the gateway. Since there is no way to log into a node directly, we will need to
+  define our node object a little differently.
+  <br/><br/>
+  In this example, the command that we run from the node is simply to
+  ping the gateway (we ould not ping the outside world from a node
+  anymore).
+  <center>
+    <img src="/assets/img/A2.png" alt="a2"><br/>
+    Download the <a href="/code/A2-ping.py" download target="_blank">A2 experiment</a> code
+  </center>
+<< codediff a2 A1-ping.py A2-ping.py >>
+</div>
+
+<!------------ A3 ------------>
+<div role="tabpanel" class="tab-pane fade" id="A3" aria-labelledby="profile-tab">
+  <br/>
+  The experiment below now uses two wireless nodes. We will configure in both nodes the
+  wired <strong>experiment interface</strong> (available as
+  <code>data</code> under linux) using DHCP.
+  <br/><br/>
+  Once this is done, we will be able to ping
+  the <strong>experiment interface</strong> at </strong>fit02</strong>
+  from <strong>fit01</strong>.
+  <center>
+    <img src="/assets/img/A3.png" alt="a3"><br/>
+    Download the <a href="/code/A3-ping.py" download target="_blank">A3 experiment</a> code
+  </center>
+<< codediff a3 A2-ping.py A3-ping.py >>
+</div>
 
 <!------------ A4 ------------>
 <div role="tabpanel" class="tab-pane fade" id="A4" aria-labelledby="profile-tab">
   <br/>
-    The experiment below uses two nodes and is an incremental change from previous experiment A3.
-    From your computer you will create the same fit01 and fit02 nodes.
-    This time however, you will configure an <em>ad-hoc</em> network between both nodes <strong>wireless interfaces</strong> (exposed in linux as <code>wlan0</code>).
-    <br/><br/>
-    Once the interfaces configured, you will ping fit01 and fit02 from one another using the <strong>wireless interface</strong>.
-<center>
-  <img src="/assets/img/A4.png" alt="a4"><br/>
-  Download the <a href="/code/A4-ping.py" download target="_blank">A4 experiment</a> code
-</center>
-<pre data-src="prism.js" data-line-remove-line="62,79" data-line-edit-line="32,94,96,110,111" data-line-inlcude-line="22-29,63-71,80-88,102-108,114-116" class="line-numbers">
-<code class="language-python">
-<< codediff A3-ping.py A4-ping.py >>
-</code></pre>
+  The experiment below uses two nodes and is an incremental change
+  from previous experiment A3. From your computer you will create
+  the same fit01 and fit02 nodes. This time however, you will
+  configure an <em>ad-hoc</em> network between both nodes
+  <strong>wireless interfaces</strong> (exposed in linux as
+  <code>wlan0</code>).
+  <br/><br/>
+  Once the interfaces configured, you will ping fit01 and fit02 from one
+  another using the <strong>wireless interface</strong>.
+  <center>
+    <img src="/assets/img/A4.png" alt="a4"><br/>
+    Download the <a href="/code/A4-ping.py" download target="_blank">A4 experiment</a> code
+  </center>
+<< codediff a4 A3-ping.py A4-ping.py >>
 </div>
 
-</div>
-
+</div> <!-- end div contents -->
