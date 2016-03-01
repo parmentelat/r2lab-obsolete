@@ -54,10 +54,6 @@ def main(args):
     nodes    = format_nodes(nodes, avoid_nodes)
     all_nodes = name_node(nodes)
 
-    print avoid_nodes
-    print nodes
-    exit();
-
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
     print "-- INFO: {}".format(now())
