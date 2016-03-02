@@ -14,7 +14,9 @@ PREP_OMF_NAME = r2lab-prep
 
 all: configure 
 
-publish: configure json infra nagios
+# march 2016 : no need to redo omf anymore, one single node that never changes
+#publish: configure omf rhubarbe infra nagios
+publish: configure rhubarbe infra nagios
 
 .PHONY: all publish
 
@@ -32,7 +34,7 @@ BEMOL-PRODUCTS   = $(call byproducts,$(PREP_OMF_NAME))
 fullmonty: configure
 	@echo "Enter git comment for these changes (one line) "; read comment; git commit -m "$$comment"
 	git push
-	$(MAKE) configure json infra nagios
+	$(MAKE) configure rhubarbe infra nagios
 
 
 .PHONY: fullmonty
@@ -54,20 +56,27 @@ clean:
 .PHONY: clean
 
 ####################
-json-push: $(OMF_NAME)-omf.json $(OMF_NAME)-rhubarbe.json
+omf-push: $(OMF_NAME)-omf.json
 	rsync -av $(OMF_NAME)-omf.json inject-omf-json.sh $(OMF_SSH):$(OMF_DIR)
-	rsync -av $(OMF_NAME)-rhubarbe.json $(OMF_SSH):$(RHUBARBE_INVENTORY)
 
-json-run:
+omf-run:
 	@echo -n "Are you sure you want to run inject-omf-json on $(OMF_SSH) (Ctrl-C to abort) ? "; read _
 	ssh $(OMF_SSH) $(OMF_DIR)/inject-omf-json.sh $(OMF_NAME)
 
-json: json-push json-run
+omf: omf-push omf-run
 
-.PHONY: json json-push json-run
+.PHONY: omf omf-push omf-run
+
+
+rhubarbe-push:  $(OMF_NAME)-rhubarbe.json
+	rsync -av $(OMF_NAME)-rhubarbe.json $(OMF_SSH):$(RHUBARBE_INVENTORY)
+
+rhubarbe: rhubarbe-push
+
+.PHONY: rhubarbe rhubarbe-push
 
 ####################
-infra-push: $(OMF_NAME).dnsmasq $(OMF_NAME).json
+infra-push: $(OMF_NAME).dnsmasq $(OMF_NAME).hosts
 	rsync -a $(OMF_NAME).dnsmasq $(OMF_SSH):/etc/dnsmasq.d/testbed.conf
 	rsync -a $(OMF_NAME).hosts $(OMF_SSH):/etc/hosts
 
@@ -98,7 +107,7 @@ tools:
 
 ####################
 # bemol-configure and other similar targets
-BEMOL-TARGETS = configure json infra publish
+BEMOL-TARGETS = configure rhubarbe infra
 
 define bemol-target
 bemol-$(1): OMF_SSH=$(PREP_OMF_SSH)
