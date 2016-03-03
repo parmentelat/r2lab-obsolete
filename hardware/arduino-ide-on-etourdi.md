@@ -1,14 +1,35 @@
+# Available commands
+
+As per UTH guys; not all this is true or useful, hence the ~~barred commands~~
+
+To control the nodes , we use the following commands :
+
+* `curl 192.168.1.xx/on` : turns the node on(on)
+* `curl 192.168.1.xx/off` :  turns the node off(off or closing)
+* `curl 192.168.1.xx/reset` : resets the node(reseted)
+* `curl 192.168.1.xx/info` : info from the CM
+* ~~`curl 192.168.1.xx/sensors`~~ : values from sensors
+* ~~`curl 192.168.1.xx/temperature`~~ :  temperature's sensor value
+* ~~`curl 192.168.1.xx/power`~~ :  power's sensor value
+* ~~`curl 192.168.1.xx/light`~~ :  light's sensor value
+* ~~`curl 192.168.1.xx/humidity`~~ :  humidity's sensor value
+
+
 # setup on etourdi
 
 `etourdi` is the box where Julien had installed the `arduino` IDE in the first place.
 
 Here's what you need to know about that if you need to burn firmwares in our CMC's
 
+***WARNING*** **We have received a version 3.2 of the firmware that needs to be deployed**
+
+
 ## Historical note
 
 ### Before
 
 Up to Feb. 8th 2016
+
 * everything was rooted here
  
     `/home/etourdi/Documents/Arduino/`
@@ -25,13 +46,16 @@ Up to Feb. 8th 2016
 
 When you use the arduino IDE, the default location when opening files is
 ```
-/usr/share/arduino`
+/usr/share/arduino
 ```
 
 So I have reorganized the whole thing so that
+
 * the location is easier to find
 * and one cannot get confused between several versions whose names begin the same (the arduino software is very rough in this respect)
 * **WARNING** when making new software available, remember that **the whole area is to be owned by `etourdi:etourdi`**
+
+
 
 So, here's what we have now
 
