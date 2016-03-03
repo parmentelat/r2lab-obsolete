@@ -13,6 +13,7 @@ $(document).ready(function() {
   var socket              = io.connect("http://r2lab.inria.fr:443");
   var version             = '1.20';
   var refresh             = true;
+  var currentTimezone     = 'local';
 
   function buildCalendar(theEvents) {
     var today  = moment().format("YYYY-MM-DD");
@@ -37,7 +38,7 @@ $(document).ready(function() {
       slotDuration: "01:00:00",
       forceEventDuration: true,
       defaultView: 'agendaDay',
-      timezone: 'Europe/Paris',
+      timezone: currentTimezone,
       defaultDate: today,
       selectHelper: false,
       overlap: false,
@@ -388,6 +389,8 @@ $(document).ready(function() {
     if (action == 'addLease') {
       // $('#calendar').fullCalendar('renderEvent', event, true );
       setActionsQueue('add', event);
+      //console.log(event.start._d);
+      //console.log(event.end._d);
       sendBroadcast('add', event);
     }
     else if (action == 'delLease'){
@@ -788,6 +791,20 @@ $(document).ready(function() {
     setCurrentSliceBox(getCurrentSliceName());
 
     listenBroadcast();
+
+
+    // when the timezone selector changes, rerender the calendar
+		$('#timezone-selector').on('change', function() {
+			currentTimezone = this.value || false;
+			$('#calendar').fullCalendar('destroy');
+      resetActionsQueued();
+      buildInitialSlicesBox(getMySlicesName());
+      buildCalendar(setNightlyAndPast());
+      setCurrentSliceBox(getCurrentSliceName());
+
+      listenBroadcast();
+		});
+
   }
 
   //STOLEN FROM THIERRY
