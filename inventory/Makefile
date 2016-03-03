@@ -14,6 +14,15 @@ PREP_OMF_NAME = r2lab-prep
 
 all: configure 
 
+# for when a remap occurs
+# xxx todo : edit /etc/rhubarbe/rhubarbe.conf on bemol to reflect the scope of rhubarbe -a
+# xxx todo : tweak faraday.sh so that it gets the default all-nodes from rhubarbe.conf
+# for now I do this manually each time
+remap: publish bemol
+
+.PHONY: remap
+
+####################
 # march 2016 : no need to redo omf anymore, one single node that never changes
 #publish: configure omf rhubarbe infra nagios
 publish: configure rhubarbe infra nagios
@@ -30,14 +39,6 @@ endef
 PRODUCTS         = $(call byproducts,$(OMF_NAME))
 BEMOL-PRODUCTS   = $(call byproducts,$(PREP_OMF_NAME))
 
-# once everything has been redone, this target pushes everything, and commits to git
-fullmonty: configure
-	@echo "Enter git comment for these changes (one line) "; read comment; git commit -m "$$comment"
-	git push
-	$(MAKE) configure rhubarbe infra nagios
-
-
-.PHONY: fullmonty
 ####################
 configure: $(PRODUCTS)
 $(PRODUCTS) r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg: $(SCRIPT) $(SOURCE)
