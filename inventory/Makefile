@@ -81,8 +81,11 @@ infra-push: $(OMF_NAME).dnsmasq $(OMF_NAME).hosts
 	rsync -a $(OMF_NAME).dnsmasq $(OMF_SSH):/etc/dnsmasq.d/testbed.conf
 	rsync -a $(OMF_NAME).hosts $(OMF_SSH):/etc/hosts
 
+# make sure the leases file gets cleaned up otherwise the new node may
+# need to wait for *some time* before it gets served its address
+# getting stuff like 192.168.3.251 instead
 infra-restart:
-	ssh $(OMF_SSH) service dnsmasq restart
+	ssh $(OMF_SSH) "service dnsmasq stop; rm -f /var/lib/misc/dnsmasq.leases; service dnsmasq start"
 
 infra: infra-push infra-restart
 
