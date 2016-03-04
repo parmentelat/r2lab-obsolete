@@ -225,10 +225,15 @@ function nodes-restore () {
 doc-alt nodes-restore "use previously named selection"
 
 #bemol && export _all_nodes=38-42 || export _all_nodes=1-37
-bemol && export _all_nodes=4,38-41 || export _all_nodes=1-37
+#bemol && export _all_nodes=4,38-41 || export _all_nodes=1-37
 
-function all-nodes () { nodes $_all_nodes; }
-function nodes-all () { all-nodes; }
+_all_nodes=""
+function _get_all_nodes () {
+    [ -z "$_all_nodes" ] && _all_nodes="$(rhubarbe nodes -a)"
+    echo $_all_nodes
+}
+
+function all-nodes () { nodes $(_get_all_nodes); }
 doc-nodes all-nodes "select all available nodes"
 
 # releases
