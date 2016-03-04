@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # for using print() in python3-style even in python2
 from __future__ import print_function
@@ -42,11 +42,11 @@ local   = ec.register_resource("linux::Node",
 
 # creating the gateway node
 gateway = ec.register_resource("linux::Node",
-                             	username = gateway_username,
-                             	hostname = gateway_hostname,
-                             	identity = gateway_key,
-                              cleanExperiment = True,
-                              cleanProcesses = True)
+                               username = gateway_username,
+                               hostname = gateway_hostname,
+                               identity = gateway_key,
+                               cleanExperiment = True,
+                               cleanProcesses = True)
 
 # creating the fit01 node
 fit01 	= ec.register_resource("linux::Node",
@@ -69,35 +69,41 @@ fit02   = ec.register_resource("linux::Node",
                             	cleanProcesses = True)
 
 # application to copy file from local to gateway
-app_local = ec.register_resource("linux::Application")
-cmd  = 'scp {}{} {}@{}:{}{}; '.format(local_dir, local_file, gateway_username, gateway_hostname, gateway_dir, local_file)
-ec.set(app_local, "command", cmd)
+cmd  = 'scp {}{} {}@{}:{}{}; '.\
+       format(local_dir, local_file,
+              gateway_username, gateway_hostname, gateway_dir, local_file)
+app_local = ec.register_resource("linux::Application",
+                                 command = cmd)
 ec.register_connection(app_local, local)
 
 # application to copy file to fit02 from gateway
-app_gateway = ec.register_resource("linux::Application")
-cmd  = 'scp {}{} {}@{}:{}{}; '.format(gateway_dir, local_file, user02, host02, host02_dir, local_file)
-ec.set(app_gateway, "command", cmd)
+cmd  = 'scp {}{} {}@{}:{}{}; '.\
+       format(gateway_dir, local_file,
+              user02, host02, host02_dir, local_file)
+app_gateway = ec.register_resource("linux::Application",
+                                   command = cmd)
 ec.register_connection(app_gateway, gateway)
 
 # fit01 will receive the file from fit02, then we start listening in the port
-app_fit01 = ec.register_resource("linux::Application")
-cmd = 'nc -dl {} > {}{}'.format(port, host01_dir, local_file)
-ec.set(app_fit01, "depends", "netcat")
-ec.set(app_fit01, "command", cmd)
+cmd = 'nc -dl {} > {}{}'.\
+      format(port, host01_dir, local_file)
+app_fit01 = ec.register_resource("linux::Application",
+                                 depends = "netcat",
+                                 command = cmd)
 ec.register_connection(app_fit01, fit01)
 
 # fit02 will send the file to fit01
-app_fit02 = ec.register_resource("linux::Application")
-cmd = 'nc {} {} < {}{}'.format(host01, port, host02_dir, local_file)
-ec.set(app_fit02, "depends", "netcat")
-ec.set(app_fit02, "command", cmd)
+cmd = 'nc {} {} < {}{}'.\
+      format(host01, port, host02_dir, local_file)
+app_fit02 = ec.register_resource("linux::Application",
+                                 depends = "netcat",
+                                 command = cmd)
 ec.register_connection(app_fit02, fit02)
 
 # fit02 will list the dir after all process
-app_fit02_ls = ec.register_resource("linux::Application")
 cmd = 'ls -la {}'.format(host02_dir)
-ec.set(app_fit02_ls, "command", cmd)
+app_fit02_ls = ec.register_resource("linux::Application",
+                                    command = cmd)
 ec.register_connection(app_fit02_ls, fit02)
 
 # defining that the node gateway can copy the file to fit02 only after the file is copied to it from local
