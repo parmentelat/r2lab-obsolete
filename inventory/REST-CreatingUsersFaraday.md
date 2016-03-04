@@ -108,3 +108,60 @@ There are 5 statuses for leases "Pending, Accepted, Cancelled, Active, Past"
 curl -k https://localhost:12346/resources/leases?status=accepted
 ```~~
 
+***********
+# March 4 2016 - tweaking the admin account
+
+* I tried to use this account for creating the nightly leases
+* found the account 'closed':
+```
+{"exception":{"code":401,"reason":"Account with description '{:name=>\"onelab.inria.r2lab.admin\"}' is closed."}}```
+
+*  and indeed 
+
+```
+root@faraday /tmp # GET accounts?name=onelab.inria.r2lab.admin
+{
+  "resource_response": {
+    "resource": {
+      "name": "onelab.inria.r2lab.admin",
+      "urn": "urn:publicid:IDN+onelab:inria:r2lab+slice+admin",
+      "uuid": "fab07428-1eb2-4940-80f8-c848b87a365e",
+      "resource_type": "account",
+      "created_at": "2016-02-01T14:48:14Z",
+      "valid_until": "2016-02-10T13:46:31Z",
+      "closed_at": "2016-02-24T09:28:15Z",```
+...
+
+```
+
+* so I went to the onelab portal and clicked on that slice; it did improve the situation a bit
+
+```
+root@faraday /tmp # GET accounts?name=onelab.inria.r2lab.admin
+{
+  "resource_response": {
+    "resource": {
+      "name": "onelab.inria.r2lab.admin",
+      "urn": "urn:publicid:IDN+onelab:inria:r2lab+slice+admin",
+      "uuid": "fab07428-1eb2-4940-80f8-c848b87a365e",
+      "resource_type": "account",
+      "created_at": "2016-02-01T14:48:14Z",
+      "valid_until": "2016-03-04T16:21:06Z",
+<snip>      
+```
+
+* But that's still not good enough; I want this account to be open for a LOONG time, so:
+
+```
+curl -k --cert /root/certificates-omf/user_cert.pem \
+-H "Accept: application/json" -H "Content-Type:application/json" \
+-X PUT -d '{"name":"onelab.inria.r2lab.admin", "valid_until": "2030-12-31T23:59:59Z"}' \
+-i https://localhost:12346/resources/accounts
+```
+
+* And now
+
+```
+root@faraday # GET accounts?name=onelab.inria.r2lab.admin | grep valid_until
+      "valid_until": "2030-12-31T23:59:59Z",
+```
