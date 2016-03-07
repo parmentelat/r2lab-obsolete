@@ -17,8 +17,8 @@ ec = ExperimentController(exp_id="B1-send-file")
 # we want to run a command right in the r2lab gateway
 # so we need to define ssh-related details for doing so
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.mario.tutorial'
-gateway_key       = '~/.ssh/onelab.private'
+gateway_username  = 'onelab.inria.[your_user]'
+gateway_key       = '~/.ssh/[your_ssh_key]'
 
 # setting up the credentials for the nodes
 host01 = 'fit01'
@@ -28,25 +28,34 @@ host01_dir = '/home/'
 host02 = 'fit02'
 user02 = 'root'
 host02_dir = '/home/'
-port   = 1234
+port = 1234
 
-local_dir       = '/local_path/'
-local_file      = 'file.txt'
-gateway_dir     = '/gateway_path/'
+local_dir   = '/local_path/'
+local_file  = 'file.txt'
+gateway_dir = '/gateway_path/'
+
+wifi_interface = 'wlan2'
+wifi_channel   = '4'
+wifi_name      = 'ad-hoc'
+wifi_key       = '1234567890'
+
+wifi_net_mask  = '/24'
+wifi_ip_fit01  = '172.16.1.1'
+wifi_ip_fit02  = '172.16.1.2'
 
 # creating local
 local   = ec.register_resource("linux::Node",
-                               hostname = 'localhost',
-                               cleanExperiment = True,
-                               cleanProcesses = True)
+                                hostname = 'localhost',
+                                cleanExperiment = True,
+                                cleanProcesses = True)
 
 # creating the gateway node
 gateway = ec.register_resource("linux::Node",
-                               username = gateway_username,
-                               hostname = gateway_hostname,
-                               identity = gateway_key,
-                               cleanExperiment = True,
-                               cleanProcesses = True)
+                                username = gateway_username,
+                                hostname = gateway_hostname,
+                                identity = gateway_key,
+                                cleanExperiment = True,
+                                cleanProcesses = True)
 
 # creating the fit01 node
 fit01 	= ec.register_resource("linux::Node",
@@ -73,7 +82,7 @@ cmd  = 'scp {}{} {}@{}:{}{}; '.\
        format(local_dir, local_file,
               gateway_username, gateway_hostname, gateway_dir, local_file)
 app_local = ec.register_resource("linux::Application",
-                                 command = cmd)
+                                  command = cmd)
 ec.register_connection(app_local, local)
 
 # application to copy file to fit02 from gateway
@@ -81,29 +90,29 @@ cmd  = 'scp {}{} {}@{}:{}{}; '.\
        format(gateway_dir, local_file,
               user02, host02, host02_dir, local_file)
 app_gateway = ec.register_resource("linux::Application",
-                                   command = cmd)
+                                    command = cmd)
 ec.register_connection(app_gateway, gateway)
 
 # fit01 will receive the file from fit02, then we start listening in the port
 cmd = 'nc -dl {} > {}{}'.\
       format(port, host01_dir, local_file)
 app_fit01 = ec.register_resource("linux::Application",
-                                 depends = "netcat",
-                                 command = cmd)
+                                  depends = "netcat",
+                                  command = cmd)
 ec.register_connection(app_fit01, fit01)
 
 # fit02 will send the file to fit01
 cmd = 'nc {} {} < {}{}'.\
       format(host01, port, host02_dir, local_file)
 app_fit02 = ec.register_resource("linux::Application",
-                                 depends = "netcat",
-                                 command = cmd)
+                                  depends = "netcat",
+                                  command = cmd)
 ec.register_connection(app_fit02, fit02)
 
 # fit02 will list the dir after all process
 cmd = 'ls -la {}'.format(host02_dir)
 app_fit02_ls = ec.register_resource("linux::Application",
-                                    command = cmd)
+                                     command = cmd)
 ec.register_connection(app_fit02_ls, fit02)
 
 # defining that the node gateway can copy the file to fit02 only after the file is copied to it from local

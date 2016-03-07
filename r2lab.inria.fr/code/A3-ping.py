@@ -17,8 +17,8 @@ ec = ExperimentController(exp_id="A3-ping")
 # we want to run a command right in the r2lab gateway
 # so we need to define ssh-related details for doing so
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.mario.tutorial'
-gateway_key       = '~/.ssh/onelab.private'
+gateway_username  = 'onelab.inria.[your_user]'
+gateway_key       = '~/.ssh/[your_ssh_key]'
 
 fit01 = ec.register_resource("linux::Node",
                             username = 'root',
@@ -61,7 +61,7 @@ ec.register_connection(app_fit02, fit02)
 ec.wait_finished(app_fit02)
 
 # ping the wired data interface of fit02 from fit01
-# you can use hostname data02 
+# you can use hostname data02
 # FYI the actual IP here would be 192.168.2.2
 app = ec.register_resource("linux::Application",
                            command='ping -c1 data02')
