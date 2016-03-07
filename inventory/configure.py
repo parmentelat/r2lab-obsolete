@@ -20,7 +20,7 @@ from argparse import ArgumentParser
 from collections import OrderedDict
 
 ########################################
-mac_regexp = re.compile ('(?P<prefix>([0-9A-Fa-f]{2}:){5})(?P<last>[0-9A-Fa-f]{2})')
+mac_regexp = re.compile('(?P<prefix>([0-9A-Fa-f]{2}:){5})(?P<last>[0-9A-Fa-f]{2})')
 
 class Node(object):
     """
@@ -29,11 +29,16 @@ class Node(object):
     and a mac addredd (the one attached to its physical eth device)
     ---
     """
-    def __init__(self, phy_num, log_num, mac, alt_mac):
+    def __init__(self, phy_num, log_num, mac, alt_mac, spare):
         self.phy_num = phy_num
         self.log_num = log_num
         self.mac = mac.lower()
         self.alt_mac = alt_mac.lower()
+        self.spare = spare
+
+    def __repr__(self):
+        return "<Node phy={}, log={} - spare={}>"\
+            .format(self.phy_num, self.log_num, self.spare)
 
     def phy_str0(self):
         "physical number on 2 chars as a str"
@@ -64,7 +69,7 @@ class Node(object):
     
     def omf_json_model(self):
         domain = 'r2lab'
-        return OrderedDict (
+        return OrderedDict(
             cmc_attributes = {
                 "name": "{}:cm".format(self.log_name()),
                 "mac": "02:00:00:00:00:{}".format(self.phy_str0()),
@@ -198,7 +203,7 @@ check_command on_off
         return result
 
     def nagios_host_cfg(self):
-        return "".join([self.nagios_host_cfg_sn(i,n) for (i,n) in self.subnets])
+        return "".join([self.nagios_host_cfg_sn(i,n) for (i, n) in self.subnets])
 
     def nagios_groups(self):
         "returns a 3-list with the hostnames for the 3 subnets"
@@ -291,8 +296,10 @@ class Nodes(OrderedDict):
                     print("{}:{}: cannot read first integer".format(f, lno))
                     continue
                 # get logical number
+                spare = False
                 if tokens[2].startswith('prep'):
                     log_num = 0
+                    spare = True
                 else:
                     try:
                         log_num = int(tokens[2])
@@ -303,19 +310,19 @@ class Nodes(OrderedDict):
                     log_num = phy_num
                 # discard nodes that are not on-site
                 if log_num <= 0:
-                    print ("{}:{} - undeployed physical node {} - ignored"
+                    print("{}:{} - undeployed physical node {} - ignored"
                            .format(f, lno, phy_num))
                     continue
                 mac = tokens[1]
                 match = mac_regexp.match(mac)
                 if match:
                     prefix, last = match.group('prefix', 'last')
-                    byte = int (last, base=16)
+                    byte = int(last, base=16)
                     alt_last = hex(byte-1)[2:]
                     alt_mac = prefix+alt_last
-                    self[phy_num] = Node(phy_num, log_num, mac, alt_mac)
+                    self[phy_num] = Node(phy_num, log_num, mac, alt_mac, spare)
                 else:
-                    print ("{}:{} physical node {} ignored - wrong MAC".format(f, lno))
+                    print("{}:{} physical node {} ignored - wrong MAC".format(f, lno))
                     if self.verbose: print(">>",line)
     
     def keep_just_one(self):
@@ -325,34 +332,42 @@ class Nodes(OrderedDict):
 
     def write_json(self):
         out_filename = self.out_basename+"-omf.json"
-        with open (out_filename, 'w') as jsonfile:
+        with open(out_filename, 'w') as jsonfile:
 # nov. 2015 : expose only one node to onelab / sfa
 #            json_models = [ node.omf_json_model() for node in self.values() ]
             first_node = list(self.values())[0]
             one_json_model = first_node.hacked_omf_json_model()
-            json.dump ([one_json_model], jsonfile, indent=2, separators=(',', ': '), sort_keys=True)
-        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
+            json.dump([one_json_model], jsonfile, indent=2, separators=(',', ': '),
+                      sort_keys=True)
+        print("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
         out_filename = self.out_basename+"-rhubarbe.json"
-        with open (out_filename, 'w') as jsonfile:
+        with open(out_filename, 'w') as jsonfile:
             json_models = [ node.rhubarbe_json_model() for node in self.values() ]
-            json.dump (json_models, jsonfile, indent=2, separators=(',', ': '), sort_keys=True)
-        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
+            json.dump(json_models, jsonfile, indent=2, separators=(',', ': '), sort_keys=True)
+        print("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
+
+    def write_all_prep_nodes(self):
+        out_filename = self.out_basename+".spare-nodes"
+        with open(out_filename, 'w') as spare_nodes:
+            indices = ",".join([node.phy_str0() for node in self.values() if node.spare])
+            spare_nodes = spare_nodes.write(indices + "\n")
+        print("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
 
     def write_dnsmasq(self):
         out_filename = self.out_basename+".dnsmasq"
-        with open (out_filename, 'w') as dnsmasqfile:
+        with open(out_filename, 'w') as dnsmasqfile:
             dnsmasqfile.write(dnsmasq_header)
             for node in self.values():
                 dnsmasqfile.write(node.dnsmasq_conf())
-        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
+        print("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
 
     def write_hosts(self):
         out_filename = self.out_basename+".hosts"
-        with open (out_filename, 'w') as hostsfile:
+        with open(out_filename, 'w') as hostsfile:
             hostsfile.write(hosts_header)
             for node in self.values():
                 hostsfile.write(node.hosts_conf())
-        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
+        print("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
     
 
     def write_nagios(self):
@@ -360,13 +375,13 @@ class Nodes(OrderedDict):
         with open(out_filename, 'w') as nagiosfile:
             for node in self.values():
                 nagiosfile.write(node.nagios_host_cfg())
-        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
+        print("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
 
     def write_nagios_hostgroups(self):
         out_filename = self.out_basename+"-nagios-groups.cfg"
         nodes_groups = zip(*[ node.nagios_groups() for node in self.values() ])
         with open(out_filename, 'w') as nagiosfile:
-            for (i, sn_name), list_names in zip(Node.subnets, nodes_groups):
+            for(i, sn_name), list_names in zip(Node.subnets, nodes_groups):
                 sn_members = ",".join(list_names)
                 hostgroup = """
 define hostgroup {{
@@ -376,7 +391,7 @@ members {sn_members}
 }}
 """.format(**locals())
                 nagiosfile.write(hostgroup)
-        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
+        print("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
 
 
     def write_diana_db(self):
@@ -384,7 +399,7 @@ members {sn_members}
         with open(out_filename, 'w') as nagiosfile:
             for node in self.values():
                 nagiosfile.write(node.diana_db())
-        print ("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
+        print("(Over)wrote {out_filename} from {self.map_filename}".format(**locals()))
         
 ########################################        
 def main():
@@ -420,6 +435,8 @@ def main():
         nodes.write_nagios()
         nodes.write_nagios_hostgroups()
         nodes.write_diana_db()
+    else:
+        nodes.write_all_prep_nodes()
 
     return 0
 

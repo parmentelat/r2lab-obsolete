@@ -18,7 +18,7 @@ all: configure
 # xxx todo : edit /etc/rhubarbe/rhubarbe.conf on bemol to reflect the scope of rhubarbe -a
 # xxx todo : tweak faraday.sh so that it gets the default all-nodes from rhubarbe.conf
 # for now I do this manually each time
-remap: publish bemol
+remap: publish bemol spare-nodes
 
 .PHONY: remap
 
@@ -37,7 +37,7 @@ $(1)-omf.json $(1)-rhubarbe.json $(1).dnsmasq $(1).hosts
 endef
 
 PRODUCTS         = $(call byproducts,$(OMF_NAME))
-BEMOL-PRODUCTS   = $(call byproducts,$(PREP_OMF_NAME))
+BEMOL-PRODUCTS   = $(call byproducts,$(PREP_OMF_NAME)) r2lab-prep.spare-nodes
 
 ####################
 configure: $(PRODUCTS)
@@ -108,6 +108,18 @@ TOOLS = display-db.py plugin-onoff.py
 
 tools:
 	rsync -av $(TOOLS) $(OMF_SSH):/usr/bin
+
+####################
+# purpose is to tweak /etc/rhubarbe/rhubarbe.conf
+# on bemol only
+# to reflect the actual spare nodes 
+RC = /etc/rhubarbe/rhubarbe.conf
+all-spares = $(shell cat r2lab-prep.spare-nodes)
+
+spare-nodes: r2lab-prep.spare-nodes
+	ssh root@bemol.pl.sophia.inria.fr \
+          sed -i -e 's/all_scope.bemol.*/all_scope.bemol=$(all-spares)/' $(RC)
+
 
 ####################
 # bemol-configure and other similar targets
