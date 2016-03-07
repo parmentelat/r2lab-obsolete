@@ -17,8 +17,8 @@ ec = ExperimentController(exp_id="A1-ping")
 # we want to run a command right in the r2lab gateway
 # so we need to define ssh-related details for doing so
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.mario.tutorial'
-gateway_key       = '~/.ssh/onelab.private'
+gateway_username  = 'onelab.inria.[your_user]'
+gateway_key       = '~/.ssh/[your_ssh_key]'
 
 # creating a node object using our credentials
 # this object will host the commands need to be run on the gateway

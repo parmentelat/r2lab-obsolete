@@ -17,11 +17,11 @@ ec = ExperimentController(exp_id="A4-ping")
 # we want to run a command right in the r2lab gateway
 # so we need to define ssh-related details for doing so
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.mario.tutorial'
-gateway_key       = '~/.ssh/onelab.private'
+gateway_username  = 'onelab.inria.[your_user]'
+gateway_key       = '~/.ssh/[your_ssh_key]'
 
 # the names used for configuring the wireless network
-wifi_interface = 'wlan0' 
+wifi_interface = 'wlan0'
 wifi_channel   = '4'
 wifi_name      = 'ad-hoc'
 wifi_key       = '1234567890'
