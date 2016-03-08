@@ -265,17 +265,17 @@ doc-nodes map "\trun an ssh command on all selected nodes"
 
 #
 alias rload="rhubarbe load"
-doc-nodes rload "load image (specify with -i) on selected nodes"
+doc-nodes rload "\tload image (specify with -i) on selected nodes"
 alias rsave="rhubarbe save"
-doc-nodes rsave "save image from one node"
+doc-nodes rsave "\tsave image from one node"
 alias rwait="rhubarbe wait"
-doc-nodes rwait "wait for nodes to be reachable through ssh"
+doc-nodes rwait "\twait for nodes to be reachable through ssh"
 alias rstat="rhubarbe status"
-doc-nodes rstat "show if nodes are turned on or off"
+doc-nodes rstat "\tshow if nodes are turned on or off"
 alias rimages="rhubarbe images"
-doc-nodes rimages "display available images"
+doc-nodes rimages "\tdisplay available images"
 alias rleases="rhubarbe leases"
-doc-nodes rleases "display current leases"
+doc-nodes rleases "\tdisplay current leases"
 
 alias load-fedora="rload -i fedora"
 doc-nodes load-fedora alias
