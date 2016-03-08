@@ -28,6 +28,9 @@ var chan_leases = 'chan-leases';
 // the monitor, asking it to short-circuit its loop
 // and to immediately refresh leases
 var chan_leases_request = 'chan-leases-request';
+// broadcast channel - only used between browsers
+// monitor is immune from that
+var chan_leases_broadcast = 'chan-leases-broadcast';
 
 //////// filenames
 // this is where we write current complete status
@@ -105,6 +108,13 @@ io.on('connection', function(socket){
 	display("Forwarding trigger message " + anything + " on channel "+ chan_leases_request);
 	io.emit(chan_leases_request, anything);
     });
+
+    vdisplay("arming callback for channel " + chan_leases_broadcast);
+    socket.on(chan_leases_broadcast, function(anything){
+	display("Forwarding trigger message " + anything + " on channel "+ chan_leases_broadcast);
+	io.emit(chan_leases_broadcast, anything);
+    });
+
 });
 
 // convenience function to synchroneously read a file as a string

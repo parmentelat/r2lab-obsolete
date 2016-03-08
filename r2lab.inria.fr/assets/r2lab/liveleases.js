@@ -12,6 +12,7 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
+//  var socket              = io.connect("http://localhost:443");
   var version             = '1.21';
   var refresh             = true;
   var currentTimezone     = 'local';
@@ -364,14 +365,27 @@ $(document).ready(function() {
   }
 
 
+    // use this to ask for an immediate refresh
+    // of the set of leases
+    // of course it must be called *after* the actual API call
+    // via django
+    function refreshLeases(){
+	msg = "INIT";
+	console.log("sending on chan-leases-request -> " + msg);  
+	socket.emit('chan-leases-request', msg);
+    }
+
+
   function sendBroadcast(action, data){
     var msg = [action, JSON.stringify(data)];
-    socket.emit('chan-leases-request', msg);
+    console.log("sending on chan-leases-broadcast -> " + msg);  
+    socket.emit('chan-leases-broadcast', msg);
   }
 
 
   function listenBroadcast(){
-    socket.on('chan-leases-request', function(msg){
+      socket.on('chan-leases-broadcast', function(msg){
+	  console.log("incoming chan-leases-broadcast");
       var action = msg[0];
 
       if (action == 'add'){
@@ -387,6 +401,7 @@ $(document).ready(function() {
     });
 
     socket.on('chan-leases', function(msg){
+	console.log("incoming chan-leases");
       setCurrentLeases(msg);
       resetActionsQueued();
       var leases = getCurrentLeases();
@@ -809,7 +824,7 @@ $(document).ready(function() {
     setCurrentSliceBox(getCurrentSliceName());
 
     listenBroadcast();
-
+      refreshLeases();
 
     // when the timezone selector changes, rerender the calendar
 		$('#timezone-selector').on('change', function() {
