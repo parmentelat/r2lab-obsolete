@@ -78,3 +78,11 @@ Otherwise
   * try again
 
 ***... to be reviewed / finalized / continued... ***
+
+# stupidest mistake so far
+
+One day I ran a harmless rhubarbe command in `/etc/dnsmasq.d`. This had the result of creating a file named `/etc/dnsmasq.d/rhubarbe.log`. 
+
+Next time dnsmasq tried to run, it complained about a syntax error in this file, refused to start; no DNS, ouch .. 
+
+Took me 1 hour to figure that out. 
