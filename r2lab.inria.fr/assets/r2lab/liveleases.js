@@ -5,7 +5,7 @@ $(document).ready(function() {
   var actionsQueue        = [];
   var actionsQueued       = [];
   var current_slice_name  = current_slice.name;//'onelab.inria.mario.tutorial';//current_slice.name
-  var current_slice_color = '#ddd';
+  var current_slice_color = '#DDD';
   var current_leases      = null;
   var color_pending       = '#000000';
   var keepOldEvent        = null;
@@ -148,6 +148,13 @@ $(document).ready(function() {
       eventRender: function(event, element) {
         element.bind('dblclick', function() {
           if (isMySlice(event.title)) {
+            newLease = createLease(event);
+            newLease.title = removingName(event.title);
+            newLease.textColor = color_pending;
+            newLease.color = current_slice_color;
+            newLease.editable = false;
+            removeElementFromCalendar(event.id);
+            addElementToCalendar(newLease);
             updateLeases('delLease', event);
           }
         });
@@ -325,6 +332,11 @@ $(document).ready(function() {
   }
 
 
+  function addElementToCalendar(element){
+    $('#calendar').fullCalendar('renderEvent', element, true );
+  }
+
+
   function resetActionsQueued(){
     actionsQueued = [];
   }
@@ -398,7 +410,6 @@ $(document).ready(function() {
         removeElementFromCalendar(event.id);
       }
       else if(event.title.indexOf('(pending)') == -1) {
-        removeElementFromCalendar(event.id);
         setActionsQueue('del', event);
       }
     }
@@ -592,6 +603,13 @@ $(document).ready(function() {
   function pendingName(name){
     var new_name = name;
     new_name = resetName(name) + ' (pending)';
+    return new_name
+  }
+
+
+  function removingName(name){
+    var new_name = name;
+    new_name = resetName(name) + ' (removing)';
     return new_name
   }
 
