@@ -17,8 +17,9 @@ ec = ExperimentController(exp_id="A4-ping")
 # we want to run a command right in the r2lab gateway
 # so we need to define ssh-related details for doing so
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.[your_user]'
-gateway_key       = '~/.ssh/[your_ssh_key]'
+gateway_key       = '~/.ssh/onelab.private'
+# of course: you need to change this to describe your own slice
+gateway_username  = 'onelab.inria.mario.tutorial'
 
 # the names used for configuring the wireless network
 wifi_interface = 'wlan0'
@@ -39,8 +40,8 @@ fit01 = ec.register_resource("linux::Node",
                             gatewayUser = gateway_username,
                             identity = gateway_key,
                             cleanExperiment = True,
-                            cleanProcesses = True)
-ec.deploy(fit01)
+                             cleanProcesses = True,
+                             autoDeploy = True)
 
 fit02 = ec.register_resource("linux::Node",
                              username = 'root',
@@ -49,8 +50,8 @@ fit02 = ec.register_resource("linux::Node",
                              gatewayUser = gateway_username,
                              identity = gateway_key,
                              cleanExperiment = True,
-                             cleanProcesses = True)
-ec.deploy(fit02)
+                             cleanProcesses = True,
+                             autoDeploy = True)
 
 # creating an application
 # configuring an ad-hoc network on node fit01
@@ -64,8 +65,8 @@ cmd += "iwconfig {} key {}; ".format(wifi_interface, wifi_key)
 cmd += "ip link set {} up; ".format(wifi_interface)
 cmd += "ip addr add {}{} dev {}; ".format(wifi_ip_fit01, wifi_net_mask, wifi_interface)
 app_fit01 = ec.register_resource("linux::Application",
-                                 command=cmd)
-ec.deploy(app_fit01)
+                                 command=cmd,
+                                 autoDeploy = True)
 ec.register_connection(app_fit01, fit01)
 ec.wait_finished(app_fit01)
 
@@ -80,8 +81,8 @@ cmd += "iwconfig {} key {}; ".format(wifi_interface, wifi_key)
 cmd += "ip link set {} up; ".format(wifi_interface)
 cmd += "ip addr add {}{} dev {}; ".format(wifi_ip_fit02, wifi_net_mask, wifi_interface)
 app_fit02 = ec.register_resource("linux::Application",
-                                 command=cmd)
-ec.deploy(app_fit02)
+                                 command=cmd,
+                                 autoDeploy = True)
 ec.register_connection(app_fit02, fit02)
 ec.wait_finished(app_fit02)
 
@@ -89,17 +90,17 @@ ec.wait_finished(app_fit02)
 # interface of fit02 from the fit01
 cmd = 'ping -c5 -I {} {}'.format(wifi_interface, wifi_ip_fit02)
 app1 = ec.register_resource("linux::Application",
-                            command=cmd)
+                            command=cmd,
+                            autoDeploy = True)
 ec.register_connection(app1, fit01)
-ec.deploy(app1)
 ec.wait_finished(app1)
 
 # and the other way around
 cmd = 'ping -c5 -I {} {}'.format(wifi_interface, wifi_ip_fit01)
 app2 = ec.register_resource("linux::Application",
-                            command=cmd)
+                            command=cmd,
+                            autoDeploy = True)
 ec.register_connection(app2, fit02)
-ec.deploy(app2)
 ec.wait_finished(app2)
 
 # recovering the results
