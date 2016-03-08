@@ -8,6 +8,7 @@ $(document).ready(function() {
   var current_slice_color = '#DDD';
   var current_leases      = null;
   var color_pending       = '#000000';
+  var color_removing      = '#000000';
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
@@ -150,8 +151,7 @@ $(document).ready(function() {
           if (isMySlice(event.title)) {
             newLease = createLease(event);
             newLease.title = removingName(event.title);
-            newLease.textColor = color_pending;
-            newLease.color = current_slice_color;
+            newLease.textColor = color_removing;
             newLease.editable = false;
             removeElementFromCalendar(event.id);
             addElementToCalendar(newLease);
