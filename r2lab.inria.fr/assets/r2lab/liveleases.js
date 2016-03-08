@@ -11,7 +11,7 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
-  var version             = '1.20';
+  var version             = '1.21';
   var refresh             = true;
   var currentTimezone     = 'local';
 
@@ -588,7 +588,7 @@ $(document).ready(function() {
 
   function fullName(name){
     var new_name = name;
-    new_name = 'onelab.inria.'+name;
+    new_name = 'onelab.'+name;
     return new_name
   }
 
