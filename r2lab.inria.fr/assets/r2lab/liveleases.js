@@ -584,8 +584,7 @@ $(document).ready(function() {
 
   function shortName(name){
     var new_name = name;
-    new_name = name.replace('onelab.inria.', '');
-    new_name = new_name.replace('onelab.upmc.', '');
+    new_name = name.replace('onelab.', '');
     return new_name
   }
 
@@ -783,8 +782,8 @@ $(document).ready(function() {
 
 
   function main (){
-    console.log(version);
 
+    console.log("liveleases version " + version);
     resetActionsQueued();
     buildInitialSlicesBox(getMySlicesName());
     buildCalendar(setNightlyAndPast());
