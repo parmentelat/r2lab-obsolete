@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # including nepi library and other required packages
 from __future__ import print_function
@@ -8,11 +8,11 @@ from nepi.util.sshfuncs import logger
 import os
 
 # setting up the default host, onelab user and shh key credential
-host_gateway  = 'faraday.inria.fr'
-user_gateway  = '[your_onelab_user]'
-user_identity = '~/.ssh/[your_public_ssh_key]'
+gateway_hostname  = 'faraday.inria.fr'
+gateway_username  = 'onelab.inria.[your_user]'
+gateway_key       = '~/.ssh/[your_ssh_key]'
 
-# setting up the credentials for the nodes 
+# setting up the credentials for the nodes
 host01 = 'fit01'
 user01 = 'root'
 
@@ -20,21 +20,21 @@ user01 = 'root'
 version = 'fedora-21.ndz'
 
 # creating a new ExperimentController (EC) to manage the experiment
-ec = ExperimentController()
+ec = ExperimentController(exp_id="C1-load")
 
 # creating the gateway node
 gateway = ec.register_resource("linux::Node",
-                                username = user_gateway,
-                                hostname = host_gateway,
-                                identity = user_identity,
+                                username = gateway_username,
+                                hostname = gateway_hostname,
+                                identity = gateway_key,
                                 cleanExperiment = True,
                                 cleanProcesses = True)
 ec.deploy(gateway)
 
 # application to copy load at fit01 a fresh distro
-app_gateway = ec.register_resource("linux::Application")
-cmd  = 'omf6 load -t {} -i {};'.format(host01, version)
-ec.set(app_gateway, "command", cmd)
+cmd  = 'rhubarbe-load {} -i {};'.format(host01, version)
+app_gateway = ec.register_resource("linux::Application",
+                                    command = cmd)
 ec.register_connection(app_gateway, gateway)
 ec.deploy(app_gateway)
 
@@ -45,21 +45,21 @@ ec.wait_finished(app_gateway)
 fit01   = ec.register_resource("linux::Node",
                                 username = user01,
                                 hostname = host01,
-                                gateway = host_gateway,
-                                gatewayUser = user_gateway,
-                                identity = user_identity,
+                                gateway = gateway_hostname,
+                                gatewayUser = gateway_username,
+                                identity = gateway_key,
                                 cleanExperiment = True,
                                 cleanProcesses = True)
 ec.deploy(fit01)
 
 # fit01 will check for the current version
-app_fit01 = ec.register_resource("linux::Application")
 cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
-ec.set(app_fit01, "command", cmd)
+app_fit01 = ec.register_resource("linux::Application",
+                                  command = cmd)
 ec.register_connection(app_fit01, fit01)
 ec.deploy(app_fit01)
 
-#wait application to recovery the results 
+#wait application to recovery the results
 ec.wait_finished(app_fit01)
 
 # recovering the results
