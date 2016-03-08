@@ -617,6 +617,7 @@ $(document).ready(function() {
   function resetName(name){
     var new_name = name;
     new_name = name.replace(' (pending)', '');
+    new_name = new_name.replace(' (removing)', '');
     new_name = new_name.replace(' * failed *', '');
     return new_name
   }
@@ -669,7 +670,7 @@ $(document).ready(function() {
 
 
   function idFormat(id){
-    new_id = id.replace('.', '');
+    new_id = id.replace(/\./g, '');
     return new_id;
   }
 
