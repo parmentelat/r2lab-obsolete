@@ -42,10 +42,8 @@ node = ec.register_resource("linux::Node",
 app = ec.register_resource("linux::Application",
                            # the command to execute
                            command='ping -c1 faraday.inria.fr',
-                           autoDeploy = True)
-
-# connect app to node
-ec.register_connection(app, node)
+                           autoDeploy = True,
+                           connectedTo = node)
 
 # and finally waiting for the app to finish its job
 ec.wait_finished(app)

@@ -35,6 +35,9 @@ tutorial.
   <li role="presentation" class="">
     <a href="#A4" role="tab" id="A4-tab" data-toggle="tab" aria-controls="A4" aria-expanded="false">A4</a>
   </li>
+  <li role="presentation" class="">
+    <a href="#A5" role="tab" id="A5-tab" data-toggle="tab" aria-controls="A5" aria-expanded="false">A5</a>
+  </li>
 </ul>
 
 <div id="contents" class="tab-content">
@@ -120,6 +123,27 @@ tutorial.
     Download the <a href="/code/A4-ping.py" download target="_blank">A4 experiment</a> code
   </center>
 << codediff a4 A3-ping.py A4-ping.py >>
+</div>
+
+<!------------ A5 ------------>
+<div role="tabpanel" class="tab-pane fade" id="A5" aria-labelledby="profile-tab">
+  <br/>
+  Here the experiment is exactly identical to the one in A4, but we will illustrate a
+  very convenient technique for writing helper scripts that can be shared between nodes.
+
+  As you remember, in A4 we had duplicated code for initializing both wireless interfaces.
+  In A5, we will write a shell script for soing the same job, and will use that script on all
+  the nodes.
+
+  For the sake of clarity - so that the whole experiment requires a single file - the code exposed
+  here has this shell script as a python inlined string.
+  It is ggod practice to isolate this code in a true script, and to specify the <strong>filename</strong> instead of the actual code as the <code>code</code> attribute of the application.
+
+  <center>
+    <img src="/assets/img/A4.png" alt="a5"><br/>
+    Download the <a href="/code/A5-ping.py" download target="_blank">A5 experiment</a> code
+  </center>
+<< codediff a5 A4-ping.py A5-ping.py >>
 </div>
 
 </div> <!-- end div contents -->

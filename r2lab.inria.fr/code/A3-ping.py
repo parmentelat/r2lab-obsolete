@@ -22,14 +22,14 @@ gateway_key       = '~/.ssh/onelab.private'
 gateway_username  = 'onelab.inria.mario.tutorial'
 
 fit01 = ec.register_resource("linux::Node",
-                            username = 'root',
-                            hostname = 'fit01',
-                            gateway = gateway_hostname,
-                            gatewayUser = gateway_username,
-                            identity = gateway_key,
-                            cleanExperiment = True,
-                            cleanProcesses = True)
-ec.deploy(fit01)
+                             username = 'root',
+                             hostname = 'fit01',
+                             gateway = gateway_hostname,
+                             gatewayUser = gateway_username,
+                             identity = gateway_key,
+                             cleanExperiment = True,
+                             cleanProcesses = True,
+                             autoDeploy=True)
 
 fit02 = ec.register_resource("linux::Node",
                              username = 'root',
@@ -44,20 +44,17 @@ fit02 = ec.register_resource("linux::Node",
 # creating an application
 # bring up (wired) data interface on fit01 node
 app_fit01 = ec.register_resource("linux::Application",
-                                 command='ifup data',
-                                 autoDeploy = True)
-
-# connect app to node
-ec.register_connection(app_fit01, fit01)
+                                 command = 'ifup data',
+                                 autoDeploy = True,
+                                 connectedTo = fit01)
 # execute this bit and wait for completion
 ec.wait_finished(app_fit01)
 
 # application to setup data interface on fit02 node
 app_fit02 = ec.register_resource("linux::Application",
-                                 command='ifup data',
-                                 autoDeploy = True)
-
-ec.register_connection(app_fit02, fit02)
+                                 command = 'ifup data',
+                                 autoDeploy = True,
+                                 connectedTo = fit02)
 # execute this bit and wait for completion
 ec.wait_finished(app_fit02)
 
@@ -65,14 +62,12 @@ ec.wait_finished(app_fit02)
 # you can use hostname data02
 # FYI the actual IP here would be 192.168.2.2
 app = ec.register_resource("linux::Application",
-                           command='ping -c1 data02',
-                           autoDeploy = True)
-ec.register_connection(app, fit01)
+                           command = 'ping -c1 data02',
+                           autoDeploy = True,
+                           connectedTo = fit01)
 ec.wait_finished(app)
 
-# recovering the results
 print ("--- INFO : experiment output:",
        ec.trace(app, "stdout"))
 
-# shutting down the experiment
 ec.shutdown()

@@ -53,35 +53,65 @@ fit02 = ec.register_resource("linux::Node",
                              cleanProcesses = True,
                              autoDeploy = True)
 
+# define the wifi init script
+# that will be uploaded on the node
+
+init_wlan_script = """\
+#!/bin/bash
+# Usage: $0 wifi_interface wifi_ip wifi_netmask wifi_channel wifi_name wifi_key 
+wifi_interface=$1; shift
+wifi_channel=$1; shift
+wifi_name=$1; shift
+wifi_key=$1; shift
+wifi_ip=$1; shift
+wifi_netmask=$1; shift
+
+ip addr flush dev $wifi_interface
+ip link set $wifi_interface down
+iwconfig $wifi_interface mode ad-hoc
+iwconfig $wifi_interface channel $wifi_channel
+iwconfig $wifi_interface essid "$wifi_name"
+iwconfig $wifi_interface key $wifi_key
+ip link set $wifi_interface up
+ip addr add $wifi_ip/$wifi_netmask dev $wifi_interface
+"""
+
+# in this tutorial we use an inline script (i.e. a python string)
+# this could as easily be stored in an external file of course
+# which is what is done in practice;
+# init_wlan_script = "./init-wlan.sh"
+# would work just as well
+
+
 # creating an application to
 # configure an ad-hoc network on node fit01
-cmd =  ""
-cmd += "ip addr flush dev {}; ".format(wifi_interface)
-cmd += "ip link set {} down; ".format(wifi_interface)
-cmd += "iwconfig {} mode ad-hoc; ".format(wifi_interface)
-cmd += "iwconfig {} channel {}; ".format(wifi_interface, wifi_channel)
-cmd += "iwconfig {} essid '{}'; ".format(wifi_interface, wifi_name)
-cmd += "iwconfig {} key {}; ".format(wifi_interface, wifi_key)
-cmd += "ip link set {} up; ".format(wifi_interface)
-cmd += "ip addr add {}/{} dev {}; ".format(wifi_ip_fit01, wifi_netmask, wifi_interface)
+# this time the command to run uses the shared shell script
+# that gets uploaded on the node thanks to the code= setting on the app
+# so we're left with calling this initscript with proper arguments
+# note that the uploaded script is always (the executable file)
+# in ${APP_HOME}/code
+cmd = \
+"${APP_HOME}/code {wifi_interface} {wifi_ip_fit01} {wifi_netmask}"
+"{wifi_channel} {wifi_name} {wifi_key}"
+.format(**locals())
+
 app_fit01 = ec.register_resource("linux::Application",
+                                 # to upload the initscript on the node; note that
+                                 # we could have used a local filename instead of a string
+                                 code = init_wlan_script,
                                  command = cmd,
                                  autoDeploy = True,
                                  connectedTo = fit01)
 ec.wait_finished(app_fit01)
 
 # ditto on fit02
-cmd = ""
-cmd += "ip addr flush dev {}; ".format(wifi_interface)
-cmd += "ip link set {} down; ".format(wifi_interface)
-cmd += "iwconfig {} mode ad-hoc; ".format(wifi_interface)
-cmd += "iwconfig {} channel {}; ".format(wifi_interface, wifi_channel)
-cmd += "iwconfig {} essid '{}'; ".format(wifi_interface, wifi_name)
-cmd += "iwconfig {} key {}; ".format(wifi_interface, wifi_key)
-cmd += "ip link set {} up; ".format(wifi_interface)
-cmd += "ip addr add {}/{} dev {}; ".format(wifi_ip_fit02, wifi_netmask, wifi_interface)
-app_fit02 = ec.register_resource("linux::Application",
-                                 command = cmd,
+cmd = \
+"${APP_HOME}/code {wifi_interface} {wifi_ip_fit02} {wifi_netmask}"
+"{wifi_channel} {wifi_name} {wifi_key}"
+.format(**locals())
+
+app_fit02 = ec.register_resource("linux::Application", code = init_wlan_script,
+                                 command = cmd
                                  autoDeploy = True,
                                  connectedTo = fit02)
 ec.wait_finished(app_fit02)

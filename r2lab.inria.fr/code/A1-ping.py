@@ -35,12 +35,9 @@ node = ec.register_resource("linux::Node",
 # creating an application
 app = ec.register_resource("linux::Application",
                            # the command to execute
-                           command='ping -c1 google.fr')
-ec.deploy(app)
-
-# connect app to node
-# this is what says that this command will be run on faraday
-ec.register_connection(app, node)
+                           command='ping -c1 google.fr',
+                           autoDeploy = True,
+                           connectedTo = node)
 
 # and finally waiting for the app to finish its job
 ec.wait_finished(app)
