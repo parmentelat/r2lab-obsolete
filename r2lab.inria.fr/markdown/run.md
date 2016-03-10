@@ -41,16 +41,17 @@ skip_header: yes
     <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
     <script>
     livemap_show_rxtx_rates = true;
-    livemap_space_x = livemap_space_y = 60;
-    livemap_radius_unavailable = 18;
-    livemap_radius_ok = 13.5;
-    livemap_radius_pinging = 9;
-    livemap_radius_warming = 4.5;
+    livemap_space_x = 72;
+    livemap_space_y = 87;
+    livemap_radius_unavailable = 21;
+    livemap_radius_ok = 16;
+    livemap_radius_pinging = 10;
+    livemap_radius_warming = 4;
     livemap_radius_ko = 0;
     livemap_margin_x = 5;
     livemap_margin_y = 20;
-    livemap_padding_x = 87;
-    livemap_padding_y = 87;
+    livemap_padding_x = 35;
+    livemap_padding_y = 35;
     </script>
     <div id="actions"></div>
     </div>
