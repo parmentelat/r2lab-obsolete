@@ -686,6 +686,7 @@ def save_in_json(results, file_name):
 
 
 
+
 def split(array, size):
     """ split one array in n (size) other parts """
 

@@ -24,7 +24,7 @@ skip_header: yes
         <div style="clear:both"></div>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3 personal_col">
       <div id="calendar"></div>
       <script type="text/javascript" src="/assets/js/moment.min.js"></script>
       <script type="text/javascript" src="/assets/js/jquery-ui.fullcalendar-custom.min.js"></script>
@@ -35,7 +35,7 @@ skip_header: yes
       <script type="text/javascript" src="/assets/r2lab/liveleases.js"></script>
       <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-7">
     <div id="livemap_container"></div>
     <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
     <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
@@ -48,9 +48,9 @@ skip_header: yes
     livemap_radius_warming = 4.5;
     livemap_radius_ko = 0;
     livemap_margin_x = 5;
-    livemap_margin_y = 45;
-    livemap_padding_x = 50;
-    livemap_padding_y = 50;
+    livemap_margin_y = 20;
+    livemap_padding_x = 87;
+    livemap_padding_y = 87;
     </script>
     <div id="actions"></div>
     </div>

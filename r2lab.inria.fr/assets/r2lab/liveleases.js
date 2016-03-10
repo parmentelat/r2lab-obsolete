@@ -13,7 +13,7 @@ $(document).ready(function() {
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
 //  var socket              = io.connect("http://localhost:443");
-  var version             = '1.21';
+  var version             = '1.22';
   var refresh             = true;
   var currentTimezone     = 'local';
 
@@ -23,11 +23,7 @@ $(document).ready(function() {
 
     //Create the calendar
     $('#calendar').fullCalendar({
-      header: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'agendaDay,agendaTwoDay',
-      },
+      header: false,
 
       views: {
         agendaTwoDay: {
@@ -48,7 +44,7 @@ $(document).ready(function() {
       editable: true,
       allDaySlot: false,
       droppable: true,
-      height: 405,
+      height: 455,
       nowIndicator: true,
       scrollTime: showAt,
 
@@ -365,27 +361,27 @@ $(document).ready(function() {
   }
 
 
-    // use this to ask for an immediate refresh
-    // of the set of leases
-    // of course it must be called *after* the actual API call
-    // via django
-    function refreshLeases(){
-	msg = "INIT";
-	console.log("sending on chan-leases-request -> " + msg);  
-	socket.emit('chan-leases-request', msg);
-    }
+  // use this to ask for an immediate refresh
+  // of the set of leases
+  // of course it must be called *after* the actual API call
+  // via django
+  function refreshLeases(){
+    msg = "INIT";
+  	console.log("sending on chan-leases-request -> " + msg);
+  	socket.emit('chan-leases-request', msg);
+  }
 
 
   function sendBroadcast(action, data){
     var msg = [action, JSON.stringify(data)];
-    console.log("sending on chan-leases-broadcast -> " + msg);  
+    console.log("sending on chan-leases-broadcast -> " + msg);
     socket.emit('chan-leases-broadcast', msg);
   }
 
 
   function listenBroadcast(){
       socket.on('chan-leases-broadcast', function(msg){
-	  console.log("incoming chan-leases-broadcast");
+	    console.log("incoming chan-leases-broadcast");
       var action = msg[0];
 
       if (action == 'add'){
@@ -401,7 +397,7 @@ $(document).ready(function() {
     });
 
     socket.on('chan-leases', function(msg){
-	console.log("incoming chan-leases");
+	    console.log("incoming chan-leases");
       setCurrentLeases(msg);
       resetActionsQueued();
       var leases = getCurrentLeases();
@@ -414,10 +410,7 @@ $(document).ready(function() {
 
   function updateLeases(action, event){
     if (action == 'addLease') {
-      // $('#calendar').fullCalendar('renderEvent', event, true );
       setActionsQueue('add', event);
-      //console.log(event.start._d);
-      //console.log(event.end._d);
       sendBroadcast('add', event);
     }
     else if (action == 'delLease'){
@@ -432,6 +425,7 @@ $(document).ready(function() {
       setActionsQueue('edit', event);
       sendBroadcast('edit', event);
     }
+    refreshLeases();
   }
 
 
@@ -586,7 +580,7 @@ $(document).ready(function() {
 
 
   function getRandomColor() {
-    var reserved_colors = ["#D0D0D0", "#FF0000", "#000000", "#FFE5E5", "#616161"];
+    var reserved_colors = ["#A1A1A1", "#D0D0D0", "#FF0000", "#000000", "#FFE5E5", "#616161"];
     var letters = '0123456789ABCDEF'.split('');
     var color = '#';
     for (var i = 0; i < 6; i++ ) {
@@ -676,7 +670,7 @@ $(document).ready(function() {
 
 
   function getColorLease(slice_title){
-    var lease_color = '#d0d0d0';
+    var lease_color = '#A1A1A1';
     if ($.inArray(fullName(slice_title), getMySlicesName()) > -1){
       lease_color = my_slices_color[my_slices_name.indexOf(fullName(slice_title))];
     }
@@ -798,9 +792,9 @@ $(document).ready(function() {
 
 
   function eventPresentbyDate(start, end, title) {
-    var title = pendingName(shortName(title)); //'onelab.inria.mario.tutorial';
-    var start = new Date(start); //new Date("2016-02-11T13:00:00Z");
-    var end   = new Date(end); //new Date("2016-02-11T14:30:00Z");
+    var title = pendingName(shortName(title));
+    var start = new Date(start);
+    var end   = new Date(end);
 
     calendar = $('#calendar').fullCalendar('clientEvents');
 
@@ -824,20 +818,9 @@ $(document).ready(function() {
     setCurrentSliceBox(getCurrentSliceName());
 
     listenBroadcast();
-      refreshLeases();
+    refreshLeases();
 
-    // when the timezone selector changes, rerender the calendar
-		$('#timezone-selector').on('change', function() {
-			currentTimezone = this.value || false;
-			$('#calendar').fullCalendar('destroy');
-      resetActionsQueued();
-      buildInitialSlicesBox(getMySlicesName());
-      buildCalendar(setNightlyAndPast());
-      setCurrentSliceBox(getCurrentSliceName());
-
-      listenBroadcast();
-		});
-
+    $('.fc-day-header').html('today');
   }
 
   //STOLEN FROM THIERRY
