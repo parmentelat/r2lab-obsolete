@@ -662,10 +662,42 @@ $(document).ready(function() {
 
 
   function setColorLeases(){
+    var some_colors = $.cookie("some-colors-data")
     $.each(my_slices_name, function(key,obj){
-      my_slices_color[key] = getRandomColor();
+      my_slices_color[key] = some_colors[key];
     });
     return my_slices_color;
+  }
+
+
+  function range(start, end) {
+    return Array(end-start).join(0).split(0).map(function(val, id) {return id+start});
+  }
+
+
+  function saveSomeColors(){
+    $.cookie.json = true;
+    var local_colors = ["#F3537D", "#5EAE10", "#481A88", "#2B15CC", "#8E34FA", "#A41987", "#1B5DF8", "#7AAD82", "#8D72E4", "#323C89"]
+    var some_colors = $.cookie("some-colors-data")
+
+    if (! some_colors){
+      some_colors = 0
+    }
+    if (local_colors.length >= my_slices_name.length) {
+      $.cookie("some-colors-data", local_colors)
+    }
+    else {
+      if (some_colors.length >= my_slices_name.length) {
+        ;
+      }else {
+        console.log(some_colors.length);
+        var lack_colors = my_slices_name.length - local_colors.length;
+        $.each(range(0,lack_colors), function(key,obj){
+          local_colors.push(getRandomColor());
+        });
+        $.cookie("some-colors-data", local_colors)
+      }
+    }
   }
 
 
@@ -811,6 +843,7 @@ $(document).ready(function() {
 
   function main (){
     console.log("liveleases version " + version);
+    saveSomeColors();
     resetActionsQueued();
     buildInitialSlicesBox(getMySlicesName());
     buildCalendar(setNightlyAndPast());
@@ -830,7 +863,6 @@ $(document).ready(function() {
       setCurrentSliceColor(element_color);
       setCurrentSliceName(element_name);
     });
-
   }
 
 
