@@ -50,8 +50,8 @@ skip_header: yes
     livemap_radius_ko = 0;
     livemap_margin_x = 5;
     livemap_margin_y = 20;
-    livemap_padding_x = 30;
-    livemap_padding_y = 30;
+    livemap_padding_x = 40;
+    livemap_padding_y = 35;
     </script>
     <div id="actions"></div>
     </div>
