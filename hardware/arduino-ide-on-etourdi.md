@@ -26,9 +26,38 @@ Here's what you need to know about that if you need to burn firmwares in our CMC
 
 ## Historical note
 
+### Now
+
+When you use the arduino IDE, the default location when opening files is
+```
+/usr/share/arduino
+```
+
+So I have reorganized the whole thing so that
+
+* the location is easier to find
+* and one cannot get confused between several versions whose names begin the same (the arduino software is very rough in this respect)
+* **WARNING** when making new software available, remember that **the whole area is to be owned by `etourdi:etourdi`**
+* also the `.ino` filename ***must match*** the directory name; that's real odd, but yes...
+* Latest version is **`withusrp_v_3_2_shield_1_2`**
+  * version number 3.2 : the one that has `usrpon` and the like
+  * shield number : all our CMC models are number 1.2 (see the `info` verb); there's also a version 2.1 that we can ignore
+* **Local changes** in 3.2 are cosmetic and are about
+  * INRIA France instead of INRIA FRANCE
+  * the labels as printed by the 3 `usrp*` commands are now lowercase, and either `ok` for `usrpon` and `usrpoff`, and `usrpon` or `usrpoff` for `usrpstatus` (they were uppercase and uselessly verbose)
+* Use the 'info' verb at the CMC to get the firmware version number. e.g. here we have the latest 3.2 uploaded on node 4
+
+```
+info root@bemol ~ # info 4
+reboot04:firmware version: 3.2 INRIA, France
+reboot04:hardware version: 1.2
+reboot04:ip: 192.168.1.4
+reboot04:mac: 02:00:00:00:00:04 
+```
+
 ### Before
 
-Up to Feb. 8th 2016
+Until to Feb. 8th 2016
 
 * everything was rooted here
  
@@ -42,36 +71,6 @@ Up to Feb. 8th 2016
 
     `NITOS_CM_Card_Firmware_v2_1b_for_shield_v1_2_watchdog_no_XML.ino`
 
-### Now
-
-When you use the arduino IDE, the default location when opening files is
-```
-/usr/share/arduino
-```
-
-So I have reorganized the whole thing so that
-
-* the location is easier to find
-* and one cannot get confused between several versions whose names begin the same (the arduino software is very rough in this respect)
-* **WARNING** when making new software available, remember that **the whole area is to be owned by `etourdi:etourdi`**
-
-
-
-So, here's what we have now
-
-```
-# pwd
-/usr/share/arduino/nitos
-
-# ls -ld
-drwxr-xr-x 5 etourdi etourdi 4096 Feb  8 16:15 .
-
-# find . -type f
-./standalone_v2_1_shield_1_2/standalone_v2_1_shield_1_2.ino
-./withusrp_v_3_1_shield_1_2/withusrp_v_3_1_shield_1_2.ino
-./withusrp_v_3_1_shield_2_1/withusrp_v_3_1_shield_2_1.ino
-./backup.tgz
-```
 
 # HowTO
 
