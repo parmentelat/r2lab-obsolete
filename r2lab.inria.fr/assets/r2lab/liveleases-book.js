@@ -59,7 +59,7 @@ $(document).ready(function() {
       //Events
       // this is fired when a selection is made
       select: function(start, end, event, view) {
-        if (isPastDate(end)) {
+        if (isPastDate(start)) {
           $('#calendar').fullCalendar('unselect');
           sendMessage('This timeslot is in the past!');
           return false;
