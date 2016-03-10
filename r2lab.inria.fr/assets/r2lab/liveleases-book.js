@@ -23,19 +23,28 @@ $(document).ready(function() {
 
     //Create the calendar
     $('#calendar').fullCalendar({
-      header: false,
+      header: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'agendaDay,agendaThreeDay,agendaWeek,month',
+      },
 
       views: {
-        agendaTwoDay: {
+        agendaThreeDay: {
           type: 'agenda',
-          duration: { days: 2 },
-          buttonText: '2 days'
+          duration: { days: 3 },
+          buttonText: '3 days'
+        },
+        agendaWeek: {
+          type: 'agenda',
+          duration: { days: 7 },
+          buttonText: 'week'
         }
       },
       defaultTimedEventDuration: '01:00:00',
       slotDuration: "01:00:00",
       forceEventDuration: true,
-      defaultView: 'agendaDay',
+      defaultView: 'agendaThreeDay',
       timezone: currentTimezone,
       defaultDate: today,
       selectHelper: false,
@@ -44,10 +53,9 @@ $(document).ready(function() {
       editable: true,
       allDaySlot: false,
       droppable: true,
-      height: 455,
+      height: 515,
       nowIndicator: true,
       scrollTime: showAt,
-
       //Events
       // this is fired when a selection is made
       select: function(start, end, event, view) {
@@ -819,8 +827,6 @@ $(document).ready(function() {
 
     listenBroadcast();
     refreshLeases();
-
-    $('.fc-day-header').html('today');
   }
 
   //STOLEN FROM THIERRY
