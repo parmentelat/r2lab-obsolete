@@ -29,6 +29,7 @@ skip_header: yes
       <script type="text/javascript" src="/assets/js/moment.min.js"></script>
       <script type="text/javascript" src="/assets/js/jquery-ui.fullcalendar-custom.min.js"></script>
       <script type="text/javascript" src="/assets/js/fullcalendar.min.js"></script>
+      <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
       <style type="text/css"> @import url("/assets/css/fullcalendar.css"); </style>
 
       <style type="text/css"> @import url("/assets/r2lab/liveleases.css"); </style>

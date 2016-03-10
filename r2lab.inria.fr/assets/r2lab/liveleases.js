@@ -810,7 +810,6 @@ $(document).ready(function() {
 
 
   function main (){
-
     console.log("liveleases version " + version);
     resetActionsQueued();
     buildInitialSlicesBox(getMySlicesName());
@@ -821,7 +820,19 @@ $(document).ready(function() {
     refreshLeases();
 
     $('.fc-day-header').html('today');
+
+    var slice = $('#my-slices .fc-event');
+    slice.dblclick(function() {
+      var element = $(this);
+      var element_color = element.css("background-color");
+      var element_name  = $.trim(element.text());
+      setCurrentSliceBox(element_name)
+      setCurrentSliceColor(element_color);
+      setCurrentSliceName(element_name);
+    });
+
   }
+
 
   //STOLEN FROM THIERRY
   //from https://docs.djangoproject.com/en/1.9/ref/csrf/
@@ -841,6 +852,7 @@ $(document).ready(function() {
     return cookieValue;
   }
 
+
   // callback will be called on the xhttp object upon ready state change
   // see http://www.w3schools.com/ajax/ajax_xmlhttprequest_onreadystatechange.asp
   function post_lease_request(verb, request, callback) {
@@ -855,4 +867,5 @@ $(document).ready(function() {
   }
 
   main();
+
 });
