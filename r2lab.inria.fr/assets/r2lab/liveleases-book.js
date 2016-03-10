@@ -89,7 +89,7 @@ $(document).ready(function() {
         var end   = moment(date).add(60, 'minutes');
         if (isPastDate(start)) {
           $('#calendar').fullCalendar('unselect');
-          sendMessage('This is the past date/time!');
+          sendMessage('This timeslot is in the past!');
           return false;
         }
         var element = $(this);
@@ -126,7 +126,7 @@ $(document).ready(function() {
         else {
           if (isPastDate(event.start)) {
             revertFunc();
-            sendMessage('This is the past date/time!');
+            sendMessage('This timeslot is in the past!');
           } else {
             newLease = createLease(event);
             newLease.title = pendingName(event.title);
