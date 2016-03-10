@@ -43,14 +43,14 @@ skip_header: yes
     livemap_show_rxtx_rates = true;
     livemap_space_x = 74;
     livemap_space_y = 87;
-    livemap_radius_unavailable = 22;
-    livemap_radius_ok = 17;
-    livemap_radius_pinging = 11;
-    livemap_radius_warming = 5;
+    livemap_radius_unavailable = 21;
+    livemap_radius_ok = 16;
+    livemap_radius_pinging = 10;
+    livemap_radius_warming = 4;
     livemap_radius_ko = 0;
     livemap_margin_x = 5;
     livemap_margin_y = 20;
-    livemap_padding_x = 40;
+    livemap_padding_x = 35;
     livemap_padding_y = 35;
     </script>
     <div id="actions"></div>
