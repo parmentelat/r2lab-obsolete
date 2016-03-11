@@ -4,16 +4,16 @@
 #
 # Usage:
 #
-# angle-measure.sh init-server channel bandwidth
+# angle-measure.sh init-sender channel bandwidth
 # e.g. channel=64
 # e.g. bandwidth=HT20 (for 20MHz)
 #
-# angle-measure.sh init-client channel bandwidth
+# angle-measure.sh init-receiver channel bandwidth
 # ditto
 #
-# angle-measure.sh run-server
+# angle-measure.sh run-sender
 #
-# angle-measure.sh run-client
+# angle-measure.sh run-receiver
 
 set -x
 
@@ -39,6 +39,8 @@ function details-on-interface () {
     ip link sh $dev
     echo ==================== iwconfig $dev
     iwconfig $dev
+    echo ==================== iw dev $dev info
+    iw dev $dev info
 }    
 
 # actually returns first interface using a given driver
@@ -92,7 +94,7 @@ function wait-for-device () {
     done
 }
     
-function init-server() {
+function init-sender() {
     ### 2 arguments are required
     channel=$1; shift       # e.g. 64
     bandwidth=$1; shift     # e.g. HT20 
@@ -126,7 +128,7 @@ function init-server() {
     details-on-interface mon0
 }
 
-function init-client() {
+function init-receiver() {
     ### 2 arguments are required
     channel=$1; shift       # e.g. 64
     bandwidth=$1; shift     # e.g. HT20 
@@ -154,11 +156,10 @@ function init-client() {
 function main() {
     command=$1; shift
     case $command in
-	init-server|init-client|run-server|run-client)
+	init-sender|init-receiver|run-sender|run-receiver)
 	    $command "$@" ;;
 	*) echo unknown command \"$command\" ;;
     esac
 }
 
 main "$@"
-   

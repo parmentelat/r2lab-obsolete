@@ -18,11 +18,11 @@ You can see this python script as a description of the dependencies between
 
 The details of each of these steps are written as a single shell
 script code (angle-measure.sh) that gives the details of each of these steps 
-on a single host (either server or client)
+on a single host (either sender or receiver)
 
 So e.g.
-angle-measure.sh init-server 64 20MHz 
-would setup the server-side wireless system to use channel 64 and 20MHz bands
+angle-measure.sh init-sender 64 20MHz 
+would setup the sender-side wireless system to use channel 64 and 20MHz bands
 
 """
 
@@ -46,15 +46,15 @@ def credentials(production):
     else:
         return 'bemol.pl.sophia.inria.fr', 'regular', '~/.ssh/onelab.private'
     
-def server_client(production):
-    "returns a tuple (server, client)"
+def sender_receiver(production):
+    "returns a tuple (sender, receiver)"
     if production:
         return "fit30", "fit31"
     else:
         return "fit04", "fit41"
 
 # using external shell script like e.g.:
-# angle-measure.sh init-server channel bandwidth
+# angle-measure.sh init-sender channel bandwidth
 
 def show_app_trace(app, message, logname):
     print ("--- STDOUT : setup stdout for {}:\n".format(message),
@@ -70,8 +70,8 @@ def main():
     parser.add_argument("-p", "--production", dest='production', action='store_true',
                         default=False, help="Run in preplab")
     # tmp
-    parser.add_argument("-s", "--server", default=None)
-    parser.add_argument("-c", "--client", default=None)
+    parser.add_argument("-s", "--sender", default=None)
+    parser.add_argument("-c", "--receiver", default=None)
     
     parser.add_argument("-v", "--verbose", dest='verbose', action='store_true',
                         default=False, help="Show selected nodes and exit")
@@ -79,23 +79,23 @@ def main():
 
     gwhost, gwuser, key = credentials(args.production)
     # get defaults for preplab or production
-    servername, clientname = server_client(args.production)
+    sendername, receivername = sender_receiver(args.production)
     # but can always be overridden
-    if args.server is not None:  servername = args.server
-    if args.client is not None:  clientname = args.client
+    if args.sender is not None:  sendername = args.sender
+    if args.receiver is not None:  receivername = args.receiver
 
     if args.verbose:
         print("Using gateway {gwhost} with account {gwuser}\n"
-              "Using server = {servername}, "\
-              "Using client = {clientname}, "\
+              "Using sender = {sendername}, "\
+              "Using receiver = {receivername}, "\
               .format(**locals()))
         exit(0)
 
-    # the server node
-    server = ec.register_resource(
+    # the sender node
+    sender = ec.register_resource(
         "linux::Node",
         username = 'root',
-        hostname = servername,
+        hostname = sendername,
         gateway = gwhost,
         gatewayUser = gwuser,
         identity = key,
@@ -103,11 +103,11 @@ def main():
         cleanProcesses = True,
         autoDeploy = True)
 
-    # the client node
-    client = ec.register_resource(
+    # the receiver node
+    receiver = ec.register_resource(
         "linux::Node",
         username = 'root',
-        hostname = clientname,
+        hostname = receivername,
         gateway = gwhost,
         gatewayUser = gwuser,
         identity = key,
@@ -115,26 +115,26 @@ def main():
         cleanProcesses = True,
         autoDeploy = True)
 
-    # an app to init the server
-    init_server = ec.register_resource(
+    # an app to init the sender
+    init_sender = ec.register_resource(
         "linux::Application",
         code = "angle-measure.sh",
-        command = "${CODE} init-server 64 HT20",
+        command = "${CODE} init-sender 64 HT20",
         autoDeploy = True,
-        connectedTo = server)
+        connectedTo = sender)
 
-    # an app to init the server
-    init_client = ec.register_resource(
+    # an app to init the sender
+    init_receiver = ec.register_resource(
         "linux::Application",
         code = "angle-measure.sh",
-        command = "${CODE} init-client 64 HT20",
+        command = "${CODE} init-receiver 64 HT20",
         autoDeploy = True,
-        connectedTo = client)
+        connectedTo = receiver)
 
-    ec.wait_finished( [init_server, init_client] )
+    ec.wait_finished( [init_sender, init_receiver] )
 
-    show_app_trace(init_server, "server init on {}".format(servername), "server-init")
-    show_app_trace(init_client, "client init on {}".format(clientname), "client-init")
+    show_app_trace(init_sender, "sender init on {}".format(sendername), "sender-init")
+    show_app_trace(init_receiver, "receiver init on {}".format(receivername), "receiver-init")
 
     ec.shutdown()
 
