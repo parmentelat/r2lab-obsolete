@@ -56,11 +56,13 @@ def server_client(production):
 # using external shell script like e.g.:
 # angle-measure.sh init-server channel bandwidth
 
-def show_app_trace(app, message):
-    print ("--- STDOUT : setup stdout for {}:".format(message),
+def show_app_trace(app, message, logname):
+    print ("--- STDOUT : setup stdout for {}:\n".format(message),
            ec.trace(app, "stdout"))
-    print ("--- STDERR : setup stderr for {}:".format(message),
-           ec.trace(app, "stderr"))
+    log = "{}.log".format(logname)
+    print ("--- STDERR : for {}: see {}".format(message, log))
+    with open(log, 'w') as errfile:
+        errfile.write(ec.trace(app, "stderr"))
 
 
 def main():
@@ -131,8 +133,8 @@ def main():
 
     ec.wait_finished( [init_server, init_client] )
 
-    show_app_trace(init_server, "server init on {}".format(servername))
-    show_app_trace(init_client, "client init on {}".format(clientname))
+    show_app_trace(init_server, "server init on {}".format(servername), "server-init")
+    show_app_trace(init_client, "client init on {}".format(clientname), "client-init")
 
     ec.shutdown()
 

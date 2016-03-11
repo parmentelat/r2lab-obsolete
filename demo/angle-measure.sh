@@ -31,6 +31,16 @@ function list-interfaces () {
     done
 }
 
+function details-on-interface () {
+    dev=$1; shift
+    echo ==================== ip addr sh $dev
+    ip addr sh $dev
+    echo ==================== ip link sh $dev
+    ip link sh $dev
+    echo ==================== iwconfig $dev
+    iwconfig $dev
+}    
+
 # actually returns first interface using a given driver
 # prints interface name on stdout
 function find-interface-by-driver () {
@@ -111,6 +121,9 @@ function init-server() {
 	echo tweaking $tx
 	echo 0x4101 > $tx
     done
+
+    details-on-interface $wlan
+    details-on-interface mon0
 }
 
 function init-client() {
@@ -132,6 +145,9 @@ function init-client() {
     ip link set $wlan up
     # set on same channel
     iw $wlan set channel $channel $bandwidth
+
+    details-on-interface $wlan
+    
 }
 
 # just a wrapper around the individual functions
