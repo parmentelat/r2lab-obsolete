@@ -13,7 +13,7 @@ $(document).ready(function() {
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
 //  var socket              = io.connect("http://localhost:443");
-  var version             = '1.24';
+  var version             = '1.25';
   var refresh             = true;
   var currentTimezone     = 'local';
 
@@ -39,6 +39,11 @@ $(document).ready(function() {
           type: 'agenda',
           duration: { days: 7 },
           buttonText: 'week'
+        },
+        month: {
+            selectable: false,
+            editable: false,
+            droppable: false,
         }
       },
       defaultTimedEventDuration: '01:00:00',
@@ -199,7 +204,7 @@ $(document).ready(function() {
     $('#messages').removeClass().addClass('alert alert-'+cls);
     $('#messages').html("<strong>"+title+"</strong> "+msg);
     $('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
-    $('#messages').delay(2000).fadeOut();
+    $('#messages').delay(5000).fadeOut();
   }
 
 
@@ -891,6 +896,10 @@ $(document).ready(function() {
     var slice = $('#my-slices .fc-event');
     slice.dblclick(function() {
       setSlice($(this));
+    });
+
+    $('body').on('click', 'button.fc-month-button', function() {
+      sendMessage('This view is read only!', 'info');
     });
   }
 
