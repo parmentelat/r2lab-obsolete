@@ -115,7 +115,7 @@ $(document).ready(function() {
 
       // this happens when the event is dragged moved and dropped
       eventDrop: function(event, delta, revertFunc) {
-        if (!confirm("Confirm this change s?")) {
+        if (!confirm("Confirm this change?")) {
             revertFunc();
         }
         else {
