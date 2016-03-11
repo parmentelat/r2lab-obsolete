@@ -13,7 +13,7 @@ $(document).ready(function() {
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
 //  var socket              = io.connect("http://localhost:443");
-  var version             = '1.23';
+  var version             = '1.24';
   var refresh             = true;
   var currentTimezone     = 'local';
 
@@ -92,13 +92,8 @@ $(document).ready(function() {
           sendMessage('This timeslot is in the past!');
           return false;
         }
-        var element = $(this);
-        var last_drag_color = element.css("background-color");
-        var last_drag_name  = $.trim(element.text());
 
-        setCurrentSliceColor(last_drag_color);
-        setCurrentSliceName(last_drag_name);
-        setCurrentSliceBox(element.text());
+        setSlice($(this))
 
         var my_title = getCurrentSliceName();
         var eventData;
@@ -718,6 +713,25 @@ $(document).ready(function() {
   }
 
 
+  function getLastSlice(){
+    $.cookie.json = true;
+    var last_slice = $.cookie("last-slice-data")
+
+    if ($.inArray(fullName(last_slice), getMySlicesName()) > -1){
+      setCurrentSliceName(last_slice);
+      $.cookie("last-slice-data", last_slice)
+    }
+    else {
+      $.cookie("last-slice-data", getCurrentSliceName())
+    }
+  }
+
+
+  function setLastSlice(){
+    $.cookie("last-slice-data", getCurrentSliceName())
+  }
+
+
   function idFormat(id){
     new_id = id.replace(/\./g, '');
     return new_id;
@@ -849,9 +863,21 @@ $(document).ready(function() {
   }
 
 
+  function setSlice(element){
+    var element_color = element.css("background-color");
+    var element_name  = $.trim(element.text());
+    setCurrentSliceBox(element_name)
+    setCurrentSliceColor(element_color);
+    setCurrentSliceName(element_name);
+    setLastSlice();
+  }
+
+
   function main (){
     console.log("liveleases version " + version);
     saveSomeColors();
+    getLastSlice();
+
     resetActionsQueued();
     buildInitialSlicesBox(getMySlicesName());
     buildCalendar(setNightlyAndPast());
@@ -864,12 +890,7 @@ $(document).ready(function() {
 
     var slice = $('#my-slices .fc-event');
     slice.dblclick(function() {
-      var element = $(this);
-      var element_color = element.css("background-color");
-      var element_name  = $.trim(element.text());
-      setCurrentSliceBox(element_name)
-      setCurrentSliceColor(element_color);
-      setCurrentSliceName(element_name);
+      setSlice($(this));
     });
   }
 
