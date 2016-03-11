@@ -1,4 +1,4 @@
-title: R2lab Experimenter Page
+title: R2lab Scheduler
 tab: book
 skip_header: yes
 <!--float_menu_template: r2lab/float-menu-slices.html-->
