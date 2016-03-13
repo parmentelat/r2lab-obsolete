@@ -152,6 +152,49 @@ function init-receiver() {
     
 }
 
+# the image that we use contains the csitool packages installed here
+# root@fit04:~# ls -l /root
+# total 8
+# drwxr-xr-x 24 root root 4096 Jan  8 11:55 linux-80211n-csitool
+# drwxr-xr-x  9 root root 4096 Jan 25 21:29 linux-80211n-csitool-supplementary
+
+function run-sender () {
+    # 2 arguments are required
+    nb_packets=$1; shift
+    period=$1; shift
+
+    echo sending $nb_packets packets with period $period
+
+    echo $(date) - begin 
+    # random_packets uses the mon0 interface which is hard-wired in the binary
+    /root/linux-80211n-csitool-supplementary/injection/random_packets $nb_packets 100 1 $period
+    # which means:
+    # * send 100000 packets
+    # * of 100 bytes each
+    # * 1: on the injection MAC
+    # * with 10000 us between packets) 
+    echo $(date) - end    
+}
+
+function run-receiver () {
+    # 2 arguments are required
+    nb_packets=$1; shift
+    period=$1; shift
+
+    # estimate experiment duration
+    duration=$(( $nb_packets * $period / 1000000))
+    # add a 3 seconds for safety
+    duration=$(( duration + 3))
+    echo "Recording CSI data for $duration seconds"
+
+    echo $(date) - begin 
+    /root/linux-80211n-csitool-supplementary/netlink/log_to_file log.data &
+    # which means we log indefinitely the csi data into file log.data
+    sleep $duration
+    echo $(date) - end    
+}
+
+
 # just a wrapper around the individual functions
 function main() {
     command=$1; shift

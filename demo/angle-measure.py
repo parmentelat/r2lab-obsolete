@@ -53,18 +53,24 @@ def sender_receiver(production):
     else:
         return "fit04", "fit41"
 
+
 # using external shell script like e.g.:
 # angle-measure.sh init-sender channel bandwidth
 
 def show_app_trace(app, message, logname):
-    print ("--- STDOUT : setup stdout for {}:\n".format(message),
-           ec.trace(app, "stdout"))
-    log = "{}.log".format(logname)
-    print ("--- STDERR : for {}: see {}".format(message, log))
-    with open(log, 'w') as errfile:
-        errfile.write(ec.trace(app, "stderr"))
+    out_name = "{}.out".format(logname)
+    out_trace = ec.trace(app, "stdout")
+    with open(out_name, 'w') as out:
+        out.write(out_trace)
+    print ("--- STDOUT : setup stdout for {} -- also in {}:\n"
+           .format(message, out_name, out_trace))
+    err_name = "{}.err".format(logname)
+    err_trace = ec.trace(app, "stderr")
+    with open(err_name, 'w') as err:
+        err.write(err_trace)
+    print ("--- STDERR : for {}: see {}".format(message, err_name))
 
-
+    
 def main():
     parser = ArgumentParser()
     parser.add_argument("-p", "--production", dest='production', action='store_true',
@@ -75,6 +81,8 @@ def main():
     
     parser.add_argument("-v", "--verbose", dest='verbose', action='store_true',
                         default=False, help="Show selected nodes and exit")
+    parser.add_argument("-i", "--skip-init", dest='skip_init', action='store_true',
+                        default=False, help="Skip initialization")
     args = parser.parse_args()
 
     gwhost, gwuser, key = credentials(args.production)
@@ -123,7 +131,7 @@ def main():
         autoDeploy = True,
         connectedTo = sender)
 
-    # an app to init the sender
+    # an app to init the receiver
     init_receiver = ec.register_resource(
         "linux::Application",
         code = "angle-measure.sh",
@@ -131,11 +139,39 @@ def main():
         autoDeploy = True,
         connectedTo = receiver)
 
-    ec.wait_finished( [init_sender, init_receiver] )
 
-    show_app_trace(init_sender, "sender init on {}".format(sendername), "sender-init")
-    show_app_trace(init_receiver, "receiver init on {}".format(receivername), "receiver-init")
+    # init
+    if not args.skip_init:
+        print("INITing")
+        ec.wait_finished( [init_sender, init_receiver] )
+        show_app_trace(init_sender, "sender init on {}".format(sendername), "sender-init")
+        show_app_trace(init_receiver, "receiver init on {}".format(receivername), "receiver-init")
+        print("DONE")
+        
+    # an app to run the sender
+    run_sender = ec.register_resource(
+        "linux::Application",
+        code = "angle-measure.sh",
+        command = "${CODE} run-sender 10000 1000",
+        autoDeploy = True,
+        connectedTo = sender)
 
+    # an app to run the receiver
+    run_receiver = ec.register_resource(
+        "linux::Application",
+        code = "angle-measure.sh",
+        command = "${CODE} run-receiver 10000 1000",
+        autoDeploy = True,
+        connectedTo = receiver)
+
+    # run
+    print("RUNning")
+    ec.wait_finished( [run_sender, run_receiver] )
+    show_app_trace(run_sender, "sender run on {}".format(sendername), "sender-run")
+    show_app_trace(run_receiver, "receiver run on {}".format(receivername), "receiver-run")
+
+    
+    # we're done
     ec.shutdown()
 
 if __name__ == '__main__':
