@@ -447,9 +447,9 @@ def summary_in_mail(nodes):
                         <td style="text-align: center; font:{}</td>\n \
                         <td style="text-align: center; font:{}</td>\n \
                         <td></td>\n \
-                        <td style="text-align: center;"><span style="background:#828282; color:#fff; padding:4px; border-radius: 5px;">{}</span></td>\n \
+                        <td style="text-align: center;"><span style="background:#828282; color:#fff; padding:4px; border-radius: 5px; display: inline-block; width: 120px;"">{}</span></td>\n \
                         <td style="text-align: center; font:20px Arial, Tahoma, Sans-serif;">&nbsp; &#155; &nbsp;</td>\n \
-                        <td style="text-align: center;"><span style="background:#42c944; color:#fff; padding:4px; border-radius: 5px;">{}</span><td>\n \
+                        <td style="text-align: center;"><span style="background:#42c944; color:#fff; padding:4px; border-radius: 5px; display: inline-block; width: 120px;"">{}</span><td>\n \
                     </tr>\
                     '.format(node, phases[node]['ph1'], phases[node]['ph2'], phases[node]['ph3'], phases[node]['ph4'], phases[node]['ph5'], loaded_nodes[node]['old_os'], loaded_nodes[node]['new_os'] )
         lines_fail += line_fail
