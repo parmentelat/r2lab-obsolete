@@ -73,9 +73,9 @@ def main():
     parser.add_argument("-s", "--sender", default=None)
     parser.add_argument("-c", "--receiver", default=None)
     
-    parser.add_argument("--packets", type=int, default=10000,
+    parser.add_argument("-a", "--packets", type=int, default=10000,
                         help="nb of packets to send")
-    parser.add_argument("--period", type=int, default=1000,
+    parser.add_argument("-e", "--period", type=int, default=1000,
                         help="time between packets in micro-seconds")
 
     parser.add_argument("-v", "--verbose", dest='verbose', action='store_true',
