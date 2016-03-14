@@ -8,8 +8,8 @@ widget_login_template: r2lab/widget_login.html
     <div class="col-lg-4">
       <span style="font-size:6em;" class="glyphicon glyphicon-signal" aria-hidden="true"></span>
       <h2>Open Platform</h2>
-      <p>Create your account in a few clicks, or login if you already have an account.</p>
-      <p><a class="btn btn-default" href="http://portal.onelab.eu/" role="button">get started »</a></p>
+      <p>Create your account through the OneLab portal, or login if you already have an account.</p>
+      <p><a class="btn btn-default in_blue" href="http://portal.onelab.eu/" target="_blank" role="button">get started »</a></p>
     </div><!-- /.col-lg-4 -->
     <div class="col-lg-4">
       <span style="font-size:6em;" class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -39,8 +39,8 @@ widget_login_template: r2lab/widget_login.html
     <p>Create your account through OneLab interface, schedule your experiments and manage the resources through the dashboard control
     </p></div>
     <div class="col-md-3">
-    <h4>2. Select resources</h4>
-    <p>Choose number, type and schedule the nodes for your personal experiment.
+    <h4>2. Book a timeslot</h4>
+    <p>At your time... in your prefered day! With few clicks the whole platform are entirely available for your tests.
     </p></div>
     <div class="col-md-3">
     <h4>3. Configure nodes</h4>

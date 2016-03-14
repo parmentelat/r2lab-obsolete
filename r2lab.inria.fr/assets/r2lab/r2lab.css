@@ -44,3 +44,8 @@ a.button.logout { background-color: #f69a97; }
     color: #909090;
     margin-top: -7px; /* Note, this must be half the font size */
 }
+
+/* button link */
+a.in_blue:visited {
+    color: #00A0D0;
+}

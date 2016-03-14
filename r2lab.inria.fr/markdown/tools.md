@@ -20,8 +20,8 @@ This will take care of the ipaddr and networkx dependencies.
 
 ##### Update:
 Within this framework, you can update to the latest stable version of NEPI by simply running:
-    
-    $ sudo pip update nepi
+
+    $ sudo pip install nepi --upgrade
 
 ##### Visualizing:
 If you also need functions related to matplotlib and pygraphviz, you can have the python code for these two tools installed using an explicit.
