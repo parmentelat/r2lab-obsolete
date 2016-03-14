@@ -160,29 +160,32 @@ function init-receiver() {
 
 function run-sender () {
     # 2 arguments are required
-    nb_packets=$1; shift
+    packets=$1; shift
     period=$1; shift
 
-    echo sending $nb_packets packets with period $period
+    echo "Sending $packets packets with period $period us"
 
-    echo $(date) - begin 
+    echo $(date) - begin
+    set -x
     # random_packets uses the mon0 interface which is hard-wired in the binary
-    /root/linux-80211n-csitool-supplementary/injection/random_packets $nb_packets 100 1 $period
+    /root/linux-80211n-csitool-supplementary/injection/random_packets $packets 100 1 $period
+    echo '[END]'
+    set +x
     # which means:
-    # * send 100000 packets
+    # * send $packets packets
     # * of 100 bytes each
     # * 1: on the injection MAC
-    # * with 10000 us between packets) 
+    # * each $period microseconds 
     echo $(date) - end    
 }
 
 function run-receiver () {
     # 2 arguments are required
-    nb_packets=$1; shift
+    packets=$1; shift
     period=$1; shift
 
     # estimate experiment duration
-    duration=$(( $nb_packets * $period / 1000000))
+    duration=$(( $packets * $period / 1000000))
     # add a 3 seconds for safety
     duration=$(( duration + 3))
     echo "Recording CSI data for $duration seconds"

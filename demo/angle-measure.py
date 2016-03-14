@@ -64,12 +64,6 @@ def show_app_trace(app, message, logname):
         out.write(out_trace)
     print ("--- STDOUT : setup stdout for {} -- also in {}:\n"
            .format(message, out_name, out_trace))
-    err_name = "{}.err".format(logname)
-    err_trace = ec.trace(app, "stderr")
-    with open(err_name, 'w') as err:
-        err.write(err_trace)
-    print ("--- STDERR : for {}: see {}".format(message, err_name))
-
     
 def main():
     parser = ArgumentParser()
@@ -79,6 +73,11 @@ def main():
     parser.add_argument("-s", "--sender", default=None)
     parser.add_argument("-c", "--receiver", default=None)
     
+    parser.add_argument("--packets", type=int, default=10000,
+                        help="nb of packets to send")
+    parser.add_argument("--period", type=int, default=1000,
+                        help="time between packets in micro-seconds")
+
     parser.add_argument("-v", "--verbose", dest='verbose', action='store_true',
                         default=False, help="Show selected nodes and exit")
     parser.add_argument("-i", "--skip-init", dest='skip_init', action='store_true',
@@ -94,8 +93,10 @@ def main():
 
     if args.verbose:
         print("Using gateway {gwhost} with account {gwuser}\n"
-              "Using sender = {sendername}, "\
-              "Using receiver = {receivername}, "\
+              "Using sender = {sendername}, "
+              "Using receiver = {receivername}, "
+              .format(**locals()))
+        print("Sending {args.packets} packets, one each {args.period} micro-seconds"
               .format(**locals()))
         exit(0)
 
@@ -123,26 +124,25 @@ def main():
         cleanProcesses = True,
         autoDeploy = True)
 
-    # an app to init the sender
-    init_sender = ec.register_resource(
-        "linux::Application",
-        code = "angle-measure.sh",
-        command = "${CODE} init-sender 64 HT20",
-        autoDeploy = True,
-        connectedTo = sender)
-
-    # an app to init the receiver
-    init_receiver = ec.register_resource(
-        "linux::Application",
-        code = "angle-measure.sh",
-        command = "${CODE} init-receiver 64 HT20",
-        autoDeploy = True,
-        connectedTo = receiver)
-
-
     # init
     if not args.skip_init:
-        print("INITing")
+        print(10*'-', 'Initialization')
+        # an app to init the sender
+        init_sender = ec.register_resource(
+            "linux::Application",
+            code = "angle-measure.sh",
+            command = "${CODE} init-sender 64 HT20",
+            autoDeploy = True,
+            connectedTo = sender)
+
+        # an app to init the receiver
+        init_receiver = ec.register_resource(
+            "linux::Application",
+            code = "angle-measure.sh",
+            command = "${CODE} init-receiver 64 HT20",
+            autoDeploy = True,
+            connectedTo = receiver)
+
         ec.wait_finished( [init_sender, init_receiver] )
         show_app_trace(init_sender, "sender init on {}".format(sendername), "sender-init")
         show_app_trace(init_receiver, "receiver init on {}".format(receivername), "receiver-init")
@@ -152,7 +152,8 @@ def main():
     run_sender = ec.register_resource(
         "linux::Application",
         code = "angle-measure.sh",
-        command = "${CODE} run-sender 10000 1000",
+        # beware of curly brackets with format
+        command = "${{CODE}} run-sender {} {}".format(args.packets, args.period),
         autoDeploy = True,
         connectedTo = sender)
 
@@ -160,12 +161,13 @@ def main():
     run_receiver = ec.register_resource(
         "linux::Application",
         code = "angle-measure.sh",
-        command = "${CODE} run-receiver 10000 1000",
+        # beware of curly brackets with format
+        command = "${{CODE}} run-receiver {} {}".format(args.packets, args.period),
         autoDeploy = True,
         connectedTo = receiver)
 
     # run
-    print("RUNning")
+    print(10*'-', 'Managing radio traffic')
     ec.wait_finished( [run_sender, run_receiver] )
     show_app_trace(run_sender, "sender run on {}".format(sendername), "sender-run")
     show_app_trace(run_receiver, "receiver run on {}".format(receivername), "receiver-run")
