@@ -24,6 +24,8 @@ from nepi.util.sshfuncs import logger
 parser = ArgumentParser()
 parser.add_argument("-N", "--nodes", dest="nodes",
                     help="Comma separated list of nodes")
+parser.add_argument("-a", "--avoid", dest="avoid_nodes",
+                    help="Comma separated list of nodes to avoid")
 parser.add_argument("-V", "--version", default=None, dest="version",
                     help="O.S version to load")
 parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
@@ -35,7 +37,8 @@ VERSIONS_ALIAS  = ['u-1410',           'u-1504',           'f-21',          'f-2
 VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',     'fedora 21',     'fedora 22',      'fedora 23']
 VERSIONS        = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
 
-SEND_RESULTS_TO = ['mario.zancanaro@inria.fr', 'thierry.parmentelat@inria.fr', 'thierry.turletti@inria.fr', 'walid.dabbous@inria.fr']
+SEND_RESULTS_TO = ['mario.zancanaro@inria.fr']
+
 
 
 
@@ -44,12 +47,19 @@ def main(args):
 
     nodes    = args.nodes
     version  = args.version
+    avoid_nodes = args.avoid_nodes
 
     if version is not None:
         valid_version(version)
 
-    nodes    = format_nodes(nodes)
+    nodes     = format_nodes(nodes, avoid_nodes)
     all_nodes = name_node(nodes)
+
+    #===========================
+    #creating db for phases test
+    phases    = {}
+    for node in nodes:
+        create_phases_db(node)
 
     # =========================================
     # RESTARTING  SERVICES (temporary) ========
@@ -67,13 +77,21 @@ def main(args):
     #------------------------------------------
     # Uncomment the line below to use CURL format "on" command
     cmd = command_in_curl(all_nodes, 'on')
-
     results = execute(cmd)
 
     if error_presence(results):
         print "** ERROR: turn on not executed"
     else:
         print "-- INFO: nodes turned on"
+
+
+    #==================================================================
+    #searching in the answer of the command for the sentence of success
+    for node in nodes:
+        cmd = command_in_curl(name_node(node))
+        results = execute(cmd)
+        if results == "on"
+            update_phases_db(node, 1)
 
 
     #=========================================
@@ -84,10 +102,9 @@ def main(args):
     bug_node  = []
     old_os    = {}
     results   = {}
-    phases    = {}
+
 
     for node in all_nodes:
-        create_phases_db(node)
         build_grouped_os_list
 
         host = name_node(node)
@@ -100,10 +117,10 @@ def main(args):
             # UPDATE NODES WHERE SOME BUG IS PRESENT
             bug_node.append(node)
             old_os.update( {node : {'os' : 'unknown'}} )
-            update_phases_db(node)
         else:
             os = name_os(result[node]['stdout'])
             old_os.update( {node : {'os' : os}} )
+            update_phases_db(node, 2)
 
 
     #=========================================
@@ -178,6 +195,10 @@ def main(args):
                 else:
                     print "-- INFO: leaving before timeout "
                     results = omf_load.output
+                    #==================================================================
+                    #searching in the answer of the command for the sentence of success
+                    nodes_found = parse_results_from_load(results)
+                    update_phases_db(nodes_found, 3)
                     break
             #-------------------------------------
 
@@ -232,6 +253,7 @@ def main(args):
                 if oldos != newos:
                     if node in bug_node: bug_node.remove(node)
                     isok = 'yes'
+                    update_phases_db(node, 4)
                 else:
                     isok = 'no'
                     bug_node.append(node)
@@ -239,6 +261,7 @@ def main(args):
                 if named_version(newos) == named_version(version):
                     if node in bug_node: bug_node.remove(node)
                     isok = 'yes'
+                    update_phases_db(node, 4)
                 else:
                     isok = 'no'
                     bug_node.append(node)
@@ -271,11 +294,11 @@ def main(args):
 
 
     #=========================================
-    # CHECK ZUMBIE (not turn off) NODES =====================
-    print "-- INFO: check for zumbie nodes"
+    # CHECK ZOMBIE (not turn off) NODES =====================
+    print "-- INFO: check for zombie nodes"
     wait_and_update_progress_bar(20)
     all_nodes   = to_str(nodes)
-    zumbie_nodes= []
+    zombie_nodes= []
     results     = {}
 
     for node in all_nodes:
@@ -290,13 +313,14 @@ def main(args):
         else:
             status = remove_special_char(result[node]['stdout']).strip()
             if status.lower() not in ['already off', 'off']:
-                zumbie_nodes.append(node)
-
+                zombie_nodes.append(node)
+            else:
+                update_phases_db(node, 5)
 
     #=========================================
     # RESULTS  ===============================
-    print "** WARNING: possible zumbie nodes"
-    print list(set(zumbie_nodes))
+    print "** WARNING: possible zombie nodes"
+    print list(set(zombie_nodes))
     print " "
 
     print "** ERROR: possible problem nodes"
@@ -315,7 +339,7 @@ def main(args):
     save_in_json(loaded_nodes, 'nightly')
 
     set_node_status(range(1,38), 'ok')
-    #set_node_status(zumbie_nodes, 'ko')
+    #set_node_status(zombie_nodes, 'ko')
     set_node_status(bug_node, 'ko')
 
     print "-- INFO: send email"
@@ -332,9 +356,36 @@ def main(args):
     # execute(RESTART_ALL)
 
 
+
+
+def parse_results_from_load(text):
+    """ return a list of the nodes found in the log/answer from load commmand """
+    text    = text.lower()
+    search  = "uploading successful"
+    idxs    = [n for n in xrange(len(text)) if text.find(search, n) == n]
+    back_in = 7 #fit02 is 5 + two spaces use it on split
+    split_by= ' '
+    found   = []
+
+    for idx in idxs:
+        found.append(text[idx-back_in : idx].split(split_by)[1])
+
+    found = map(lambda each:each.strip("fit"), found)
+
+    return found
+
+
+
+
 def update_phases_db(node, phase):
     """ set fail for the node n in the phase """
-    phases.update({ node : {"ph{}".format(phase) : 'x'} })
+
+    if not type(node) is list:
+        phases[node]["ph{}".format(phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
+    else:
+        for n in node:
+            phases[int(n)]["ph{}".format(phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
+
 
 
 
@@ -343,11 +394,12 @@ def create_phases_db(node):
     number_of_phases = 5
     all_phases = {}
     for n in range(number_of_phases):
-        all_phases["ph{}".format(n+1)] = 'o'
+        all_phases["ph{}".format(n+1)] = '18px Arial, Tahoma, Sans-serif; color: red;">&#215;'
 
-    phases.update({node : all_phases})
+    phases.update({int(node) : all_phases})
 
-update_phases_db
+
+
 
 def write_in_file(text):
     """save the results in a file for posterior use of it """
@@ -361,20 +413,69 @@ def write_in_file(text):
 
 
 
-def summary_in_mail(content):
+
+def summary_in_mail(nodes):
     """send a summary output of the routine"""
-    list_of_bug_nodes = content
+    list_of_bug_nodes = nodes
     title = ''
     body  = ''
     to    = SEND_RESULTS_TO
-    #to    = 'mario.zancanaro@inria.fr'
+
+    line_ok = ''
+    line_fail = ''
+    lines_fail = ''
+
+    header = '\
+            <tr>\n \
+            <td style="width: 40px; text-align: center;"></td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/power.png"/ style="width:25px;height:25px;">&nbsp;on&nbsp;</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/term.png"/ style="width:25px;height:25px;">ssh</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/share.png"/ style="width:25px;height:25px;">load</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/shuffle.png"/ style="width:25px;height:25px;">o.s.</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/zombie.png"/ style="width:25px;height:25px;">zombie</td>\n \
+            <td>&nbsp;&nbsp;</td>\n \
+            <td colspan="3"></td>\n \
+            </tr>'
+
+    for node in list_of_bug_nodes:
+        line_fail = '\
+                    <tr>\n \
+                        <td style="font:15px helveticaneue, Arial, Tahoma, Sans-serif;"><span style="border-radius: 50%; border: 2px solid #525252; width: 30px; height: 30px; line-height: 30px; display: block; text-align: center;"><span style="color: #525252;">{}</span></span></td>\n \
+                        <td style="text-align: center; font:{}</td>\n \
+                        <td style="text-align: center; font:{}</td>\n \
+                        <td style="text-align: center; font:{}</td>\n \
+                        <td style="text-align: center; font:{}</td>\n \
+                        <td style="text-align: center; font:{}</td>\n \
+                        <td></td>\n \
+                        <td style="text-align: center;"><span style="background:#828282; color:#fff; padding:4px; border-radius: 5px;">{}</span></td>\n \
+                        <td style="text-align: center; font:20px Arial, Tahoma, Sans-serif;">&nbsp; &#155; &nbsp;</td>\n \
+                        <td style="text-align: center;"><span style="background:#42c944; color:#fff; padding:4px; border-radius: 5px;">{}</span><td>\n \
+                    </tr>\
+                    '.format(node, phases[node]['ph1'], phases[node]['ph2'], phases[node]['ph3'], phases[node]['ph4'], phases[node]['ph5'], loaded_nodes[node]['old_os'], loaded_nodes[node]['new_os'] )
+        lines_fail += line_fail
+    lines_fail = header + lines_fail
+
+    line_ok = '\
+            <tr>\n \
+                <td style="font:11px Arial, Tahoma, Sans-serif; width: 10px; text-align: left;"><img src="http://r2lab.inria.fr/assets/img/people.png"/ style="width:35px;height:35px;"></td>\n \
+                <td colspan="9" style="font:14px Arial, Tahoma, Sans-serif; vertical-align: middle; text-align: left;"><b>Yeah!</b><span style="font:12px Arial"> All nodes are working fine!</span></td>\n \
+            </tr>\n \
+            '
+
+    with open('_nightly_email.html', 'r') as email_partial:
+        body = email_partial.read()
+
+    body = body.replace("[THE DATE]", date('%d/%m/%Y'))
 
     if len(list_of_bug_nodes) < 1:
-        title = 'Nightly Routine of {}: Perfect!'.format(date())
-        body  = 'All nodes are OK!'
+        body = body.replace("[THE CONTENT]", line_ok)
+
+        title = 'Nightly Routine of {}: Perfect!'.format(date('%d/%m/%Y'))
+
     elif len(list_of_bug_nodes) >= 1:
-        title = 'Nightly Routine of {}: Issues!'.format(date())
-        body  = 'Something went wrong with the node(s): <br> {}'.format(', '.join(str(x) for x in list_of_bug_nodes))
+        body = body.replace("[THE CONTENT]", lines_fail)
+
+        title = 'Nightly Routine of {}: Issues!'.format(date('%d/%m/%Y'))
 
     cmd = 'mail -a "Content-type: text/html" -s "{}" {} <<< "{}"'.format(title, to, body)
     result = execute(cmd)
@@ -559,6 +660,7 @@ def stringfy_list(list):
 
 
 
+
 def name_os(os):
     """ Format the O.S. names """
     versions_names = VERSIONS_NAMES
@@ -634,19 +736,37 @@ def all_nodes():
 
 
 
-def format_nodes(nodes):
+def new_list_nodes(nodes):
+    """Put nodes in string list format with zero left """
+    if not type(nodes) is list:
+        if ',' in nodes:
+            nodes = nodes.split(',')
+        elif '-' in nodes:
+            nodes = nodes.strip("[]").split('-')
+            nodes = range(int(nodes[0]), int(nodes[1])+1)
+
+    new_list_nodes = map(str, nodes)
+    for k, v in enumerate(new_list_nodes):
+        if int(v) < 10:
+            new_list_nodes[k] = v.rjust(2, '0')
+
+    return new_list_nodes
+
+
+
+
+def format_nodes(nodes, avoid=None):
     """Correct format when inserted 'all' in -N nodes parameter """
+    to_remove = avoid
+
     if 'all' in nodes:
         nodes = all_nodes()
     else:
-        if not type(nodes) is list:
-            if ',' in nodes:
-                nodes = nodes.split(',')
-            elif '-' in nodes:
-                nodes = nodes.strip("[]").split('-')
-                nodes = range(int(nodes[0]), int(nodes[1])+1)
-            else:
-                nodes = nodes.split()
+        nodes = new_list_nodes(nodes)
+
+    if to_remove:
+        to_remove = new_list_nodes(to_remove)
+        nodes = [item for item in nodes if item not in to_remove]
 
     return nodes
 
@@ -655,6 +775,7 @@ def format_nodes(nodes):
 
 def save_in_json(results, file_name):
     """ Save the result in a json file """
+
     dir = args.text_dir
     file_name = "{}.ext".format(file_name)
 
@@ -663,8 +784,10 @@ def save_in_json(results, file_name):
 
 
 
+
 def split(array, size):
     """ split one array in n (size) other parts """
+
     splited_arrays = []
 
     while len(array) > size:
@@ -685,9 +808,9 @@ def now():
 
 
 
-def date():
+def date(format='%Y-%m-%d'):
     """ Current date """
-    return datetime.now().strftime('%Y-%m-%d')
+    return datetime.now().strftime(format)
 
 
 
