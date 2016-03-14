@@ -16,9 +16,9 @@ tab: blog
   * and to inspect current reservations (`rhubarbe leases`)
   * as well as a monitoring tool (this is what feeds the [livemap](status.md#livemap) and [livetable](status.md#livetable) views
 
-* As a result, it is now possible for us to expose a single resource named `37nodes` to the noelab portal, thus materializing the fact that the whole testbed is actually reserved 
+* As a result, it is now possible for us to expose a single resource named `37nodes` to the onelab portal, thus materializing the fact that the whole testbed is actually reserved 
 
-### November 10 
+### November 10
 
 * availability of images based on fedora-23 and ubuntu-15.10
 
