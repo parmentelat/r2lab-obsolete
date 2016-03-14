@@ -2,9 +2,9 @@
 
 COMMAND=$(basename $0)
 
-output=/var/log/restart-all.log
+output=/var/log/restart-omf.log
 
-function restart-all () {
+function restart-omf () {
     echo "==================== Entering $COMMAND on" $(date)
     ### stop
     echo Stopping omf-sfa
@@ -15,11 +15,6 @@ function restart-all () {
     service openfire stop
     echo Stopping dnsmasq
     service dnsmasq stop
-    ### cleanup the pxlinu symlink
-    source /root/r2lab/inventory/faraday.sh
-    echo "Dealing with any dangling symlink"
-    nextboot-listall
-    nextboot-cleanall    
     ### start
     echo Starting dnsmasq
     service dnsmasq start
@@ -34,8 +29,8 @@ function restart-all () {
 
 if [[ -n "$@" ]]; then
     # if called with any argument, we show output on the terminal
-    restart-all
+    restart-omf
 else
     # otherwise (for cron) this gets logged
-    restart-all >> $output
+    restart-omf >> $output
 fi
