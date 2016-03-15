@@ -12,7 +12,7 @@ from nepi.util.sshfuncs import logger
 # the exp_id name should be unique for your experiment
 # it will be used on the various resources
 # to store results and similar functions
-ec = ExperimentController(exp_id="A4-ping")
+ec = ExperimentController(exp_id="A5-ping")
 
 # we want to run a command right in the r2lab gateway
 # so we need to define ssh-related details for doing so
@@ -58,7 +58,7 @@ fit02 = ec.register_resource("linux::Node",
 
 init_wlan_script = """\
 #!/bin/bash
-# Usage: $0 wifi_interface wifi_ip wifi_netmask wifi_channel wifi_name wifi_key 
+# Usage: $0 wifi_interface wifi_ip wifi_netmask wifi_channel wifi_name wifi_key
 wifi_interface=$1; shift
 wifi_channel=$1; shift
 wifi_name=$1; shift

@@ -9,8 +9,8 @@ import os
 
 # setting up the default host, onelab user and shh key credential
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.[your_user]'
-gateway_key       = '~/.ssh/[your_ssh_key]'
+gateway_username  = 'onelab.inria.mario.tutorial'
+gateway_key       = '~/.ssh/onelab.private'
 
 # setting up the credentials for the nodes
 host01 = 'fit01'

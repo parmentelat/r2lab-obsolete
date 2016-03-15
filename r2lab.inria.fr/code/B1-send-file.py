@@ -17,8 +17,8 @@ ec = ExperimentController(exp_id="B1-send-file")
 # we want to run a command right in the r2lab gateway
 # so we need to define ssh-related details for doing so
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.[your_user]'
-gateway_key       = '~/.ssh/[your_ssh_key]'
+gateway_username  = 'onelab.inria.mario.tutorial'
+gateway_key       = '~/.ssh/onelab.private'
 
 # setting up the credentials for the nodes
 host01 = 'fit01'
