@@ -60,7 +60,7 @@ cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
 app_fit01 = ec.register_resource("linux::Application",
                                   command = cmd,
                                   autoDeploy = True,
-                                  )
+                                  connectedTo = fit01)
 ec.deploy(app_fit01)
 
 #wait application to recovery the results

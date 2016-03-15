@@ -194,10 +194,11 @@ def main(args):
                         print "-- WARNING: let's wait more ... {}/{}".format(i+1,check_number_times)
                 else:
                     print "-- INFO: leaving before timeout "
-                    results = omf_load.output
+                    result = omf_load.output
+                    stdout  = remove_special_char(result['node']['stdout'])
                     #==================================================================
                     #searching in the answer of the command for the sentence of success
-                    nodes_found = parse_results_from_load(results)
+                    nodes_found = parse_results_from_load(stdout)
                     update_phases_db(nodes_found, 3)
                     break
             #-------------------------------------
