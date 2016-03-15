@@ -230,7 +230,7 @@ def main(args):
 
         if error_presence(result):
             # UPDATE NODES WHERE SOME BUG IS PRESENT
-            old_os.update( {node : {'os' : 'unknown'}} )
+            # old_os.update( {node : {'os' : 'unknown'}} )
             bug_node.append(node)
         else:
             os = name_os(result[node]['stdout'])
@@ -245,7 +245,9 @@ def main(args):
         try:
             new_os[node]['os']
         except:
-            loaded_nodes.update( { node : {'old_os' : 'unknown', 'new_os' : 'unknown', 'changed' : 'no'}} )
+            oldos = old_os[node]['os']
+
+            loaded_nodes.update( { node : {'old_os' : oldos, 'new_os' : 'not set', 'changed' : 'no'}} )
             bug_node.append(node)
             go = False
 
