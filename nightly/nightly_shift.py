@@ -37,9 +37,11 @@ VERSIONS_ALIAS  = ['u-1410',           'u-1504',           'f-21',          'f-2
 VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',     'fedora 21',     'fedora 22',      'fedora 23']
 VERSIONS        = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
 
-SEND_RESULTS_TO = ['mario.zancanaro@inria.fr']
+SEND_RESULTS_TO = 'mario.zancanaro@inria.fr'
 
 phases          = {}
+loaded_nodes    = {}
+
 
 
 
@@ -88,9 +90,11 @@ def main(args):
     #==================================================================
     #searching in the answer of the command for the sentence of success
     for node in nodes:
+        print "-- INFO: search for cmd answer for each node"
         cmd = command_in_curl([name_node(node)])
-        results = execute(cmd)
-        if results == "on":
+        result = execute(cmd)
+        stdout = remove_special_char(result['node']['stdout'])
+        if stdout.strip() == "on":
             update_phases_db(node, 1)
 
 
@@ -164,7 +168,7 @@ def main(args):
             else:
                 for node in list_nodes:
                     # UPDATE NODES WHERE SOME BUG IS PRESENT
-                    old_os.update( {node : {'os' : 'not found'}} )
+                    #old_os.update( {node : {'os' : 'not found'}} )
                     bug_node.append(node)
 
     if do_execute:
@@ -235,14 +239,13 @@ def main(args):
 
     #=========================================
     # VERIFY IF CHANGED THE OS ===============
-    loaded_nodes = {}
     for node in old_os:
         go = True
 
         try:
             new_os[node]['os']
         except:
-            loaded_nodes.update( { node : {'old_os' : 'not found', 'new_os' : 'not found', 'changed' : 'no'}} )
+            loaded_nodes.update( { node : {'old_os' : 'unknown', 'new_os' : 'unknown', 'changed' : 'no'}} )
             bug_node.append(node)
             go = False
 
@@ -382,10 +385,10 @@ def update_phases_db(node, the_phase):
     """ set fail for the node n in the phase """
 
     if not type(node) is list:
-        phases[int(node)]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
+        phases[int(node)]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: #42c944;">&#8226;'
     else:
         for n in node:
-            phases[int(n)]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
+            phases[int(n)]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: #42c944;">&#8226;'
 
 
 
@@ -429,16 +432,16 @@ def summary_in_mail(nodes):
     header = '\
             <tr>\n \
             <td style="width: 40px; text-align: center;"></td>\n \
-            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/power.png"/ style="width:25px;height:25px;">&nbsp;on&nbsp;</td>\n \
-            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/term.png"/ style="width:25px;height:25px;">ssh</td>\n \
-            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/share.png"/ style="width:25px;height:25px;">load</td>\n \
-            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/shuffle.png"/ style="width:25px;height:25px;">o.s.</td>\n \
-            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/zombie.png"/ style="width:25px;height:25px;">zombie</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/power.png" style="width:25px;height:25px;">&nbsp;start&nbsp;</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/term.png" style="width:25px;height:25px;">ssh</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/share.png" style="width:25px;height:25px;">load</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/shuffle.png" style="width:25px;height:25px;">o.s.</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/zombie.png" style="width:25px;height:25px;">zombie</td>\n \
             <td>&nbsp;&nbsp;</td>\n \
             <td colspan="3"></td>\n \
             </tr>'
 
-    for node in list_of_bug_nodes:
+    for node in sorted(list_of_bug_nodes):
         line_fail = '\
                     <tr>\n \
                         <td style="font:15px helveticaneue, Arial, Tahoma, Sans-serif;"><span style="border-radius: 50%; border: 2px solid #525252; width: 30px; height: 30px; line-height: 30px; display: block; text-align: center;"><span style="color: #525252;">{}</span></span></td>\n \
@@ -452,13 +455,13 @@ def summary_in_mail(nodes):
                         <td style="text-align: center; font:20px Arial, Tahoma, Sans-serif;">&nbsp; &#155; &nbsp;</td>\n \
                         <td style="text-align: center;"><span style="background:#42c944; color:#fff; padding:4px; border-radius: 5px; display: inline-block; width: 120px;"">{}</span><td>\n \
                     </tr>\
-                    '.format(node, phases[node]['ph1'], phases[node]['ph2'], phases[node]['ph3'], phases[node]['ph4'], phases[node]['ph5'], loaded_nodes[node]['old_os'], loaded_nodes[node]['new_os'] )
+                    '.format(node, phases[int(node)]['ph1'], phases[int(node)]['ph2'], phases[int(node)]['ph3'], phases[int(node)]['ph4'], phases[int(node)]['ph5'], loaded_nodes[node]['old_os'], loaded_nodes[node]['new_os'] )
         lines_fail += line_fail
     lines_fail = header + lines_fail
 
     line_ok = '\
             <tr>\n \
-                <td style="font:11px Arial, Tahoma, Sans-serif; width: 10px; text-align: left;"><img src="http://r2lab.inria.fr/assets/img/people.png"/ style="width:35px;height:35px;"></td>\n \
+                <td style="font:11px Arial, Tahoma, Sans-serif; width: 10px; text-align: left;"><img src="http://r2lab.inria.fr/assets/img/people.png" style="width:35px;height:35px;"></td>\n \
                 <td colspan="9" style="font:14px Arial, Tahoma, Sans-serif; vertical-align: middle; text-align: left;"><b>Yeah!</b><span style="font:12px Arial"> All nodes are working fine!</span></td>\n \
             </tr>\n \
             '
@@ -519,12 +522,6 @@ def email_body():
 
 def send_email(sender, receiver, title, content):
     """ send email using python """
-    print content
-    print " "
-    print sender
-    print receiver
-    print title
-
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
