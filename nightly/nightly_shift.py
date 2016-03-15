@@ -39,6 +39,7 @@ VERSIONS        = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fed
 
 SEND_RESULTS_TO = ['mario.zancanaro@inria.fr']
 
+phases          = {}
 
 
 
@@ -57,7 +58,6 @@ def main(args):
 
     #===========================
     #creating db for phases test
-    phases = {}
     for node in nodes:
         create_phases_db(node)
 

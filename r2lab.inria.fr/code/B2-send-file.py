@@ -47,7 +47,8 @@ wifi_ip_fit02  = '172.16.1.2'
 local   = ec.register_resource("linux::Node",
                                 hostname = 'localhost',
                                 cleanExperiment = True,
-                                cleanProcesses = True)
+                                cleanProcesses = True,
+                                autoDeploy = True)
 
 # creating the gateway node
 gateway = ec.register_resource("linux::Node",
@@ -55,7 +56,8 @@ gateway = ec.register_resource("linux::Node",
                                 hostname = gateway_hostname,
                                 identity = gateway_key,
                                 cleanExperiment = True,
-                                cleanProcesses = True)
+                                cleanProcesses = True,
+                                autoDeploy = True)
 
 # creating the fit01 node
 fit01 	= ec.register_resource("linux::Node",
@@ -65,7 +67,8 @@ fit01 	= ec.register_resource("linux::Node",
                             	gatewayUser = gateway_username,
                             	identity = gateway_key,
                             	cleanExperiment = True,
-                            	cleanProcesses = True)
+                            	cleanProcesses = True,
+                                autoDeploy = True)
 
 # creating the fit02 node
 fit02   = ec.register_resource("linux::Node",
@@ -75,7 +78,8 @@ fit02   = ec.register_resource("linux::Node",
                             	gatewayUser = gateway_username,
                             	identity = gateway_key,
                             	cleanExperiment = True,
-                            	cleanProcesses = True)
+                            	cleanProcesses = True,
+                                autoDeploy = True)
 
 # configuring the ad-hoc for node fit01
 cmd  = "ip addr flush dev {}; ".format(wifi_interface)
