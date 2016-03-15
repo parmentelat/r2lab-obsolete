@@ -195,7 +195,7 @@ def main(args):
                 else:
                     print "-- INFO: leaving before timeout "
                     result = omf_load.output
-                    stdout  = remove_special_char(result['node']['stdout'])
+                    stdout = remove_special_char(result['node']['stdout'])
                     #==================================================================
                     #searching in the answer of the command for the sentence of success
                     nodes_found = parse_results_from_load(stdout)
@@ -463,7 +463,7 @@ def summary_in_mail(nodes):
             </tr>\n \
             '
 
-    with open('_nightly_email.html', 'r') as email_partial:
+    with open('~/root/r2lab/nightly/_nightly_email.html', 'r') as email_partial:
         body = email_partial.read()
 
     body = body.replace("[THE DATE]", date('%d/%m/%Y'))
