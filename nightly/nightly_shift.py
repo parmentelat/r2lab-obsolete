@@ -90,7 +90,7 @@ def main(args):
     for node in nodes:
         cmd = command_in_curl(name_node(node))
         results = execute(cmd)
-        if results == "on"
+        if results == "on":
             update_phases_db(node, 1)
 
 
