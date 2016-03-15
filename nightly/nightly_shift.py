@@ -198,6 +198,9 @@ def main(args):
                     stdout = remove_special_char(result['node']['stdout'])
                     #==================================================================
                     #searching in the answer of the command for the sentence of success
+                    print "=========================="
+                    print stdout
+                    print "=========================="
                     nodes_found = parse_results_from_load(stdout)
                     update_phases_db(nodes_found, 3)
                     break
@@ -463,9 +466,8 @@ def summary_in_mail(nodes):
             </tr>\n \
             '
 
-    with open('~/root/r2lab/nightly/_nightly_email.html', 'r') as email_partial:
-        body = email_partial.read()
 
+    body = email_body()
     body = body.replace("[THE DATE]", date('%d/%m/%Y'))
 
     if len(list_of_bug_nodes) < 1:
@@ -480,6 +482,39 @@ def summary_in_mail(nodes):
 
     cmd = 'mail -a "Content-type: text/html" -s "{}" {} <<< "{}"'.format(title, to, body)
     result = execute(cmd)
+
+
+
+
+def email_body():
+    """ just a durty partial body """
+
+    #with open('_nightly_email.html', 'r') as email_partial:
+    #    body = email_partial.read()
+
+    body = '<!DOCTYPE html>\n \
+    <html lang="en">\n \
+      <head>\n \
+        <meta charset="utf-8">\n \
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">\n \
+      </head>\n \
+      <body style="font:14px helveticaneue, Arial, Tahoma, Sans-serif; margin: 0;">\n \
+      	<table style="padding: 10px;">\n \
+    		  <tr>\n \
+            <td colspan="10" style="align: left;"><h5><span style="background:#f0ad4e; color:#fff; padding:4px; border-radius: 5px;">[THE DATE]</span></h5></td>\n \
+        	</tr>\n \
+          <tr>\n \
+            <td colspan="10">The nightly routine summary</td>\n \
+    			</tr>\n \
+          <tr>\n \
+            <td colspan="10"><br></td>\n \
+          </tr>\n \
+          [THE CONTENT]\n \
+    		</table>\n \
+      <hr>\n \
+      </body>\n \
+    </html>'
+    return body
 
 
 
