@@ -88,7 +88,7 @@ def main(args):
     #==================================================================
     #searching in the answer of the command for the sentence of success
     for node in nodes:
-        cmd = command_in_curl(name_node(node))
+        cmd = command_in_curl([name_node(node)])
         results = execute(cmd)
         if results == "on":
             update_phases_db(node, 1)

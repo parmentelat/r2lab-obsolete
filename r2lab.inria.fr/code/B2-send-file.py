@@ -91,8 +91,9 @@ cmd += "sudo iwconfig {} key {}; ".format(wifi_interface, wifi_key)
 cmd += "sudo ip link set {} up; ".format(wifi_interface)
 cmd += "sudo ip addr add {}{} dev {}; ".format(wifi_ip_fit01, wifi_net_mask, wifi_interface)
 app_adhoc_fit01 = ec.register_resource("linux::Application",
-                                        command = cmd)
-ec.register_connection(app_adhoc_fit01, fit01)
+                                        command = cmd,
+                                        autoDeploy = True,
+                                        connectedTo = fit01)
 
 # configuring the ad-hoc for node fit01
 cmd  = "ip addr flush dev {}; ".format(wifi_interface)
@@ -104,46 +105,52 @@ cmd += "sudo iwconfig {} key {}; ".format(wifi_interface, wifi_key)
 cmd += "sudo ip link set {} up; ".format(wifi_interface)
 cmd += "sudo ip addr add {}{} dev {}; ".format(wifi_ip_fit02, wifi_net_mask, wifi_interface)
 app_adhoc_fit02 = ec.register_resource("linux::Application",
-                                        command = cmd)
-ec.register_connection(app_adhoc_fit02, fit02)
+                                        command = cmd,
+                                        autoDeploy = True,
+                                        connectedTo = fit02)
 
 # application to copy file from local to gateway
 cmd  = 'scp {}{} {}@{}:{}{}; '.\
        format(local_dir, local_file,
               gateway_username, gateway_hostname, gateway_dir, local_file)
 app_local = ec.register_resource("linux::Application",
-                                  command = cmd)
-ec.register_connection(app_local, local)
+                                  command = cmd,
+                                  autoDeploy = True,
+                                  connectedTo = local)
 
 # application to copy file to fit02 from gateway
 cmd  = 'scp {}{} {}@{}:{}{}; '.\
        format(gateway_dir, local_file,
               user02, host02, host02_dir, local_file)
 app_gateway = ec.register_resource("linux::Application",
-                                    command = cmd)
-ec.register_connection(app_gateway, gateway)
+                                    command = cmd,
+                                    autoDeploy = True,
+                                    connectedTo = gateway)
 
 # fit01 will receive the file from fit02, then we start listening in the port
 cmd = 'nc -dl {} > {}{}'.\
       format(port, host01_dir, local_file)
 app_fit01 = ec.register_resource("linux::Application",
                                   depends = "netcat",
-                                  command = cmd)
-ec.register_connection(app_fit01, fit01)
+                                  command = cmd,
+                                  autoDeploy = True,
+                                  connectedTo = fit01)
 
 # fit02 will send the file to fit01
 cmd = 'nc {} {} < {}{}'.\
       format(wifi_ip_fit01, port, host02_dir, local_file)
 app_fit02 = ec.register_resource("linux::Application",
                                   depends = "netcat",
-                                  command = cmd)
-ec.register_connection(app_fit02, fit02)
+                                  command = cmd,
+                                  autoDeploy = True,
+                                  connectedTo = fit02)
 
 # fit02 will list the dir after all process
 cmd = 'ls -la {}'.format(host02_dir)
 app_fit02_ls = ec.register_resource("linux::Application",
-                                     command = cmd)
-ec.register_connection(app_fit02_ls, fit02)
+                                     command = cmd,
+                                     autoDeploy = True,
+                                     connectedTo = fit02)
 
 # defining that the node gateway can copy the file to fit02 only after the file is copied to it from local
 ec.register_condition(app_gateway, ResourceAction.START, app_local, ResourceState.STOPPED)
