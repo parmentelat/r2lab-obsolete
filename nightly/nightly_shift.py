@@ -57,7 +57,7 @@ def main(args):
 
     #===========================
     #creating db for phases test
-    phases    = {}
+    phases = {}
     for node in nodes:
         create_phases_db(node)
 
@@ -377,14 +377,14 @@ def parse_results_from_load(text):
 
 
 
-def update_phases_db(node, phase):
+def update_phases_db(node, the_phase):
     """ set fail for the node n in the phase """
 
     if not type(node) is list:
-        phases[node]["ph{}".format(phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
+        phases[node]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
     else:
         for n in node:
-            phases[int(n)]["ph{}".format(phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
+            phases[int(n)]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
 
 
 

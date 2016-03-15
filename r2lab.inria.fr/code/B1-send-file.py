@@ -47,7 +47,8 @@ wifi_ip_fit02  = '172.16.1.2'
 local   = ec.register_resource("linux::Node",
                                 hostname = 'localhost',
                                 cleanExperiment = True,
-                                cleanProcesses = True)
+                                cleanProcesses = True,
+                                autoDeploy = True)
 
 # creating the gateway node
 gateway = ec.register_resource("linux::Node",
@@ -55,7 +56,8 @@ gateway = ec.register_resource("linux::Node",
                                 hostname = gateway_hostname,
                                 identity = gateway_key,
                                 cleanExperiment = True,
-                                cleanProcesses = True)
+                                cleanProcesses = True,
+                                autoDeploy = True)
 
 # creating the fit01 node
 fit01 	= ec.register_resource("linux::Node",
@@ -65,7 +67,8 @@ fit01 	= ec.register_resource("linux::Node",
                             	gatewayUser = gateway_username,
                             	identity = gateway_key,
                             	cleanExperiment = True,
-                            	cleanProcesses = True)
+                            	cleanProcesses = True,
+                                autoDeploy = True)
 
 # creating the fit02 node
 fit02   = ec.register_resource("linux::Node",
@@ -75,45 +78,51 @@ fit02   = ec.register_resource("linux::Node",
                             	gatewayUser = gateway_username,
                             	identity = gateway_key,
                             	cleanExperiment = True,
-                            	cleanProcesses = True)
+                            	cleanProcesses = True,
+                                autoDeploy = True)
 
 # application to copy file from local to gateway
 cmd  = 'scp {}{} {}@{}:{}{}; '.\
        format(local_dir, local_file,
               gateway_username, gateway_hostname, gateway_dir, local_file)
 app_local = ec.register_resource("linux::Application",
-                                  command = cmd)
-ec.register_connection(app_local, local)
+                                  command = cmd,
+                                  autoDeploy = True,
+                                  connectedTo = local)
 
 # application to copy file to fit02 from gateway
 cmd  = 'scp {}{} {}@{}:{}{}; '.\
        format(gateway_dir, local_file,
               user02, host02, host02_dir, local_file)
 app_gateway = ec.register_resource("linux::Application",
-                                    command = cmd)
-ec.register_connection(app_gateway, gateway)
+                                    command = cmd,
+                                    autoDeploy = True,
+                                    connectedTo = gateway)
 
 # fit01 will receive the file from fit02, then we start listening in the port
 cmd = 'nc -dl {} > {}{}'.\
       format(port, host01_dir, local_file)
 app_fit01 = ec.register_resource("linux::Application",
                                   depends = "netcat",
-                                  command = cmd)
-ec.register_connection(app_fit01, fit01)
+                                  command = cmd,
+                                  autoDeploy = True,
+                                  connectedTo = fit01)
 
 # fit02 will send the file to fit01
 cmd = 'nc {} {} < {}{}'.\
       format(host01, port, host02_dir, local_file)
 app_fit02 = ec.register_resource("linux::Application",
                                   depends = "netcat",
-                                  command = cmd)
-ec.register_connection(app_fit02, fit02)
+                                  command = cmd,
+                                  autoDeploy = True,
+                                  connectedTo = fit02)
 
 # fit02 will list the dir after all process
 cmd = 'ls -la {}'.format(host02_dir)
 app_fit02_ls = ec.register_resource("linux::Application",
-                                     command = cmd)
-ec.register_connection(app_fit02_ls, fit02)
+                                     command = cmd,
+                                     autoDeploy = True,
+                                     connectedTo = fit02)
 
 # defining that the node gateway can copy the file to fit02 only after the file is copied to it from local
 ec.register_condition(app_gateway, ResourceAction.START, app_local, ResourceState.STOPPED)
