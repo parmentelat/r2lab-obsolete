@@ -198,9 +198,6 @@ def main(args):
                     stdout = remove_special_char(result['node']['stdout'])
                     #==================================================================
                     #searching in the answer of the command for the sentence of success
-                    print "=========================="
-                    print stdout
-                    print "=========================="
                     nodes_found = parse_results_from_load(stdout)
                     update_phases_db(nodes_found, 3)
                     break
@@ -505,7 +502,7 @@ def email_body():
             <td colspan="10" style="align: left;"><h5><span style="background:#f0ad4e; color:#fff; padding:4px; border-radius: 5px;">[THE DATE]</span></h5></td>\n \
         	</tr>\n \
           <tr>\n \
-            <td colspan="10">The nightly routine summary</td>\n \
+            <td colspan="10">The nightly routine summary<sup style="font:9px Arial, Tahoma, Sans-serif; color: red;"><b> beta</b></sup></td>\n \
     			</tr>\n \
           <tr>\n \
             <td colspan="10"><br></td>\n \
@@ -522,6 +519,12 @@ def email_body():
 
 def send_email(sender, receiver, title, content):
     """ send email using python """
+    print content
+    print " "
+    print sender
+    print receiver
+    print title
+
     import smtplib
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
