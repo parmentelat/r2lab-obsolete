@@ -28,14 +28,16 @@ gateway = ec.register_resource("linux::Node",
                                 hostname = gateway_hostname,
                                 identity = gateway_key,
                                 cleanExperiment = True,
-                                cleanProcesses = True)
+                                cleanProcesses = True,
+                                autoDeploy = True)
 ec.deploy(gateway)
 
 # application to copy load at fit01 a fresh distro
 cmd  = 'rhubarbe-load {} -i {};'.format(host01, version)
 app_gateway = ec.register_resource("linux::Application",
-                                    command = cmd)
-ec.register_connection(app_gateway, gateway)
+                                    command = cmd,
+                                    autoDeploy = True,
+                                    connectedTo = gateway)
 ec.deploy(app_gateway)
 
 #wait application finish
@@ -49,14 +51,16 @@ fit01   = ec.register_resource("linux::Node",
                                 gatewayUser = gateway_username,
                                 identity = gateway_key,
                                 cleanExperiment = True,
-                                cleanProcesses = True)
+                                cleanProcesses = True,
+                                autoDeploy = True)
 ec.deploy(fit01)
 
 # fit01 will check for the current version
 cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
 app_fit01 = ec.register_resource("linux::Application",
-                                  command = cmd)
-ec.register_connection(app_fit01, fit01)
+                                  command = cmd,
+                                  autoDeploy = True,
+                                  )
 ec.deploy(app_fit01)
 
 #wait application to recovery the results

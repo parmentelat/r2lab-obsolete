@@ -381,7 +381,7 @@ def update_phases_db(node, the_phase):
     """ set fail for the node n in the phase """
 
     if not type(node) is list:
-        phases[node]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
+        phases[int(node)]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
     else:
         for n in node:
             phases[int(n)]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: green;">&#8226;'
