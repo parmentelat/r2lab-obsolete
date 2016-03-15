@@ -85,7 +85,7 @@ def main():
 
     # select sender and receiver nodes
     parser.add_argument("-s", "--sender", default=None)
-    parser.add_argument("-c", "--receiver", default=None)
+    parser.add_argument("-r", "--receiver", default=None)
     
     # select how many packets, and how often they are sent
     parser.add_argument("-a", "--packets", type=int, default=10000,
@@ -169,7 +169,7 @@ def main():
 
     # init phase
     if not args.skip_init:
-        print(10*'-', 'Initialization')
+        print(10*'-', 'Drivers Initialization')
         ec.wait_finished( [init_sender, init_receiver] )
         get_app_stdout(init_sender, "sender-init", dataname)
         get_app_stdout(init_receiver, "receiver-init", dataname)
@@ -198,24 +198,15 @@ def main():
     ec.wait_finished( [run_sender, run_receiver] )
 
     # collect data
+    print(10*'-', 'Collecting data in {}'.format(dataname))
     get_app_stdout(run_sender, "sender-run", dataname)
     get_app_trace(run_receiver, "receiver-run", dataname,
                   "stderr", "receiver-run.err")
-    def method1():
-        # the sender has stdout and stderr merged
-        # the receiver has our data in stdout and textual log in stderr
-        get_app_trace(run_receiver, "receiver-run", "stdout", "raw-data")
-        app_path = ec.get_resource(run_receiver).trace_filepath('stdout')
-        retrieve_command = "./bar.sh {} {} {}"\
-            .format(receivername, app_path, dataname)
-        print("Running", retrieve_command)
-        os.system(retrieve_command)
-
-    def method2():
-        get_app_trace(run_receiver, "receiver-run", ".", "stdout", dataname+".raw")
+    # raw data gets to go in the current directory as it's more convenient to manage
+    # also it's safe to wait for a little while
+    time.sleep(5)
+    get_app_trace(run_receiver, "receiver-run", ".", "stdout", dataname+".raw")
     
-    import time; time.sleep(10)
-    method2()
     # we're done
     ec.shutdown()
 
