@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 
 """
 This NEPI script is for orchestrating an experiment on R2lab
@@ -26,18 +26,25 @@ would setup the sender-side wireless system to use channel 64 and 20MHz bands
 
 """
 
+########################################
 # for using print() in python3-style even in python2
 from __future__ import print_function
 
+import os, os.path
+import time
+import logging
 from argparse import ArgumentParser
 
 # import nepi library and other required packages
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
-from nepi.util.sshfuncs import logger
 
 ec = ExperimentController(exp_id="angle-measure")
 
+# using external shell script like e.g.:
+# angle-measure.sh init-sender channel bandwidth
+
+########## helpers
 # this can run on the prep-lab for dry runs
 def credentials(production):
     "returns a triple (hostname, username, key)"
@@ -53,50 +60,70 @@ def sender_receiver(production):
     else:
         return "fit04", "fit41"
 
+########## how and where to store results
+def get_app_trace(app, appname, rundir, tracename, outfile):
+    if not os.path.isdir(rundir):
+        os.makedirs(rundir)
+    outpath = os.path.join(rundir, outfile)
+    with open(outpath, 'w') as f:
+        f.write(ec.trace(app, tracename))
+    print(4*'=', "Stored trace {} for app {} in {}"
+          .format(tracename, appname, outpath))
 
-# using external shell script like e.g.:
-# angle-measure.sh init-sender channel bandwidth
+def get_app_stdout(app, appname, rundir):
+    get_app_trace(app, appname, rundir, "stdout", "{}.out".format(appname))
 
-def show_app_trace(app, message, logname):
-    out_name = "{}.out".format(logname)
-    out_trace = ec.trace(app, "stdout")
-    with open(out_name, 'w') as out:
-        out.write(out_trace)
-    print ("--- STDOUT : setup stdout for {} -- also in {}:\n"
-           .format(message, out_name, out_trace))
-    
+########## the experiment
 def main():
+
+#    logging.getLogger('sshfuncs').setLevel(logging.DEBUG)
+#    logging.getLogger('application').setLevel(logging.DEBUG)
+
     parser = ArgumentParser()
     parser.add_argument("-p", "--production", dest='production', action='store_true',
                         default=False, help="Run in preplab")
-    # tmp
+
+    # select sender and receiver nodes
     parser.add_argument("-s", "--sender", default=None)
     parser.add_argument("-c", "--receiver", default=None)
     
+    # select how many packets, and how often they are sent
     parser.add_argument("-a", "--packets", type=int, default=10000,
                         help="nb of packets to send")
     parser.add_argument("-e", "--period", type=int, default=1000,
                         help="time between packets in micro-seconds")
 
-    parser.add_argument("-v", "--verbose", dest='verbose', action='store_true',
-                        default=False, help="Show selected nodes and exit")
+    # partial runs, dry runs
+    parser.add_argument("-n", "--dry-run", action='store_true',
+                        default=False, help="Show experiment context and exit - do nothing")
     parser.add_argument("-i", "--skip-init", dest='skip_init', action='store_true',
                         default=False, help="Skip initialization")
     args = parser.parse_args()
 
+    # get credentials, depending on target testbed (preplab or production chamber)
     gwhost, gwuser, key = credentials(args.production)
-    # get defaults for preplab or production
+
+    # get defaults for target nodes, either on preplab or production
     sendername, receivername = sender_receiver(args.production)
     # but can always be overridden
     if args.sender is not None:  sendername = args.sender
     if args.receiver is not None:  receivername = args.receiver
 
-    if args.verbose:
+    packets = args.packets
+    period = args.period
+
+    # we keep all 'environment' data for one run in a dedicated subdir
+    # using this name scheme to store results locally
+    dataname = "csi-{}-{}-{}-{}".format(
+        receivername, sendername, packets, period)
+
+    ########## display context and exit if -n is provided
+    if args.dry_run:
         print("Using gateway {gwhost} with account {gwuser}\n"
               "Using sender = {sendername}, "
               "Using receiver = {receivername}, "
               .format(**locals()))
-        print("Sending {args.packets} packets, one each {args.period} micro-seconds"
+        print("Sending {packets} packets, one each {period} micro-seconds"
               .format(**locals()))
         exit(0)
 
@@ -124,36 +151,35 @@ def main():
         cleanProcesses = True,
         autoDeploy = True)
 
-    # init
+    # an app to init the sender
+    init_sender = ec.register_resource(
+        "linux::Application",
+        code = "angle-measure.sh",
+        command = "${CODE} init-sender 64 HT20",
+        autoDeploy = True,
+        connectedTo = sender)
+
+    # an app to init the receiver
+    init_receiver = ec.register_resource(
+        "linux::Application",
+        code = "angle-measure.sh",
+        command = "${CODE} init-receiver 64 HT20",
+        autoDeploy = True,
+        connectedTo = receiver)
+
+    # init phase
     if not args.skip_init:
         print(10*'-', 'Initialization')
-        # an app to init the sender
-        init_sender = ec.register_resource(
-            "linux::Application",
-            code = "angle-measure.sh",
-            command = "${CODE} init-sender 64 HT20",
-            autoDeploy = True,
-            connectedTo = sender)
-
-        # an app to init the receiver
-        init_receiver = ec.register_resource(
-            "linux::Application",
-            code = "angle-measure.sh",
-            command = "${CODE} init-receiver 64 HT20",
-            autoDeploy = True,
-            connectedTo = receiver)
-
         ec.wait_finished( [init_sender, init_receiver] )
-        show_app_trace(init_sender, "sender init on {}".format(sendername), "sender-init")
-        show_app_trace(init_receiver, "receiver init on {}".format(receivername), "receiver-init")
-        print("DONE")
+        get_app_stdout(init_sender, "sender-init", dataname)
+        get_app_stdout(init_receiver, "receiver-init", dataname)
         
     # an app to run the sender
     run_sender = ec.register_resource(
         "linux::Application",
         code = "angle-measure.sh",
         # beware of curly brackets with format
-        command = "${{CODE}} run-sender {} {}".format(args.packets, args.period),
+        command = "${{CODE}} run-sender {} {}".format(packets, period),
         autoDeploy = True,
         connectedTo = sender)
 
@@ -162,17 +188,34 @@ def main():
         "linux::Application",
         code = "angle-measure.sh",
         # beware of curly brackets with format
-        command = "${{CODE}} run-receiver {} {}".format(args.packets, args.period),
+        command = "${{CODE}} run-receiver {} {}".format(packets, period),
         autoDeploy = True,
+        splitStderr = True,
         connectedTo = receiver)
 
     # run
     print(10*'-', 'Managing radio traffic')
     ec.wait_finished( [run_sender, run_receiver] )
-    show_app_trace(run_sender, "sender run on {}".format(sendername), "sender-run")
-    show_app_trace(run_receiver, "receiver run on {}".format(receivername), "receiver-run")
 
+    # collect data
+    get_app_stdout(run_sender, "sender-run", dataname)
+    get_app_trace(run_receiver, "receiver-run", dataname,
+                  "stderr", "receiver-run.err")
+    def method1():
+        # the sender has stdout and stderr merged
+        # the receiver has our data in stdout and textual log in stderr
+        get_app_trace(run_receiver, "receiver-run", "stdout", "raw-data")
+        app_path = ec.get_resource(run_receiver).trace_filepath('stdout')
+        retrieve_command = "./bar.sh {} {} {}"\
+            .format(receivername, app_path, dataname)
+        print("Running", retrieve_command)
+        os.system(retrieve_command)
+
+    def method2():
+        get_app_trace(run_receiver, "receiver-run", ".", "stdout", dataname+".raw")
     
+    import time; time.sleep(10)
+    method2()
     # we're done
     ec.shutdown()
 

@@ -11,11 +11,22 @@
 # angle-measure.sh init-receiver channel bandwidth
 # ditto
 #
-# angle-measure.sh run-sender
+# angle-measure.sh run-sender packets period
 #
-# angle-measure.sh run-receiver
+# angle-measure.sh run-receiver packets period
 
+# we prefer to have the output of set -x go into stderr
+# mostly so that we can isolate the receiver stdout as raw data
+# without these verbose statements polluting the output
+export BASH_XTRACEFD=2
 set -x
+
+
+##############################
+# helper functions
+# mostly so that
+# (*) we figure the name of the intel wireless interfaces
+# (*) we can gather a complete status of the setup for the record
 
 # http://unix.stackexchange.com/questions/41817/linux-how-to-find-the-device-driver-used-for-a-device/225496#225496?newreg=c865c93607124e70b9f530f2733aba05
 function list-interfaces () {
@@ -93,7 +104,8 @@ function wait-for-device () {
 	fi
     done
 }
-    
+
+############################## successive steps of the experiment
 function init-sender() {
     ### 2 arguments are required
     channel=$1; shift       # e.g. 64
@@ -128,6 +140,8 @@ function init-sender() {
     details-on-interface mon0
 }
 
+
+
 function init-receiver() {
     ### 2 arguments are required
     channel=$1; shift       # e.g. 64
@@ -151,6 +165,8 @@ function init-receiver() {
     details-on-interface $wlan
     
 }
+
+
 
 # the image that we use contains the csitool packages installed here
 # root@fit04:~# ls -l /root
@@ -179,6 +195,10 @@ function run-sender () {
     echo $(date) - end    
 }
 
+
+
+# echo everything on stderr so we can just redirect stdout
+# so stdout receives the output of log_to_file
 function run-receiver () {
     # 2 arguments are required
     packets=$1; shift
@@ -188,16 +208,17 @@ function run-receiver () {
     duration=$(( $packets * $period / 1000000))
     # add a 3 seconds for safety
     duration=$(( duration + 3))
-    echo "Recording CSI data for $duration seconds"
+    >&2 echo "Recording CSI data for $duration seconds"
 
-    echo $(date) - begin 
-    /root/linux-80211n-csitool-supplementary/netlink/log_to_file log.data &
-    # which means we log indefinitely the csi data into file log.data
+    >&2 echo $(date) - begin 
+    /root/linux-80211n-csitool-supplementary/netlink/log_to_file receiver.raw &
+    # which means we log indefinitely the csi data into file receiver.raw
     sleep $duration
-    echo $(date) - end    
+    >&2 echo $(date) - end
+    cat receiver.raw
 }
 
-
+########################################
 # just a wrapper around the individual functions
 function main() {
     command=$1; shift
