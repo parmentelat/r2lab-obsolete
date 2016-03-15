@@ -480,8 +480,9 @@ def summary_in_mail(nodes):
 
         title = 'Nightly Routine of {}: Issues!'.format(date('%d/%m/%Y'))
 
-    cmd = 'mail -a "Content-type: text/html" -s "{}" {} <<< "{}"'.format(title, to, body)
-    result = execute(cmd)
+    # cmd = 'mail -a "Content-type: text/html" -s "{}" {} <<< "{}"'.format(title, to, body)
+    # result = execute(cmd)
+    send_email("mario.zancanaro@inria.fr", to, title, body)
 
 
 
@@ -515,6 +516,36 @@ def email_body():
       </body>\n \
     </html>'
     return body
+
+
+
+
+def send_email(sender, receiver, title, content):
+    """ send email using python """
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    # Create message container - the correct MIME type is multipart/alternative.
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = title
+    msg['From'] = sender
+    msg['To'] = receiver
+
+    # Record the MIME types of both parts - text/plain and text/html.
+    body = MIMEText(content, 'html')
+
+    # Attach parts into message container.
+    # According to RFC 2046, the last part of a multipart message, in this case
+    # the HTML message, is best and preferred.
+    msg.attach(body)
+
+    # Send the message via local SMTP server.
+    s = smtplib.SMTP('localhost')
+    # sendmail function takes 3 arguments: sender's address, recipient's address
+    # and message to send - here it is sent as one string.
+    s.sendmail(sender, receiver, msg.as_string())
+    s.quit()
 
 
 
