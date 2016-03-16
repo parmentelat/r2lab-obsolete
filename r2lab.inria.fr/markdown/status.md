@@ -45,14 +45,15 @@ at the bottom of this page](#accurate-layout).
 
 #### Legend
 
-* The <b>availability</b> column: 
+* The ***availability*** column: 
   tells you whether the node is usable or not. If not, this means you should not try to use that node for your experiment, as it may be physically powered off, or otherwise behave erratically.
-* The <b>on/off</b> column:
+* The ***on/off*** column:
   reports if the node is currently turned on or off.
-* The <b>ping</b> column: 
-  does the node answers a single ping at the wired network interface.
-* The <b>O.S</b> column:
+* The ***ping*** column: 
+  says whether the node answers a single ping at the wired network interface or not.
+* The ***Last O.S*** column:
   the nature of the O.S. that was **last seen** on that node (i.e. even if the node is currently off).
+* The ***wlan...*** columns provide measured bandwidth in reception and transmission on the 2 radio interfaces. *This is only indicative* and inaccurate; experiments should probably measure this themselves if it is a crucial information. Also note that this feature does not work on images that use other names for the wireless devices.
 
 Also please note that 
 
