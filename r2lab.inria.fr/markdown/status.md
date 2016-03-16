@@ -1,27 +1,22 @@
 title: R2lab Status
 tab: status
+skip_header: yes
+
+This page gives you live details on the individual nodes in the R2lab testbed.
+
 ---
+## Overall status (livemap)
 
-R2lab testbed project offers a high quality anechoic room for your experiments. Following are the details of the anechoic room.
+<a name="livemap"></a>
+For accurate dimensions of the room, please see the [static blueprint
+at the bottom of this page](#accurate-layout).
 
+<div id="livemap_container"></div>
+<script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
+<script>livemap_show_rxtx_rates = true;</script>
+<style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
 
-<div class="alert alert-danger" role="alert" markdown="1">
-**Important note!**
-
-R2lab platform is reset every night. A time slot from **3AM** until
-**4AM** is reserved to execute this routine.
-All times on this website are expressed wrt the CET timezone, which is UTC+1 in winter, and UTC+2 in summer.
-
-Please, make sure all your experiments are saved before. You can check
-[here](tuto-02-shell-tools.md#main) how to do it.
-</div>
-
-### Overall status (livemap)
-
-Frequently a routine checks the availability of our nodes platform. In
-order to allow real time and multiple information concerning the R2lab
-platform, our live map keeps users posted about the state of each
-node concerning technical infos, incidents and operational details:
+#### Legend
 
 * A round shape with a O.S. icon (fedora or ubuntu) informs that the node is turned on, running the
   referenced O.S. and reachable through ssh.
@@ -35,34 +30,9 @@ node concerning technical infos, incidents and operational details:
 * Finally, if a node is hidden behind a large red circle, it means it
   is out of order, and altogether unavailable.
 
-<a name="livemap"></a>
-For accurate dimensions of the room, please see the [static blueprint
-at the bottom of this page](#accurate-layout).
-
-<div id="livemap_container"></div>
-<script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
-<script>livemap_show_rxtx_rates = true;</script>
-<style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
-
 ***
 
-### Detailed status (livetable)
-
-Complementary to the live map above, this status table presents the same status information in an alternative format.
-
-* The <b>availability</b> column: 
-  tells you whether the node is usable or not. If not, this means you should not try to use that node for your experiment, as it may be physically powered off, or otherwise behave erratically.
-* The <b>on/off</b> column:
-  reports if the node is currently turned on or off.
-* The <b>ping</b> column: 
-  does the node answers a single ping at the wired network interface.
-* The <b>O.S</b> column:
-  the nature of the O.S. that was last seen on that node.
-
-Also please note that 
-
- * Clicking anywhere in the header will focus on the nodes that are currently up; a second click returns to full mode.
- * Clicking a node badge will take it off the list
+## Detailed status (livetable)
 
 <a name="livetable"></a>
 
@@ -73,7 +43,21 @@ Also please note that
 <script>livetable_show_rxtx_rates = true;</script>
 <style type="text/css"> @import url("/assets/r2lab/livetable.css"); </style>
 
-<br />
+#### Legend
+
+* The <b>availability</b> column: 
+  tells you whether the node is usable or not. If not, this means you should not try to use that node for your experiment, as it may be physically powered off, or otherwise behave erratically.
+* The <b>on/off</b> column:
+  reports if the node is currently turned on or off.
+* The <b>ping</b> column: 
+  does the node answers a single ping at the wired network interface.
+* The <b>O.S</b> column:
+  the nature of the O.S. that was **last seen** on that node (i.e. even if the node is currently off).
+
+Also please note that 
+
+ * Clicking anywhere in the header will focus on the nodes that are currently up; a second click returns to full mode.
+ * Clicking a node badge will take it off the list
 
 ***
 

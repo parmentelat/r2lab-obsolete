@@ -37,4 +37,19 @@ skip_header: yes
       <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
     </div>
   </div>
+
+<br/>
+
+<div class="alert alert-danger" role="alert" markdown="1">
+**Important note!**
+
+R2lab platform is reset every night. A time slot from **3AM** until
+**4AM** is reserved to execute this routine.
+All times on this website are expressed wrt the CET timezone, which is UTC+1 in winter, and UTC+2 in summer.
+
+Please, make sure all your experiments are saved before. You can check
+[here](tuto-02-shell-tools.md#main) how to do it.
 </div>
+
+</div>
+
