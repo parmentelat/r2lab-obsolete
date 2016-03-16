@@ -484,7 +484,7 @@ def summary_in_mail(nodes):
 
     # cmd = 'mail -a "Content-type: text/html" -s "{}" {} <<< "{}"'.format(title, to, body)
     # result = execute(cmd)
-    send_email("mario.zancanaro@inria.fr", to, title, body)
+    send_email("r2lab@inria.fr", to, title, body)
 
 
 
