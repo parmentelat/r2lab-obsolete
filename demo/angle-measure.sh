@@ -218,6 +218,7 @@ function run-receiver () {
     sleep $duration
     >&2 echo $(date) - end
     cat receiver.raw
+    >&2 md5sum receiver.raw
 }
 
 ########################################
