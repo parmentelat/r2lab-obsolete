@@ -26,7 +26,7 @@ at the bottom of this page](#accurate-layout).
   (usually this means the node is being turned on or off)
   * a slightly larger and green-ish bullet means the node answers to ping but cannot be
   reached through ssh yet (usually this means an image is being
-  burned).
+  loaded).
 * Finally, if a node is hidden behind a large red circle, it means it
   is out of order, and altogether unavailable.
 
