@@ -39,8 +39,6 @@ from argparse import ArgumentParser
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 
-ec = ExperimentController(exp_id="angle-measure")
-
 # using external shell script like e.g.:
 # angle-measure.sh init-sender channel bandwidth
 
@@ -53,15 +51,8 @@ def credentials(production):
     else:
         return 'bemol.pl.sophia.inria.fr', 'regular', '~/.ssh/onelab.private'
     
-def sender_receiver(production):
-    "returns a tuple (sender, receiver)"
-    if production:
-        return "fit30", "fit31"
-    else:
-        return "fit04", "fit41"
-
 ########## how and where to store results
-def get_app_trace(app, appname, rundir, tracename, outfile):
+def get_app_trace(ec, app, appname, rundir, tracename, outfile):
     if not os.path.isdir(rundir):
         os.makedirs(rundir)
     outpath = os.path.join(rundir, outfile)
@@ -70,62 +61,19 @@ def get_app_trace(app, appname, rundir, tracename, outfile):
     print(4*'=', "Stored trace {} for app {} in {}"
           .format(tracename, appname, outpath))
 
-def get_app_stdout(app, appname, rundir):
-    get_app_trace(app, appname, rundir, "stdout", "{}.out".format(appname))
+def get_app_stdout(ec, app, appname, rundir):
+    get_app_trace(ec, app, appname, rundir, "stdout", "{}.out".format(appname))
 
-########## the experiment
-def main():
-
-#    logging.getLogger('sshfuncs').setLevel(logging.DEBUG)
-#    logging.getLogger('application').setLevel(logging.DEBUG)
-
-    parser = ArgumentParser()
-    parser.add_argument("-p", "--production", dest='production', action='store_true',
-                        default=False, help="Run in preplab")
-
-    # select sender and receiver nodes
-    parser.add_argument("-s", "--sender", default=None)
-    parser.add_argument("-r", "--receiver", default=None)
-    
-    # select how many packets, and how often they are sent
-    parser.add_argument("-a", "--packets", type=int, default=10000,
-                        help="nb of packets to send")
-    parser.add_argument("-e", "--period", type=int, default=1000,
-                        help="time between packets in micro-seconds")
-
-    # partial runs, dry runs
-    parser.add_argument("-n", "--dry-run", action='store_true',
-                        default=False, help="Show experiment context and exit - do nothing")
-    parser.add_argument("-i", "--skip-init", dest='skip_init', action='store_true',
-                        default=False, help="Skip initialization")
-    args = parser.parse_args()
-
-    # get credentials, depending on target testbed (preplab or production chamber)
-    gwhost, gwuser, key = credentials(args.production)
-
-    # get defaults for target nodes, either on preplab or production
-    sendername, receivername = sender_receiver(args.production)
-    # but can always be overridden
-    if args.sender is not None:  sendername = args.sender
-    if args.receiver is not None:  receivername = args.receiver
-
-    packets = args.packets
-    period = args.period
-
+########## one experiment
+def one_run(gwhost, gwuser, key, sendername, receivername, packets, size, period):
     # we keep all 'environment' data for one run in a dedicated subdir
     # using this name scheme to store results locally
-    dataname = "csi-{}-{}-{}-{}".format(
-        receivername, sendername, packets, period)
+    dataname = "csi-{}-{}-{}-{}-{}".format(
+        receivername, sendername, packets, size, period)
 
-    ########## display context and exit if -n is provided
-    if args.dry_run:
-        print("Using gateway {gwhost} with account {gwuser}\n"
-              "Using sender = {sendername}, "
-              "Using receiver = {receivername}, "
-              .format(**locals()))
-        print("Sending {packets} packets, one each {period} micro-seconds"
-              .format(**locals()))
-        exit(0)
+    summary = "{} ==> {} {}x{} each {}us".format(sendername, receivername, packets, size, period)
+
+    ec = ExperimentController(exp_id="angle-measure")
 
     # the sender node
     sender = ec.register_resource(
@@ -168,18 +116,15 @@ def main():
         connectedTo = receiver)
 
     # init phase
-    if not args.skip_init:
-        print(10*'-', 'Drivers Initialization')
-        ec.wait_finished( [init_sender, init_receiver] )
-        get_app_stdout(init_sender, "sender-init", dataname)
-        get_app_stdout(init_receiver, "receiver-init", dataname)
+    print(10*'-', summary, 'Drivers Initialization')
+    ec.wait_finished( [init_sender, init_receiver] )
         
     # an app to run the sender
     run_sender = ec.register_resource(
         "linux::Application",
         code = "angle-measure.sh",
         # beware of curly brackets with format
-        command = "${{CODE}} run-sender {} {}".format(packets, period),
+        command = "${{CODE}} run-sender {} {} {}".format(packets, size, period),
         autoDeploy = True,
         connectedTo = sender)
 
@@ -188,27 +133,104 @@ def main():
         "linux::Application",
         code = "angle-measure.sh",
         # beware of curly brackets with format
-        command = "${{CODE}} run-receiver {} {}".format(packets, period),
+        command = "${{CODE}} run-receiver {} {} {}".format(packets, size, period),
         autoDeploy = True,
         splitStderr = True,
         connectedTo = receiver)
 
     # run
-    print(10*'-', 'Managing radio traffic')
+    print(10*'-', summary, 'Managing radio traffic')
     ec.wait_finished( [run_sender, run_receiver] )
 
     # collect data
-    print(10*'-', 'Collecting data in {}'.format(dataname))
-    get_app_stdout(run_sender, "sender-run", dataname)
-    get_app_trace(run_receiver, "receiver-run", dataname,
+    print(10*'-', summary, 'Collecting data in {}'.format(dataname))
+    get_app_stdout(ec, init_sender, "sender-init", dataname)
+    get_app_stdout(ec, init_receiver, "receiver-init", dataname)
+    get_app_stdout(ec, run_sender, "sender-run", dataname)
+    get_app_trace(ec, run_receiver, "receiver-run", dataname,
                   "stderr", "receiver-run.err")
     # raw data gets to go in the current directory as it's more convenient to manage
     # also it's safe to wait for a little while
     time.sleep(5)
-    get_app_trace(run_receiver, "receiver-run", ".", "stdout", dataname+".raw")
+    get_app_trace(ec, run_receiver, "receiver-run", ".", "stdout", dataname+".raw")
     
     # we're done
+    print(10*'-', summary, 'Shutting down')
     ec.shutdown()
+
+def main():
+
+#    logging.getLogger('sshfuncs').setLevel(logging.DEBUG)
+#    logging.getLogger('application').setLevel(logging.DEBUG)
+
+    parser = ArgumentParser()
+    # select gwhost and credentials
+    parser.add_argument("-p", "--production", dest='production', action='store_true',
+                        default=False, help="Run in preplab")
+
+    # select sender and receiver nodes
+    parser.add_argument("-r", "--receivers", action='append', default=[],
+                        help="hostnames for the receiver nodes, additive")
+    parser.add_argument("-s", "--senders", action='append', default=[],
+                        help="hostnames for the sender node, additive")
+    
+    # select how many packets, and how often they are sent
+    parser.add_argument("-a", "--packets", type=int, default=10000,
+                        help="nb of packets to send")
+    parser.add_argument("-i", "--size", type=int, default=100,
+                        help="packet size in bytes")
+    parser.add_argument("-e", "--period", type=int, default=1000,
+                        help="time between packets in micro-seconds")
+
+    # partial runs, dry runs
+    parser.add_argument("-n", "--dry-run", action='store_true',
+                        default=False, help="Show experiment context and exit - do nothing")
+    args = parser.parse_args()
+
+    # get credentials, depending on target testbed (preplab or production chamber)
+    gwhost, gwuser, key = credentials(args.production)
+
+    packets = args.packets
+    size = args.size
+    period = args.period
+
+    # nodes to use
+    if not args.receivers or not args.senders:
+        parser.print_help()
+        exit(1)
+
+    def flatten(grandpa):
+        return [x for father in grandpa for x in father if x]
+    def select_nodes(parser_args):
+        """
+        normalize a list of incoming nodenames
+        """
+        nodenames = []
+        for arg in parser_args:
+            args = [ arg ]
+            args = flatten([ arg.split(' ') for arg in args])
+            args = flatten([ arg.split(',') for arg in args])
+            args = [ arg.replace('fit', '') for arg in args]
+            args = [ int(arg) for arg in args ]
+            args = [ "fit{:02d}".format(arg) for arg in args]
+            nodenames += args
+        return nodenames
+
+    receivernames = select_nodes(args.receivers)
+    sendernames = select_nodes(args.senders)
+
+    if args.dry_run:
+        print(10*'-', "Using gateway {gwhost} with account {gwuser} and key {key}"
+              .format(**locals()))
+    for sendername in sendernames:
+        for receivername in receivernames:
+            ########## dry run : just display context
+            if args.dry_run:
+                print(4*'-', "{sendername} => {receivername}, "
+                      "Sending {packets} packets, one each {period} micro-seconds"
+                      .format(**locals()))
+            else:
+                one_run(gwhost, gwuser, key, sendername, receivername, packets, size, period)
 
 if __name__ == '__main__':
     main()

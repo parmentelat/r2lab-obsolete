@@ -11,9 +11,9 @@
 # angle-measure.sh init-receiver channel bandwidth
 # ditto
 #
-# angle-measure.sh run-sender packets period
+# angle-measure.sh run-sender packets size period
 #
-# angle-measure.sh run-receiver packets period
+# angle-measure.sh run-receiver packets size period
 
 # we prefer to have the output of set -x go into stderr
 # mostly so that we can isolate the receiver stdout as raw data
@@ -177,19 +177,20 @@ function init-receiver() {
 function run-sender () {
     # 2 arguments are required
     packets=$1; shift
+    size=$1; shift
     period=$1; shift
 
-    echo "Sending $packets packets with period $period us"
+    echo "Sending $packets packets $size-long with period $period us"
 
     echo $(date) - begin
     set -x
     # random_packets uses the mon0 interface which is hard-wired in the binary
-    /root/linux-80211n-csitool-supplementary/injection/random_packets $packets 100 1 $period
+    /root/linux-80211n-csitool-supplementary/injection/random_packets $packets $size 1 $period
     echo '[END]'
     set +x
     # which means:
     # * send $packets packets
-    # * of 100 bytes each
+    # * of $size bytes each
     # * 1: on the injection MAC
     # * each $period microseconds 
     echo $(date) - end    
@@ -202,6 +203,7 @@ function run-sender () {
 function run-receiver () {
     # 2 arguments are required
     packets=$1; shift
+    size=$1; shift
     period=$1; shift
 
     # estimate experiment duration
