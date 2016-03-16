@@ -213,7 +213,7 @@ function run-receiver () {
     >&2 echo "Recording CSI data for $duration seconds"
 
     >&2 echo $(date) - begin 
-    /root/linux-80211n-csitool-supplementary/netlink/log_to_file receiver.raw &
+    >&2 /root/linux-80211n-csitool-supplementary/netlink/log_to_file receiver.raw &
     # which means we log indefinitely the csi data into file receiver.raw
     sleep $duration
     >&2 echo $(date) - end
