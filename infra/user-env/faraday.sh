@@ -29,11 +29,8 @@ function doc-admin () {
 
 function help-nodes () { echo -e $_doc_nodes; }
 function help-alt () { echo -e $_doc_alt; }
-function help () { help-nodes; help-alt; }
 function help-admin () { echo -e $_doc_admin; }
-doc-alt help-admin "list admin-oriented commands"
-function help-all () { help; help-admin; }
-doc-admin help-all "list all known commands : help + help-admin"
+function help () { help-nodes; }
 
 #################### contextual data
 function bemol () { hostname | grep -q bemol; }
@@ -236,21 +233,45 @@ function _get_all_nodes () {
 function all-nodes () { nodes $(_get_all_nodes); }
 doc-nodes all-nodes "select all available nodes"
 
-# releases
-# -> show fedora/debian releases for $NODES
-# releases 12 14
-# -> show fedora/debian releases for fit12 fit14 - does not change NODES
-function releases () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
-    for node in $(norm $nodes); do
-	echo ==================== $node
-	ssh root@$node "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release; gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
-    done
+# nodes-on : filter nodes that are on from args, or NODES if not provided
+function show-nodes-on () {
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
+    rhubarbe status $nodes | grep 'on' | cut -d: -f1 | sed -e s,reboot,fit,
 }
+doc-nodes show-nodes-on "display only selected nodes that are ON - does not change selection"
+function focus-nodes-on () {
+    nodes $(show-nodes-on)
+}
+doc-nodes focus-nodes-on "restrict current selection to nodes that are ON"
 
-alias rel=releases
-doc-nodes releases "(alias rel) use ssh to display current release (ubuntu or fedora + gnuradio)"
+### first things first
+alias rleases="rhubarbe leases"
+doc-nodes rleases "\tdisplay current leases (rhubarbe leases)"
 
+#
+alias ron="rhubarbe on"
+alias on=ron
+doc-nodes "(r)on" "\tturn selected nodes on (rhubarbe on)"
+alias roff="rhubarbe off"
+alias off=off
+doc-nodes "(r)off" "\tturn selected nodes off (rhubarbe off)"
+alias rreset="rhubarbe reset"
+alias reset=reset
+doc-nodes "(r)reset" "reset selected nodes (rhubarbe reset)"
+alias rstatus="rhubarbe status"
+doc-nodes "rstatus" "show status (on or off) selected nodes (rhubarbe status)"
+alias st=rstatus
+doc-nodes "st" "\tlike rstatus (status is a well-known command on ubuntu)"
+alias rinfo="rhubarbe info"
+alias info=rinfo
+doc-nodes "(r)info" "\tget version info from selected nodes CMC (rhubarbe info)"
+alias rload="rhubarbe load"
+doc-nodes rload "\tload image (specify with -i) on selected nodes (rhubarbe load)"
+alias rsave="rhubarbe save"
+doc-nodes rsave "\tsave image from one node (rhubarbe save)"
+alias rwait="rhubarbe wait"
+doc-nodes rwait "\twait for nodes to be reachable through ssh (rhubarbe wait)"
+alias rstatus="rhubarbe status"
 # map command [args]
 # -> run command on $NODES
 # e.g. map hostname
@@ -263,19 +284,7 @@ function map () {
 }
 doc-nodes map "\trun an ssh command on all selected nodes"
 
-#
-alias rload="rhubarbe load"
-doc-nodes rload "\tload image (specify with -i) on selected nodes"
-alias rsave="rhubarbe save"
-doc-nodes rsave "\tsave image from one node"
-alias rwait="rhubarbe wait"
-doc-nodes rwait "\twait for nodes to be reachable through ssh"
-alias rstat="rhubarbe status"
-doc-nodes rstat "\tshow if nodes are turned on or off"
-alias rimages="rhubarbe images"
-doc-nodes rimages "\tdisplay available images"
-alias rleases="rhubarbe leases"
-doc-nodes rleases "\tdisplay current leases"
+doc-nodes rimages "\tdisplay available images (rhubarbe images)"
 
 alias load-fedora="rload -i fedora"
 doc-nodes load-fedora alias
@@ -306,6 +315,21 @@ doc-nodes load-ubuntu "upload latest ubuntu image on all nodes"
 doc-nodes load-fedora "... latest fedora image"
 doc-nodes load-gnuradio "... latest recommended gnuradio image"
 
+# releases
+# -> show fedora/debian releases for $NODES
+# releases 12 14
+# -> show fedora/debian releases for fit12 fit14 - does not change NODES
+function releases () {
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    for node in $(norm $nodes); do
+	echo ==================== $node
+	ssh root@$node "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release; gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
+    done
+}
+
+alias rel=releases
+doc-nodes releases "(alias rel) use ssh to display current release (ubuntu or fedora + gnuradio)"
+
 function prefix () {
     token="$1"; shift
     sed -e "s/^/$token/"
@@ -319,17 +343,17 @@ function -curl () {
     done
 }
 
-# showstatus
-# display status on arguments, or $NODES if not provided
-alias st="rhubarbe status"
-doc-nodes st "\tshow node CMC status (rhubarbe status)"
-# idem for actually doing stuff
-function reset () { -curl reset "$@" ; }
-doc-nodes reset "\treset node through its CMC"
-function off () { -curl off "$@" ; }
-doc-nodes off "\tturn off node through its CMC"
-function on () { -curl on "$@" ; }
-doc-nodes on "\tturn on node through its CMC"
+# using curl - just in case - should not be used
+function con () { -curl on "$@" ; }
+doc-alt con "\tturn on node through its CMC - using curl"
+function coff () { -curl off "$@" ; }
+doc-alt coff "\tturn off node through its CMC - using curl"
+function creset () { -curl reset "$@" ; }
+doc-alt creset "\treset node through its CMC - using curl"
+alias cstatus="-curl status "$@" ; "
+doc-alt cstatus "\tshow node CMC status - using curl"
+alias cinfo="-curl info "$@" ; "
+doc-alt cinfo "\tshow node CMC info - using curl"
 
 # function 'wn' is part of the 'miscell' bash component
 function wait () {
@@ -338,18 +362,8 @@ function wait () {
 	wn $node
     done
 }
-doc-nodes wait "\twait for all nodes to respond to ping on their control interface"
-
-# nodes-on : filter nodes that are on from args, or NODES if not provided
-function show-nodes-on () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
-    rhubarbe status $nodes | grep 'on' | cut -d: -f1 | sed -e s,reboot,fit,
-}
-doc-nodes show-nodes-on "display only selected nodes that are ON - does not change selection"
-function focus-nodes-on () {
-    nodes $(show-nodes-on)
-}
-doc-nodes focus-nodes-on "restrict current selection to nodes that are ON"
+# don't document as it's probably not avail. to users - see rwait
+#doc-nodes wait "\twait for all nodes to respond to ping on their control interface"
 
 ####################
 # reload these tools
@@ -458,9 +472,9 @@ function -nextboot () {
 }
 
 alias nextboot-list="-nextboot list"
-doc-nodes nextboot-list "display pxelinux symlink, if found"
+doc-admin nextboot-list "display pxelinux symlink, if found"
 alias nextboot-clean="-nextboot clean"
-doc-nodes nextboot-clean "remove any pxelinux symlink for selected nodes"
+doc-admin nextboot-clean "remove any pxelinux symlink for selected nodes"
 alias nextboot-frisbee="-nextboot pxefrisbee"
 doc-admin nextboot-frisbee "\n\t\tcreate pxelinux symlink so that node reboots on the pxefrisbee image"
 alias nextboot-vivid="-nextboot pxevivid"
@@ -538,7 +552,7 @@ alias ss="-do-first ssh"
 alias tn="-do-first telnet"
 
 doc-nodes ss "\tEnter first selected node using ssh\n\t\targ if present is taken as a node, not a command" 
-doc-nodes tn "\tEnter first selected node using telnet - ditto" 
+doc-admin tn "\tEnter first selected node using telnet - ditto" 
 
 #################### manually run a old or new frisbee server
 function serve_ubuntu_old () {
@@ -586,7 +600,7 @@ function net-names () {
 	ssh root@$node ip addr show | grep UP | grep -v 'lo:'
     done
 }
-doc-nodes net-names "display network interface names"
+doc-admin net-names "display network interface names"
 
 function chmod-private-key () {
     chmod 600 ~/.ssh/id_rsa
