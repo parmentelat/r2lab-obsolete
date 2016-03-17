@@ -178,7 +178,7 @@ function run-sender () {
 
     echo "Sending $packets packets $size-long with period $period us"
 
-    echo $(date) - begin
+    echo $(date) - begin traffic
     set -x
     # random_packets uses the mon0 interface which is hard-wired in the binary
     /root/linux-80211n-csitool-supplementary/injection/random_packets $packets $size 1 $period
@@ -189,10 +189,14 @@ function run-sender () {
     # * of $size bytes each
     # * 1: on the injection MAC
     # * each $period microseconds 
-    echo $(date) - end
+    echo $(date) - end traffic
 
     # unload driver to be 100% sure we will be silent
+    echo unloading intel drivers
     modprobe -r iwlwifi mac80211 cfg80211
+
+    # for extra safety
+    sleep 60
 
 }
 
