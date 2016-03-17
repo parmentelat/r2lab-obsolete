@@ -253,13 +253,13 @@ alias ron="rhubarbe on"
 alias on=ron
 doc-nodes "(r)on" "\tturn selected nodes on (rhubarbe on)"
 alias roff="rhubarbe off"
-alias off=off
+alias off=roff
 doc-nodes "(r)off" "\tturn selected nodes off (rhubarbe off)"
 alias rreset="rhubarbe reset"
-alias reset=reset
+alias reset=rreset
 doc-nodes "(r)reset" "reset selected nodes (rhubarbe reset)"
 alias rstatus="rhubarbe status"
-doc-nodes "rstatus" "show status (on or off) selected nodes (rhubarbe status)"
+doc-nodes "rstatus" "\tshow status (on or off) selected nodes (rhubarbe status)"
 alias st=rstatus
 doc-nodes "st" "\tlike rstatus (status is a well-known command on ubuntu)"
 alias rinfo="rhubarbe info"
