@@ -19,7 +19,7 @@ skip_header: yes
     <div class="col-md-2">
       <div id="wrap">
         <div id="my-slices">
-          <h4 align="center">drag & drop slices</h4>
+          <h4 align="center">drag & drop booking</h4>
         </div>
         <div style="clear:both"></div>
       </div>
@@ -52,4 +52,3 @@ In any case, please make sure to save your experiments once you are done, as the
 </div>
 
 </div>
-

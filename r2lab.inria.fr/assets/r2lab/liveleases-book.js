@@ -64,7 +64,7 @@ $(document).ready(function() {
       //Events
       // this is fired when a selection is made
       select: function(start, end, event, view) {
-        if (isPastDate(start)) {
+        if (isPastDate(end)) {
           $('#calendar').fullCalendar('unselect');
           sendMessage('This timeslot is in the past!');
           return false;
@@ -92,7 +92,7 @@ $(document).ready(function() {
       drop: function(date, event, view) {
         var start = date;
         var end   = moment(date).add(60, 'minutes');
-        if (isPastDate(start)) {
+        if (isPastDate(end)) {
           $('#calendar').fullCalendar('unselect');
           sendMessage('This timeslot is in the past!');
           return false;
@@ -124,7 +124,7 @@ $(document).ready(function() {
             revertFunc();
         }
         else {
-          if (isPastDate(event.start)) {
+          if (isPastDate(event.end)) {
             revertFunc();
             sendMessage('This timeslot is in the past!');
           } else {
@@ -208,9 +208,9 @@ $(document).ready(function() {
   }
 
 
-  function isPastDate(start){
+  function isPastDate(end){
     var past = false;
-    if(moment().diff(start, 'minutes') > 0){
+    if(moment().diff(end, 'minutes') > 0){
       past = true;
     }
     return past;
@@ -803,7 +803,7 @@ $(document).ready(function() {
     var knew = [];
     var slices = $("#my-slices");
 
-    slices.html('<h4 align="center">drag & drop slices</h4>');
+    slices.html('<h4 align="center">drag & drop booking</h4>');
 
     $.each(leases, function(key,val){
       val = shortName(val);
