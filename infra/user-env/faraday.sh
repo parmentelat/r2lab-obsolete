@@ -284,6 +284,7 @@ function map () {
 }
 doc-nodes map "\trun an ssh command on all selected nodes"
 
+alias rimages="rhubarbe images"
 doc-nodes rimages "\tdisplay available images (rhubarbe images)"
 
 alias load-fedora="rload -i fedora"
