@@ -190,6 +190,10 @@ function run-sender () {
     # * 1: on the injection MAC
     # * each $period microseconds 
     echo $(date) - end
+
+    # unload driver to be 100% sure we will be silent
+    modprobe -r iwlwifi mac80211 cfg80211
+
 }
 
 
