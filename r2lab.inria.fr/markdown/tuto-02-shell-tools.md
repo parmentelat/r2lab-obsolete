@@ -39,6 +39,8 @@ In case you're unsure about the current status of reservation, you can list rese
 
     rleases
 
+This is a poorman's tool, as of course [the scheduler](/book.md) will give you that same information in a much nicer way.
+
 ### Selecting nodes
 
 Most of the time, you will want to manage a selected subset of nodes. There's a simple mechanism in place so you don't need to specify your nodes for each and every command, by defining the environment variable `NODES`. For this the `nodes` command is your friend
