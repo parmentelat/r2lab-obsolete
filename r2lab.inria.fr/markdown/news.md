@@ -1,5 +1,31 @@
 title: Latest news, infos and incidents...
-tab: blog
+tab: news
+---
+
+### March 17
+
+* The 3d printed boxes are ready to ship
+
+### Feb 28
+
+* Start progressive rollout of a new layout for antennas
+* Antennas to be aligned in a row, on a north-south line (relative to the livemap, not geographically)
+* And spaces on a 3cm basis (although this seems a little too wide)
+
+### Feb 25
+
+* Start Progressive deployment of Intel 5300 cards.
+  * Target is one Atheros and one Intel on each node
+
+### Feb 20
+* Ordered 3d-printed boxes to contain cards as they cannot be seated inside the box
+
+### Feb 2
+
+* Reception of USRP-oriented extensions of the CMC cards
+* Related firmware version is 3.2.
+* Deployed on only a couple nodes for now
+---
 ---
 
 ### December 20, 2015
