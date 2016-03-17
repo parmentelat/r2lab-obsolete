@@ -15,14 +15,10 @@
 #
 # angle-measure.sh run-receiver packets size period
 
-# we prefer to have the output of set -x go into stderr
-# mostly so that we can isolate the receiver stdout as raw data
-# without these verbose statements polluting the output
-export BASH_XTRACEFD=2
 set -x
 
 
-##############################
+############################## UTILITIES for managing drivers and interfaces
 # helper functions
 # mostly so that
 # (*) we figure the name of the intel wireless interfaces
@@ -193,7 +189,7 @@ function run-sender () {
     # * of $size bytes each
     # * 1: on the injection MAC
     # * each $period microseconds 
-    echo $(date) - end    
+    echo $(date) - end
 }
 
 
@@ -210,15 +206,14 @@ function run-receiver () {
     duration=$(( $packets * $period / 1000000))
     # add a 3 seconds for safety
     duration=$(( duration + 3))
-    >&2 echo "Recording CSI data for $duration seconds"
+    echo "Recording CSI data for $duration seconds"
 
-    >&2 echo $(date) - begin 
-    >&2 /root/linux-80211n-csitool-supplementary/netlink/log_to_file receiver.raw &
-    # which means we log indefinitely the csi data into file receiver.raw
+    echo $(date) - begin 
+    /root/linux-80211n-csitool-supplementary/netlink/log_to_file rawdata &
+    # which means we log indefinitely the csi data into file rawdata
     sleep $duration
-    >&2 echo $(date) - end
-    cat receiver.raw
-    >&2 md5sum receiver.raw
+    echo $(date) - end
+    md5sum rawdata
 }
 
 ########################################

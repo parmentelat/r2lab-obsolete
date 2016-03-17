@@ -44,12 +44,9 @@ from nepi.execution.resource import ResourceAction, ResourceState
 
 ########## helpers
 # this can run on the prep-lab for dry runs
-def credentials(production):
+def credentials():
     "returns a triple (hostname, username, key)"
-    if production:
-        return 'faraday.inria.fr', 'onelab.inria.mario.tutorial', '~/.ssh/onelab.private'
-    else:
-        return 'bemol.pl.sophia.inria.fr', 'regular', '~/.ssh/onelab.private'
+    return 'faraday.inria.fr', 'onelab.inria.mario.tutorial', '~/.ssh/onelab.private'
     
 ########## how and where to store results
 def get_app_trace(ec, app, appname, rundir, tracename, outfile):
@@ -65,11 +62,11 @@ def get_app_stdout(ec, app, appname, rundir):
     get_app_trace(ec, app, appname, rundir, "stdout", "{}.out".format(appname))
 
 ########## one experiment
-def one_run(gwhost, gwuser, key, sendername, receivername, packets, size, period):
+def one_run(gwhost, gwuser, key, sendername, receivername, packets, size, period, storage):
     # we keep all 'environment' data for one run in a dedicated subdir
     # using this name scheme to store results locally
-    dataname = "csi-{}-{}-{}-{}-{}".format(
-        receivername, sendername, packets, size, period)
+    dataname = os.path.join(storage, "csi-{}-{}-{}-{}-{}"
+                            .format(receivername, sendername, packets, size, period))
 
     summary = "{} ==> {} {}x{} each {}us".format(sendername, receivername, packets, size, period)
 
@@ -135,7 +132,6 @@ def one_run(gwhost, gwuser, key, sendername, receivername, packets, size, period
         # beware of curly brackets with format
         command = "${{CODE}} run-receiver {} {} {}".format(packets, size, period),
         autoDeploy = True,
-        splitStderr = True,
         connectedTo = receiver)
 
     # run
@@ -147,12 +143,11 @@ def one_run(gwhost, gwuser, key, sendername, receivername, packets, size, period
     get_app_stdout(ec, init_sender, "sender-init", dataname)
     get_app_stdout(ec, init_receiver, "receiver-init", dataname)
     get_app_stdout(ec, run_sender, "sender-run", dataname)
-    get_app_trace(ec, run_receiver, "receiver-run", dataname,
-                  "stderr", "receiver-run.err")
+    get_app_stdout(ec, run_receiver, "receiver-run", dataname)
     # raw data gets to go in the current directory as it's more convenient to manage
     # also it's safe to wait for a little while
     time.sleep(5)
-    get_app_trace(ec, run_receiver, "receiver-run", ".", "stdout", dataname+".raw")
+    get_app_trace(ec, run_receiver, "receiver-run", ".", "rawdata", dataname+".raw")
     
     # we're done
     print(10*'-', summary, 'Shutting down')
@@ -164,9 +159,6 @@ def main():
 #    logging.getLogger('application').setLevel(logging.DEBUG)
 
     parser = ArgumentParser()
-    # select gwhost and credentials
-    parser.add_argument("-p", "--production", dest='production', action='store_true',
-                        default=False, help="Run in preplab")
 
     # select sender and receiver nodes
     parser.add_argument("-r", "--receivers", action='append', default=[],
@@ -174,6 +166,8 @@ def main():
     parser.add_argument("-s", "--senders", action='append', default=[],
                         help="hostnames for the sender node, additive")
     
+    parser.add_argument("-d", "--storage-dir", default=".",
+                        help="specify a directory for storing all results")
     # select how many packets, and how often they are sent
     parser.add_argument("-a", "--packets", type=int, default=10000,
                         help="nb of packets to send")
@@ -187,8 +181,8 @@ def main():
                         default=False, help="Show experiment context and exit - do nothing")
     args = parser.parse_args()
 
-    # get credentials, depending on target testbed (preplab or production chamber)
-    gwhost, gwuser, key = credentials(args.production)
+    # get credentials
+    gwhost, gwuser, key = credentials()
 
     packets = args.packets
     size = args.size
@@ -227,10 +221,10 @@ def main():
             ########## dry run : just display context
             if args.dry_run:
                 print(4*'-', "{sendername} => {receivername}, "
-                      "Sending {packets} packets, one each {period} micro-seconds"
+                      "Sending {packets} packets, {size} bytes long, every {period} micro-seconds"
                       .format(**locals()))
             else:
-                one_run(gwhost, gwuser, key, sendername, receivername, packets, size, period)
+                one_run(gwhost, gwuser, key, sendername, receivername, packets, size, period, args.storage_dir)
 
 if __name__ == '__main__':
     main()
