@@ -14,12 +14,7 @@ Once you have [obtained a slice account on R2LAB (faraday)](tuto-01-registration
 
 From your bash account on the gateway, you have a few very simple but handy tools at your disposal for the early steps of your experiment, like seeing the nodes status, turning them on or off, and loading images.
 
-
-    onelab.inria.mario.tutorial@faraday:~$ help
-    #################### commands that work on a selection of nodes
-    nodes		show or define currently selected nodes; eg nodes 1-10,12 13 ~5
-    nodes-add	(alias n+) add nodes to current selection
-    etc..
+    help
 
 ### Addressing
 
