@@ -424,22 +424,22 @@ $(document).ready(function() {
       setActionsQueue('edit', event);
       sendBroadcast('edit', event);
     }
-    //refreshLeases();
+    refreshLeases();
   }
 
 
-  function go_refresh() {
-    if(! wait_for_show) {
-      setTimeout(function(){
-        wait_for_show = true;
-        refreshLeases();
-      },3000);
-    } else {
-      setTimeout(function(){
-        go_refresh();
-      },2000);
-    }
-  }
+  // function go_refresh() {
+  //   if(! wait_for_show) {
+  //     setTimeout(function(){
+  //       wait_for_show = true;
+  //       refreshLeases();
+  //     },3000);
+  //   } else {
+  //     setTimeout(function(){
+  //       go_refresh();
+  //     },2000);
+  //   }
+  // }
 
 
   function getLocalId(title, start, end){
@@ -500,7 +500,6 @@ $(document).ready(function() {
     post_lease_request(shiftAction, request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
         wait_for_show = false;
-        go_refresh();
         //console.log(request);
       }
     });
@@ -896,8 +895,7 @@ $(document).ready(function() {
     setCurrentSliceBox(getCurrentSliceName());
 
     listenBroadcast();
-    go_refresh();
-    //refreshLeases();
+    refreshLeases();
 
     $('.fc-day-header').html('today');
 
