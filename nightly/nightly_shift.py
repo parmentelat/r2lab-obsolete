@@ -895,5 +895,83 @@ def historic_file_in_array():
 
 
 
+def treat_historic_file(data):
+    """split in single array the dates and nodes from the nigthly file. Data must be ['2016-01-22: 27, 09, 29', '2016-01-23: 27',...] """
+    chars_to_remove = [':', ',']
+    #all dates summarized iin one array
+    date = []
+    #all nodes summarized iin one array
+    node = []
+
+    for line in data:
+        line = line.translate(None, ''.join(chars_to_remove))
+        line = line.split()
+        date.append(line[0])
+        del line[0]
+        node.append(line)
+    node = reduce(lambda c, x: c + x, node, [])
+    return node
+
+
+
+
+def generate_graph(data_nodes, nodes=None):
+    """generate each node graph. data_nodes param come from treat_historic_file func. """
+    lines = ''
+    if nodes is None:
+        nodes = range(1,38)
+    back_color = '#ffb1b1'
+    data_nodes = map(int, data_nodes)
+    table_width = 600
+    final_with  = table_width + 30 #the first and last collunm widht sum
+    total = len(data_nodes)
+
+    header = '\n \
+    <br>\n \
+    <hr>\n \
+    <table cellspacing="1" style="padding: 10px;">\n \
+        <tr>\n \
+          <td colspan="3">The weekly statistic summary<sup style="font:9px Arial, Tahoma, Sans-serif; color: red;"><b> beta</b></sup></td>\n \
+        </tr>\n \
+        <tr>\n \
+          <td colspan="3"><br></td>\n \
+        </tr>\n \
+        <tr style="width:515px; display: block;">\n \
+          <td style="font:11px Arial, Tahoma, Sans-serif; width: 10px; text-align: left;"><img src="http://r2lab.inria.fr/assets/img/arrow.png"/ style="width:35px;height:35px;"></td>\n \
+          <td colspan="9" style="font:14px Arial, Tahoma, Sans-serif; vertical-align: middle; text-align: left;"> Failed nodes since <b>22/01/2016</b>!</span></td>\n \
+        </tr>\n \
+        <tr><td colspan=3><br></td>\n \
+        </tr>\n \
+    '
+
+    line = '<tr style="width:{}px; display: block;">\n \
+              <td style="font: 9px sans-serif; text-align: left; width: 15px;">[NODE]</td>\n \
+              <td style="font: 9px sans-serif; border-right: 0px solid #9e9d9d; border-bottom: 0px solid #9e9d9d; border-top: 0px solid #9e9d9d; border-left: 1px solid #9e9d9d; background-color: {}; text-align: right; padding: 0px; color: black; height: 5px; width: [WIDTH]px;"></td>\n \
+              <td style="font: 9px sans-serif; border-right: 1px solid #9e9d9d; border-bottom: 0px dashed #9e9d9d; border-top: 0px dashed #9e9d9d; border-left: 0px; background-color: white; text-align: right; padding: 0px; color: black; height: 5px; width: [DIFF WIDTH]px;"></td>\n \
+              <td style="font: 9px sans-serif; text-align: left; width: 15px;">&nbsp;[PERCENT]%</td>\n \
+            </tr>\n \
+            '.format(final_with, back_color)
+
+    footer = '</table>'
+
+    for node in nodes:
+        value = data_nodes.count(node)
+        percent = int(round((value*100)/total))
+        diff_percent = 100 - percent
+        width = percent * (table_width/100)
+        diff_width = table_width - 100 - width
+        temp_line = line.replace("[NODE]", str(node))
+        temp_line = temp_line.replace("[DIFF WIDTH]", str(diff_width))
+        temp_line = temp_line.replace("[WIDTH]", str(width))
+        temp_line = temp_line.replace("[PERCENT]", str(percent))
+
+        if (percent > 0):
+            lines = lines + temp_line
+
+    return header+lines+footer
+
+
+
+
 if __name__ == "__main__":
     main(args)
