@@ -12,7 +12,7 @@
 - how it works
 - multiple antennas on the receiver side
 - the polaris node
-- 2 major steps : data collection & post-processing
+- 2 major steps : experiment & post-processing
 
 # Part 3: Running it
 
@@ -21,8 +21,10 @@
 - turning off all nodes
 - burning images
 - running the experiment
-- digging in the code
+- digging in the code, written using NEPI
 
 # Part 4: Postprocessing
 
-- the results
+- postprocessing 
+- data vizualisation
+- using Matlab in this specific case
