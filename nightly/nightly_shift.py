@@ -936,7 +936,7 @@ def generate_graph(data_nodes, nodes=None):
         <tr>\n \
           <td colspan="3"><br></td>\n \
         </tr>\n \
-        <tr style="width:515px; display: block;">\n \
+        <tr style="width:630px; display: block;">\n \
           <td style="font:11px Arial, Tahoma, Sans-serif; width: 10px; text-align: left;"><img src="http://r2lab.inria.fr/assets/img/arrow.png"/ style="width:35px;height:35px;"></td>\n \
           <td colspan="9" style="font:14px Arial, Tahoma, Sans-serif; vertical-align: middle; text-align: left;"> Failed nodes since <b>22/01/2016</b>!</span></td>\n \
         </tr>\n \
