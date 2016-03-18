@@ -547,7 +547,7 @@ function -do-first () {
 	node=$(echo $NODES | awk '{print $1;}')
     fi
     echo "Running $command $node"
-    $command $node
+    $command -l root $node
 }
 alias ss="-do-first ssh"
 alias tn="-do-first telnet"
