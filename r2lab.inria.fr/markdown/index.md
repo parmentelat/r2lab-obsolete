@@ -20,7 +20,7 @@ widget_login_template: r2lab/widget_login.html
       <span style="font-size:6em;" class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
       <h2>Open Tools</h2>
       <p>Deploy and run your experiments using NEPI: Network Experiment Programming Interface</p>
-      <p><a class="btn btn-default" href="tools.md#main" role="button">view details »</a></p>
+      <p><a class="btn btn-default in_blue" href="tools.md#main" role="button">view details »</a></p>
     </div><!-- /.col-lg-4 -->
   </div><!-- /.row -->
 

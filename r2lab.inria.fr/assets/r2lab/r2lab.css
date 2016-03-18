@@ -46,6 +46,15 @@ a.button.logout { background-color: #f69a97; }
 }
 
 /* button link */
+a.in_blue:hover {
+    color: #00A0D0;
+}
+a.in_blue:link {
+    color: #00A0D0;
+}
 a.in_blue:visited {
+    color: #00A0D0;
+}
+a.in_blue:active {
     color: #00A0D0;
 }
