@@ -16,7 +16,6 @@ $(document).ready(function() {
   var version             = '1.25';
   var refresh             = true;
   var currentTimezone     = 'local';
-  var wait_for_show       = false;
 
   function buildCalendar(theEvents) {
     var today  = moment().format("YYYY-MM-DD");
@@ -376,8 +375,8 @@ $(document).ready(function() {
   // via django
   function refreshLeases(){
     msg = "INIT";
-  	console.log("sending on chan-leases-request -> " + msg);
-  	socket.emit('chan-leases-request', msg);
+    console.log("sending on chan-leases-request -> " + msg);
+    socket.emit('chan-leases-request', msg);
   }
 
 
@@ -417,39 +416,29 @@ $(document).ready(function() {
 
 
   function updateLeases(action, event){
-
-    wait_for_show = true;
-
     if (action == 'addLease') {
       setActionsQueue('add', event);
       sendBroadcast('add', event);
+      refreshLeases();
     }
     else if (action == 'delLease'){
       if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
         removeElementFromCalendar(event.id);
+        setTimeout(function(){
+          refreshLeases();
+        }, 2000);
       }
       else if(event.title.indexOf('(pending)') == -1) {
         setActionsQueue('del', event);
+        setTimeout(function(){
+          refreshLeases();
+        }, 2000);
       }
     }
     else if (action == 'editLease'){
       setActionsQueue('edit', event);
       sendBroadcast('edit', event);
-    }
-    //refreshLeases();
-  }
-
-
-  function go_refresh() {
-    if(! wait_for_show) {
-      setTimeout(function(){
-        wait_for_show = true;
-        refreshLeases();
-      },3000);
-    } else {
-      setTimeout(function(){
-        go_refresh();
-      },2000);
+      refreshLeases();
     }
   }
 
@@ -512,8 +501,6 @@ $(document).ready(function() {
     post_lease_request(shiftAction, request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
           wait_for_show = false;
-          go_refresh();
-          //console.log(request);
       }
     });
   }
@@ -908,8 +895,7 @@ $(document).ready(function() {
     setCurrentSliceBox(getCurrentSliceName());
 
     listenBroadcast();
-    go_refresh();
-    // refreshLeases();
+    refreshLeases();
 
     // $('.fc-day-header').html('today');
 
