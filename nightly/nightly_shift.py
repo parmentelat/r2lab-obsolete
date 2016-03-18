@@ -973,5 +973,23 @@ def generate_graph(data_nodes, nodes=None):
 
 
 
+def get_statistic():
+    """ get the graph each monday  """
+    from datetime import date
+    import calendar
+    graph = ''
+
+    today = date.today()
+    week_day = calendar.day_name[today.weekday()]
+    if week_day.lower() == 'monday':
+        h = historic_file_in_array()
+        d = treat_historic_file(h)
+        graph = generate_graph(d)
+
+    return graph
+
+
+
+
 if __name__ == "__main__":
     main(args)
