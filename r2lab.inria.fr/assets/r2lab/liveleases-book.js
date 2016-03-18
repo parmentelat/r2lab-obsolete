@@ -44,6 +44,7 @@ $(document).ready(function() {
             selectable: false,
             editable: false,
             droppable: false,
+            dblclick: false,
         }
       },
       defaultTimedEventDuration: '01:00:00',
@@ -120,21 +121,26 @@ $(document).ready(function() {
 
       // this happens when the event is dragged moved and dropped
       eventDrop: function(event, delta, revertFunc) {
-        if (!confirm("Confirm this change?")) {
-            revertFunc();
-        }
-        else {
-          if (isPastDate(event.end)) {
-            revertFunc();
-            sendMessage('This timeslot is in the past!');
-          } else {
-            newLease = createLease(event);
-            newLease.title = pendingName(event.title);
-            newLease.editable = false;
-            newLease.textColor = color_pending;
-            removeElementFromCalendar(newLease.id);
-            updateLeases('editLease', newLease);
+        var view = $('#calendar').fullCalendar('getView').type;
+        if(view != 'month'){
+          if (!confirm("Confirm this change?")) {
+              revertFunc();
           }
+          else {
+            if (isPastDate(event.end)) {
+              revertFunc();
+              sendMessage('This timeslot is in the past!');
+            } else {
+              newLease = createLease(event);
+              newLease.title = pendingName(event.title);
+              newLease.editable = false;
+              newLease.textColor = color_pending;
+              removeElementFromCalendar(newLease.id);
+              updateLeases('editLease', newLease);
+            }
+          }
+        }else {
+          revertFunc();
         }
       },
 
@@ -152,6 +158,8 @@ $(document).ready(function() {
 
       // this fires when an event is rendered
       eventRender: function(event, element) {
+        var view = $('#calendar').fullCalendar('getView').type;
+        if(view != 'month'){
         element.bind('dblclick', function() {
           if (isMySlice(event.title)) {
             newLease = createLease(event);
@@ -163,7 +171,7 @@ $(document).ready(function() {
             updateLeases('delLease', event);
           }
         });
-      },
+      }},
 
       // this is fired when an event is resized
       eventResize: function(event, jsEvent, ui, view, revertFunc) {
