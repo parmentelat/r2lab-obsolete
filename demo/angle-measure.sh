@@ -182,13 +182,13 @@ function run-sender () {
     set -x
     # random_packets uses the mon0 interface which is hard-wired in the binary
     /root/linux-80211n-csitool-supplementary/injection/random_packets $packets $size 1 $period
-    echo '[END]'
-    set +x
     # which means:
     # * send $packets packets
     # * of $size bytes each
     # * 1: on the injection MAC
     # * each $period microseconds 
+    set +x
+    
     echo $(date) - end traffic
 
     # unload driver to be 100% sure we will be silent
@@ -210,16 +210,30 @@ function run-receiver () {
     size=$1; shift
     period=$1; shift
 
-    # estimate experiment duration
-    duration=$(( $packets * $period / 1000000))
-    # add a 3 seconds for safety
-    duration=$(( duration + 3))
+    ### estimate experiment duration
+    # in theory overall duration is $packets * $period
+    # but in fact the time  for sending a packet must be included as well
+    # and with small periods this is substantially different
+    # we work around this problem by using a minimal period of 1ms per packet
+    minimum=1000
+    # compute min of period and minimum
+    actual_period=$(( $period <= $minimum ? $minimum : $period))
+    duration=$(( $packets * $actual_period / 1000000))
+    # then add another 30s for safety
+    duration=$(( duration + 30))
     echo "Recording CSI data for $duration seconds"
 
+    # for forensics
     echo $(date) - begin 
+    # start a job that logs indefinitely the csi data into file rawdata
     /root/linux-80211n-csitool-supplementary/netlink/log_to_file rawdata &
-    # which means we log indefinitely the csi data into file rawdata
+    # record its pid
+    pid=$!
+    # wait for the estimated duration
     sleep $duration
+    # kill the recording job
+    kill $pid
+    # for forensics
     echo $(date) - end
     md5sum rawdata
 }

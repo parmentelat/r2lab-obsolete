@@ -68,7 +68,8 @@ def one_run(gwhost, gwuser, key, sendername, receivername, packets, size, period
     dataname = os.path.join(storage, "csi-{}-{}-{}-{}-{}"
                             .format(receivername, sendername, packets, size, period))
 
-    summary = "{} ==> {} {}x{} each {}us".format(sendername, receivername, packets, size, period)
+    summary = "{} ==> {} {}x{} each {}us"\
+        .format(sendername, receivername, packets, size, period)
 
     ec = ExperimentController(exp_id="angle-measure")
 
