@@ -924,7 +924,7 @@ def generate_graph(data_nodes, nodes=None):
     data_nodes = map(int, data_nodes)
     table_width = 600
     final_with  = table_width + 30 #the first and last collunm widht sum
-    total = len(data_nodes)
+    total = len(historic_file_in_array())
 
     header = '\n \
     <br>\n \
