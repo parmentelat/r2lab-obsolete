@@ -514,9 +514,9 @@ def email_body():
           </tr>\n \
           [THE CONTENT]\n \
     		</table>\n \
-      <hr>\n \
+            {}\n \
       </body>\n \
-    </html>'
+    </html>'.format(get_statistic())
     return body
 
 
@@ -880,6 +880,17 @@ def now():
 def date(format='%Y-%m-%d'):
     """ Current date """
     return datetime.now().strftime(format)
+
+
+
+
+def historic_file_in_array():
+    """read db file from nigthly and put in array format. Returns ['2016-01-22: 27, 09, 29', '2016-01-23: 27',...] """
+    dir_name  = "/root/r2lab/nightly/"
+    file_name = "nightly.txt"
+    with open(dir_name+file_name) as f:
+        lines = f.read().splitlines()
+    return lines
 
 
 
