@@ -21,7 +21,8 @@ set -x
 ############################## UTILITIES for managing drivers and interfaces
 # helper functions
 # mostly so that
-# (*) we figure the name of the intel wireless interfaces
+# (*) we figure the name of the intel wireless interfaces wlan<n>
+# (*) we can wait for that device to be up
 # (*) we can gather a complete status of the setup for the record
 
 # http://unix.stackexchange.com/questions/41817/linux-how-to-find-the-device-driver-used-for-a-device/225496#225496?newreg=c865c93607124e70b9f530f2733aba05
@@ -124,8 +125,8 @@ function init-sender() {
     # init monitor interface
     iw mon0 set channel $channel $bandwidth
 
-    ### define the number of Space time streams and the number of Antenna for transmission
-    # original was using tee to broadcast on any number of files
+    ### define the number of Space time streams
+    # and the number of Antenna for transmission
     txs=$(find /sys -name monitor_tx_rate)
     for tx in $txs; do
 	echo tweaking $tx

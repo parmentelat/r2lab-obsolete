@@ -21,8 +21,8 @@ script code (angle-measure.sh) that gives the details of each of these steps
 on a single host (either sender or receiver)
 
 So e.g.
-angle-measure.sh init-sender 64 20MHz 
-would setup the sender-side wireless system to use channel 64 and 20MHz bands
+angle-measure.sh run-sender 50000 100 1000
+would cause the sender node to send 50000 random packets of 100 bytes every millisecond
 
 """
 
@@ -222,10 +222,12 @@ def main():
             ########## dry run : just display context
             if args.dry_run:
                 print(4*'-', "{sendername} => {receivername}, "
-                      "Sending {packets} packets, {size} bytes long, every {period} micro-seconds"
+                      "Sending {packets} packets, {size} bytes long,"
+                      " every {period} micro-seconds"
                       .format(**locals()))
             else:
-                one_run(gwhost, gwuser, key, sendername, receivername, packets, size, period, args.storage_dir)
+                one_run(gwhost, gwuser, key, sendername, receivername,
+                        packets, size, period, args.storage_dir)
 
 if __name__ == '__main__':
     main()
