@@ -58,12 +58,12 @@
   <div class="header">
    <div class="container">
     <div class="row">
-     <div class="col-xs-12 col-sm-3 col-md-2 logo">
+     <div class="col-lg-2 col-xs-12 col-sm-3 col-md-2 logo">
       <a href="/index.md">
        <img class="img-responsive" src="/assets/img/r2lab_logo.svg" alt="OneLab - Future Internet Testbeds" />
       </a>
      </div>
-     <div class="col-xs-12 col-sm-7 col-md-7 navigation">
+     <div class="col-lg-9 col-xs-12 col-sm-7 col-md-7 navigation">
       <ul>
         <li><a id="tab-overview" tab="{{tab}}" class="sites" href="/overview.md">Overview</a></li>
         <li><a id="tab-platform" tab="{{tab}}" class="sites" href="/hardware.md">Nodes</a></li>
@@ -73,10 +73,14 @@
 {% if r2lab_context %}
         <li><a id="tab-book" tab="{{tab}}" class="sites" href="/book.md">Book</a></li>
         <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">Run</a></li>
+        <!-- <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">One</a></li>
+        <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">Two</a></li>
+        <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">Three</a></li>
+        <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">Four</a></li> -->
 {% endif %}
       </ul>
      </div>
-     <div class="col-xs-12 col-sm-2 col-md-3 secondary">
+     <div class="col-lg-1 col-xs-12 col-sm-2 col-md-3 secondary">
       <ul>
        <li>
 {# temporary - show a logout button when actually logged in #}
@@ -107,8 +111,6 @@
     stay tuned about the last news, infos and incidents about R2lab, check out our <a href="news.md">news feed</a>
    </div>
   </div>
-{% else %}
-<div class="alert alert-info text-center"></div>
 {% endif %}
 
   <div class="container">
