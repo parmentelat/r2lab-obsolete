@@ -13,7 +13,7 @@ $(document).ready(function() {
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
 //  var socket              = io.connect("http://localhost:443");
-  var version             = '1.25';
+  var version             = '1.26';
   var refresh             = true;
   var currentTimezone     = 'local';
 
@@ -427,7 +427,9 @@ $(document).ready(function() {
     if (action == 'addLease') {
       setActionsQueue('add', event);
       sendBroadcast('add', event);
-      refreshLeases();
+      setTimeout(function(){
+        refreshLeases();
+      }, 2000);
     }
     else if (action == 'delLease'){
       if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
@@ -446,7 +448,9 @@ $(document).ready(function() {
     else if (action == 'editLease'){
       setActionsQueue('edit', event);
       sendBroadcast('edit', event);
-      refreshLeases();
+      setTimeout(function(){
+        refreshLeases();
+      }, 2000);
     }
   }
 
@@ -784,21 +788,21 @@ $(document).ready(function() {
 
 
   function buildSlicesBox(leases){
-    var knew = getMySlicesinShortName();
+    // var knew_slices = getMySlicesinShortName();
     var slices = $("#my-slices");
 
     $.each(leases, function(key,val){
-      if ($.inArray(val.title, knew) === -1) { //already present?
+      if ($.inArray(val.title, knew_slices) === -1) { //already present?
         if (isMySlice(val.title)) {
           if(val.title === getCurrentSliceName()){
             setCurrentSliceColor(val.color);
           }
           slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ val.color +"").text(val.title)).append($("<div />").attr("id", idFormat(val.title)).addClass('noactive'));
         } else{
-          $("div.fc-event-not-mine").remove();
+          // $("div.fc-event-not-mine").remove();
           slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ val.color +"").text(val.title));
         }
-        knew.push(val.title);
+        knew_slices.push(val.title);
       }
     });
 
@@ -811,18 +815,16 @@ $(document).ready(function() {
     });
   }
 
-
+  var knew_slices = [];
   function buildInitialSlicesBox(leases){
     setColorLeases();
-    var knew = [];
     var slices = $("#my-slices");
-
     slices.html('<h4 align="center">drag & drop booking</h4>');
 
     $.each(leases, function(key,val){
       val = shortName(val);
       var color = getColorLease(val);
-      if ($.inArray(val, knew) === -1) { //already present?
+      if ($.inArray(val, knew_slices) === -1) { //already present?
         if (isMySlice(val)) {
           if(val === getCurrentSliceName()){
             setCurrentSliceColor(color);
@@ -831,7 +833,7 @@ $(document).ready(function() {
         } else{
           slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ color +"").text(val));
         }
-        knew.push(val);
+        knew_slices.push(val);
       }
     });
 
