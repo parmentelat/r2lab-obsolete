@@ -572,9 +572,11 @@ $(document).ready(function() {
     if(actionsQueue.length > 0){
       setTimeout(function(){
         refreshCalendar2(events);
-      }, 1000);
+      }, 300);
     } else {
-      refreshCalendar(events);
+      setTimeout(function(){
+        refreshCalendar(events);
+      }, 300);
     }
   }
 
