@@ -551,7 +551,7 @@ $(document).ready(function() {
   }
 
 
-  function refreshCalendar2(){
+  function refreshCalendar2(events){
     if(actionsQueue.length > 0){
 
       var failedEvents = [];
@@ -571,10 +571,13 @@ $(document).ready(function() {
 
     if(actionsQueue.length > 0){
       setTimeout(function(){
-        refreshCalendar2();
-      }, 2000);
+        refreshCalendar2(events);
+      }, 1000);
+    } else {
+      setTimeout(function(){
+        refreshCalendar(events);
+      }, 1000);
     }
-
   }
 
 
@@ -588,7 +591,7 @@ $(document).ready(function() {
       resetCalendar();
       $('#calendar').fullCalendar('addEventSource', events);
     } else {
-      refreshCalendar2();
+      refreshCalendar2(events);
     }
   }
 
