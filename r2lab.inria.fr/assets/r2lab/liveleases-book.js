@@ -4,7 +4,6 @@ $(document).ready(function() {
   var my_slices_color     = [];
   var actionsQueue        = [];
   var actionsQueued       = [];
-  var actionsDelQueue     = [];
   var current_slice_name  = current_slice.name;//'onelab.inria.mario.tutorial';//current_slice.name
   var current_slice_color = '#DDD';
   var current_leases      = null;
@@ -505,7 +504,6 @@ $(document).ready(function() {
       request = {
         "uuid" : data.uuid,
       };
-      actionsDelQueue.push(data.id);
       delActionQueue(data.id);
     }
     else {
@@ -555,35 +553,20 @@ $(document).ready(function() {
 
   function refreshCalendar(events){
     if(refresh){
-      // var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
+      var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
 
       var failedEvents = [];
-      // $.each(diffLeases, function(key,event_id){
-      //   if (! isPresent(event_id, getActionsQueued() )){
-      //     var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
-      //     $.each(each, function(k,obj){
-      //       failedEvents.push(failedLease(obj));
-      //     });
-      //   }
-      // });
-      resetActionQueue();
-
-      $.each(events, function(key, event){
-        removeElementFromCalendar(event.id);
-        $('#calendar').fullCalendar('renderEvent', event);
-      });
-
-      if (actionsDelQueue.length > 0) {
-      $.each(getActionsQueued(), function(key,event_id){
-        if (isPresent(event_id, actionsDelQueue )){
-          removeElementFromCalendar(event_id);
-          var idx = actionsDelQueue.indexOf(id);
-          actionsDelQueue.splice(idx,1);
+      $.each(diffLeases, function(key,event_id){
+        if (! isPresent(event_id, getActionsQueued() )){
+          var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
+          $.each(each, function(k,obj){
+            failedEvents.push(failedLease(obj));
+          });
         }
       });
-      }
-      // resetCalendar();
-      // $('#calendar').fullCalendar('addEventSource', events);
+      resetActionQueue();
+      resetCalendar();
+      $('#calendar').fullCalendar('addEventSource', events);
 
       $.each(theZombieLeases, function(k,obj){
         failedEvents.push(zombieLease(obj));
