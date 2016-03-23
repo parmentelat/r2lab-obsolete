@@ -13,7 +13,7 @@ $(document).ready(function() {
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
 //  var socket              = io.connect("http://localhost:443");
-  var version             = '1.26';
+  var version             = '1.27';
   var refresh             = true;
   var currentTimezone     = 'local';
 
@@ -532,28 +532,44 @@ $(document).ready(function() {
   }
 
 
-  function refreshCalendar(events){
-    if(refresh){
-      var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
+  function refreshCalendar2(){
+    if(actionsQueue.length > 0){
 
       var failedEvents = [];
-      $.each(diffLeases, function(key,event_id){
-        if (! isPresent(event_id, getActionsQueued() )){
-          var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
-          $.each(each, function(k,obj){
-            failedEvents.push(failedLease(obj));
-          });
-        }
-      });
-      resetActionQueue();
+      if (! isPresent(actionsQueue.first(), getActionsQueued() )){
+        var each = $("#calendar").fullCalendar( 'clientEvents', actionsQueue.first() );
+        $.each(each, function(k,obj){
+          failedEvents.push(failedLease(obj));
+        });
+
+        removeElementFromCalendar(actionsQueue.first())
+        actionsQueue.shift(); //remove the first element
+        $('#calendar').fullCalendar('addEventSource', failedEvents);
+      } else {
+        actionsQueue.shift();
+      }
+    }
+
+    if(actionsQueue.length > 0){
+      setTimeout(function(){
+        refreshCalendar2();
+      }, 2000);
+    }
+
+  }
+
+
+  Array.prototype.first = function() {
+    return this[0];
+  }
+
+
+  function refreshCalendar(events){
+  if(refresh &&  actionsQueue.length == 0){
       resetCalendar();
       $('#calendar').fullCalendar('addEventSource', events);
-
-      $.each(theZombieLeases, function(k,obj){
-        failedEvents.push(zombieLease(obj));
-      });
-      resetZombieLeases();
-      $('#calendar').fullCalendar('addEventSource', failedEvents);
+    } else {
+      refreshCalendar2();
     }
   }
 
