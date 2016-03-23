@@ -427,9 +427,7 @@ $(document).ready(function() {
     if (action == 'addLease') {
       setActionsQueue('add', event);
       sendBroadcast('add', event);
-      setTimeout(function(){
-        refreshLeases();
-      }, 2000);
+      refreshLeases();
     }
     else if (action == 'delLease'){
       if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
@@ -440,17 +438,13 @@ $(document).ready(function() {
       }
       else if(event.title.indexOf('(pending)') == -1) {
         setActionsQueue('del', event);
-        setTimeout(function(){
-          refreshLeases();
-        }, 2000);
+        refreshLeases();
       }
     }
     else if (action == 'editLease'){
       setActionsQueue('edit', event);
       sendBroadcast('edit', event);
-      setTimeout(function(){
-        refreshLeases();
-      }, 2000);
+      refreshLeases();
     }
   }
 
