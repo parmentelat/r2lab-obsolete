@@ -555,9 +555,7 @@ $(document).ready(function() {
         refreshCalendar2(events);
       }, 1000);
     } else {
-      setTimeout(function(){
-        refreshCalendar(events);
-      }, 1000);
+      refreshCalendar(events);
     }
   }
 
