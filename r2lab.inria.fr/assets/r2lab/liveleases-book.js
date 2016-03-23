@@ -13,7 +13,7 @@ $(document).ready(function() {
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
 //  var socket              = io.connect("http://localhost:443");
-  var version             = '1.27';
+  var version             = '1.26';
   var refresh             = true;
   var currentTimezone     = 'local';
 
@@ -427,7 +427,9 @@ $(document).ready(function() {
     if (action == 'addLease') {
       setActionsQueue('add', event);
       sendBroadcast('add', event);
-      refreshLeases();
+      setTimeout(function(){
+        refreshLeases();
+      }, 2000);
     }
     else if (action == 'delLease'){
       if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
@@ -438,13 +440,17 @@ $(document).ready(function() {
       }
       else if(event.title.indexOf('(pending)') == -1) {
         setActionsQueue('del', event);
-        refreshLeases();
+        setTimeout(function(){
+          refreshLeases();
+        }, 2000);
       }
     }
     else if (action == 'editLease'){
       setActionsQueue('edit', event);
       sendBroadcast('edit', event);
-      refreshLeases();
+      setTimeout(function(){
+        refreshLeases();
+      }, 2000);
     }
   }
 
@@ -545,47 +551,28 @@ $(document).ready(function() {
   }
 
 
-  function refreshCalendar2(events){
-    if(actionsQueue.length > 0){
+  function refreshCalendar(events){
+    if(refresh){
+      var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
 
       var failedEvents = [];
-      if (! isPresent(actionsQueue.first(), getActionsQueued() )){
-        var each = $("#calendar").fullCalendar( 'clientEvents', actionsQueue.first() );
-        $.each(each, function(k,obj){
-          failedEvents.push(failedLease(obj));
-        });
-
-        removeElementFromCalendar(actionsQueue.first())
-        actionsQueue.shift(); //remove the first element
-        $('#calendar').fullCalendar('addEventSource', failedEvents);
-      } else {
-        actionsQueue.shift();
-      }
-    }
-
-    if(actionsQueue.length > 0){
-      setTimeout(function(){
-        refreshCalendar2(events);
-      }, 300);
-    } else {
-      setTimeout(function(){
-        refreshCalendar(events);
-      }, 300);
-    }
-  }
-
-
-  Array.prototype.first = function() {
-    return this[0];
-  }
-
-
-  function refreshCalendar(events){
-  if(refresh &&  actionsQueue.length == 0){
+      $.each(diffLeases, function(key,event_id){
+        if (! isPresent(event_id, getActionsQueued() )){
+          var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
+          $.each(each, function(k,obj){
+            failedEvents.push(failedLease(obj));
+          });
+        }
+      });
+      resetActionQueue();
       resetCalendar();
       $('#calendar').fullCalendar('addEventSource', events);
-    } else {
-      refreshCalendar2(events);
+
+      $.each(theZombieLeases, function(k,obj){
+        failedEvents.push(zombieLease(obj));
+      });
+      resetZombieLeases();
+      $('#calendar').fullCalendar('addEventSource', failedEvents);
     }
   }
 
