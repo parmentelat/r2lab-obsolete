@@ -553,26 +553,32 @@ $(document).ready(function() {
 
   function refreshCalendar(events){
     if(refresh){
-      var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
+      // var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
 
       var failedEvents = [];
-      $.each(diffLeases, function(key,event_id){
-        if (! isPresent(event_id, getActionsQueued() )){
-          var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
-          $.each(each, function(k,obj){
-            failedEvents.push(failedLease(obj));
-          });
-        }
-      });
+      // $.each(diffLeases, function(key,event_id){
+      //   if (! isPresent(event_id, getActionsQueued() )){
+      //     var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
+      //     $.each(each, function(k,obj){
+      //       failedEvents.push(failedLease(obj));
+      //     });
+      //   }
+      // });
       resetActionQueue();
-      resetCalendar();
-      $('#calendar').fullCalendar('addEventSource', events);
+
+      $.each(events, function(key, event){
+        removeElementFromCalendar(event.id);
+        $('#calendar').fullCalendar('renderEvent', event);
+      });
+
+      // resetCalendar();
+      // $('#calendar').fullCalendar('addEventSource', events);
 
       $.each(theZombieLeases, function(k,obj){
         failedEvents.push(zombieLease(obj));
       });
       resetZombieLeases();
-      //$('#calendar').fullCalendar('addEventSource', failedEvents);
+      $('#calendar').fullCalendar('addEventSource', failedEvents);
     }
   }
 
