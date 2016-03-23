@@ -553,7 +553,7 @@ $(document).ready(function() {
         failedEvents.push(zombieLease(obj));
       });
       resetZombieLeases();
-      $('#calendar').fullCalendar('addEventSource', failedEvents);
+      //$('#calendar').fullCalendar('addEventSource', failedEvents);
     }
   }
 
