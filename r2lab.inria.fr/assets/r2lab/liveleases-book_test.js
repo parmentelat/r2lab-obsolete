@@ -492,6 +492,15 @@ $(document).ready(function() {
   }
 
 
+  function isNightly(title){
+    var nightly = true;
+    if(title.indexOf('nightly routine') == -1){
+      nightly = false;
+    }
+    return nightly;
+  }
+
+
   function isFailed(title){
     var failed = true;
     if(title.indexOf('* failed *') == -1){
@@ -613,7 +622,7 @@ $(document).ready(function() {
         else if (obj.title && obj.uuid && isPending(obj.title)){
           removeElementFromCalendar(obj.id);
         }
-        else if (obj.title && !isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
+        else if (obj.title && !isNightly(obj.title) && !isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
           removeElementFromCalendar(obj.id);
         }
       });
