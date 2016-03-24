@@ -23,19 +23,34 @@ $(document).ready(function() {
 
     //Create the calendar
     $('#calendar').fullCalendar({
-      header: false,
+      header: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'agendaDay,agendaThreeDay,agendaWeek,month',
+      },
 
       views: {
-        agendaTwoDay: {
+        agendaThreeDay: {
           type: 'agenda',
-          duration: { days: 2 },
-          buttonText: '2 days'
+          duration: { days: 3 },
+          buttonText: '3 days'
+        },
+        agendaWeek: {
+          type: 'agenda',
+          duration: { days: 7 },
+          buttonText: 'week'
+        },
+        month: {
+            selectable: false,
+            editable: false,
+            droppable: false,
+            dblclick: false,
         }
       },
       defaultTimedEventDuration: '01:00:00',
       slotDuration: "01:00:00",
       forceEventDuration: true,
-      defaultView: 'agendaDay',
+      defaultView: 'agendaThreeDay',
       timezone: currentTimezone,
       defaultDate: today,
       selectHelper: false,
@@ -44,10 +59,9 @@ $(document).ready(function() {
       editable: true,
       allDaySlot: false,
       droppable: true,
-      height: 455,
+      height: 515,
       nowIndicator: true,
       scrollTime: showAt,
-
       //Events
       // this is fired when a selection is made
       select: function(start, end, event, view) {
@@ -107,21 +121,26 @@ $(document).ready(function() {
 
       // this happens when the event is dragged moved and dropped
       eventDrop: function(event, delta, revertFunc) {
-        if (!confirm("Confirm this change?")) {
-            revertFunc();
-        }
-        else {
-          if (isPastDate(event.end)) {
-            revertFunc();
-            sendMessage('This timeslot is in the past!');
-          } else {
-            newLease = createLease(event);
-            newLease.title = pendingName(event.title);
-            newLease.editable = false;
-            newLease.textColor = color_pending;
-            removeElementFromCalendar(newLease.id);
-            updateLeases('editLease', newLease);
+        var view = $('#calendar').fullCalendar('getView').type;
+        if(view != 'month'){
+          if (!confirm("Confirm this change?")) {
+              revertFunc();
           }
+          else {
+            if (isPastDate(event.end)) {
+              revertFunc();
+              sendMessage('This timeslot is in the past!');
+            } else {
+              newLease = createLease(event);
+              newLease.title = pendingName(event.title);
+              newLease.editable = false;
+              newLease.textColor = color_pending;
+              removeElementFromCalendar(newLease.id);
+              updateLeases('editLease', newLease);
+            }
+          }
+        }else {
+          revertFunc();
         }
       },
 
@@ -139,6 +158,8 @@ $(document).ready(function() {
 
       // this fires when an event is rendered
       eventRender: function(event, element) {
+        var view = $('#calendar').fullCalendar('getView').type;
+        if(view != 'month'){
         element.bind('dblclick', function() {
           if (isMySlice(event.title)) {
             newLease = createLease(event);
@@ -150,7 +171,7 @@ $(document).ready(function() {
             updateLeases('delLease', event);
           }
         });
-      },
+      }},
 
       // this is fired when an event is resized
       eventResize: function(event, jsEvent, ui, view, revertFunc) {
@@ -191,7 +212,7 @@ $(document).ready(function() {
     $('#messages').removeClass().addClass('alert alert-'+cls);
     $('#messages').html("<strong>"+title+"</strong> "+msg);
     $('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
-    $('#messages').delay(2000).fadeOut();
+    $('#messages').delay(5000).fadeOut();
   }
 
 
@@ -362,8 +383,8 @@ $(document).ready(function() {
   // via django
   function refreshLeases(){
     msg = "INIT";
-  	console.log("sending on chan-leases-request -> " + msg);
-  	socket.emit('chan-leases-request', msg);
+    console.log("sending on chan-leases-request -> " + msg);
+    socket.emit('chan-leases-request', msg);
   }
 
 
@@ -388,11 +409,10 @@ $(document).ready(function() {
         removeElementFromCalendar(lease.id);
         $('#calendar').fullCalendar('renderEvent', lease, true );
       }
-
     });
 
     socket.on('chan-leases', function(msg){
-	    console.log("incoming chan-leases");
+      console.log("incoming chan-leases");
       setCurrentLeases(msg);
       resetActionsQueued();
       var leases = getCurrentLeases();
@@ -492,8 +512,7 @@ $(document).ready(function() {
     }
     post_lease_request(shiftAction, request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
-        wait_for_show = false;
-        //console.log(request);
+          wait_for_show = false;
       }
     });
   }
@@ -531,23 +550,37 @@ $(document).ready(function() {
     return diff_array;
   }
 
-
-  function refreshCalendar(events){
+  function refreshCalendar2(events){
     if(refresh){
-      var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
+      // var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
 
       var failedEvents = [];
-      $.each(diffLeases, function(key,event_id){
-        if (! isPresent(event_id, getActionsQueued() )){
-          var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
-          $.each(each, function(k,obj){
-            failedEvents.push(failedLease(obj));
-          });
-        }
-      });
+      // $.each(diffLeases, function(key,event_id){
+      //   if (! isPresent(event_id, getActionsQueued() )){
+      //     var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
+      //     $.each(each, function(k,obj){
+      //       failedEvents.push(failedLease(obj));
+      //     });
+      //   }
+      // });
       resetActionQueue();
-      resetCalendar();
-      $('#calendar').fullCalendar('addEventSource', events);
+
+      $.each(events, function(key, event){
+        removeElementFromCalendar(event.id);
+        $('#calendar').fullCalendar('renderEvent', event);
+      });
+
+      if (actionsDelQueue.length > 0) {
+        $.each(getActionsQueued(), function(key,event_id){
+          if (isPresent(event_id, actionsDelQueue )){
+            removeElementFromCalendar(event_id);
+            var idx = actionsDelQueue.indexOf(id);
+            actionsDelQueue.splice(idx,1);
+          }
+        });
+      }
+      // resetCalendar();
+      // $('#calendar').fullCalendar('addEventSource', events);
 
       $.each(theZombieLeases, function(k,obj){
         failedEvents.push(zombieLease(obj));
@@ -555,6 +588,32 @@ $(document).ready(function() {
       resetZombieLeases();
       $('#calendar').fullCalendar('addEventSource', failedEvents);
     }
+  }
+
+  function refreshCalendar(events){
+    refreshCalendar2(events);
+    // if(refresh){
+    //   var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
+    //
+    //   var failedEvents = [];
+    //   $.each(diffLeases, function(key,event_id){
+    //     if (! isPresent(event_id, getActionsQueued() )){
+    //       var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
+    //       $.each(each, function(k,obj){
+    //         failedEvents.push(failedLease(obj));
+    //       });
+    //     }
+    //   });
+    //   resetActionQueue();
+    //   resetCalendar();
+    //   $('#calendar').fullCalendar('addEventSource', events);
+    //
+    //   $.each(theZombieLeases, function(k,obj){
+    //     failedEvents.push(zombieLease(obj));
+    //   });
+    //   resetZombieLeases();
+    //   $('#calendar').fullCalendar('addEventSource', failedEvents);
+    // }
   }
 
 
@@ -888,11 +947,15 @@ $(document).ready(function() {
     listenBroadcast();
     refreshLeases();
 
-    $('.fc-day-header').html('today');
+    // $('.fc-day-header').html('today');
 
     var slice = $('#my-slices .fc-event');
     slice.dblclick(function() {
       setSlice($(this));
+    });
+
+    $('body').on('click', 'button.fc-month-button', function() {
+      sendMessage('This view is read only!', 'info');
     });
   }
 
@@ -928,6 +991,7 @@ $(document).ready(function() {
     xhttp.send(JSON.stringify(request));
     xhttp.onreadystatechange = function(){callback(xhttp);};
   }
+
 
   main();
 });
