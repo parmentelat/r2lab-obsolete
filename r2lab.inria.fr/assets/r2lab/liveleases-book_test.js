@@ -4,7 +4,6 @@ $(document).ready(function() {
   var my_slices_color     = [];
   var actionsQueue        = [];
   var actionsQueued       = [];
-  var actionsDelQueue     = [];
   var current_slice_name  = current_slice.name;//'onelab.inria.mario.tutorial';//current_slice.name
   var current_slice_color = '#DDD';
   var current_leases      = null;
@@ -553,8 +552,6 @@ $(document).ready(function() {
         "uuid" : data.uuid,
       };
       delActionQueue(data.id);
-      console.log('passou');
-      actionsDelQueue.push(data.id);
     }
     else {
       console.log('Someting went wrong in map actions.');
@@ -601,23 +598,23 @@ $(document).ready(function() {
   }
 
 
-  function refreshCalendar2(events){
+  function refreshCalendar(events){
     if(refresh){
-      resetActionQueue();
 
       $.each(events, function(key, event){
         removeElementFromCalendar(event.id);
         $('#calendar').fullCalendar('renderEvent', event);
       });
 
+      console.log(actionsQueue);
       var each_removing = $("#calendar").fullCalendar( 'clientEvents' );
       $.each(each_removing, function(k,obj){
         if(obj.title && isRemoving(obj.title)){
-          if (isPresent(obj.id, actionsDelQueue )){
+          removeElementFromCalendar(obj.id);
+        }
+        else if (obj.title && isPending(obj.title)){
+          if ($.inArray(obj.id, actionsQueue) == -1) {
             removeElementFromCalendar(obj.id);
-            // sendBroadcast('del', obj.id);
-            var idx = actionsDelQueue.indexOf(obj.id);
-            actionsDelQueue.splice(idx,1);
           }
         }
       });
@@ -628,34 +625,9 @@ $(document).ready(function() {
       });
       resetZombieLeases();
       $('#calendar').fullCalendar('addEventSource', failedEvents);
+
+      resetActionQueue();
     }
-  }
-
-
-  function refreshCalendar(events){
-    refreshCalendar2(events);
-    // if(refresh){
-    //   var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
-    //
-    //   var failedEvents = [];
-    //   $.each(diffLeases, function(key,event_id){
-    //     if (! isPresent(event_id, getActionsQueued() )){
-    //       var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
-    //       $.each(each, function(k,obj){
-    //         failedEvents.push(failedLease(obj));
-    //       });
-    //     }
-    //   });
-    //   resetActionQueue();
-    //   resetCalendar();
-    //   $('#calendar').fullCalendar('addEventSource', events);
-    //
-    //   $.each(theZombieLeases, function(k,obj){
-    //     failedEvents.push(zombieLease(obj));
-    //   });
-    //   resetZombieLeases();
-    //   $('#calendar').fullCalendar('addEventSource', failedEvents);
-    // }
   }
 
 
