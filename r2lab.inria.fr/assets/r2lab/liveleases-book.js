@@ -866,24 +866,6 @@ $(document).ready(function() {
   }
 
 
-  function eventPresentbyDate(start, end, title) {
-    var title = pendingName(shortName(title));
-    var start = new Date(start);
-    var end   = new Date(end);
-
-    calendar = $('#calendar').fullCalendar('clientEvents');
-
-    $.each(calendar, function(key,obj){
-      if ((new Date(obj.start._d) - start == 0) && (new Date(obj.end._d) - end == 0) && (obj.title == title)){
-        obj.title = resetName(title);
-        obj.textColor = "#ffffff";
-        obj.editable = true;
-        $('#calendar').fullCalendar( 'rerenderEvents', obj.id);
-      }
-    });
-  }
-
-
   function setSlice(element){
     var element_color = element.css("background-color");
     var element_name  = $.trim(element.text());
