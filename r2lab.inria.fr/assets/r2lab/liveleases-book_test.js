@@ -606,16 +606,16 @@ $(document).ready(function() {
         $('#calendar').fullCalendar('renderEvent', event);
       });
 
-      console.log(actionsQueue);
       var each_removing = $("#calendar").fullCalendar( 'clientEvents' );
       $.each(each_removing, function(k,obj){
         if(obj.title && isRemoving(obj.title)){
           removeElementFromCalendar(obj.id);
         }
+        else if (obj.title && obj.uuid && isPending(obj.title)){
+          removeElementFromCalendar(obj.id);
+        }
         else if (obj.title && isPending(obj.title)){
-          if ($.inArray(obj.id, actionsQueue) == -1) {
-            removeElementFromCalendar(obj.id);
-          }
+          removeElementFromCalendar(obj.id);
         }
       });
 
