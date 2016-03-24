@@ -12,8 +12,7 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
-//  var socket              = io.connect("http://localhost:443");
-  var version             = '1.26';
+  var version             = '1.30';
   var refresh             = true;
   var currentTimezone     = 'local';
 
@@ -666,11 +665,9 @@ $(document).ready(function() {
     for (var i = 0; i < 6; i++ ) {
         color += letters[Math.round(Math.random() * 15)];
     }
-
     if ($.inArray(color.toUpperCase(), reserved_colors) > -1){
       getRandomColor();
     }
-
     return color;
   }
 
