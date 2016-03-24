@@ -169,7 +169,7 @@ $(document).ready(function() {
             newLease.editable = false;
             removeElementFromCalendar(event.id);
             addElementToCalendar(newLease);
-            updateLeases('delLease', event);
+            updateLeases('delLease', newLease);
           }
           if (isMySlice(event.title) && isPending(event.title)) {
             if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
@@ -179,7 +179,7 @@ $(document).ready(function() {
               newLease.editable = false;
               removeElementFromCalendar(event.id);
               addElementToCalendar(newLease);
-              updateLeases('delLease', event);
+              updateLeases('delLease', newLease);
             }
           }
           if (isMySlice(event.title) && isFailed(event.title)) {
@@ -425,8 +425,9 @@ $(document).ready(function() {
         $('#calendar').fullCalendar('renderEvent', lease, true );
       }
       else if (action == 'del'){
-        var id  = createLeaseFromJson(msg[1]);
-        removeElementFromCalendar(id);
+        var lease  = createLeaseFromJson(msg[1]);
+        removeElementFromCalendar(lease.id);
+        $('#calendar').fullCalendar('renderEvent', lease, true );
       }
     });
 
@@ -459,6 +460,7 @@ $(document).ready(function() {
       }
       else {
         setActionsQueue('del', event);
+        sendBroadcast('del', event);
         setTimeout(function(){
           refreshLeases();
         }, 2000);
@@ -613,7 +615,7 @@ $(document).ready(function() {
         if(obj.title && isRemoving(obj.title)){
           if (isPresent(obj.id, actionsDelQueue )){
             removeElementFromCalendar(obj.id);
-            sendBroadcast('del', obj.id);
+            // sendBroadcast('del', obj.id);
             var idx = actionsDelQueue.indexOf(obj.id);
             actionsDelQueue.splice(idx,1);
           }
