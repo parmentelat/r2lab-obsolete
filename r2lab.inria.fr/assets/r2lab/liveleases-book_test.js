@@ -281,7 +281,6 @@ $(document).ready(function() {
       });
     });
     buildSlicesBox(leases);
-    $.merge(leases, setNightlyAndPast());
     return leases;
   }
 
@@ -493,9 +492,11 @@ $(document).ready(function() {
 
 
   function isNightly(title){
-    var nightly = true;
-    if(title.indexOf('nightly routine') == -1){
-      nightly = false;
+    var nightly = false;
+    if (title){
+      if(title.indexOf('nightly routine') > -1){
+        nightly = true;
+      }
     }
     return nightly;
   }
@@ -606,24 +607,31 @@ $(document).ready(function() {
   }
 
 
+  function refreshCalendar2(events){
+    //$('#calendar').fullCalendar('refetchEvents');
+  }
+
   function refreshCalendar(events){
     if(refresh){
 
       $.each(events, function(key, event){
         removeElementFromCalendar(event.id);
-        $('#calendar').fullCalendar('renderEvent', event);
+        $('#calendar').fullCalendar('renderEvent', event, true);
       });
 
       var each_removing = $("#calendar").fullCalendar( 'clientEvents' );
       $.each(each_removing, function(k,obj){
-        if(obj.title && isRemoving(obj.title)){
-          removeElementFromCalendar(obj.id);
-        }
-        else if (obj.title && obj.uuid && isPending(obj.title)){
-          removeElementFromCalendar(obj.id);
-        }
-        else if (obj.title && !isNightly(obj.title) && !isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
-          removeElementFromCalendar(obj.id);
+        //when click in month viwe all 'tousands' of nightly comes. Maybe reset when comeback from month view (not implemented)
+        if (!isNightly(obj.title) && obj.title) {
+          if(isRemoving(obj.title)){
+            removeElementFromCalendar(obj.id);
+          }
+          else if (obj.uuid && isPending(obj.title)){
+            removeElementFromCalendar(obj.id);
+          }
+          else if (!isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
+            removeElementFromCalendar(obj.id);
+          }
         }
       });
 
@@ -776,7 +784,6 @@ $(document).ready(function() {
       if (some_colors.length >= my_slices_name.length) {
         ;
       }else {
-        console.log(some_colors.length);
         var lack_colors = my_slices_name.length - local_colors.length;
         $.each(range(0,lack_colors), function(key,obj){
           local_colors.push(getRandomColor());
