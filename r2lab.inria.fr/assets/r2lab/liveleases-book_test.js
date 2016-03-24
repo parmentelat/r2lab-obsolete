@@ -424,6 +424,10 @@ $(document).ready(function() {
         removeElementFromCalendar(lease.id);
         $('#calendar').fullCalendar('renderEvent', lease, true );
       }
+      else if (action == 'del'){
+        var id  = createLeaseFromJson(msg[1]);
+        removeElementFromCalendar(id);
+      }
     });
 
     socket.on('chan-leases', function(msg){
@@ -609,21 +613,12 @@ $(document).ready(function() {
         if(obj.title && isRemoving(obj.title)){
           if (isPresent(obj.id, actionsDelQueue )){
             removeElementFromCalendar(obj.id);
+            sendBroadcast('del', obj.id);
             var idx = actionsDelQueue.indexOf(obj.id);
             actionsDelQueue.splice(idx,1);
           }
         }
       });
-
-      if (actionsDelQueue.length > 0) {
-        $.each(getActionsQueued(), function(key,event_id){
-          if (isPresent(event_id, actionsDelQueue )){
-            // removeElementFromCalendar(event_id);
-            var idx = actionsDelQueue.indexOf(event_id);
-            actionsDelQueue.splice(idx,1);
-          }
-        });
-      }
 
       var failedEvents = [];
       $.each(theZombieLeases, function(k,obj){
