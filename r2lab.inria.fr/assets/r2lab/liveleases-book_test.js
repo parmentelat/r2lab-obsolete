@@ -395,14 +395,16 @@ $(document).ready(function() {
   // via django
   function refreshLeases(){
     msg = "INIT";
-    console.log("sending on chan-leases-request -> " + msg);
+    //console.log("sending on chan-leases-request -> " + msg);
+    console.log("sending on chan-leases-request");
     socket.emit('chan-leases-request', msg);
   }
 
 
   function sendBroadcast(action, data){
     var msg = [action, JSON.stringify(data)];
-    console.log("sending on chan-leases-broadcast -> " + msg);
+    //console.log("sending on chan-leases-broadcast -> " + msg);
+    console.log("sending on chan-leases-broadcast");
     socket.emit('chan-leases-broadcast', msg);
   }
 
