@@ -614,6 +614,9 @@ $(document).ready(function() {
         else if (obj.title && obj.uuid && isPending(obj.title)){
           removeElementFromCalendar(obj.id);
         }
+        else if (obj.title && !isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
+          removeElementFromCalendar(obj.id);
+        }
       });
 
       var failedEvents = [];
