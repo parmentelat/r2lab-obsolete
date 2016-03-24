@@ -4,6 +4,7 @@ $(document).ready(function() {
   var my_slices_color     = [];
   var actionsQueue        = [];
   var actionsQueued       = [];
+  var actionsDelQueue     = [];
   var current_slice_name  = current_slice.name;//'onelab.inria.mario.tutorial';//current_slice.name
   var current_slice_color = '#DDD';
   var current_leases      = null;
@@ -161,7 +162,7 @@ $(document).ready(function() {
         var view = $('#calendar').fullCalendar('getView').type;
         if(view != 'month'){
         element.bind('dblclick', function() {
-          if (isMySlice(event.title)) {
+          if (isMySlice(event.title) && event.editable == true ) {
             newLease = createLease(event);
             newLease.title = removingName(event.title);
             newLease.textColor = color_removing;
@@ -169,6 +170,20 @@ $(document).ready(function() {
             removeElementFromCalendar(event.id);
             addElementToCalendar(newLease);
             updateLeases('delLease', event);
+          }
+          if (isMySlice(event.title) && isPending(event.title)) {
+            if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
+              newLease = createLease(event);
+              newLease.title = removingName(event.title);
+              newLease.textColor = color_removing;
+              newLease.editable = false;
+              removeElementFromCalendar(event.id);
+              addElementToCalendar(newLease);
+              updateLeases('delLease', event);
+            }
+          }
+          if (isMySlice(event.title) && isFailed(event.title)) {
+            removeElementFromCalendar(event.id);
           }
         });
       }},
@@ -438,7 +453,7 @@ $(document).ready(function() {
           refreshLeases();
         }, 2000);
       }
-      else if(event.title.indexOf('(pending)') == -1) {
+      else {
         setActionsQueue('del', event);
         setTimeout(function(){
           refreshLeases();
@@ -452,6 +467,33 @@ $(document).ready(function() {
         refreshLeases();
       }, 2000);
     }
+  }
+
+
+  function isRemoving(title){
+    var removing = true;
+    if(title.indexOf('(removing)') == -1){
+      removing = false;
+    }
+    return removing;
+  }
+
+
+  function isPending(title){
+    var pending = true;
+    if(title.indexOf('(pending)') == -1){
+      pending = false;
+    }
+    return pending;
+  }
+
+
+  function isFailed(title){
+    var failed = true;
+    if(title.indexOf('* failed *') == -1){
+      failed = false;
+    }
+    return failed;
   }
 
 
@@ -505,6 +547,8 @@ $(document).ready(function() {
         "uuid" : data.uuid,
       };
       delActionQueue(data.id);
+      console.log('passou');
+      actionsDelQueue.push(data.id);
     }
     else {
       console.log('Someting went wrong in map actions.');
@@ -550,19 +594,9 @@ $(document).ready(function() {
     return diff_array;
   }
 
+
   function refreshCalendar2(events){
     if(refresh){
-      // var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
-
-      var failedEvents = [];
-      // $.each(diffLeases, function(key,event_id){
-      //   if (! isPresent(event_id, getActionsQueued() )){
-      //     var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
-      //     $.each(each, function(k,obj){
-      //       failedEvents.push(failedLease(obj));
-      //     });
-      //   }
-      // });
       resetActionQueue();
 
       $.each(events, function(key, event){
@@ -570,18 +604,28 @@ $(document).ready(function() {
         $('#calendar').fullCalendar('renderEvent', event);
       });
 
+      var each_removing = $("#calendar").fullCalendar( 'clientEvents' );
+      $.each(each_removing, function(k,obj){
+        if(obj.title && isRemoving(obj.title)){
+          if (isPresent(obj.id, actionsDelQueue )){
+            removeElementFromCalendar(obj.id);
+            var idx = actionsDelQueue.indexOf(obj.id);
+            actionsDelQueue.splice(idx,1);
+          }
+        }
+      });
+
       if (actionsDelQueue.length > 0) {
         $.each(getActionsQueued(), function(key,event_id){
           if (isPresent(event_id, actionsDelQueue )){
-            removeElementFromCalendar(event_id);
-            var idx = actionsDelQueue.indexOf(id);
+            // removeElementFromCalendar(event_id);
+            var idx = actionsDelQueue.indexOf(event_id);
             actionsDelQueue.splice(idx,1);
           }
         });
       }
-      // resetCalendar();
-      // $('#calendar').fullCalendar('addEventSource', events);
 
+      var failedEvents = [];
       $.each(theZombieLeases, function(k,obj){
         failedEvents.push(zombieLease(obj));
       });
@@ -589,6 +633,7 @@ $(document).ready(function() {
       $('#calendar').fullCalendar('addEventSource', failedEvents);
     }
   }
+
 
   function refreshCalendar(events){
     refreshCalendar2(events);
