@@ -629,9 +629,9 @@ $(document).ready(function() {
           else if (!isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
             removeElementFromCalendar(obj.id);
           }
-          else if (isPresent(obj.id, actionsQueue) && isPending(obj.title) && !obj.uuid ){
-            removeElementFromCalendar(obj.id);
-          }
+          // else if (isPresent(obj.id, actionsQueue) && isPending(obj.title) && !obj.uuid ){
+          //   removeElementFromCalendar(obj.id);
+          // }
         }
       });
 
