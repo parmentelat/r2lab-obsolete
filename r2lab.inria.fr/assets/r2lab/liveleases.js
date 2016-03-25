@@ -12,8 +12,7 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
-//  var socket              = io.connect("http://localhost:443");
-  var version             = '1.26';
+  var version             = '1.30';
   var refresh             = true;
   var currentTimezone     = 'local';
 
@@ -140,14 +139,28 @@ $(document).ready(function() {
       // this fires when an event is rendered
       eventRender: function(event, element) {
         element.bind('dblclick', function() {
-          if (isMySlice(event.title)) {
+          if (isMySlice(event.title) && event.editable == true ) {
             newLease = createLease(event);
             newLease.title = removingName(event.title);
             newLease.textColor = color_removing;
             newLease.editable = false;
             removeElementFromCalendar(event.id);
             addElementToCalendar(newLease);
-            updateLeases('delLease', event);
+            updateLeases('delLease', newLease);
+          }
+          if (isMySlice(event.title) && isPending(event.title)) {
+            if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
+              newLease = createLease(event);
+              newLease.title = removingName(event.title);
+              newLease.textColor = color_removing;
+              newLease.editable = false;
+              removeElementFromCalendar(event.id);
+              addElementToCalendar(newLease);
+              updateLeases('delLease', newLease);
+            }
+          }
+          if (isMySlice(event.title) && isFailed(event.title)) {
+            removeElementFromCalendar(event.id);
           }
         });
       },
@@ -362,14 +375,16 @@ $(document).ready(function() {
   // via django
   function refreshLeases(){
     msg = "INIT";
-  	console.log("sending on chan-leases-request -> " + msg);
+  	// console.log("sending on chan-leases-request -> " + msg);
+    console.log("sending on chan-leases-request");
   	socket.emit('chan-leases-request', msg);
   }
 
 
   function sendBroadcast(action, data){
     var msg = [action, JSON.stringify(data)];
-    console.log("sending on chan-leases-broadcast -> " + msg);
+    // console.log("sending on chan-leases-broadcast -> " + msg);
+    console.log("sending on chan-leases-broadcast");
     socket.emit('chan-leases-broadcast', msg);
   }
 
@@ -388,7 +403,11 @@ $(document).ready(function() {
         removeElementFromCalendar(lease.id);
         $('#calendar').fullCalendar('renderEvent', lease, true );
       }
-
+      else if (action == 'del'){
+        var lease  = createLeaseFromJson(msg[1]);
+        removeElementFromCalendar(lease.id);
+        $('#calendar').fullCalendar('renderEvent', lease, true );
+      }
     });
 
     socket.on('chan-leases', function(msg){
@@ -417,9 +436,9 @@ $(document).ready(function() {
         setTimeout(function(){
           refreshLeases();
         }, 2000);
-      }
-      else if(event.title.indexOf('(pending)') == -1) {
+      } else {
         setActionsQueue('del', event);
+        sendBroadcast('del', event);
         setTimeout(function(){
           refreshLeases();
         }, 2000);
@@ -432,6 +451,44 @@ $(document).ready(function() {
         refreshLeases();
       }, 2000);
     }
+  }
+
+
+  function isRemoving(title){
+    var removing = true;
+    if(title.indexOf('(removing)') == -1){
+      removing = false;
+    }
+    return removing;
+  }
+
+
+  function isPending(title){
+    var pending = true;
+    if(title.indexOf('(pending)') == -1){
+      pending = false;
+    }
+    return pending;
+  }
+
+
+  function isNightly(title){
+    var nightly = false;
+    if (title){
+      if(title.indexOf('nightly routine') > -1){
+        nightly = true;
+      }
+    }
+    return nightly;
+  }
+
+
+  function isFailed(title){
+    var failed = true;
+    if(title.indexOf('* failed *') == -1){
+      failed = false;
+    }
+    return failed;
   }
 
 
@@ -534,26 +591,39 @@ $(document).ready(function() {
 
   function refreshCalendar(events){
     if(refresh){
-      var diffLeases = diffArrays(getActionsQueue(), getActionsQueued());
 
-      var failedEvents = [];
-      $.each(diffLeases, function(key,event_id){
-        if (! isPresent(event_id, getActionsQueued() )){
-          var each = $("#calendar").fullCalendar( 'clientEvents', event_id );
-          $.each(each, function(k,obj){
-            failedEvents.push(failedLease(obj));
-          });
+      $.each(events, function(key, event){
+        removeElementFromCalendar(event.id);
+        $('#calendar').fullCalendar('renderEvent', event, true);
+      });
+
+      var each_removing = $("#calendar").fullCalendar( 'clientEvents' );
+      $.each(each_removing, function(k,obj){
+        //when click in month viwe all 'tousands' of nightly comes. Maybe reset when comeback from month view (not implemented)
+        if (!isNightly(obj.title) && obj.title) {
+          if(isRemoving(obj.title)){
+            removeElementFromCalendar(obj.id);
+          }
+          else if (obj.uuid && isPending(obj.title)){
+            removeElementFromCalendar(obj.id);
+          }
+          else if (!isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
+            removeElementFromCalendar(obj.id);
+          }
+          else if (isPresent(obj.id, actionsQueue) && isPending(obj.title) && !obj.uuid ){
+            removeElementFromCalendar(obj.id);
+          }
         }
       });
-      resetActionQueue();
-      resetCalendar();
-      $('#calendar').fullCalendar('addEventSource', events);
 
+      var failedEvents = [];
       $.each(theZombieLeases, function(k,obj){
         failedEvents.push(zombieLease(obj));
       });
       resetZombieLeases();
       $('#calendar').fullCalendar('addEventSource', failedEvents);
+
+      resetActionQueue();
     }
   }
 
