@@ -140,6 +140,9 @@ $(document).ready(function() {
       eventRender: function(event, element) {
         element.bind('dblclick', function() {
           if (isMySlice(event.title) && event.editable == true ) {
+            if (!confirm("Confirm removing?")) {
+                revertFunc();
+            }
             newLease = createLease(event);
             newLease.title = removingName(event.title);
             newLease.textColor = color_removing;
@@ -849,10 +852,9 @@ $(document).ready(function() {
             setCurrentSliceColor(val.color);
           }
           slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ val.color +"").text(val.title)).append($("<div />").attr("id", idFormat(val.title)).addClass('noactive'));
-        } else{
-          // $("div.fc-event-not-mine").remove();
-          slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ val.color +"").text(val.title));
-        }
+        }// else{
+        //   slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ val.color +"").text(val.title));
+        // }
         knew_slices.push(val.title);
       }
     });
@@ -881,9 +883,9 @@ $(document).ready(function() {
             setCurrentSliceColor(color);
           }
           slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ color +"").text(val)).append($("<div />").attr("id", idFormat(val)).addClass('noactive'));
-        } else{
-          slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ color +"").text(val));
-        }
+        } //else{
+        //   slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ color +"").text(val));
+        // }
         knew_slices.push(val);
       }
     });

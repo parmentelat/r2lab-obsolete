@@ -159,18 +159,11 @@ $(document).ready(function() {
       eventRender: function(event, element) {
         var view = $('#calendar').fullCalendar('getView').type;
         if(view != 'month'){
-        element.bind('dblclick', function() {
-          if (isMySlice(event.title) && event.editable == true ) {
-            newLease = createLease(event);
-            newLease.title = removingName(event.title);
-            newLease.textColor = color_removing;
-            newLease.editable = false;
-            removeElementFromCalendar(event.id);
-            addElementToCalendar(newLease);
-            updateLeases('delLease', newLease);
-          }
-          if (isMySlice(event.title) && isPending(event.title)) {
-            if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
+          element.bind('dblclick', function() {
+            if (isMySlice(event.title) && event.editable == true ) {
+              if (!confirm("Confirm removing?")) {
+                  revertFunc();
+              }
               newLease = createLease(event);
               newLease.title = removingName(event.title);
               newLease.textColor = color_removing;
@@ -179,11 +172,21 @@ $(document).ready(function() {
               addElementToCalendar(newLease);
               updateLeases('delLease', newLease);
             }
-          }
-          if (isMySlice(event.title) && isFailed(event.title)) {
-            removeElementFromCalendar(event.id);
-          }
-        });
+            if (isMySlice(event.title) && isPending(event.title)) {
+              if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
+                newLease = createLease(event);
+                newLease.title = removingName(event.title);
+                newLease.textColor = color_removing;
+                newLease.editable = false;
+                removeElementFromCalendar(event.id);
+                addElementToCalendar(newLease);
+                updateLeases('delLease', newLease);
+              }
+            }
+            if (isMySlice(event.title) && isFailed(event.title)) {
+              removeElementFromCalendar(event.id);
+            }
+          });
       }},
 
       // this is fired when an event is resized
@@ -865,10 +868,9 @@ $(document).ready(function() {
             setCurrentSliceColor(val.color);
           }
           slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ val.color +"").text(val.title)).append($("<div />").attr("id", idFormat(val.title)).addClass('noactive'));
-        } else{
-          // $("div.fc-event-not-mine").remove();
-          slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ val.color +"").text(val.title));
-        }
+        } //else{
+        //   slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ val.color +"").text(val.title));
+        // }
         knew_slices.push(val.title);
       }
     });
@@ -897,9 +899,9 @@ $(document).ready(function() {
             setCurrentSliceColor(color);
           }
           slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ color +"").text(val)).append($("<div />").attr("id", idFormat(val)).addClass('noactive'));
-        } else{
-          slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ color +"").text(val));
-        }
+        } //else{
+        //   slices.append($("<div />").addClass('fc-event-not-mine').attr("style", "background-color: "+ color +"").text(val));
+        // }
         knew_slices.push(val);
       }
     });
