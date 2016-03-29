@@ -86,7 +86,7 @@
 {# temporary - show a logout button when actually logged in #}
 {# this way we can still this code in production #}
 {% if r2lab_context.mfuser %}
-        <a class="button logout" href="http:/logout/">Logout</a>
+        <a class="button logout" href="/logout/">Logout</a>
 {% else %}
         <a class="button" target="_blank" href="http://portal.onelab.eu">Access the portal</a>
 {% endif %}
