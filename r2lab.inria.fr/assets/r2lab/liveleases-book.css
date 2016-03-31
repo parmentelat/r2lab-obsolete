@@ -1,11 +1,4 @@
-/* Thierry : this is too intrusive and changes the whole page layout
-body {
-  margin: 10px 10px;
-  padding: 0;
-  font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
-  font-size: 12px;
-}
-*/
+@import url("popover-overrides.css");
 
 .sactive {
   width: 0;

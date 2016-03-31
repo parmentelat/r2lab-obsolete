@@ -12,7 +12,7 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
-  var version             = '1.30';
+  var version             = '1.31';
   var refresh             = true;
   var currentTimezone     = 'local';
 
@@ -157,10 +157,12 @@ $(document).ready(function() {
 
       // this fires when an event is rendered
       eventRender: function(event, element) {
+        $(element).popover({content: event.title, placement: 'top'});
+
         var view = $('#calendar').fullCalendar('getView').type;
         if(view != 'month'){
           element.bind('dblclick', function() {
-            if (isMySlice(event.title) && event.editable == true ) { 
+            if (isMySlice(event.title) && event.editable == true ) {
               if (!confirm("Confirm removing?")) {
                   revertFunc();
               }
@@ -188,6 +190,18 @@ $(document).ready(function() {
             }
           });
       }},
+
+      eventClick: function(event, jsEvent, view) {
+        $(this).popover('show');
+      },
+
+      // eventMouseover: function(event, jsEvent, view) {
+      //   $(this).popover('show');
+      // },
+
+      eventMouseout: function(event, jsEvent, view) {
+        $(this).popover('hide');
+      },
 
       // this is fired when an event is resized
       eventResize: function(event, jsEvent, ui, view, revertFunc) {

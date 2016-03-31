@@ -12,7 +12,7 @@ $(document).ready(function() {
   var keepOldEvent        = null;
   var theZombieLeases     = [];
   var socket              = io.connect("http://r2lab.inria.fr:443");
-  var version             = '1.30';
+  var version             = '1.31';
   var refresh             = true;
   var currentTimezone     = 'local';
 
