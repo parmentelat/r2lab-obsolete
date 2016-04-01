@@ -4,7 +4,7 @@ widget_login_template: r2lab/widget_login.html
 ---
 
 ### What is R2Lab ?
-<div class="row">
+<div class="row" markdown="1">
   <div class="col-md-6">  
   R2Lab is a Wi-fi mesh testbed infrastructure suitable for testing wireless devices and heterogeneous wireless communication.
   <br>
@@ -26,18 +26,18 @@ widget_login_template: r2lab/widget_login.html
 
 <br>
 ### The nodes
-<div class="row">
+<div class="row" markdown="1">
   <div class="col-md-3">
     <br>
     <img src="/assets/img/node_interface.jpg">
   </div>
-  
-  <div class="col-md-7"> 
+
+  <div class="col-md-7">
   <br>
   R2lab platform consists in a set of thirty-seven nodes in an anechoic chamber of **≈ 90m<sup>2</sup>** distributed in mesh layout to offer an advanced simulation wi-fi site.
   <br>
-  <br> 
-  A full control of network nodes is provided with direct access to the gateway nodes. A full stack monitoring capability allow monitoring feedback from all network metrics like energy consumption, delay, throughput, overhead and etc. 
+  <br>
+  A full control of network nodes is provided with direct access to the gateway nodes. A full stack monitoring capability allow monitoring feedback from all network metrics like energy consumption, delay, throughput, overhead and etc.
   <br>
   <br>
   Besides, NEPI tool ([see more](tools.md)) offers a quick experiments deployment and easy evaluation of results. NEPI offers the possibility of implement different simulation types, topologies and covering of a wide range of network real use cases.
@@ -45,14 +45,14 @@ widget_login_template: r2lab/widget_login.html
   <br>
   </div>
 
-  <div class="col-md-2"> 
+  <div class="col-md-2">
   </div>
 </div>
 
 <br>
 ### The OneLab platform
 <div class="row" markdown="1">
-  <div class="col-md-7"> 
+  <div class="col-md-7">
   <br>
   R2Lab is also part of the OneLab project - a consortium of higher education and research institutions.
   <br>
@@ -66,8 +66,7 @@ widget_login_template: r2lab/widget_login.html
     <br>
     <img src="/assets/img/onelab-logo.png" style="height:55px;">
   </div>
-  
-  <div class="col-md-2"> 
+
+  <div class="col-md-2">
   </div>
 </div>
-
