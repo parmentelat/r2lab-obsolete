@@ -23,31 +23,33 @@ user23 = 'root'
 # distro version for OAI
 version_host11 = 'oai-enb.ndz'
 version_host23 = 'oai-ue.ndz'
+load_nodes     = False
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="D1-OAI")
 
-# creating the gateway node
-gateway = ec.register_resource("linux::Node",
-                                username = gateway_username,
-                                hostname = gateway_hostname,
-                                identity = gateway_key,
-                                cleanExperiment = True,
-                                cleanProcesses = True,
-                                autoDeploy = True)
+if load_nodes:
+    # creating the gateway node
+    gateway = ec.register_resource("linux::Node",
+                                    username = gateway_username,
+                                    hostname = gateway_hostname,
+                                    identity = gateway_key,
+                                    cleanExperiment = True,
+                                    cleanProcesses = True,
+                                    autoDeploy = True)
 
-# application to load at fit11 and fit23 the fresh distro for OAI
-cmd   = 'rhubarbe-load -i {} -t 2000 {}; '.format(version_host11, host11)
-cmd  += 'rhubarbe-load -i {} -t 2000 {}; '.format(version_host23, host23)
-app_gateway = ec.register_resource("linux::Application",
-                                    command = cmd,
-                                    connectedTo = gateway)
-ec.deploy(app_gateway)
-# wait application finish
-ec.wait_finished(app_gateway)
+    # application to load at fit11 and fit23 the fresh distro for OAI
+    cmd   = 'rhubarbe-load -i {} -t 2000 {}; '.format(version_host11, host11)
+    cmd  += 'rhubarbe-load -i {} -t 2000 {}; '.format(version_host23, host23)
+    app_gateway = ec.register_resource("linux::Application",
+                                        command = cmd,
+                                        connectedTo = gateway)
+    ec.deploy(app_gateway)
+    # wait application finish
+    ec.wait_finished(app_gateway)
 
-print ("Nodes loaded... Waiting to start (30 sec.)...")
-time.sleep(35)
+    print ("Nodes loaded... Waiting to start (30 sec.)...")
+    time.sleep(30)
 
 # creating the fit11 node
 fit11   = ec.register_resource("linux::Node",
