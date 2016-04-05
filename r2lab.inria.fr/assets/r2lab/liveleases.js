@@ -138,7 +138,7 @@ $(document).ready(function() {
 
       // this fires when an event is rendered
       eventRender: function(event, element) {
-        $(element).popover({content: event.title, placement: 'top'});
+        $(element).popover({content: event.title, placement: 'top', trigger: 'hover', delay: {"show": 1000 }});
 
         element.bind('dblclick', function() {
           if (isMySlice(event.title) && event.editable == true ) {
@@ -174,13 +174,13 @@ $(document).ready(function() {
       //   $(this).popover('show');
       // },
 
-      eventMouseover: function(event, jsEvent, view) {
-        $(this).popover('show');
-      },
-
-      eventMouseout: function(event, jsEvent, view) {
-        $(this).popover('hide');
-      },
+      // eventMouseover: function(event, jsEvent, view) {
+      //   $(this).popover('show');
+      // },
+      //
+      // eventMouseout: function(event, jsEvent, view) {
+      //   $(this).popover('hide');
+      // },
 
       // this is fired when an event is resized
       eventResize: function(event, jsEvent, ui, view, revertFunc) {
