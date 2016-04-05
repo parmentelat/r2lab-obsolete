@@ -178,9 +178,9 @@ $(document).ready(function() {
       //   $(this).popover('show');
       // },
       //
-      // eventMouseout: function(event, jsEvent, view) {
-      //   $(this).popover('hide');
-      // },
+      eventMouseout: function(event, jsEvent, view) {
+        $(this).popover('hide');
+      },
 
       // this is fired when an event is resized
       eventResize: function(event, jsEvent, ui, view, revertFunc) {
