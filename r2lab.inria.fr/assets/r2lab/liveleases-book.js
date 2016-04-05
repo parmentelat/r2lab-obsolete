@@ -191,13 +191,13 @@ $(document).ready(function() {
           });
       }},
 
-      eventClick: function(event, jsEvent, view) {
-        $(this).popover('show');
-      },
-
-      // eventMouseover: function(event, jsEvent, view) {
+      // eventClick: function(event, jsEvent, view) {
       //   $(this).popover('show');
       // },
+
+      eventMouseover: function(event, jsEvent, view) {
+        $(this).popover('show');
+      },
 
       eventMouseout: function(event, jsEvent, view) {
         $(this).popover('hide');
