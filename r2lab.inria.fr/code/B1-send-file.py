@@ -34,15 +34,6 @@ local_dir   = '/local_path/'
 local_file  = 'file.txt'
 gateway_dir = '/gateway_path/'
 
-wifi_interface = 'wlan2'
-wifi_channel   = '4'
-wifi_name      = 'ad-hoc'
-wifi_key       = '1234567890'
-
-wifi_net_mask  = '/24'
-wifi_ip_fit01  = '172.16.1.1'
-wifi_ip_fit02  = '172.16.1.2'
-
 # creating local
 local   = ec.register_resource("linux::Node",
                                 hostname = 'localhost',
