@@ -30,9 +30,9 @@ user02 = 'root'
 host02_dir = '/home/'
 port = 1234
 
-local_dir       = '/Users/nano/'
-local_file      = 'text.txt'
-gateway_dir     = '/home/mario/'
+local_dir   = '/local_path/'
+local_file  = 'file.txt'
+gateway_dir = '/gateway_path/'
 
 wifi_interface = 'wlan2'
 wifi_channel   = '4'
