@@ -1,5 +1,5 @@
 
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # including nepi library and other required packages
 from __future__ import print_function
@@ -48,8 +48,8 @@ if load_nodes:
     # wait application finish
     ec.wait_finished(app_gateway)
 
-    print ("Nodes loaded... Waiting to start (30 sec.)...")
-    time.sleep(30)
+    print ("Nodes loaded... Waiting to start (45 sec.)...")
+    time.sleep(45)
 
 # creating the fit11 node
 fit11   = ec.register_resource("linux::Node",
@@ -96,16 +96,26 @@ app_fit23 = ec.register_resource("linux::Application",
                                   connectedTo = fit23)
 
 
-# deploy the applications
-ec.deploy([app_fit11, app_fit23])
-# wait application to recovery the results
-ec.wait_finished([app_fit11, app_fit23])
+# fit23 will ping fit11 to test it
+cmd  = "ping 10.0.1.9 -i 0.001 -s 1000 -c 100; "
+app_ping_fit11 = ec.register_resource("linux::Application",
+                                  command = cmd,
+                                  connectedTo = fit11)
 
-# recovering the results
-print ("\n--- INFO: listing fit11 distro:")
-print (ec.trace(app_fit11, "stdout"))
-print ("\n--- INFO: listing fit23 distro:")
-print (ec.trace(app_fit23, "stdout"))
+# defining that the node 23 can start only after the node 11 finish its task
+ec.register_condition(app_fit23, ResourceAction.START, app_fit11, ResourceState.STARTED, "15s")
+
+# defining that the node 23 can start only after the node 11 finish its task
+ec.register_condition(app_ping_fit11, ResourceAction.START, app_fit23, ResourceState.STARTED, "15s")
+
+# deploy the applications
+ec.deploy([app_fit11, app_fit23, app_ping_fit11])
+
+# wait application to recovery the results
+ec.wait_finished([app_ping_fit11])
+
+print ("\n--- INFO: fit11 ping test:")
+print (ec.trace(app_ping_fit11, "stdout"))
 
 # shutting down the experiment
 ec.shutdown()
