@@ -21,7 +21,6 @@ def credentials():
     return 'faraday.inria.fr', 'onelab.inria.mario.tutorial', '~/.ssh/onelab.private'
 
 
-# this can run on the prep-lab for dry runs
 def wifi_conf():
     "returns a wifi confs (interface, channel, name, key)"
     return 'wlan2', '4', 'ad-hoc', '1234567890'
