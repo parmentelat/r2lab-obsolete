@@ -18,7 +18,7 @@ from nepi.util.sshfuncs import logger
 # this can run on the prep-lab for dry runs
 def credentials():
     "returns a triple (hostname, username, key)"
-    return 'faraday.inria.fr', 'onelab.inria.mario.tutorial', '~/.ssh/onelab_mario_tutorial'
+    return 'faraday.inria.fr', 'onelab.inria.mario.tutorial', '~/.ssh/onelab.private'
 
 
 # this can run on the prep-lab for dry runs
