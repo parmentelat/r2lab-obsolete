@@ -27,7 +27,7 @@ def get_app_trace(ec, app, appname, rundir, tracename, outfile):
         os.makedirs(rundir)
     outpath = os.path.join(rundir, outfile)
     with open(outpath, 'w') as f:
-        f.write(ec.trace(app, tracename))
+        f.write(str(ec.trace(app, tracename)))
     print(4*'=', "Stored trace {} for app {} in {}"
           .format(tracename, appname, outpath))
 
@@ -40,11 +40,11 @@ def get_app_stdout(ec, app, appname, rundir):
 def one_run(gwhost, gwuser, key, sendername, receivername, file, port, storage):
     # we keep all 'environment' data for one run in a dedicated subdir
     # using this name scheme to store results locally
-    dataname = os.path.join(storage, "csi-{}-{}-{}-{}"
-                            .format(receivername, sendername, file, port))
+    dataname = os.path.join(storage, "out-{}-{}-{}"
+                            .format(receivername, sendername, port))
 
-    summary = "{} --> {} file {}"\
-        .format(sendername, receivername, file)
+    summary = "{} --> {} port {}"\
+        .format(sendername, receivername, port)
 
     #fixed params home dirs
     gateway_dir = '/home/{}/'.format(gwuser)
@@ -161,13 +161,19 @@ def one_run(gwhost, gwuser, key, sendername, receivername, file, port, storage):
     #wait ls application to recovery the results and present after
     ec.wait_finished(run_ls_receiver)
 
-    # recovering the results of each application
-    print ("\n--- INFO: listing directory on receiver:")
-    print (ec.trace(run_local, "stdout"))
-    print (ec.trace(run_gateway, "stdout"))
-    print (ec.trace(run_sender, "stdout"))
-    print (ec.trace(run_receiver, "stdout"))
-    print (ec.trace(run_ls_receiver, "stdout"))
+    # collect data
+    print(10*'-', summary, 'Collecting data in {}'.format(dataname))
+    get_app_stdout(ec, run_local, "run-local", dataname)
+    get_app_stdout(ec, run_gateway, "run-gateway", dataname)
+    get_app_stdout(ec, run_sender, "run-sender", dataname)
+    get_app_stdout(ec, run_receiver, "run-receiver", dataname)
+    get_app_stdout(ec, run_ls_receiver, "run-ls-receiver", dataname)
+
+    # raw data gets to go in the current directory as it's more convenient to manage
+    # also it's safe to wait for a little while
+    time.sleep(5)
+    get_app_trace(ec, run_ls_receiver, "run-ls-receiver", ".", "rawdata", dataname+".raw")
+
     # shutting down the experiment
     ec.shutdown()
 
