@@ -11,8 +11,8 @@ import time
 
 # setting up the default host, onelab user and shh key credential
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'root'#'onelab.inria.mario.tutorial'
-gateway_key       = '~/.ssh/id_rsa'#'~/.ssh/onelab.private'
+gateway_username  = 'onelab.inria.mario.tutorial'
+gateway_key       = '~/.ssh/onelab.private'
 
 # setting up the credentials for the nodes
 host11 = 'fit11'
@@ -23,7 +23,7 @@ user23 = 'root'
 # distro version for OAI
 version_host11 = 'oai-enb.ndz'
 version_host23 = 'oai-ue.ndz'
-load_nodes     = False
+load_nodes     = True
 
 # creating a new ExperimentController (EC) to manage the experiment
 ec = ExperimentController(exp_id="D1-OAI")
