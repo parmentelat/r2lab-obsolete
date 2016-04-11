@@ -86,12 +86,12 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
   Instead to have only fit01 and fit02 involved, you can give any node by terminal command line.
   <br>
   Then, the terminal call should be:<br>
-  <code> $ python B1-send-file_shift.py -s11 -r23 my_local_file.ext </code><br>
-  where, -s means the <b>sender</b> node, -r refers to the <b>receiver</b> node and <b>my_local_file</b> is the file you want
+  <pre><code>$ python B1-send-file_shift.py -s11 -r23 my_local_file.ext </code></pre>
+  where, <code>-s</code> means the <b>sender</b> node, <code>-r</code> refers to the <b>receiver</b> node and <b>my_local_file</b> is the file you want
   transmit from sender node to receiver one.
   <br>
   Other options can be checked typing <b>-h</b>, or:<br>
-  <code> $ python B1-send-file_shift.py -h </code><br>
+  <pre><code>$ python B1-send-file_shift.py -h </code></pre>
 
   <center>
     <img src="/assets/img/B1.png" alt="b1"><br/>
@@ -127,12 +127,12 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
   Instead to have only fit01 and fit02 involved, you can give any node by terminal command line.
   <br>
   Then, the terminal call should be:<br>
-  <code> $ python B2-send-file_shift.py -s11 -r23 my_local_file.ext </code><br>
-  where, -s means the <b>sender</b> node, -r refers to the <b>receiver</b> node and <b>my_local_file</b> is the file you want
+  <pre><code>$ python B2-send-file_shift.py -s11 -r23 my_local_file.ext </code></pre>
+  where, <code>-s</code> means the <b>sender</b> node, <code>-r</code> refers to the <b>receiver</b> node and <b>my_local_file</b> is the file you want
   transmit from sender node to receiver one.
   <br>
   Other options can be checked typing <b>-h</b>, or:<br>
-  <code> $ python B2-send-file_shift.py -h </code><br>
+  <pre><code>$ python B2-send-file_shift.py -h </code></pre>
 
   <center>
     <img src="/assets/img/B2.png" alt="b2"><br/>
