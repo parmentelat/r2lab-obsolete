@@ -38,7 +38,13 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
     <a href="#B1" id="B1-tab" role="tab" data-toggle="tab" aria-controls="B1" aria-expanded="true">B1</a>
   </li>
   <li role="presentation" class="">
+    <a href="#B1-shift" role="tab" id="B1-shift-tab" data-toggle="tab" aria-controls="B1-shift" aria-expanded="false">B1 Shift</a>
+  </li>
+  <li role="presentation" class="">
     <a href="#B2" role="tab" id="B2-tab" data-toggle="tab" aria-controls="B2" aria-expanded="false">B2</a>
+  </li>
+  <li role="presentation" class="">
+    <a href="#B2-shift" role="tab" id="B2-shift-tab" data-toggle="tab" aria-controls="B2-shift" aria-expanded="false">B2 Shift</a>
   </li>
 </ul>
 
@@ -72,6 +78,29 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
 << codediff b1 B1-send-file.py >>
 </div>
 
+<!------------ B1 Shift ------------>
+<div role="tabpanel" class="tab-pane fade active in" id="B1-shift" aria-labelledby="home-tab">
+  <br/>
+  The experiment below are the same as the previous (B1), however here,
+  a command line parser is provided to change the target nodes conveniently.
+  Instead to have only fit01 and fit02 involved, you can give any node by terminal command line.
+  <br>
+  Then, the terminal call should be:<br>
+  <code> $ python B1-send-file_shift.py -s11 -r23 my_local_file.ext </code><br>
+  where, -s means the <b>sender</b> node, -r refers to the <b>receiver</b> node and <b>my_local_file</b> is the file you want
+  transmit from sender node to receiver one.
+  <br>
+  Other options can be checked typing <b>-h</b>, or:<br>
+  <code> $ python B1-send-file_shift.py -h </code><br>
+
+  <center>
+    <img src="/assets/img/B1.png" alt="b1"><br/>
+    Download the <a href="/code/B1-send-file_shift.py" download target="_blank">B1 shift experiment</a> code
+  </center>
+
+<< codediff b1s B1-send-file_shift.py >>
+</div>
+
 <!------------ B2 ------------>
 <div role="tabpanel" class="tab-pane fade" id="B2" aria-labelledby="profile-tab">
   <br/>
@@ -85,9 +114,32 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
     <img src="/assets/img/B2.png" alt="b2"><br/>
     Download the <a href="/code/B2-send-file.py" download target="_blank">B2 experiment</a> code
   </center>
-  
-<< codediff b2 B1-send-file.py B2-send-file.py >>
 
+<< codediff b2 B1-send-file.py B2-send-file.py >>
+</div>
+
+<!------------ B2 Shift------------>
+<div role="tabpanel" class="tab-pane fade" id="B2-shift" aria-labelledby="profile-tab">
+  <br/>
+
+  The experiment below are the same as the previous (B2), however here,
+  a command line parser is provided to change the target nodes conveniently.
+  Instead to have only fit01 and fit02 involved, you can give any node by terminal command line.
+  <br>
+  Then, the terminal call should be:<br>
+  <code> $ python B2-send-file_shift.py -s11 -r23 my_local_file.ext </code><br>
+  where, -s means the <b>sender</b> node, -r refers to the <b>receiver</b> node and <b>my_local_file</b> is the file you want
+  transmit from sender node to receiver one.
+  <br>
+  Other options can be checked typing <b>-h</b>, or:<br>
+  <code> $ python B2-send-file_shift.py -h </code><br>
+
+  <center>
+    <img src="/assets/img/B2.png" alt="b2"><br/>
+    Download the <a href="/code/B2-send-file_shift.py" download target="_blank">B2 shift experiment</a> code
+  </center>
+
+<< codediff b2s B2-send-file_shift.py >>
 </div>
 
 </div> <!-- end div contents -->
