@@ -95,7 +95,7 @@ app_adhoc_fit01 = ec.register_resource("linux::Application",
                                         autoDeploy = True,
                                         connectedTo = fit01)
 
-# configuring the ad-hoc for node fit01
+# configuring the ad-hoc for node fit02
 cmd  = "ip addr flush dev {}; ".format(wifi_interface)
 cmd += "sudo ip link set {} down; ".format(wifi_interface)
 cmd += "sudo iwconfig {} mode ad-hoc; ".format(wifi_interface)
