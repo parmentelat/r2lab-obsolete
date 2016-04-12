@@ -160,7 +160,7 @@ tutorial.
   and devices.
   You can check more details about <a href="http://openairinterface.eurecom.fr/openairinterface-software" target="_blank">OIA</a>.
   <br/><br/>
-  For now, the nodes that have the OAI installed are <code>11</code> and <code>23</code>. Then, in the code
+  For now, the nodes equipped with OAI interfaces are <code>11</code> and <code>23</code>. Then, in the code
   you will find the nodes already setup.
 
   <center>
