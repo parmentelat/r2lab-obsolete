@@ -1,3 +1,5 @@
+// this requires omfrest.js
+
 $(document).ready(function() {
 
   var my_slices_name      = r2lab_slices;//['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];//r2lab_slices
@@ -284,7 +286,7 @@ $(document).ready(function() {
         if(isZombie(v)){
           theZombieLeases.push(newLease);
           var request = {"uuid" : newLease.uuid};
-          post_lease_request('delete', request, function(xhttp) {
+          post_omfrest_request('/leases/delete', request, function(xhttp) {
             if (xhttp.readyState == 4 && xhttp.status == 200) {
               ;//console.log(request);
             }
@@ -553,11 +555,11 @@ $(document).ready(function() {
 
 
   function setActionsQueue(action, data){
-    var shiftAction = null;
+    var verb = null;
     var request = null;
 
     if(action == 'add'){
-      shiftAction = 'add';
+      verb = 'add';
       request = {
         "slicename"  : fullName(resetName(data.title)),
         "valid_from" : data.start._d.toISOString(),
@@ -566,7 +568,7 @@ $(document).ready(function() {
       actionsQueue.push(data.id);
     }
     else if (action == 'edit'){
-      shiftAction = 'update';
+      verb = 'update';
       request = {
         "uuid" : data.uuid,
         "valid_from" : data.start._d.toISOString(),
@@ -574,7 +576,7 @@ $(document).ready(function() {
       };
     }
     else if (action == 'del'){
-      shiftAction = 'delete';
+      verb = 'delete';
       request = {
         "uuid" : data.uuid,
       };
@@ -584,7 +586,7 @@ $(document).ready(function() {
       console.log('Someting went wrong in map actions.');
       return false;
     }
-    post_lease_request(shiftAction, request, function(xhttp) {
+    post_omfrest_request("/leases/"+verb, request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
           wait_for_show = false;
       }
@@ -983,40 +985,6 @@ $(document).ready(function() {
       sendMessage('This view is read only!', 'info');
     });
   }
-
-
-  //STOLEN FROM THIERRY
-  //from https://docs.djangoproject.com/en/1.9/ref/csrf/
-  function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-  }
-
-
-  // callback will be called on the xhttp object upon ready state change
-  // see http://www.w3schools.com/ajax/ajax_xmlhttprequest_onreadystatechange.asp
-  function post_lease_request(verb, request, callback) {
-    var xhttp = new XMLHttpRequest();
-    xhttp.open("POST", "/leases/"+verb, true);
-    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    // this is where we retrieve the CSRF token from the context
-    var csrftoken = getCookie('csrftoken');
-    xhttp.setRequestHeader("X-CSRFToken", csrftoken);
-    xhttp.send(JSON.stringify(request));
-    xhttp.onreadystatechange = function(){callback(xhttp);};
-  }
-
 
   main();
 });

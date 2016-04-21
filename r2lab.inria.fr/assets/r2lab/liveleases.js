@@ -1,6 +1,8 @@
+// this requires omfrest.js
+
 $(document).ready(function() {
 
-  var my_slices_name      = r2lab_slices;//['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];//r2lab_slices
+  var my_slices_name      = r2lab_slices; // a list of slice hrns
   var my_slices_color     = [];
   var actionsQueue        = [];
   var actionsQueued       = [];
@@ -263,7 +265,7 @@ $(document).ready(function() {
         if(isZombie(v)){
           theZombieLeases.push(newLease);
           var request = {"uuid" : newLease.uuid};
-          post_lease_request('delete', request, function(xhttp) {
+          post_omfrest_request('/leases/delete', request, function(xhttp) {
             if (xhttp.readyState == 4 && xhttp.status == 200) {
               ;//console.log(request);
             }
@@ -533,11 +535,11 @@ $(document).ready(function() {
 
 
   function setActionsQueue(action, data){
-    var shiftAction = null;
+    var verb = null;
     var request = null;
 
     if(action == 'add'){
-      shiftAction = 'add';
+      verb = 'add';
       request = {
         "slicename"  : fullName(resetName(data.title)),
         "valid_from" : data.start._d.toISOString(),
@@ -546,7 +548,7 @@ $(document).ready(function() {
       actionsQueue.push(data.id);
     }
     else if (action == 'edit'){
-      shiftAction = 'update';
+      verb = 'update';
       request = {
         "uuid" : data.uuid,
         "valid_from" : data.start._d.toISOString(),
@@ -554,7 +556,7 @@ $(document).ready(function() {
       };
     }
     else if (action == 'del'){
-      shiftAction = 'delete';
+      verb = 'delete';
       request = {
         "uuid" : data.uuid,
       };
@@ -564,7 +566,7 @@ $(document).ready(function() {
       console.log('Someting went wrong in map actions.');
       return false;
     }
-    post_lease_request(shiftAction, request, function(xhttp) {
+    post_omfrest_request("/leases/"+verb, request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
         wait_for_show = false;
         //console.log(request);

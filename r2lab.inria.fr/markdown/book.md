@@ -33,6 +33,7 @@ skip_header: yes
       <style type="text/css"> @import url("/assets/css/fullcalendar.css"); </style>
 
       <style type="text/css"> @import url("/assets/r2lab/liveleases-book.css"); </style>
+      <script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
       <script type="text/javascript" src="/assets/r2lab/liveleases-book.js"></script>
       <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
     </div>

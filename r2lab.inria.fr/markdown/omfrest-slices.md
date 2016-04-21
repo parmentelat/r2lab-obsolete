@@ -7,7 +7,7 @@ This is a unit test; all data is hard-coded in the page itself
 See also `slices/view.py`
 
 <!-- this exposes the getCookie function -->
-<script type="text/javascript" src="/assets/r2lab/ajax-slices.js"></script>
+<script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
 
 ---
 <div id="get-slice"><p>Click this paragraph to get slices details (hard-wired list)</p>
@@ -20,7 +20,7 @@ var get_slice = function() {
     var request = {
        "names" : [ "onelab.testwd.another_slice", "onelab.upmc.infocom.demo2016"],
 	    };
-    post_slice_request('get', request, function(xhttp) {
+    post_omfrest_request('/slices/get', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
 	  // decoding
 	  var responses = JSON.parse(xhttp.responseText);
@@ -53,7 +53,7 @@ var update_slice = function() {
                     "valid_from": "2016-02-20T11:00:00Z",
                     "valid_until": "2016-02-20T12:00:00Z"
 		    };
-    post_slice_request('update', request, function(xhttp) {
+    post_omfrest_request('/slices/update', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
           document.getElementById("update-response").innerHTML = xhttp.responseText;
 	  // decoding
@@ -77,7 +77,7 @@ var delete_slice = function() {
     var request = { 
     		    "uuid" : added_slice_uuid,
 		    };
-    post_slice_request('delete', request, function(xhttp) {
+    post_omfrest_request('/leases/delete', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
           document.getElementById("delete-response").innerHTML = xhttp.responseText;
 	  // decoding
