@@ -47,14 +47,12 @@ class SlicesProxy(OmfRestView):
         jobs = [
             self.co_get_slice(slicename) for slicename in record['names']
             ]
-        print("-> gather jobs", jobs)
         js_s = self.loop.run_until_complete(asyncio.gather(*jobs, loop=self.loop))
         try:
             results = [ json.loads(js) for js in js_s ]
             return self.http_response_from_struct(results)
         except:
-            import traceback
-            traceback.print_exc()
+            logger.exception("Cannot get slices")
             return self.http_response_from_struct(
                 { 'error': 'unexpected error',
                   'raw_result' : js_s,

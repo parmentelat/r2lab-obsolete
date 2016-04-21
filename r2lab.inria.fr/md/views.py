@@ -184,9 +184,8 @@ def markdown_page(request, markdown_file, extra_metavars={}):
         if isinstance(e, FileNotFoundError):
             previous_message += str(e)
         else:
-            import traceback
             stack = traceback.format_exc()
-            print(stack)
+            logger.info("Storing stacktrace in previous_message - {}".format(stack))
             previous_message += "<pre>\n{}\n</pre>".format(stack)
         previous_message = mark_safe(previous_message)
         if settings.DEBUG:

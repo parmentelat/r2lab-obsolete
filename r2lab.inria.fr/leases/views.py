@@ -58,8 +58,7 @@ class LeasesProxy(OmfRestView):
             return self.http_response_from_struct(
                 self.return_lease(lease))
         except:
-            import traceback
-            traceback.print_exc()
+            logger.exception("Cannot add lease")
             return self.http_response_from_struct(
                 {'error': 'unexpected error',
                  'raw_result' : js,
@@ -95,8 +94,7 @@ class LeasesProxy(OmfRestView):
             return self.http_response_from_struct(
                 self.return_lease(lease))
         except:
-            import traceback
-            traceback.print_exc()
+            logger.exception("Cannot update lease")
             return self.http_response_from_struct(
                 {'error': 'unexpected error',
                  'raw_result' : js,
@@ -124,8 +122,7 @@ class LeasesProxy(OmfRestView):
             return self.http_response_from_struct(
                 {'ok' : ok=="OK"})
         except:
-            import traceback
-            traceback.print_exc()
+            logger.exception("Cannot delete lease")
             return self.http_response_from_struct(
                 {'error': 'unexpected error',
                  'raw_result' : js,

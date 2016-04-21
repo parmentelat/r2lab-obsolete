@@ -78,9 +78,7 @@ def manifold_details(url, email, password, logger):
             hrn = hrns[0]
             
     except Exception as e:
-        import traceback
-        logger.error("mfdetails: Could not retrieve user's slices\n{}"
-                     .format(traceback.format_exc()))
+        logger.exception("mfdetails: Could not retrieve user's slices")
 
     # add hrn in person
     person['hrn'] = hrn
