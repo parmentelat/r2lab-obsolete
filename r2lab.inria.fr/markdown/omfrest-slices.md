@@ -10,80 +10,44 @@ See also `slices/view.py`
 <script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
 
 ---
-<div id="get-slice"><p>Click this paragraph to get slices details (hard-wired list)</p>
-<p id='add-response'>Result here</p>
+<div id="get2-div"><p>Click this paragraph to get slices details (hard-wired list)</p>
+<ul id='get2'><li>Results here</li></ul>
+</div>
+
+---
+<div id="getall-div"><p>Click this paragraph to get the complete list of slices</p>
+<ul id='getall'><li>Results here</li></ul>
 </div>
 
 <script>
 // an example of how to retrieve slices
-var get_slice = function() {
-    var request = {
-       "names" : [ "onelab.testwd.another_slice", "onelab.upmc.infocom.demo2016"],
-	    };
+var get_slices = function(id, names) {
+    var sel = "#"+id;
+    var request = {};
+    if (names) request['names'] = names;
     post_omfrest_request('/slices/get', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
 	  // decoding
 	  var responses = JSON.parse(xhttp.responseText);
+	  $(sel+">li").remove();
 	  // can come in handy to browse the structure
-	  console.log(responses);
+	  console.log("responses=", responses);
 	  // but we will only show the gist of it, name and expiration
-	  names = [];
-	  for (i=0; i<responses.length; i++) {
+	  for (i = 0; i < responses.length; i++) {
 	      var response = responses[i];
-	      slicename = response['resource_response']['resource']['name'];
-	      expiration = response['resource_response']['resource']['valid_until'];
-              names = names + " " + slicename + "[ -> " + expiration + "]";
+	      var slicename = response['name'];
+	      var expiration = response['valid_until'];
+	      var label = "name=" + slicename + ", expiration=" + expiration;
+	      $(sel).append("<li>"+label+"</li>");
+	      console.log(label);
 	  }
-	  $("#add-response").html(names);
       }});
 }
-$(function(){$('#get-slice').click(get_slice);})
+$(function(){
+  $('#get2-div').click(function() {
+    get_slices("get2", [ "onelab.testwd.another_slice", "onelab.upmc.infocom.demo2016"])});
+  $('#getall-div').click(function() {
+    get_slices('getall');});
+});
 </script>
 
----
-<div id="update-slice"><p>Click this paragraph to update the just-added slice</p>
-<p id='update-response'>Result here</p>
-</div>
-
-<script>
-// an example of how to update a slice
-var update_slice = function() {
-    var request = { 
-    		    "uuid" : added_slice_uuid,
-                    "valid_from": "2016-02-20T11:00:00Z",
-                    "valid_until": "2016-02-20T12:00:00Z"
-		    };
-    post_omfrest_request('/slices/update', request, function(xhttp) {
-      if (xhttp.readyState == 4 && xhttp.status == 200) {
-          document.getElementById("update-response").innerHTML = xhttp.responseText;
-	  // decoding
-	  var responses = JSON.parse(xhttp.responseText);
-	  console.log(responses);
-      }});
-}
-$(function(){$('#update-slice').click(update_slice);})
-</script>
-
-
-
----
-<div id="delete-slice"><p>Click this paragraph to delete the just-added slice</p>
-<p id='delete-response'>Result here</p>
-</div>
-
-<script>
-// an example of how to delete a slice
-var delete_slice = function() {
-    var request = { 
-    		    "uuid" : added_slice_uuid,
-		    };
-    post_omfrest_request('/leases/delete', request, function(xhttp) {
-      if (xhttp.readyState == 4 && xhttp.status == 200) {
-          document.getElementById("delete-response").innerHTML = xhttp.responseText;
-	  // decoding
-	  var responses = JSON.parse(xhttp.responseText);
-	  console.log(responses);
-      }});
-}
-$(function(){$('#delete-slice').click(delete_slice);})
-</script>

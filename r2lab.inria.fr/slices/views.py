@@ -35,23 +35,33 @@ class SlicesProxy(OmfRestView):
 
     def get_slices(self, record):
         """
-        retrieve the account objects attached to a list of slicenames
+        retrieve account objects
+        if 'names' is provided in the input record, it should contain a 
+        list of slicenames (hrns) and only these will be probed then
+        otherwise all slices are returned
         """
-        error = self.check_record(record,
-                                  ('names', ),
-                                  ())
+        error = self.check_record(record, (), ('names', ))
         if error:
             return self.http_response_from_struct(error)
         self.init_omf_sfa_proxy()
-        # issue all requests in parallel
-        jobs = [
-            self.co_get_slice(slicename) for slicename in record['names']
+        if 'names' in record:
+            # issue all requests in parallel
+            jobs = [
+                self.co_get_slice(slicename) for slicename in record['names']
             ]
-        js_s = self.loop.run_until_complete(asyncio.gather(*jobs, loop=self.loop))
+            js_s = self.loop.run_until_complete(asyncio.gather(*jobs, loop=self.loop))
+        else:
+            js_s = [ self.loop.run_until_complete(self.co_get_slice()) ]
         try:
-            results = [ json.loads(js) for js in js_s ]
-            return self.http_response_from_struct(results)
-        except:
+            responses = [ json.loads(js) for js in js_s ]
+            responses = self.normalize_responses(responses)
+            responses = [ response for response in responses if
+                          response['name'] not in ('__default__',) ]
+            responses.sort(key=lambda r: r['name'])
+            return self.http_response_from_struct(responses)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
             logger.exception("Cannot get slices")
             return self.http_response_from_struct(
                 { 'error': 'unexpected error',
@@ -59,9 +69,8 @@ class SlicesProxy(OmfRestView):
               })
 
     @asyncio.coroutine
-    def co_get_slice(self, slicename):
-        url = "account?name={}".format(slicename)
-        logger.debug("-> omf_sfa GET on url {}".format(url))
+    def co_get_slice(self, slicename=None):
+        url = "accounts" if slicename is None else "account?name={}".format(slicename)
         js = yield from self.omf_sfa_proxy.REST_as_json(url, "GET", None)
-        logger.info("<- omf_sfa GET {}".format(js))
         return js
+

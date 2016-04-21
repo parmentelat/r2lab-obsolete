@@ -2,11 +2,11 @@
 
 $(document).ready(function() {
 
-  var my_slices_name      = r2lab_slices;//['onelab.inria.r2lab.mario_test', 'onelab.inria.r2lab.admin', 'onelab.inria.mario.tutorial', 'onelab.inria.mario.script'];//r2lab_slices
+  var my_slices_name      = r2lab_slices; // a list of slice hrns
   var my_slices_color     = [];
   var actionsQueue        = [];
   var actionsQueued       = [];
-  var current_slice_name  = current_slice.name;//'onelab.inria.mario.tutorial';//current_slice.name
+  var current_slice_name  = current_slice.name; //'onelab.inria.mario.tutorial';//current_slice.name
   var current_slice_color = '#DDD';
   var current_leases      = null;
   var color_pending       = '#000000';

@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.views.generic import View
 
 # essentially, this describes the OMF REST API endpoint details
-from r2lab.settings import omfrest_settings
+from r2lab.settings import omfrest_settings, logger
 
 ### the standard way to use rhubarbe is to have it installed separately
 try:
@@ -73,3 +73,20 @@ class OmfRestView(View):
         if unknown:
             error += " unknown field(s): {}".format(" ".join(unknown))
         return None if not error else {'error' : error}
+
+    def normalize_responses(self, responses):
+        """
+        for concurrent calls
+        sometimes one method uses several ways to achieve its operation
+        like e.g. get_slices, that would send
+        * either ONE request for the whole list of accounts
+        * OR several individual requests, one per account
+
+        our job here is to remove the 'resource_response' step so that all results
+        are homogeneous and look like a list of the actual resource records
+        """
+
+        try:
+            return responses[0]['resource_response']['resources'] 
+        except KeyError:
+            return [response['resource_response']['resource'] for response in responses]
