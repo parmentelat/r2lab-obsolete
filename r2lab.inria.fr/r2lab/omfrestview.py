@@ -6,10 +6,13 @@ from django.http import HttpResponse
 
 from django.views.generic import View
 
+# essentially, this describes the OMF REST API endpoint details
+from r2lab.settings import omfrest_settings
+
 ### the standard way to use rhubarbe is to have it installed separately
 try:
     from rhubarbe.omfsfaproxy import OmfSfaProxy
-# in a standalone environment however, just create a symlink:
+# in a standalone / devel environment however, just create a symlink
 except:
     from .omfsfaproxy import OmfSfaProxy
 
@@ -48,9 +51,10 @@ class OmfRestView(View):
         self.loop = asyncio.new_event_loop()
         # we use this location on r2lab.inria.fr which is readable by apache
         self.omf_sfa_proxy \
-            = OmfSfaProxy("faraday.inria.fr", 12346,
-                          "/etc/rhubarbe/root.pem", None,
-                          "37nodes",
+            = OmfSfaProxy(omfrest_settings['hostname'],
+                          omfrest_settings['port'],
+                          omfrest_settings['root_pem'], None,
+                          omfrest_settings['nodename'],
                           loop=self.loop)
 
     def check_record(self, record, mandatory, optional):

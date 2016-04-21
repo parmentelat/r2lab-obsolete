@@ -29,6 +29,21 @@ LOG_FILE = os.path.join(RUNTIME_DIR, "django.log")
 from .logger import init_logger
 logger = init_logger(LOG_FILE)
 
+########## details on the OMF REST endpoint for creating an OmfSfaProxy object
+
+omfrest_settings = {
+    'hostname' : "faraday.inria.fr",
+    'port' : 12346,
+    'nodename' : '37nodes',
+    # in production mode, root_pem is /etc/rhubarbe/root.pem
+    # but can be r2lab.inria.fr/r2lab/root.pem on devel boxes
+    'root_pem' : "/etc/rhubarbe/root.pem" if PRODUCTION \
+                   else os.path.join(BASE_DIR, "r2lab", "root.pem")
+    }
+
+if not os.path.exists(omfrest_settings['root_pem']):
+    logger.warning("Could not find a certificate for issuing REST calls")
+
 ####################
 
 # Quick-start development settings - unsuitable for production
