@@ -15,6 +15,9 @@
   </head>
   <body>
     <ul id="messages"></ul>
+    <form action="" id="form-hostname">
+      <input id="hostname"/><button>hostname</button>
+    </form>
     <form action="" id="form-status">
       <input id="status" autocomplete="off" /><button>Status</button>
     </form>
@@ -28,7 +31,17 @@
 <script src="http://code.jquery.com/jquery-2.1.4.js"></script>
 <script>
 //  var socket = io();
-  var socket = io.connect('http://localhost:443/');
+    var hostname = "localhost";
+    var hostname = "r2lab.inria.fr";
+    var url = 'http://'+ hostname + ':443';
+    console.log('connecting to ' + url);
+    var socket = io.connect(url);
+    //  var socket = io.connect('http://r2lab.inria.fr:443/');
+  $('#form-hostname').submit(function(){
+    var url = 'http://'+ $('#hostname').val()+ ':443';
+    console.log('connecting to ' + url);
+    socket = io.connect(url);
+    });
   $('#form-status').submit(function(){
     socket.emit('chan-status', $('#status').val());
 /*    $('#status').val(''); */

@@ -30,7 +30,8 @@ def manifold_details(url, email, password, logger):
     auth = {'AuthMethod': 'password', 'Username': email, 'AuthString': password}
     api = ManifoldAPI(url, auth)
     sessions_result = api.forward(Query.create('local:session').to_dict())
-    if debug: print("sessions_result = ", sessions_result)
+    if debug:
+        print("sessions_result = ", sessions_result)
     sessions = sessions_result.ok_value()
     if not sessions:
         logger.error("GetSession failed: {}".format(sessions_result.error()))
@@ -42,7 +43,8 @@ def manifold_details(url, email, password, logger):
 
     # Get account details
     persons_result = api.forward(Query.get('local:user').to_dict())
-    if debug: print("persons_result=", persons_result)
+    if debug:
+        print("persons_result=", persons_result)
     persons = persons_result.ok_value()
     if not persons:
         logger.error("GetPersons failed: {}".format(persons_result.error()))
@@ -53,7 +55,8 @@ def manifold_details(url, email, password, logger):
     # get related slices
     query = Query.get('myslice:user').filter_by('user_hrn', '==', '$user_hrn').select(['user_hrn', 'slices'])
     mf_result = api.forward(query.to_dict())
-    if debug: print("mf_result=", mf_result)
+    if debug:
+        print("mf_result=", mf_result)
     # xxx - needs more work
     # for now if hrn is not properly filled we want to proceed
     # however this is wrong; it can happen for example
@@ -67,6 +70,7 @@ def manifold_details(url, email, password, logger):
         # xxx use ManifoldResult ?
         # this is a list of dicts that have a 'slices' field
         val_d_s = mf_result['value']
+        logger.info("slices from manifold={}".format(val_d_s))
         slices = [ nm for val_d in val_d_s for nm in val_d['slices'] ]
         # in fact there is only one of these dicts because we have specified myslice:user
         hrns = [ val_d['user_hrn'] for val_d in val_d_s ]

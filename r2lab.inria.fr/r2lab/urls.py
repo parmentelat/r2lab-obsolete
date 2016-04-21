@@ -23,6 +23,7 @@ from django.views.generic.base import RedirectView
 import md.views
 import mfauth.views
 import leases.views
+import slices.views
 
 urlpatterns = [
     # default: empty or just / -> md/index.md
@@ -33,6 +34,7 @@ urlpatterns = [
     url(r'^login/', mfauth.views.Login.as_view()),
     url(r'^logout/', mfauth.views.Logout.as_view()),
     url(r'^leases/(?P<verb>(add|update|delete))', leases.views.LeasesProxy.as_view()),
+    url(r'^slices/(?P<verb>(get))', slices.views.SlicesProxy.as_view()),
     # probably not useful
 #    url(r'^admin/', admin.site.urls),
 ] \

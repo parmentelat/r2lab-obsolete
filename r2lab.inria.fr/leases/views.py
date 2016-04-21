@@ -16,7 +16,7 @@ from r2lab.settings import logger
 ### the standard way to use rhubarbe is to have it installed separately
 try:
     from rhubarbe.omfsfaproxy import OmfSfaProxy
-# in a standalone environment however
+# in a standalone environment however, just create a symlink:
 except:
     from .omfsfaproxy import OmfSfaProxy
 
