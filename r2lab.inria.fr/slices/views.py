@@ -67,7 +67,8 @@ class SlicesProxy(OmfRestView):
             slices = response['resource_response']['resources']
             slices = [ slice for slice in slices
                        if slice['name'] not in ('__default__', ) ]
-            slices.sort(key=lambda r: r['name'])
+            # temporary - should be handled in the UI
+            slices.sort(key=lambda r: r['valid_until'])
 
         return self.http_response_from_struct(slices)
 
