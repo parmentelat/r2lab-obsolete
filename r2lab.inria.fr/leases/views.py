@@ -22,16 +22,21 @@ class LeasesProxy(OmfRestView):
         if auth_error:
             return auth_error
         # otherwise
-        record = self.decode_body_as_json(request)
-        if verb == 'add':
-            return self.add_lease(record)
-        elif verb == 'update':
-            return self.update_lease(record)
-        elif verb == 'delete':
-            return self.delete_lease(record)
-        else:
+        try:
+            record = self.decode_body_as_json(request)
+            if verb == 'add':
+                return self.add_lease(record)
+            elif verb == 'update':
+                return self.update_lease(record)
+            elif verb == 'delete':
+                return self.delete_lease(record)
+            else:
+                return self.http_response_from_struct(
+                    {'error' : "Unknown verb {}".format(verb)})
+        except Exception as e:
             return self.http_response_from_struct(
-                {'error' : "Unknown verb {}".format(verb)})
+                { 'error' : "Failure when running verb {}".format(verb),
+                  'message' : e})
 
     def return_lease(self, lease):
         """
@@ -52,17 +57,10 @@ class LeasesProxy(OmfRestView):
             return self.http_response_from_struct(error)
         self.init_omf_sfa_proxy()
         js = self.loop.run_until_complete(self.co_add_lease(record))
-        try:
-            result = json.loads(js)
-            lease = result['resource_response']['resource']
-            return self.http_response_from_struct(
-                self.return_lease(lease))
-        except:
-            logger.exception("Cannot add lease")
-            return self.http_response_from_struct(
-                {'error': 'unexpected error',
-                 'raw_result' : js,
-             })
+        result = json.loads(js)
+        lease = result['resource_response']['resource']
+        return self.http_response_from_struct(
+            self.return_lease(lease))
 
     @asyncio.coroutine
     def co_add_lease(self, record):
@@ -88,17 +86,10 @@ class LeasesProxy(OmfRestView):
             return self.http_response_from_struct(error)
         self.init_omf_sfa_proxy()
         js = self.loop.run_until_complete(self.co_update_lease(record))
-        try:
-            result = json.loads(js)
-            lease = result['resource_response']['resource']
-            return self.http_response_from_struct(
-                self.return_lease(lease))
-        except:
-            logger.exception("Cannot update lease")
-            return self.http_response_from_struct(
-                {'error': 'unexpected error',
-                 'raw_result' : js,
-             })
+        result = json.loads(js)
+        lease = result['resource_response']['resource']
+        return self.http_response_from_struct(
+            self.return_lease(lease))
 
     @asyncio.coroutine
     def co_update_lease(self, record):
@@ -116,17 +107,10 @@ class LeasesProxy(OmfRestView):
             return self.http_response_from_struct(error)
         self.init_omf_sfa_proxy()
         js = self.loop.run_until_complete(self.co_delete_lease(record))
-        try:
-            result = json.loads(js)
-            ok = result['resource_response']['response']
-            return self.http_response_from_struct(
-                {'ok' : ok=="OK"})
-        except:
-            logger.exception("Cannot delete lease")
-            return self.http_response_from_struct(
-                {'error': 'unexpected error',
-                 'raw_result' : js,
-             })
+        result = json.loads(js)
+        ok = result['resource_response']['response']
+        return self.http_response_from_struct(
+            {'ok' : ok=="OK"})
 
     @asyncio.coroutine
     def co_delete_lease(self, record):
