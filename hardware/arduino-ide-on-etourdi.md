@@ -79,6 +79,7 @@ Until to Feb. 8th 2016
 * Click the icon that looks like a *Up arrow* (upper area, 4-th from the left), then Select 'Open...'
 * double click on the 'nitos' subdir that you should see right away
 * navigate to the location of interest; **Warning** you need to select the **.ino** file, not just the directory
+
 ---
 * disconnect the USB cable from etourdi - if applicable
 * disconnect the node from any power supply
@@ -108,6 +109,7 @@ byte ip[] = {
 * screw the box lid over again
 * plug the node in; you're good to go
 * optionnally check it with
+
 ```
 root@bemol ~ # info 38 | grep firmware
 reboot38:firmware version: 3.1 INRIA, FRANCE
