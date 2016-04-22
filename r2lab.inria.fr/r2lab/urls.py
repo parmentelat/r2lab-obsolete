@@ -34,7 +34,7 @@ urlpatterns = [
     url(r'^login/', mfauth.views.Login.as_view()),
     url(r'^logout/', mfauth.views.Logout.as_view()),
     url(r'^leases/(?P<verb>(add|update|delete))', leases.views.LeasesProxy.as_view()),
-    url(r'^slices/(?P<verb>(get))', slices.views.SlicesProxy.as_view()),
+    url(r'^slices/(?P<verb>(get|renew))', slices.views.SlicesProxy.as_view()),
     # probably not useful
 #    url(r'^admin/', admin.site.urls),
 ] \

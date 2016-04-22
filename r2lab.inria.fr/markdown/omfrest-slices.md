@@ -51,3 +51,27 @@ $(function(){
 });
 </script>
 
+----
+<div id="renew-div"><p>Click here to renew slice (hard-wired name)</p>
+<p id='renew-response'>Result here</p>
+</div>
+
+<script>
+// an example of how to renew a slice
+var renew_slice = function() {
+    var request = { 
+    		    "name" : "onelab.inria.mario.tutorial",
+		  };
+    post_omfrest_request('/slices/renew', request, function(xhttp) {
+      if (xhttp.readyState == 4 && xhttp.status == 200) {
+          document.getElementById("renew-response").innerHTML = xhttp.responseText;
+	  // decoding
+	  var answer = JSON.parse(xhttp.responseText);
+	  console.log(answer);
+      }});
+}
+$(function(){$('#renew-div').click(renew_slice);})
+</script>
+
+
+

@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 import asyncio
 import json
+import time
 
 from django.shortcuts import render
 
@@ -17,6 +18,8 @@ from django.views.decorators.csrf import csrf_protect
 from r2lab.settings import logger
 from r2lab.omfrestview import OmfRestView
 
+wire_timeformat = "%Y-%m-%dT%H:%M:%S%Z"
+
 # Create your views here.
 class SlicesProxy(OmfRestView):
 
@@ -29,6 +32,8 @@ class SlicesProxy(OmfRestView):
             record = self.decode_body_as_json(request)
             if verb == 'get':
                 return self.get_slices(record)
+            if verb == 'renew':
+                return self.renew_slice(record)
             else:
                 return self.http_response_from_struct(
                     {'error' : "Unknown verb {}".format(verb)})
@@ -78,3 +83,41 @@ class SlicesProxy(OmfRestView):
         js = yield from self.omf_sfa_proxy.REST_as_json(url, "GET", None)
         return js
 
+    
+    def renew_slice(self, record):
+        """
+        renew a slice
+
+        * mandatory argument is 'name' that should hold a valid hrn
+        * optional argument is 'valid_until' that should then in the
+        omf-sfa timestamp format
+          if not provided the slice is renewed until 2 months from now
+        """
+        error = self.check_record(record,
+                                  ('name',), ('valid_until',))
+        if error:
+            return self.http_response_from_struct(error)
+        if 'valid_until' not in record:
+            now = time.time()
+            day = 24*3600
+#            now = now - (now % day)
+            # 2 months is 61 days
+            new_expire = time.localtime(now + 61 * day)
+            record['valid_until'] = time.strftime(wire_timeformat,
+                                                  new_expire)
+
+        self.init_omf_sfa_proxy()
+        js = self.loop.run_until_complete(self.co_update_slice(record))
+        response = json.loads(js)
+        slice = response['resource_response']['resource']
+        return self.http_response_from_struct(slice)
+
+    @asyncio.coroutine
+    def co_update_slice(self, record):
+        slice_request = record
+        logger.info("-> omf_sfa PUT request {}".format(slice_request))
+        result = yield from self.omf_sfa_proxy.REST_as_json("accounts", "PUT", slice_request)
+        logger.info("omf_sfa PUT -> {}".format(result))
+        return result
+        
+        
