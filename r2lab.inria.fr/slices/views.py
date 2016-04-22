@@ -100,7 +100,6 @@ class SlicesProxy(OmfRestView):
         if 'valid_until' not in record:
             now = time.time()
             day = 24*3600
-#            now = now - (now % day)
             # 2 months is 61 days
             new_expire = time.localtime(now + 61 * day)
             record['valid_until'] = time.strftime(wire_timeformat,

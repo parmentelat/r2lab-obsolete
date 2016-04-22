@@ -45,7 +45,7 @@ var get_slices = function(id, names) {
 }
 $(function(){
   $('#get2-div').click(function() {
-    get_slices("get2", [ "onelab.testwd.another_slice", "onelab.upmc.infocom.demo2016"])});
+    get_slices("get2", [ "onelab.inria.mario.tutorial", "onelab.upmc.infocom.demo2016"])});
   $('#getall-div').click(function() {
     get_slices('getall');});
 });
