@@ -30,6 +30,13 @@ function ubuntu_ssh () {
 	-e 's,^#\?PasswordAuthentication.*,PasswordAuthentication yes,' \
 	-e 's,^#\?UsePAM.*,UsePAM no,' \
 	/etc/ssh/sshd_config
+    cat <<EOF
+Do not forget to restart sshd and to test password-less access to root before quitting
+Depending on your release:
+systemctl restart sshd
+or
+service ssh restart
+EOF
 }
 
 function ubuntu_base () {
