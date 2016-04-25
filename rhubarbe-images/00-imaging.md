@@ -1,5 +1,79 @@
 Entries listed latest first
 
+# generic ubuntu stuff
+
+```
+curl -O https://github.com/parmentelat/r2lab/blob/master/rhubarbe-images/utilities.sh
+```
+
+
+# 2016/04/25 - `ubuntu-14.04`
+
+* done on fit38 (had to disconnect the USRP usb first)
+* essentially similar to the next entry about `ubuntu-16.04`
+* just beware about **Using the current partition scheme** which at first I missed completely with this installer - and so I ended up with and extended partition.
+
+# 2016/04/22 - `ubuntu-16.04`
+
+* done on fit41 (and actually I should not have because the damn thing has is super slow when downloading pxefrisbee and I have no idea why)
+* created a USB stick from the `server` iso using USB Stick Creator on ubuntu
+* started with uploading a previous ubuntu image to be sure about the partitioning and `ext4` business 
+
+##### booted off the USB stick
+
+Ran the installer and
+
+* asked to use current partition scheme
+* enabled openssh
+* had to create a dummy user (r2lab/r2lab/r2lab)
+
+##### rebooted and then manually did
+* `sudo su -` then set a specific password for root
+* tweaked `/etc/network/interfaces` to mention `control` and not the hardware device name (s.t. like `enp3s25`)
+* `systemctl restart networking` -> connectivity OK
+* `apt-get update; apt-get -y install emacs24-nox`
+* tweaked `/etc/ssh/sshd_config` to set `PermitRootPassword yes` so I could ssh from bemol
+
+##### remotely - from bemol
+
+```
+apt-get install -y rsync make git gcc
+apt-get install -y iw ethtool tcpdump wireshark bridge-utils
+```
+
+* saved image in ubuntu-16.04-v0 before the weekend
+* edited /etc/ssh/sshd_config so that```root@r2lab:/etc/ssh# grep -v '^#' /etc/ssh/sshd_config | egrep -i'Root|Password|PAM'PermitRootLogin yesPermitEmptyPasswords yesPasswordAuthentication yesUsePAM no
+```
+
+* restarted sshd 
+
+```
+systemctl restart sshd
+```
+￼￼￼￼￼￼￼￼￼￼￼* cleared passwd and extra user
+
+```
+passwd --delete rootuserdel --remove r2lab
+```
+
+* cleared up hostname
+
+```
+rm -f /etc/hostname
+```
+
+**NOTE** there might remain a reference to r2lab in `/etc/hosts` 
+
+* saved image in ubuntu-16.04-v1
+
+*****
+*****
+
+* XXX - to be continued from here XXX
+
+*****
+*****
+
 # 2015/12/09: `ubuntu-12.04.5`
 
 * for Naoufal's experiment; an old image is required

@@ -4,21 +4,60 @@
 # tweaks in /etc/hosts (replace actual hostname for loopback address)
 # xxx not implemented yet
 
-rm /etc/hostname
+# the logic on ubuntu is as follows
+# * make sure your node has the usual dual-partition disk layout (NO extended partition)
+# * reload another image on your target node if unsure (fedora21 is just fine)
+# * get the amd64 server iso
+# * use USB-startup-creator to make a bootable
 
-###
-passwd --delete root
-userdel --remove ubuntu
-rm /etc/hostname
+# xxx to be completed xxx
 
-packages="iw ethtool
+# tweak sshd_config
+# beware of
+# systemctl restart sshd
+# vs
+# service ssh restart
+
+function ubuntu_ssh () {
+   echo TODO
+}
+
+function ubuntu_base () {
+    ###
+    passwd --delete root
+    userdel --remove ubuntu
+    rm /etc/hostname
+
+    packages="iw ethtool
 rsync make git
 emacs24-nox
 gcc make tcpdump wireshark bridge-utils
 "
 
-apt-get -y install $packages
+    apt-get -y install $packages
 
+}
+
+function ubuntu_interfaces () {
+    cat > /etc/network/interfaces <<EOF
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# the control network interface - required
+auto control
+iface control inet dhcp
+
+# the data network interface - optional
+auto data
+#iface data inet dhcp
+EOF
+
+}
+
+function ubuntu_udev () {
 ####################
 # udev
 #
@@ -54,6 +93,9 @@ KERNELS=="0000:00:01.0", ACTION=="add", NAME="wlan0"
 KERNELS=="0000:04:00.0", ACTION=="add", NAME="wlan1"
 EOF
 
+}
+
+
 # need to tweak /etc/sysconfig/network-scripts as well
 # done manually:
 # (*) renamed ifcfg-files
@@ -64,19 +106,7 @@ EOF
 # need to tweak /etc/network/interfaces accordingly, of course
 # turning on DHCP on the data interface cannot be tested on bemol (no data interface..)
 
-cat > /etc/network/interfaces <<EOF
-source /etc/network/interfaces.d/*
-
-# The loopback network interface
-auto lo
-iface lo inet loopback
-
-# the control network interface - required
-auto control
-iface control inet dhcp
-
-# the data network interface - optional
-auto data
-#iface data inet dhcp
-EOF
-
+for subcommand in "$@"; do
+    echo Running subcommand $subcommand
+    $subcommand
+done
