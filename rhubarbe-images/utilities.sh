@@ -25,10 +25,10 @@
 # UsePAM no
 function ubuntu_ssh () {
     sed -iutilities \
-	-e 's,^#?PermitRootLogin.*,PermitRootLogin yes,' \
-	-e 's,^#?PermitEmptyPasswords.*,PermitEmptyPasswords yes,' \
-	-e 's,^#?PasswordAuthentication.*,PasswordAuthentication yes,' \
-	-e 's,^#?UsePAM.*,UsePAM no,' \
+	-e 's,^#\?PermitRootLogin.*,PermitRootLogin yes,' \
+	-e 's,^#\?PermitEmptyPasswords.*,PermitEmptyPasswords yes,' \
+	-e 's,^#\?PasswordAuthentication.*,PasswordAuthentication yes,' \
+	-e 's,^#\?UsePAM.*,UsePAM no,' \
 	/etc/ssh/sshd_config
 }
 
