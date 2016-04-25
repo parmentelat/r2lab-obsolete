@@ -60,7 +60,7 @@ $(function(){
 // an example of how to renew a slice
 var renew_slice = function() {
     var request = { 
-    		    "name" : "onelab.inria.mario.tutorial",
+    		    "name" : "onelab.inria.r2lab.naoufal",
 		  };
     post_omfrest_request('/slices/renew', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
