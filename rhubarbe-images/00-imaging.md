@@ -3,7 +3,8 @@ Entries listed latest first
 # generic ubuntu stuff
 
 ```
-curl -O https://github.com/parmentelat/r2lab/blob/master/rhubarbe-images/utilities.sh
+curl -O https://raw.githubusercontent.com/parmentelat/r2lab/master/rhubarbe-images/utilities.sh
+chmod +x utilities.sh
 ```
 
 
