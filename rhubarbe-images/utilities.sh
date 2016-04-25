@@ -18,8 +18,18 @@
 # vs
 # service ssh restart
 
+# root@r2lab:/etc/ssh# grep -v '^#' /etc/ssh/sshd_config | egrep -i 'Root|Password|PAM'
+# PermitRootLogin yes
+# PermitEmptyPasswords yes
+# PasswordAuthentication yes
+# UsePAM no
 function ubuntu_ssh () {
-   echo TODO
+    sed -iutilities \
+	-e 's,^#?PermitRootLogin.*,PermitRootLogin yes,' \
+	-e 's,^#?PermitEmptyPasswords.*,PermitEmptyPasswords yes,' \
+	-e 's,^#?PasswordAuthentication.*,PasswordAuthentication yes,' \
+	-e 's,^#?UsePAM.*,UsePAM no,' \
+	/etc/ssh/sshd_config
 }
 
 function ubuntu_base () {
@@ -28,10 +38,9 @@ function ubuntu_base () {
     userdel --remove ubuntu
     rm /etc/hostname
 
-    packages="iw ethtool
-rsync make git
-emacs24-nox
-gcc make tcpdump wireshark bridge-utils
+    packages="
+rsync git make gcc emacs24-nox
+iw ethtool tcpdump wireshark bridge-utils
 "
 
     apt-get -y install $packages
