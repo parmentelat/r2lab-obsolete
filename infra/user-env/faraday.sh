@@ -297,12 +297,16 @@ alias load-f22="rload -i fedora-22"
 doc-nodes load-f22 alias
 alias load-f23="rload -i fedora-23"
 doc-nodes load-f23 alias
+alias load-u1404="rload -i ubuntu-14.04"
+doc-nodes load-u1404 alias
 alias load-u1410="rload -i ubuntu-14.10"
 doc-nodes load-u1410 alias
 alias load-u1504="rload -i ubuntu-15.04"
 doc-nodes load-u1504 alias
 alias load-u1510="rload -i ubuntu-15.10"
 doc-nodes load-u1510 alias
+alias load-u1604="rload -i ubuntu-16.04"
+doc-nodes load-u1604 alias
 
 function load-gr-u1410 () { load-image gnuradio-ubuntu-14.10.ndz "$@" ; }
 function load-gr-u1504 () { load-image gnuradio-ubuntu-15.04.ndz "$@" ; }
