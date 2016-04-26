@@ -1,79 +1,104 @@
 Entries listed latest first
 
+# 2016 Apr 26 `ubuntu-14.04-k3.19-lowl`
+
+* done on fit01
+* started from `ubuntu-14.04`
+
+## untrimmed version 
+
+#####  this version has both the stock and lowlat kernels
+
+* installed the following
+
+```
+apt-get install \
+  linux-headers-3.19.0-58-lowlatency \
+  linux-image-3.19.0-58-lowlatency \
+  module-init-tools
+```
+
+* edited `/etc/default/grub` so that 
+
+```
+GRUB_DEFAULT="1>2"
+``` 
+
+*  Which means
+  
+  * it means we want the submenu that shows up in second position in the grub main menu; and then the third entry in that submenu
+  * this should be stable enough, as the 2 first ones (in the submenu) were the stock `4.2.0-27-generic` kernel and associated recovery mode, then the one we are interested in
+  * also beware of **using quotes** as this looks like a shell script (I'm guessing); in any case without the quotes I always the stock kernel
+  * See detailed doc here
+[https://help.ubuntu.com/community/Grub2/Submenus]()
+
+* Then run `update-grub` to push on `/boot`
+* ended up with a **800Mb** image
+
+## trimmed version
+
+##### Only the lowlatency kernel on board
+
+* spotted the stock kernels with 
+
+```
+dpkg -l | grep 4.2
+```
+
+* removed them using
+
+```
+dpkg --purge remove <the list>
+```
+
+* edited again `/etc/default/grub`
+
+```
+GRUB_DEFAULT="1>0"
+```
+
+* ran `update-grub`
+* ended up with a **694 Mb** image
+
 # generic ubuntu stuff
+
+## workflow
+
+* downlaod the ISO for 64 bits `server` (as opposed to desktop which is much bigger)
+* run `USB startup creator` (approx name) on a ubuntu (e.g. arduino) to create a bootable stick
+* select a node that has the usual disk layout with 2 partitions on `ext4` (upload e.g. fedora21 or similar)
+* boot off the USB stick ; while running the installer :
+  * add openssh server
+  * beware about **Using the current partition scheme** which can be missed completely - especially with 14.04, looks better with more recent installers
+  * hostname `r2lab`; user `rl2ab`; password `r2lab` (will be cleaned up later on)
+* log in as r2lab/r2lab
+
+
+## `utilities.sh`
+
+`rhubarbe-images/utilities.sh` is a script designed to **help** automate the various stages. 
+**IMPORTANT** this script only is a help - make sure to read it before running it
 
 ```
 curl -O https://raw.githubusercontent.com/parmentelat/r2lab/master/rhubarbe-images/utilities.sh
 chmod +x utilities.sh
+# And then
+./utilities.sh help
 ```
 
 
 # 2016/04/25 - `ubuntu-14.04`
 
 * done on fit38 (had to disconnect the USRP usb first)
-* essentially similar to the next entry about `ubuntu-16.04`
-* just beware about **Using the current partition scheme** which at first I missed completely with this installer - and so I ended up with and extended partition.
+* first time where `utilities.sh` was actually used, although I improved it a lot afterwards, so please use with care
+
 
 # 2016/04/22 - `ubuntu-16.04`
 
 * done on fit41 (and actually I should not have because the damn thing has is super slow when downloading pxefrisbee and I have no idea why)
 * created a USB stick from the `server` iso using USB Stick Creator on ubuntu
 * started with uploading a previous ubuntu image to be sure about the partitioning and `ext4` business 
-
-##### booted off the USB stick
-
-Ran the installer and
-
-* asked to use current partition scheme
-* enabled openssh
-* had to create a dummy user (r2lab/r2lab/r2lab)
-
-##### rebooted and then manually did
-* `sudo su -` then set a specific password for root
-* tweaked `/etc/network/interfaces` to mention `control` and not the hardware device name (s.t. like `enp3s25`)
-* `systemctl restart networking` -> connectivity OK
-* `apt-get update; apt-get -y install emacs24-nox`
-* tweaked `/etc/ssh/sshd_config` to set `PermitRootPassword yes` so I could ssh from bemol
-
-##### remotely - from bemol
-
-```
-apt-get install -y rsync make git gcc
-apt-get install -y iw ethtool tcpdump wireshark bridge-utils
-```
-
-* saved image in ubuntu-16.04-v0 before the weekend
-* edited /etc/ssh/sshd_config so that```root@r2lab:/etc/ssh# grep -v '^#' /etc/ssh/sshd_config | egrep -i'Root|Password|PAM'PermitRootLogin yesPermitEmptyPasswords yesPasswordAuthentication yesUsePAM no
-```
-
-* restarted sshd 
-
-```
-systemctl restart sshd
-```
-￼￼￼￼￼￼￼￼￼￼￼* cleared passwd and extra user
-
-```
-passwd --delete rootuserdel --remove r2lab
-```
-
-* cleared up hostname
-
-```
-rm -f /etc/hostname
-```
-
-**NOTE** there might remain a reference to r2lab in `/etc/hosts` 
-
-* saved image in ubuntu-16.04-v1
-
-*****
-*****
-
-* XXX - to be continued from here XXX
-
-*****
-*****
+* otherwise the procedure was in line with what `utilities.sh` has, except done mostly manually
 
 # 2015/12/09: `ubuntu-12.04.5`
 
