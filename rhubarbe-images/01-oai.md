@@ -58,7 +58,7 @@ cd /root/openair-cn/SCRIPTS
 ```
 
 ##### Checkpoint
-saved in `oai-core3`
+saved in `oai-epc+hss-core3`
 
 
 ### Config
