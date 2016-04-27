@@ -5,22 +5,23 @@
   * git's `openair-cn/DOCS/EPC_User_Guide.pdf`
   *  [this document](https://gitlab.eurecom.fr/oai/openairinterface5g/wikis/HowToConnectCOTSUEwithOAIeNB)
 
-### Passwords
-The following 2 installs will prompt for these passwords:
+### Preparation : passwords and interactive installs
+We do these 2 installs first off so we can redirect outputs on files in later stages.
+
+The following 2 installs will prompt for passwords:
+
 * for mysql-server, use `linux`
 * for phpadmin, use `admin`
+* Also I selected `apache2` at some point
 
-Also I selected `apache2` at some point
 
-
-We do them first off so we can redirect outputs on files in lates stages.
 
 ```
 apt-get install -y mysql-server
 apt-get install -y phpmyadmin
 ```
 
-### Actions
+### Moving on
 ```
 cd
 echo -n | \
