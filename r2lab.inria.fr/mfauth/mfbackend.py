@@ -53,7 +53,7 @@ class ManifoldBackend:
         except ManifoldException as e:
             logger.error("ManifoldException in Auth Backend: {}".format(e.manifold_result))
         except Exception as e:
-            logger.exception("ERROR in Manifold Auth Backend)
+            logger.exception("ERROR in Manifold Auth Backend")
             return None
 
         try:
