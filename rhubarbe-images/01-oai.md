@@ -1,6 +1,6 @@
 # 2016 Apr 27 `ubuntu-10.04-oai-core`
 
-* done on fit38
+* done first on fit38, then moved on fit16
 * based on
   * git's `openair-cn/DOCS/EPC_User_Guide.pdf`
   *  [this document](https://gitlab.eurecom.fr/oai/openairinterface5g/wikis/HowToConnectCOTSUEwithOAIeNB)
@@ -50,7 +50,7 @@ cd /root/openair-cn/SCRIPTS
 
 ```
 cd /root/openair-cn/SCRIPTS
-./build_epc -i -f -H localhost
+./build_epc -i -f -H localhost >& build_epc.log
 # `-i` for installing dependencies 
 # `-f` is to force installs - note that we have installed mysql-server separately in `core0`
 # `-H` in this context is to specify the hostname 
