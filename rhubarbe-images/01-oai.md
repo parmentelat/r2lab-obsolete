@@ -72,11 +72,11 @@ sed -e s,xxx,$fitid,g /root/r2lab/rhubarbe-images/epc-r2lab.sed.in > epc-r2lab.s
 sed -f epc-r2lab.sed epc.conf.in > epc.conf
 ```
 
-at which point `diff epc.conf.in epc.conf` should show 2 pairs of 2 lines changed to use the 'data' interface
+at which point `diff epc.conf.in epc.conf` should show 2 pairs of 2 lines changed to use the `data` interface
 
 ```
 cd /root/openair-cn/SCRIPTS
-./build_epc -C -l
+./build_epc -C -l >& build_ecp.conf.log
 ```
 
 * `-C` : create config
@@ -92,6 +92,22 @@ cd /root/openair-cn/SCRIPTS
 ****
 ****
 ****
+
+```
+root@fit16:~/openair-cn/SCRIPTS# ./run_epc -i -r
+setting network interfaces: 1
+rmmod: ERROR: Module xt_GTPUSP is not currently loaded
+OPENAIR_DIR    =
+GTPU kernel module installed
+Cannot find /usr/local/bin/mme_gw executable, have a look at the output of build_epc executable
+```
+
+need to dig into the `build_epc.log` file
+****
+****
+****
+
+
 
 # 2016 Apr 26 `ubuntu-14.04-k3.19-lowl`
 
