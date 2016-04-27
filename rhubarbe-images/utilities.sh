@@ -81,8 +81,8 @@ auto control
 iface control inet dhcp
 
 # the data network interface - optional
-auto data
-#iface data inet dhcp
+#auto data
+iface data inet dhcp
 EOF
 
 }

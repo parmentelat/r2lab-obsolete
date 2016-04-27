@@ -1,64 +1,6 @@
-Entries listed latest first
-
-# 2016 Apr 26 `ubuntu-14.04-k3.19-lowl`
-
-* done on fit01
-* started from `ubuntu-14.04`
-
-## untrimmed version 
-
-#####  this version has both the stock and lowlat kernels
-
-* installed the following
-
-```
-apt-get install \
-  linux-headers-3.19.0-58-lowlatency \
-  linux-image-3.19.0-58-lowlatency \
-  module-init-tools
-```
-
-* edited `/etc/default/grub` so that 
-
-```
-GRUB_DEFAULT="1>2"
-``` 
-
-*  Which means
-  
-  * it means we want the submenu that shows up in second position in the grub main menu; and then the third entry in that submenu
-  * this should be stable enough, as the 2 first ones (in the submenu) were the stock `4.2.0-27-generic` kernel and associated recovery mode, then the one we are interested in
-  * also beware of **using quotes** as this looks like a shell script (I'm guessing); in any case without the quotes I always the stock kernel
-  * See detailed doc here
-[https://help.ubuntu.com/community/Grub2/Submenus]()
-
-* Then run `update-grub` to push on `/boot`
-* ended up with a **800Mb** image
-
-## trimmed version
-
-##### Only the lowlatency kernel on board
-
-* spotted the stock kernels with 
-
-```
-dpkg -l | grep 4.2
-```
-
-* removed them using
-
-```
-dpkg --purge remove <the list>
-```
-
-* edited again `/etc/default/grub`
-
-```
-GRUB_DEFAULT="1>0"
-```
-
-* ran `update-grub`
-* ended up with a **694 Mb** image
+* Entries listed latest first
+* OAI-related details in a separate file `01-oai.md`
+* List of known issues in `02-fixes.md`
 
 # generic ubuntu stuff
 

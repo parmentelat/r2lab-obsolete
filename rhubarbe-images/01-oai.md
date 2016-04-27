@@ -1,0 +1,154 @@
+# 2016 Apr 27 `ubuntu-10.04-oai-core`
+
+* done on fit38
+* based on
+  * git's `openair-cn/DOCS/EPC_User_Guide.pdf`
+  *  [this document](https://gitlab.eurecom.fr/oai/openairinterface5g/wikis/HowToConnectCOTSUEwithOAIeNB)
+
+### Passwords
+The following 2 installs will prompt for these passwords:
+* for mysql-server, use `linux`
+* for phpadmin, use `admin`
+
+Also I selected `apache2` at some point
+
+
+We do them first off so we can redirect outputs on files in lates stages.
+
+```
+apt-get install -y mysql-server
+apt-get install -y phpmyadmin
+```
+
+### Actions
+```
+cd
+echo -n | \
+   openssl s_client -showcerts -connect gitlab.eurecom.fr:443 2>/dev/null | \
+   sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >> \
+   /etc/ssl/certs/ca-certificates.crt
+git clone https://gitlab.eurecom.fr/oai/openair-cn.git
+git clone https://github.com/parmentelat/r2lab.git
+
+apt-get install -y cpufrequtils
+echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
+update-rc.d ondemand disable
+/etc/init.d/cpufrequtils restart
+# this seems to be purely informative ?
+cpufreq-info
+
+### HSS
+
+cd /root/openair-cn/SCRIPTS
+./build_hss -i -F -f localhost >& build_hss.log
+# `-i` for installing dependencies 
+# `-F` is to force installs - note that we have installed mysql-server separately in `core0`
+# `-f` in this context is to specify the hostname 
+```
+
+### EPC
+
+```
+cd /root/openair-cn/SCRIPTS
+./build_epc -i -f -H localhost
+# `-i` for installing dependencies 
+# `-f` is to force installs - note that we have installed mysql-server separately in `core0`
+# `-H` in this context is to specify the hostname 
+```
+
+##### Checkpoint
+saved in `oai-core3`
+
+
+### Config
+
+```
+fitid=16
+cd
+git clone https://github.com/parmentelat/r2lab.git
+cd openair-cn/BUILD/EPC/
+sed -e s,xxx,$fitid,g /root/r2lab/rhubarbe-images/epc-r2lab.sed.in > epc-r2lab.sed
+sed -f epc-r2lab.sed epc.conf.in > epc.conf
+```
+
+at which point `diff epc.conf.in epc.conf` should show 2 pairs of 2 lines changed to use the 'data' interface
+
+```
+cd /root/openair-cn/SCRIPTS
+./build_epc -C -l
+```
+
+* `-C` : create config
+* `-l` : use localhost as hss
+
+```
+./run_epc -i -r
+```
+
+* `-i` : set up interfaces
+* `-r` : remove gptu kmodule 
+
+****
+****
+****
+
+# 2016 Apr 26 `ubuntu-14.04-k3.19-lowl`
+
+* done on fit01
+* started from `ubuntu-14.04`
+
+## untrimmed version 
+
+#####  this version has both the stock and lowlat kernels
+
+* installed the following
+
+```
+apt-get install \
+  linux-headers-3.19.0-58-lowlatency \
+  linux-image-3.19.0-58-lowlatency \
+  module-init-tools
+```
+
+* edited `/etc/default/grub` so that 
+
+```
+GRUB_DEFAULT="1>2"
+``` 
+
+*  Which means
+  
+  * it means we want the submenu that shows up in second position in the grub main menu; and then the third entry in that submenu
+  * this should be stable enough, as the 2 first ones (in the submenu) were the stock `4.2.0-27-generic` kernel and associated recovery mode, then the one we are interested in
+  * also beware of **using quotes** as this looks like a shell script (I'm guessing); in any case without the quotes I always the stock kernel
+  * See detailed doc here
+[https://help.ubuntu.com/community/Grub2/Submenus]()
+
+* Then run `update-grub` to push on `/boot`
+* ended up with a **800Mb** image
+
+## trimmed version
+
+##### Only the lowlatency kernel on board
+
+* spotted the stock kernels with 
+
+```
+dpkg -l | grep 4.2
+```
+
+* removed them using
+
+```
+dpkg --purge remove <the list>
+```
+
+* edited again `/etc/default/grub`
+
+```
+GRUB_DEFAULT="1>0"
+```
+
+* ran `update-grub`
+* ended up with a **694 Mb** image
+
