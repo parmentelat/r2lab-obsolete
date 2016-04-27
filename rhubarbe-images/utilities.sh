@@ -1,48 +1,60 @@
-# tweaks of /etc/ssh/sshd_config
-# xxx not implemented yet
+#!/bin/bash
 
-# tweaks in /etc/hosts (replace actual hostname for loopback address)
-# xxx not implemented yet
+help_message=""
+function record_help () {
+    for line in "$@"; do
+	help_message="${help_message}${line}\n"
+    done
+}
 
-# the logic on ubuntu is as follows
-# * make sure your node has the usual dual-partition disk layout (NO extended partition)
-# * reload another image on your target node if unsure (fedora21 is just fine)
-# * get the amd64 server iso
-# * use USB-startup-creator to make a bootable
+function help () {
+    echo $help_message
+}
 
-# xxx to be completed xxx
+########################################
+# UBUNTU
+########################################
 
-# tweak sshd_config
-# beware of
-# systemctl restart sshd
-# vs
-# service ssh restart
+record_help "ubuntu_ssh: tweaks sshd_config, remove dummy r2lab user, remove root password, restart ssh"
+function ubuntu_ssh () {
 
+####################
+# expected result is this
 # root@r2lab:/etc/ssh# grep -v '^#' /etc/ssh/sshd_config | egrep -i 'Root|Password|PAM'
 # PermitRootLogin yes
 # PermitEmptyPasswords yes
 # PasswordAuthentication yes
 # UsePAM no
-function ubuntu_ssh () {
-    sed -iutilities \
+
+    # tweak sshd_config
+    sed -i.utilities \
 	-e 's,^#\?PermitRootLogin.*,PermitRootLogin yes,' \
 	-e 's,^#\?PermitEmptyPasswords.*,PermitEmptyPasswords yes,' \
 	-e 's,^#\?PasswordAuthentication.*,PasswordAuthentication yes,' \
 	-e 's,^#\?UsePAM.*,UsePAM no,' \
 	/etc/ssh/sshd_config
-    cat <<EOF
-Do not forget to restart sshd and to test password-less access to root before quitting
-Depending on your release:
-systemctl restart sshd
-or
-service ssh restart
+
+    # remove dummy user
+    userdel --remove ubuntu
+
+    # remove root password
+    passwd --delete root
+    
+    # restart ssh
+    echo "Restarting sshd"
+    type systemctl >& /dev/null \
+	&& systemctl restart sshd \
+        || service ssh restart
+    cat << EOF
+You should now be able to ssh as root without a password
+CHECK IT NOW before you quit this session
 EOF
 }
 
+
+record_help "ubuntu_base: remove /etc/hostname, install base packages"
 function ubuntu_base () {
     ###
-    passwd --delete root
-    userdel --remove ubuntu
     rm /etc/hostname
 
     packages="
@@ -50,10 +62,12 @@ rsync git make gcc emacs24-nox
 iw ethtool tcpdump wireshark bridge-utils
 "
 
+    apt-get update
     apt-get -y install $packages
-
 }
 
+
+record_help "ubuntu_interfaces: overwrite /etc/network/interfaces"
 function ubuntu_interfaces () {
     cat > /etc/network/interfaces <<EOF
 source /etc/network/interfaces.d/*
@@ -73,6 +87,8 @@ EOF
 
 }
 
+
+record_help "ubuntu_dev: add udev rules for canonical interface names"
 function ubuntu_udev () {
 ####################
 # udev
@@ -111,6 +127,12 @@ EOF
 
 }
 
+########################################
+# FEDORA
+########################################
+
+# todo...
+
 
 # need to tweak /etc/sysconfig/network-scripts as well
 # done manually:
@@ -122,7 +144,11 @@ EOF
 # need to tweak /etc/network/interfaces accordingly, of course
 # turning on DHCP on the data interface cannot be tested on bemol (no data interface..)
 
-for subcommand in "$@"; do
-    echo Running subcommand $subcommand
-    $subcommand
-done
+if [[ -z "$@" ]] ; then
+    help
+else
+    for subcommand in "$@"; do
+	echo Running subcommand $subcommand
+	$subcommand
+    done
+fi
