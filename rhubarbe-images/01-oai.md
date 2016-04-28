@@ -5,23 +5,54 @@
   * git's `openair-cn/DOCS/EPC_User_Guide.pdf`
   *  [this document](https://gitlab.eurecom.fr/oai/openairinterface5g/wikis/HowToConnectCOTSUEwithOAIeNB)
 
-### Preparation : passwords and interactive installs
+## Bootstrap
+
+```
+git clone https://github.com/parmentelat/r2lab.git
+ln -s /root/r2lab/rhubarbe-images/epc-hss.sh .
+```
+
+## Pushing tmp code
+
+```
+# laptop
+r push1 rsync -av epc-build.sh $(plr faraday):
+# faraday
+r push2 rsync -av epc-build.sh fit16:/tmp
+```
+
+## Base
+
+passwords and interactive installs
+
+##### Automated : in principle this is equivalent to
+
+```
+/root/r2lab/rhubarbe-images/epc-hss.sh base
+```
+
+##### Manual
+
 We do these 2 installs first off so we can redirect outputs on files in later stages.
-
-The following 2 installs will prompt for passwords:
-
-* for mysql-server, use `linux`
-* for phpadmin, use `admin`
-* Also I selected `apache2` at some point
-
 
 
 ```
 apt-get install -y mysql-server
+```
+
+ * set mysql server password to `linux` (enter twice for confirmation)
+
+```
 apt-get install -y phpmyadmin
 ```
 
-### Moving on
+ * First prompt is about using `apache2`
+ * Then you're prompted for the mysql password (enter `linux` once)
+ * Then for a phpmyadmin password (enter `admin`, twice for confirmation)
+
+
+Git cloning, and `cpufrequtils`
+
 ```
 cd
 echo -n | \
@@ -37,9 +68,51 @@ update-rc.d ondemand disable
 /etc/init.d/cpufrequtils restart
 # this seems to be purely informative ?
 cpufreq-info
+```
+
+****
+Saved in `oai-epc+hss-base`
+****
+
+## Git pull - after restoring that image
+
+```
+/root/r2lab/rhubarbe-images/epc-hss.sh gitup
+```
+
+## Builds
+
+```
+/root/r2lab/rhubarbe-images/epc-hss.sh build
+```
+
+
+****
+Saved in `oai-epc+hss-builds`
+****
+
+### reconfigure
+
+```
+/root/r2lab/rhubarbe-images/epc-hss.sh build
+```
+
+### run
+
+```
+/root/r2lab/rhubarbe-images/epc-hss.sh run
+```
+
+****
+****
+****
+****
+****
+
 
 ### HSS
 
+```
 cd /root/openair-cn/SCRIPTS
 ./build_hss -i -F -f localhost >& build_hss.log
 # `-i` for installing dependencies 
@@ -76,7 +149,7 @@ at which point `diff epc.conf.in epc.conf` should show 2 pairs of 2 lines change
 
 ```
 cd /root/openair-cn/SCRIPTS
-./build_epc -C -l >& build_ecp.conf.log
+./build_epc -C -l >& build_epc.conf.log
 ```
 
 * `-C` : create config
