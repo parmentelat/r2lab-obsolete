@@ -176,7 +176,8 @@ function nodes () {
     echo "export NODES=\"$NODES\""
     echo "export NBNODES=$(nbnodes)"
 }
-doc-nodes nodes "\tshow or define currently selected nodes; eg nodes 1-10,12 13 ~5"
+alias n=nodes
+doc-nodes nodes "\t(alias n) show or define currently selected nodes; eg nodes 1-10,12 13 ~5"
 
 
 function nbnodes () {
