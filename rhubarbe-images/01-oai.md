@@ -8,17 +8,18 @@
 ## Bootstrap
 
 ```
+cd
 git clone https://github.com/parmentelat/r2lab.git
-ln -s /root/r2lab/rhubarbe-images/epc-hss.sh .
+ln -s r2lab/infra/userenv/nodes.sh .bash_aliases
 ```
 
 ## Pushing tmp code
 
 ```
 # laptop
-r push1 rsync -av epc-build.sh $(plr faraday):
+r push1 rsync -av oai-gw.sh $(plr faraday):
 # faraday
-r push2 rsync -av epc-build.sh fit16:/tmp
+r push2 rsync -av oai-gw.sh fit16:/tmp
 ```
 
 ## Base
@@ -28,7 +29,7 @@ passwords and interactive installs
 ##### Automated : in principle this is equivalent to
 
 ```
-/root/r2lab/rhubarbe-images/epc-hss.sh base
+/root/r2lab/rhubarbe-images/oai-gw.sh base
 ```
 
 ##### Manual
@@ -77,13 +78,13 @@ Saved in `oai-epc+hss-base`
 ## Git pull - after restoring that image
 
 ```
-/root/r2lab/rhubarbe-images/epc-hss.sh gitup
+/root/r2lab/rhubarbe-images/oai-gw.sh gitup
 ```
 
 ## Builds
 
 ```
-/root/r2lab/rhubarbe-images/epc-hss.sh build
+/root/r2lab/rhubarbe-images/oai-gw.sh build
 ```
 
 
@@ -94,13 +95,13 @@ Saved in `oai-epc+hss-builds`
 ### reconfigure
 
 ```
-/root/r2lab/rhubarbe-images/epc-hss.sh build
+/root/r2lab/rhubarbe-images/oai-gw.sh build
 ```
 
 ### run
 
 ```
-/root/r2lab/rhubarbe-images/epc-hss.sh run
+/root/r2lab/rhubarbe-images/oai-gw.sh run
 ```
 
 ****

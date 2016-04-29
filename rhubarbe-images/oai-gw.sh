@@ -151,8 +151,11 @@ function stop() { _manage stop; }
 
 available_subcommands="$available_subcommands log"
 function log() {
-    echo 'tail -f /root/openair-cn/SCRIPTS/run_*.{log,out}'
-    tail -f /root/openair-cn/SCRIPTS/run_*.log
+    cd /root/openair-cn/SCRIPTS
+    targets="run_epc.log run_epc.out run_hss.log"
+    for target in $targets; do [ -f $target ] || touch $target; done
+    tail -f $targets
+    cd -
 }
 
 ####################
