@@ -29,9 +29,9 @@ available="$available bashrc"
 function bashrc() { echo "Reloading ~/.bashrc"; source ~/.bashrc; }
 
 available="$available oai-gw"
-alias oai-gw=/root/2rlab/rhubarbe-images/oai-gw.sh
+alias oai-gw=/root/r2lab/rhubarbe-images/oai-gw.sh
 
 available="$available oai-enb"
-alias oai-enb=/root/2rlab/rhubarbe-images/oai-enb.sh
+alias oai-enb=/root/r2lab/rhubarbe-images/oai-enb.sh
 
 function help() { echo Available commands; echo "$available"; }
