@@ -126,19 +126,28 @@ function run() {
     ./run_hss >& run_hss.log &
 }
 
-available_subcommands="$available_subcommands kill"
-function kill() {
-    ps=$(pgrep run_)
+function _manage() {
+    # if $1 is 'kill' then the found processes are killed
+    arg=$1; shift
+    [ "$arg" == 'kill' ] && kill_mode=true
+    ps=$(pgrep -f run_)
     if [ -z "$ps" ]; then
 	echo "No running process in run_ - exiting"
 	return 1
     fi
     echo "Found processes"
     ps $ps
-    pkill run_
-    echo "Their status now"
-    ps $ps
+    if [ -n "$kill_mode"]; then
+	pkill run_
+	echo "Their status now"
+	ps $ps
+    fi
 }
+
+available_subcommands="$available_subcommands status"
+function status() { _manage; }
+available_subcommands="$available_subcommands kill"
+function kill() { _manage kill; }
 
 available_subcommands="$available_subcommands log"
 function log() {
