@@ -67,7 +67,7 @@ function configure {
     # when hostname is correctly e.g. fit16
     fitid=$(hostname)
     id=$(sed -e s,fit,, <<< $fitid)
-    origin=hostname
+    origin="from hostname"
     if [ "$fitid" == "$id" ]; then
 	# sample output
 	#inet 192.168.3.16/24 brd 192.168.3.255 scope global control
@@ -77,11 +77,11 @@ function configure {
 		    cut -d/ -f1 | \
 		    cut -d. -f4)
 	fitid=fit$id
-	origin="ip addr show"
+	origin="from ip addr show"
 	echo "Forcing hostname to be $fitid"
 	hostname $fitid
     fi
-    echo "Using id=$id and fitid=$fitid - from $origin"
+    echo "Using id=$id and fitid=$fitid - $origin"
 
     echo "========== Turning on the data interface"
     ifup data
@@ -106,6 +106,7 @@ s,192.170.1.1/24,192.168.2.xxx/24,g
 s,eth0,data,g
 s,192.168.12.17/24,192.168.2.xxx/24,g
 s,127.0.0.1:5656,/root/openair-cn/SCRIPTS/run_epc.out,g
+s,TAC = "15",TAC = "1",g
 EOF
     sed -f epc-r2lab.sed epc.conf.in.distrib > epc.conf.in
 
