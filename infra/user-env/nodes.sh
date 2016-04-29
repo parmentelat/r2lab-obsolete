@@ -26,7 +26,7 @@ function gitup() {
 
 # reload this file after a gitup
 avalaible="$available bashrc"
-function bashrc() { echo "Reloading ~/.bashrc; source ~/.bashrc; }
+function bashrc() { echo "Reloading ~/.bashrc"; source ~/.bashrc; }
 
 avalaible="$available oai-gw"
 alias oai-gw=/root/2rlab/rhubarbe-images/oai-gw.sh
@@ -34,4 +34,4 @@ alias oai-gw=/root/2rlab/rhubarbe-images/oai-gw.sh
 avalaible="$available oai-enb"
 alias oai-enb=/root/2rlab/rhubarbe-images/oai-enb.sh
 
-function help() { echo Available commands; echo $available"; }
+function help() { echo Available commands; echo "$available"; }
