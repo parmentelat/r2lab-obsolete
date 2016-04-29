@@ -115,8 +115,8 @@ EOF
     ./build_epc --clean --clean-certificates --local-hss 2>&1 | tee build_epc.run2.log
 }
 
-available_subcommands="$available_subcommands run"
-function run() {
+available_subcommands="$available_subcommands start"
+function start() {
     cd /root/openair-cn/SCRIPTS
     echo "In $(pwd)"
     echo "Running run_epc in background"
@@ -127,27 +127,27 @@ function run() {
 }
 
 function _manage() {
-    # if $1 is 'kill' then the found processes are killed
-    arg=$1; shift
-    [ "$arg" == 'kill' ] && kill_mode=true
-    ps=$(pgrep -f run_)
-    if [ -z "$ps" ]; then
+    # if $1 is 'stop' then the found processes are killed
+    mode=$1; shift
+    pids=$(pgrep run_)
+    if [ -z "$pids" ]; then
 	echo "No running process in run_ - exiting"
 	return 1
     fi
     echo "Found processes"
-    ps $ps
-    if [ -n "$kill_mode"]; then
-	pkill run_
+    ps $pids
+    if [ "$mode" == 'stop' ]; then
+	echo "Killing $pids"
+	kill $pids
 	echo "Their status now"
-	ps $ps
+	ps $pids
     fi
 }
 
 available_subcommands="$available_subcommands status"
 function status() { _manage; }
-available_subcommands="$available_subcommands kill"
-function kill() { _manage kill; }
+available_subcommands="$available_subcommands stop"
+function stop() { _manage stop; }
 
 available_subcommands="$available_subcommands log"
 function log() {
