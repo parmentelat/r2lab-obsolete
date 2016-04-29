@@ -12,7 +12,7 @@ function base() {
     echo "========== Installing phpmyadmin - provide mysql-server password as linux and set password=admin"
     apt-get install -y phpmyadmin
 
-    echo "========== running git clone for openair-cn and r2lab"
+    echo "========== Running git clone for openair-cn and r2lab"
     read _
     cd
     echo -n | \
@@ -90,8 +90,8 @@ function configure {
     if grep -q $fitid /etc/hosts; then
 	echo $fitid already in /etc/hosts
     else
-	echo "========== defining $fitid in /etc/hosts"
-	echo "========== 127.0.1.1  $fitid.r2lab.fr $fitid" >> /etc/hosts
+	echo "========== Defining $fitid in /etc/hosts"
+	echo "127.0.1.1  $fitid.r2lab.fr $fitid" >> /etc/hosts
     fi
 
     cd /root/openair-cn/BUILD/EPC/
@@ -108,7 +108,7 @@ s,192.168.12.17/24,192.168.2.xxx/24,g
 EOF
     sed -f epc-r2lab.sed epc.conf.in.distrib > epc.conf.in
 
-    echo "========== rebuilding hss and epc configs"
+    echo "========== Rebuilding hss and epc configs"
     cd /root/openair-cn/SCRIPTS
     ./build_hss --clean --clean-certificates --local-mme --fqdn fit$fitid.r2lab.fr 2>&1 | tee build_hss-run2.log
     ./build_epc --clean --clean-certificates --local-hss 2>&1 | tee build_epc.run2.log
