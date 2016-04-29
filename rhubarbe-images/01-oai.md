@@ -72,7 +72,7 @@ cpufreq-info
 ```
 
 ****
-Saved in `oai-epc+hss-base`
+Saved in `oai-gw-base`
 ****
 
 ## Git pull - after restoring that image
@@ -89,7 +89,7 @@ Saved in `oai-epc+hss-base`
 
 
 ****
-Saved in `oai-epc+hss-builds`
+Saved in `oai-gw-builds`
 ****
 
 ### reconfigure
@@ -130,10 +130,6 @@ cd /root/openair-cn/SCRIPTS
 # `-f` is to force installs - note that we have installed mysql-server separately in `core0`
 # `-H` in this context is to specify the hostname 
 ```
-
-##### Checkpoint
-saved in `oai-epc+hss-core3`
-
 
 ### Config
 
