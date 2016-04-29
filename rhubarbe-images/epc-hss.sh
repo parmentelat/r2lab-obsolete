@@ -105,6 +105,7 @@ s,eth0:2 *,data,g
 s,192.170.1.1/24,192.168.2.xxx/24,g
 s,eth0,data,g
 s,192.168.12.17/24,192.168.2.xxx/24,g
+s,127.0.0.1:5656,/root/openair-cn/SCRIPTS/run_epc.out,g
 EOF
     sed -f epc-r2lab.sed epc.conf.in.distrib > epc.conf.in
 
@@ -119,7 +120,8 @@ function run() {
     cd /root/openair-cn/SCRIPTS
     echo "In $(pwd)"
     echo "Running run_epc in background"
-    ./run_epc --gdb --set-nw-interfaces --remove-gtpu-kmodule >& run_epc.log &
+    # --gdb is a possible additional option here
+    ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& run_epc.log &
     echo "Running run_hss in background"
     ./run_hss >& run_hss.log &
 }
@@ -140,7 +142,7 @@ function kill() {
 
 available_subcommands="$available_subcommands log"
 function log() {
-    echo 'tail -f /root/openair-cn/SCRIPTS/run_*.log'
+    echo 'tail -f /root/openair-cn/SCRIPTS/run_*.{log,out}'
     tail -f /root/openair-cn/SCRIPTS/run_*.log
 }
 
