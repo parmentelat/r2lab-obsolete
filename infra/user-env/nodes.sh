@@ -8,12 +8,12 @@
 # 
 #
 
-avalaible=""
+available=""
 
 
 git_repos="/root/r2lab /root/openair-cn /root/openairinterface5g"
 
-avalaible="$available gitup"
+available="$available gitup"
 function gitup() {
     for repo in $git_repos; do
 	[ -d $repo ] || continue;
@@ -25,13 +25,13 @@ function gitup() {
 }
 
 # reload this file after a gitup
-avalaible="$available bashrc"
+available="$available bashrc"
 function bashrc() { echo "Reloading ~/.bashrc"; source ~/.bashrc; }
 
-avalaible="$available oai-gw"
+available="$available oai-gw"
 alias oai-gw=/root/2rlab/rhubarbe-images/oai-gw.sh
 
-avalaible="$available oai-enb"
+available="$available oai-enb"
 alias oai-enb=/root/2rlab/rhubarbe-images/oai-enb.sh
 
 function help() { echo Available commands; echo "$available"; }
