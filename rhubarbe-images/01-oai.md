@@ -1,4 +1,25 @@
-# 2016 Apr 27 `ubuntu-10.04-oai-core`
+# 2016 May 2 `oai-enb-*`
+
+This is more informal as the initial setup was done by Thierry T. on fit 11.
+
+However the same general principle should apply, using the `oai-enb` alias, that points at `/root/r2lab/rhubarbe-images/oai-enb.sh` and that supports the same subcommands as `oai-gw` like `build`, `configure`, `run`, etc..
+
+
+## Pushing tmp code
+
+```
+# laptop
+r push1 rsync -av oai-enb.sh $(plr faraday):
+# faraday
+r push2 rsync -av oai-enb.sh fit11:/tmp
+```
+
+
+
+****
+****
+****
+# 2016 Apr 27 `oai-gw-*`
 
 * done first on fit38, then moved on fit16
 * based on
@@ -10,8 +31,17 @@
 ```
 cd
 git clone https://github.com/parmentelat/r2lab.git
-ln -s r2lab/infra/userenv/nodes.sh .bash_aliases
+ln -s r2lab/infra/user-env/nodes.sh .bash_aliases
 ```
+
+This has the side effect of defining convenience bash functions like e.g.
+
+* `help` : micro help
+* `gitup` : run git pull in the git repos `/root/r2lab, `/root/openair-cn` and `/root/openairinterface5g` when present
+* `bashrc` : reload `r2lab/infra/user-env/nodes.sh`
+* `oai-gw` : run `oai-gw.sh` - for the 5g gateway node - requires a subcommand
+* `oai-enb` : run `oai-enb.sh` - for the 5g eNodeB node - requires a subcommand
+
 
 ## Pushing tmp code
 
@@ -75,18 +105,13 @@ cpufreq-info
 Saved in `oai-gw-base`
 ****
 
-## Git pull - after restoring that image
-
-```
-/root/r2lab/rhubarbe-images/oai-gw.sh gitup
-```
-
 ## Builds
 
 ```
-/root/r2lab/rhubarbe-images/oai-gw.sh build
+oai-gw build
 ```
 
+which is equivalent to `/root/r2lab/rhubarbe-images/oai-gw.sh build`
 
 ****
 Saved in `oai-gw-builds`
@@ -95,13 +120,13 @@ Saved in `oai-gw-builds`
 ### reconfigure
 
 ```
-/root/r2lab/rhubarbe-images/oai-gw.sh build
+oai-gw configure
 ```
 
 ### run
 
 ```
-/root/r2lab/rhubarbe-images/oai-gw.sh run
+oai-gw run
 ```
 
 ****

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+DIRNAME=$(dirname "$0")
+
+source $DIRNAME/r2lab.sh
+
 available_subcommands=""
 
 available_subcommands="$available_subcommands base"
@@ -60,10 +64,7 @@ function build() {
     echo "========== Done - save image in oai-epc+hss-builds"
 }
 
-available_subcommands="$available_subcommands configure"
-function configure {
-
-    gitup
+function check_hostname() {
     # when hostname is correctly e.g. fit16
     fitid=$(hostname)
     id=$(sed -e s,fit,, <<< $fitid)
@@ -82,6 +83,13 @@ function configure {
 	hostname $fitid
     fi
     echo "Using id=$id and fitid=$fitid - $origin"
+}    
+
+available_subcommands="$available_subcommands configure"
+function configure() {
+
+    gitup
+    check_hostname
 
     echo "========== Turning on the data interface"
     ifup data
