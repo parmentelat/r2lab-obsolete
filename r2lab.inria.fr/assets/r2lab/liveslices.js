@@ -12,6 +12,10 @@ $(document).ready(function() {
       cls   = 'info';
       title = 'Info:'
     }
+    if(type == 'attention'){
+      cls   = 'warning';
+      title = 'Attention:'
+    }
     if(type == 'success'){
       cls   = 'success';
       title = 'Yep!'
@@ -50,6 +54,8 @@ $(document).ready(function() {
         var s_message = 'valid';
         var s_icon = "";
         if (isPastDate(expiration)){
+          sendMessage('One or more of your slices had expired. Click <a href="#" data-toggle="modal" data-target="#slice_modal">here</a> to manage it and renew it!', 'attention');
+
           s_class = 'in_red';
           s_message = 'expired';
           s_icon = "<a href='#' rel='tooltip' title='renew'><span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+i+"','"+slicename+"');></span></a>";
@@ -65,8 +71,6 @@ $(document).ready(function() {
   function main(){
     partial();
     get_slices("list-slices", r2lab_slices);
-
-    // sendMessage('One or more of your slices had expired. Click <a href="#" data-toggle="modal" data-target="#slice_modal">here</a> to manage it and renew it!', 'warning');
   }
 
 
@@ -87,8 +91,6 @@ var renew_slice = function(element, slicename) {
       $('#datetime_'+element).addClass('in_green');
       $('#datetime_'+element).html(moment(answer['valid_until']).format("YYYY-MM-DD HH:mm"));
       $('#icon_'+element).html('');
-    } else {
-      alert('Ops! Request failed.');
     }
   });
 }
