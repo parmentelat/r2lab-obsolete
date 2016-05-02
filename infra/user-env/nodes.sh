@@ -35,8 +35,8 @@ available="$available refresh"
 function refresh() { gitup /root/r2lab; bashrc; }
 
 ##########
-available="$available check_hostname"
-function check_hostname() {
+available="$available r2lab_id"
+function r2lab_id() {
     # when hostname is correctly set, e.g. fit16
     fitid=$(hostname)
     id=$(sed -e s,fit,, <<< $fitid)

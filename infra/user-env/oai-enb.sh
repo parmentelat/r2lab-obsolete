@@ -80,7 +80,7 @@ function configure() {
     echo "Using gateway $gw_id"
 
     gitup
-    id=$(check_hostname)
+    id=$(r2lab_id)
     fitid=fit$id
     
     cd $conf_dir

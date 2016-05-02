@@ -68,7 +68,7 @@ available="$available configure"
 function configure() {
 
     gitup
-    id=$(check_hostname)
+    id=$(r2lab_id)
     fitid=fit$id
 
     echo "========== Turning on the data interface"
