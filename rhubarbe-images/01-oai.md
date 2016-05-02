@@ -9,9 +9,9 @@ However the same general principle should apply, using the `oai-enb` alias, that
 
 ```
 # laptop
-r push1 rsync -av oai-enb.sh $(plr faraday):
+r push1 rsync -av oai-enb.sh nodes.sh $(plr faraday):
 # faraday
-r push2 rsync -av oai-enb.sh fit11:/tmp
+r push2 rsync -av oai-enb.sh nodes.sh fit11:/tmp
 ```
 
 
@@ -47,9 +47,9 @@ This has the side effect of defining convenience bash functions like e.g.
 
 ```
 # laptop
-r push1 rsync -av oai-gw.sh $(plr faraday):
+r push1 rsync -av oai-gw.sh nodes.sh $(plr faraday):
 # faraday
-r push2 rsync -av oai-gw.sh fit16:/tmp
+r push2 rsync -av oai-gw.sh nodes.sh fit16:/tmp
 ```
 
 ## Base
@@ -59,7 +59,7 @@ passwords and interactive installs
 ##### Automated : in principle this is equivalent to
 
 ```
-/root/r2lab/rhubarbe-images/oai-gw.sh base
+/root/r2lab/infra/user-env/oai-gw.sh base
 ```
 
 ##### Manual
@@ -111,7 +111,7 @@ Saved in `oai-gw-base`
 oai-gw build
 ```
 
-which is equivalent to `/root/r2lab/rhubarbe-images/oai-gw.sh build`
+which is equivalent to `/root/r2lab/infra/user-env/oai-gw.sh build`
 
 ****
 Saved in `oai-gw-builds`
@@ -126,7 +126,9 @@ oai-gw configure
 ### run
 
 ```
-oai-gw run
+oai-gw start
+oai-gw status
+oai-gw stop
 ```
 
 ****
@@ -135,6 +137,9 @@ oai-gw run
 ****
 ****
 
+# Backup section : 
+
+## a summary of previous - not quite working - attempts
 
 ### HSS
 

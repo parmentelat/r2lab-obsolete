@@ -1,12 +1,12 @@
 #!/bin/bash
 
 DIRNAME=$(dirname "$0")
+echo loading $DIRNAME/nodes.sh
+source $DIRNAME/nodes.sh
 
-source $DIRNAME/r2lab.sh
+available=""
 
-available_subcommands=""
-
-available_subcommands="$available_subcommands base"
+available="$available base"
 function base() {
 
     echo "========== Installing mysql-server - select apache2 and set password=linux"
@@ -39,7 +39,7 @@ function base() {
     echo "========== Done - save image in oai-epc+hss-base"
 }
 
-available_subcommands="$available_subcommands gitup"
+available="$available gitup"
 function gitup() {
     here=$(pwd)
     echo "========== Pulling git repos"
@@ -51,7 +51,7 @@ function gitup() {
     cd $here
 }
 
-available_subcommands="$available_subcommands build"
+available="$available build"
 function build() {
     
     gitup
@@ -64,32 +64,12 @@ function build() {
     echo "========== Done - save image in oai-epc+hss-builds"
 }
 
-function check_hostname() {
-    # when hostname is correctly e.g. fit16
-    fitid=$(hostname)
-    id=$(sed -e s,fit,, <<< $fitid)
-    origin="from hostname"
-    if [ "$fitid" == "$id" ]; then
-	# sample output
-	#inet 192.168.3.16/24 brd 192.168.3.255 scope global control
-	id=$(ip addr show control | \
-		    grep 'inet '| \
-		    awk '{print $2;}' | \
-		    cut -d/ -f1 | \
-		    cut -d. -f4)
-	fitid=fit$id
-	origin="from ip addr show"
-	echo "Forcing hostname to be $fitid"
-	hostname $fitid
-    fi
-    echo "Using id=$id and fitid=$fitid - $origin"
-}    
-
-available_subcommands="$available_subcommands configure"
+available="$available configure"
 function configure() {
 
     gitup
-    check_hostname
+    id=$(check_hostname)
+    fitid=fit$id
 
     echo "========== Turning on the data interface"
     ifup data
@@ -124,7 +104,7 @@ EOF
     ./build_epc --clean --clean-certificates --local-hss 2>&1 | tee build_epc.run2.log
 }
 
-available_subcommands="$available_subcommands start"
+available="$available start"
 function start() {
     cd /root/openair-cn/SCRIPTS
     echo "In $(pwd)"
@@ -153,12 +133,12 @@ function _manage() {
     fi
 }
 
-available_subcommands="$available_subcommands status"
+available="$available status"
 function status() { _manage; }
-available_subcommands="$available_subcommands stop"
+available="$available stop"
 function stop() { _manage stop; }
 
-available_subcommands="$available_subcommands log"
+available="$available log"
 function log() {
     cd /root/openair-cn/SCRIPTS
     targets="run_epc.log run_epc.out run_hss.log"
@@ -170,7 +150,7 @@ function log() {
 ####################
 function main() {
     if [[ -z "$@" ]]; then
-	echo "========== Available subcommands $available_subcommands"
+	echo "========== Available subcommands $available"
     fi
     for subcommand in "$@"; do
 	echo "========== Running stage $subcommand"

@@ -13,9 +13,11 @@ available=""
 
 git_repos="/root/r2lab /root/openair-cn /root/openairinterface5g"
 
+##########
 available="$available gitup"
 function gitup() {
-    for repo in $git_repos; do
+    [[ -n "$@" ]] && repos="$@" || repos="$git_repos"
+    for repo in $repos; do
 	[ -d $repo ] || continue;
 	echo "========== Updating $repo"
 	cd /root/r2lab
@@ -28,10 +30,41 @@ function gitup() {
 available="$available bashrc"
 function bashrc() { echo "Reloading ~/.bashrc"; source ~/.bashrc; }
 
+# update and reload
+available="$available refresh"
+function refresh() { gitup /root/r2lab; bashrc; }
+
+##########
+available="$available check_hostname"
+function check_hostname() {
+    # when hostname is correctly set, e.g. fit16
+    fitid=$(hostname)
+    id=$(sed -e s,fit,, <<< $fitid)
+    origin="from hostname"
+    if [ "$fitid" == "$id" ]; then
+	# sample output
+	#inet 192.168.3.16/24 brd 192.168.3.255 scope global control
+	id=$(ip addr show control | \
+		    grep 'inet '| \
+		    awk '{print $2;}' | \
+		    cut -d/ -f1 | \
+		    cut -d. -f4)
+	fitid=fit$id
+	origin="from ip addr show"
+	echo "Forcing hostname to be $fitid" >&2-
+	hostname $fitid
+    fi
+    echo "Using id=$id and fitid=$fitid - $origin" >&2-
+    echo $id
+}    
+
+
 available="$available oai-gw"
-alias oai-gw=/root/r2lab/rhubarbe-images/oai-gw.sh
+alias oai-gw=/root/r2lab/infra/user-env/oai-gw.sh
 
 available="$available oai-enb"
-alias oai-enb=/root/r2lab/rhubarbe-images/oai-enb.sh
+alias oai-enb=/root/r2lab/infra/user-env/oai-enb.sh
+
+
 
 function help() { echo Available commands; echo "$available"; }
