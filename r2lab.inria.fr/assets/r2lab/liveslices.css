@@ -7,7 +7,11 @@
 }
 
 .less_height .content {
-        text-align: center;
-        padding: 1px;
-        background: #ccc;
+  text-align: center;
+  padding: 1px;
+  background: #ccc;
+}
+
+#list-slices {
+  text-align: left;
 }

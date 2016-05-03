@@ -44,7 +44,11 @@ $(document).ready(function() {
     post_omfrest_request('/slices/get', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
   	  var responses = JSON.parse(xhttp.responseText);
-  	  $(body).html('');
+  	  $(body).html("<div class='row'>\
+                      <div class='col-md-6'><b>name</b></div>\
+                      <div class='col-md-4'><b>expiration date</b></div>\
+                      <div class='col-md-2'>&nbsp;</div>\
+                    </div>");
   	  for (i = 0; i < responses.length; i++) {
         var response = responses[i];
         var slicename = response['name'];
@@ -54,13 +58,23 @@ $(document).ready(function() {
         var s_message = 'valid';
         var s_icon = "";
         if (isPastDate(expiration)){
-          sendMessage('One or more of your slices had expired. Click <a href="#" data-toggle="modal" data-target="#slice_modal">here</a> to manage it and renew it!', 'attention');
+          sendMessage('One or more of your slices had expired. Click \
+                      <a href="#" data-toggle="modal" data-target="#slice_modal">here</a>\
+                      to manage it and renew it!', 'attention');
 
-          s_class = 'in_red';
+          s_class   = 'in_red';
           s_message = 'expired';
-          s_icon = "<a href='#' rel='tooltip' title='renew'><span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+i+"','"+slicename+"');></span></a>";
+          s_icon    = "<a href='#' rel='tooltip' title='renew'>\
+                        <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+i+"','"+slicename+"');></span>\
+                       </a>";
         }
-        $(body).append("<div class='row'><div class='col-md-6'>"+slicename+"</div><div class='col-md-4' id='datetime_"+i+"'><span class="+s_class+">"+moment(expiration).format("YYYY-MM-DD HH:mm")+"<span></div><div class='col-md-2' id='icon_"+i+"'>"+s_icon+"</div></div>");
+        $(body).append("<div class='row'>\
+                          <div class='col-md-6'>"+slicename+"</div>\
+                          <div class='col-md-4' id='datetime_"+i+"'>\
+                            <span class="+s_class+">"+moment(expiration).format("YYYY-MM-DD HH:mm")+"<span>\
+                          </div>\
+                          <div class='col-md-2' id='icon_"+i+"'>"+s_icon+"</div>\
+                        </div>");
         $('a').tooltip();
        }
      }

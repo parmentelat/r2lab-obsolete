@@ -23,6 +23,9 @@ skip_header: yes
         </div>
         <div style="clear:both"></div>
       </div>
+      <div id="manage_slices">
+        <a href="#" data-toggle="modal" data-target="#slice_modal">manage your slices</a>
+      </div>
     </div>
     <div class="col-md-3 personal_col">
       <div id="calendar"></div>
