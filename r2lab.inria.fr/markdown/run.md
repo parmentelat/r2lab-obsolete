@@ -75,12 +75,12 @@ skip_header: yes
 <!-- PARTIAL MODAL FOR SLICES - USED IN RUN OR BOOK -->
 <script type="text/javascript" src="/assets/r2lab/liveslices.js"></script>
 <style type="text/css"> @import url("/assets/r2lab/liveslices.css"); </style>
-<div class="modal fade" id="slice_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="slice_modal" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Manage Slices</h4>
+        <h4 class="modal-title" id="myModalSlice">Manage Slices</h4>
       </div>
       <div class="modal-body" id="list-slices">
         ...
