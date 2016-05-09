@@ -9,6 +9,7 @@ function doc-nodes () {
   fun=$1; shift;
   docstring=$1; shift
   [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
+  [ "$docstring" == 'alias1' ] && docstring="\t$(alias $fun)"
   [ "$docstring" == 'function' ] && docstring=$(type $fun)
   _doc_nodes="$_doc_nodes\n$fun\t$docstring"
 }
@@ -266,6 +267,18 @@ doc-nodes "st" "\tlike rstatus (status is a well-known command on ubuntu)"
 alias rinfo="rhubarbe info"
 alias info=rinfo
 doc-nodes "(r)info" "\tget version info from selected nodes CMC (rhubarbe info)"
+alias rusrpon="rhubarbe usrpon"
+doc-nodes "rusrpon" "\tturn selected nodes usrpon (rhubarbe usrpon)"
+alias uon=rusrpon
+doc-nodes "uon" alias1
+alias rusrpoff="rhubarbe usrpoff"
+doc-nodes "rusrpoff" "turn selected nodes usrpoff (rhubarbe usrpoff)"
+alias uoff=rusrpoff
+doc-nodes uoff alias1
+alias rusrpstatus="rhubarbe usrpstatus"
+doc-nodes "rusrpstatus" "show status (usrpon or usrpoff) of selected nodes USRP (rhubarbe usrpstatus)"
+alias ust=rusrpstatus
+doc-nodes "ust" alias1
 alias rload="rhubarbe load"
 doc-nodes rload "\tload image (specify with -i) on selected nodes (rhubarbe load)"
 alias rsave="rhubarbe save"
