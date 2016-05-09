@@ -18,7 +18,18 @@ In addition the 2 Ground pins  - labelled `GND` - must be connected together, as
 However the dupont cables can be used in both directions on any of their ends, so here is our convention to avoid mis-connections :
 
  * on each end there is a black plastic block connector
- * one side of the connector is plain, the other one has 4 holes (see figures)
+ * one side of the connector is plain, the other one has 4 holes (see figures figures)
+
+****
+**Plain side of the connector**
+
+![plain side of the connector](connector-plain.png)
+****
+**Holed side of the connector**
+
+![holed side of the connector](connector-holed.png)
+****
+ 
  * inside the box, the **holed side** of the connector is oriented **towards the inside of the box**
  * on the USRP CMC, the **holed side** of the connector is **upwards**
 
