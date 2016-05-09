@@ -1,7 +1,7 @@
 // this requires omfrest.js
 
 $(document).ready(function() {
-  var version             = '1.31';
+  var version = '1.32';
 
   function buildCalendar(theEvents) {
     var today  = moment().format("YYYY-MM-DD");
