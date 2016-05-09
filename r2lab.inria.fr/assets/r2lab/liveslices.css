@@ -1,0 +1,17 @@
+.in_red {
+  color:red;
+}
+
+.in_green {
+  color:green;
+}
+
+.less_height .content {
+  text-align: center;
+  padding: 1px;
+  background: #ccc;
+}
+
+#list-slices {
+  text-align: left;
+}

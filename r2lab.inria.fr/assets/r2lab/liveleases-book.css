@@ -11,6 +11,13 @@
   float: left;
 }
 
+#manage_slices {
+  font-size: 11px;
+  margin-left: 35px;
+  margin-top: 5px;
+  float: left;
+}
+
 #calendar {
   margin: 10px 10px;
   padding: 0;
@@ -36,7 +43,7 @@
   font-size: 12px;
   float: left;
   width: 150px;
-  height: 515px;
+  height: 495px;
   padding: 0 10px;
   border: 1px solid #ccc;
   background: #eee;

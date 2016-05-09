@@ -23,6 +23,9 @@ skip_header: yes
         </div>
         <div style="clear:both"></div>
       </div>
+      <div id="manage_slices">
+        <a href="#" data-toggle="modal" data-target="#slice_modal">manage your slices</a>
+      </div>
     </div>
     <div class="col-md-3 personal_col">
       <div id="calendar"></div>
@@ -67,4 +70,24 @@ skip_header: yes
       <style type="text/css"> @import url("/assets/r2lab/livetable.css"); </style>
     </div>
   </div>    
+</div>
+
+<!-- PARTIAL MODAL FOR SLICES - USED IN RUN OR BOOK -->
+<script type="text/javascript" src="/assets/r2lab/liveslices.js"></script>
+<style type="text/css"> @import url("/assets/r2lab/liveslices.css"); </style>
+<div class="modal fade" id="slice_modal" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalSlice">Manage Slices</h4>
+      </div>
+      <div class="modal-body" id="list-slices">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>
