@@ -1,4 +1,4 @@
-// this requires omfrest.js
+// this requires omfrest.js and liveleases-common.js
 
 $(document).ready(function() {
   var version = '1.32';

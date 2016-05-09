@@ -744,6 +744,8 @@ function parseLease(data){
     });
   });
   buildSlicesBox(leases);
-  $.merge(leases, setNightlyAndPast()); //removed from live-leases-book
+  if($(location).attr('pathname') == '/run.md'){
+    $.merge(leases, setNightlyAndPast()); //present in live-leases-book
+  }
   return leases;
 }
