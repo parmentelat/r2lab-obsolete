@@ -93,7 +93,7 @@ EOF
     # apt-get requirements
     apt-get update
     apt-get install -y git
-    apt-get install -y libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential
+    apt-get install -y libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential libffi-dev
 
     # 
     echo "========== Running git clone for openair-cn and r2lab and openinterface5g (type enter to confirm)"
