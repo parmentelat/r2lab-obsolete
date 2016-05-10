@@ -123,6 +123,8 @@ function start() {
     ./run_hss >& $log_hss &
 }
 
+locks="/var/run/mme_gw.pid /var/run/oai_hss.pid"
+
 function _manage() {
     # if $1 is 'stop' then the found processes are killed
     mode=$1; shift
@@ -138,6 +140,8 @@ function _manage() {
 	kill $pids
 	echo "Their status now"
 	ps $pids
+	echo "Clearing locks $locks"
+	rm -f $locks
     fi
 }
 
