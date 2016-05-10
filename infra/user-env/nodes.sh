@@ -93,10 +93,11 @@ function oai-as-gw() { define-oai gw.sh; echo function "'oai'" now defined; }
 
 available="$available oai-env"
 function oai-env() {
-    _oai places > /tmp/oaienv
-    source /tmp/oaienv
-    echo "Defined these:"
-    cat /tmp/oaienv
+    _oai places > /tmp/oai-env
+    source /tmp/oai-env
+    echo "Following vars now in your env" >2&-
+    echo ========== >2&-
+    cat /tmp/oai-env
 }
 
 #################### a utility to deal with logs
@@ -145,7 +146,7 @@ function define_main() {
 	    echo "========== Available subcommands $available"  >&2-
 	fi
 	for subcommand in "$@"; do
-	    echo "========== Running stage $subcommand"  >&2-
+	    echo "Running stage $subcommand"  >&2-
 	    case $subcommand in
 		env)
 		    echo "Use oai-env; not oai env" ;;

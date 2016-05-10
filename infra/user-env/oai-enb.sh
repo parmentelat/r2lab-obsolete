@@ -41,7 +41,7 @@
 ###
 
 DIRNAME=$(dirname "$0")
-echo loading $DIRNAME/nodes.sh  >&2-
+echo Loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
 available=""
