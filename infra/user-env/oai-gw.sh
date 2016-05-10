@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIRNAME=$(dirname "$0")
-echo loading $DIRNAME/nodes.sh
+echo loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
 available=""
@@ -144,22 +144,8 @@ function status() { _manage; }
 available="$available stop"
 function stop() { _manage stop; }
 
-available="$available log"
-function log() {
-    for log in $logs; do [ -f $log ] || { echo "Touching $log"; touch $log; } done
-    tail -f $logs
-}
-
 ####################
-function main() {
-    if [[ -z "$@" ]]; then
-	echo "========== Available subcommands $available"
-    fi
-    for subcommand in "$@"; do
-	echo "========== Running stage $subcommand"
-	$subcommand
-    done
-}
+define_main
 
 ########################################
 main "$@"

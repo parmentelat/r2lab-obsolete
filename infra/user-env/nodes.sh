@@ -61,30 +61,75 @@ function r2lab_id() {
 }    
 
 
+##########
 # the utility to select which function the oai alias should point to
+# in most cases, we just want oai to be an alias to e.g.
+# /root/r2lab/infra/user-env/oai-gw.sh
+# except that while developping we use the version in /tmp
+# if present
+
+# the place where the standard (git) scripts are located
+oai_scripts=/root/r2lab/infra/user-env
+
 available="$available oai-as-gw"
-function oai-as-gw() { alias oai=oai-gw; }
+function define-oai() {
+    # suffix should be gw.sh or enb.sh
+    suffix=$1; shift
+    function _oai() {
+	candidates="/tmp $oai_scripts"
+	for candidate in $candidates; do
+	    script=$candidate/oai-$suffix
+	    [ -f $script ] && break;
+	done
+	echo Invoking script $script >&2-
+	$script "$@"
+    }
+    alias oai=_oai
+}
 available="$available oai-as-enb"
-function oai-as-enb() { alias oai=oai-enb; }
+function oai-as-enb() { define-oai enb.sh; echo function "'oai'" now defined; }
+available="$available oai-as-gw"
+function oai-as-gw() { define-oai gw.sh; echo function "'oai'" now defined; }
 
-## always expose these
-available="$available oai-gw"
-alias oai-gw=/root/r2lab/infra/user-env/oai-gw.sh
-
-available="$available oai-enb"
-alias oai-enb=/root/r2lab/infra/user-env/oai-enb.sh
-
-### while using a version under devel.
-# not exposed in help
-function oai-as-gw-tmp() {
-    alias oai-gw=/tmp/oai-gw.sh;
-    alias oai=/tmp/oai-gw.sh;
-}
-function oai-as-enb-tmp() {
-    alias oai-enb=/tmp/oai-enb.sh;
-    alias oai=/tmp/oai-enb.sh;
+available="$available oai-env"
+function oai-env() {
+    _oai places > /tmp/oaienv
+    source /tmp/oaienv
+    echo "Defined these:"
+    cat /tmp/oaienv
 }
 
+#################### a utility to deal with logs
+function locate_logs() {
+    if [ -n "$logs" ]; then
+	echo $logs
+    else
+	echo No logs defined - Please define the "'logs'" shell variable  >&2-
+    fi
+}
+	
+available="$available logs-tail"
+function logs-tail() {
+    var logfiles=$(locate_logs)
+    for logfile in $logfiles; do [ -f $logfile ] || { echo "Touching $logfile"; touch $logfile; } done
+    tail -f $logfiles
+}
+
+available="$available logs-grep"
+function logs-grep() {
+    [[ -z "$@" ]] && { echo usage: $0 grep-arg..s; return; }
+    var logfiles=$(locate_logs)
+    grep "$@" $logfiles
+}
+
+available="$available logs-tgz"
+function logs-tgz() {
+    output=$1; shift
+    [ -z "$output" ] && { echo usage: $0 output; return; }
+    var logfiles=$(locate_logs)
+    tar -czf $output.tgz $logfiles
+    echo "Captured logs in $output.tgz"
+}    
 ####################
 available="$available spy-sctp"
 function spy-sctp() {
@@ -92,6 +137,23 @@ function spy-sctp() {
     [ -z "$ifname" ] && ifname=data
     echo $spying for SCTP packets on interface $ifname
     tcpdump -i $ifname ip proto 132
+}
+
+function define_main() {
+    function main() {
+	if [[ -z "$@" ]]; then
+	    echo "========== Available subcommands $available"  >&2-
+	fi
+	for subcommand in "$@"; do
+	    echo "========== Running stage $subcommand"  >&2-
+	    case $subcommand in
+		env)
+		    echo "Use oai-env; not oai env" ;;
+		*)
+		    $subcommand ;;
+	    esac
+	done
+    }
 }
 
 

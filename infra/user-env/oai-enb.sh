@@ -41,7 +41,7 @@
 ###
 
 DIRNAME=$(dirname "$0")
-echo loading $DIRNAME/nodes.sh
+echo loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
 available=""
@@ -136,7 +136,7 @@ export OPENAIR2_DIR=$OPENAIR_HOME/openair2
 export OPENAIR3_DIR=$OPENAIR_HOME/openair3
 export OPENAIRCN_DIR=$OPENAIR_HOME/openair-cn
 export OPENAIR_TARGETS=$OPENAIR_HOME/targets
-alias  oai='cd $OPENAIR_HOME'
+alias oairoot='cd $OPENAIR_HOME'
 alias oai0='cd $OPENAIR0_DIR'
 alias oai1='cd $OPENAIR1_DIR'
 alias oai2='cd $OPENAIR2_DIR'
@@ -262,22 +262,8 @@ function status() { _manage; }
 available="$available stop"
 function stop() { _manage stop; }
 
-available="$available log"
-function log() {
-    for log in $logs; do [ -f $log ] || { echo "Touching $log"; touch $log; } done
-    tail -f $logs
-}
-
 ####################
-function main() {
-    if [[ -z "$@" ]]; then
-	echo "========== Available subcommands $available"
-    fi
-    for subcommand in "$@"; do
-	echo "========== Running stage $subcommand"
-	$subcommand
-    done
-}
+define_main
 
 ########################################
 main "$@"
