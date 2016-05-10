@@ -8,6 +8,8 @@
 # 
 #
 
+unalias ls >& /dev/null
+
 available=""
 
 
@@ -71,6 +73,26 @@ alias oai-gw=/root/r2lab/infra/user-env/oai-gw.sh
 
 available="$available oai-enb"
 alias oai-enb=/root/r2lab/infra/user-env/oai-enb.sh
+
+### while using a version under devel.
+# not exposed in help
+function oai-as-gw-tmp() {
+    alias oai-gw=/tmp/oai-gw.sh;
+    alias oai=/tmp/oai-gw.sh;
+}
+function oai-as-enb-tmp() {
+    alias oai-enb=/tmp/oai-enb.sh;
+    alias oai=/tmp/oai-enb.sh;
+}
+
+####################
+available="$available spy-sctp"
+function spy-sctp() {
+    ifname=$1; shift
+    [ -z "$ifname" ] && ifname=data
+    echo $spying for SCTP packets on interface $ifname
+    tcpdump -i $ifname ip proto 132
+}
 
 
 function help() { echo Available commands; echo "$available"; }

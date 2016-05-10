@@ -8,6 +8,10 @@ available=""
 
 ####################
 run_dir=/root/openair-cn/SCRIPTS
+log_epc=$run_dir/run_epc.log
+syslog_epc=$run_dir/run_epc.syslog
+log_hss=$run_dir/run_hss.log
+logs="$log_epc $syslog_epc $log_hss"
 conf_dir=/root/openair-cn/BUILD/EPC/
 config=epc.conf.in
 
@@ -95,7 +99,7 @@ s,eth0:2 *,data,g
 s,192.170.1.1/24,192.168.2.xxx/24,g
 s,eth0,data,g
 s,192.168.12.17/24,192.168.2.xxx/24,g
-s,127.0.0.1:5656,/root/openair-cn/SCRIPTS/run_epc.out,g
+s,127.0.0.1:5656,${syslog_epc},g
 s,TAC = "15",TAC = "1",g
 EOF
     sed -f epc-r2lab.sed $config.distrib > $config
@@ -112,9 +116,9 @@ function start() {
     echo "In $(pwd)"
     echo "Running run_epc in background"
     # --gdb is a possible additional option here
-    ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& run_epc.log &
+    ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& $log_epc &
     echo "Running run_hss in background"
-    ./run_hss >& run_hss.log &
+    ./run_hss >& $log_hss &
 }
 
 function _manage() {
@@ -142,11 +146,8 @@ function stop() { _manage stop; }
 
 available="$available log"
 function log() {
-    cd $run_dir
-    targets="run_epc.log run_epc.out run_hss.log"
-    for target in $targets; do [ -f $target ] || touch $target; done
-    tail -f $targets
-    cd -
+    for log in $logs; do [ -f $log ] || { echo "Touching $log"; touch $log; } done
+    tail -f $logs
 }
 
 ####################

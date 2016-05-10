@@ -2,16 +2,25 @@
 
 This is more informal as the initial setup was done by Thierry T. on fit 11.
 
-However the same general principle should apply, using the `oai-enb` alias, that points at `/root/r2lab/rhubarbe-images/oai-enb.sh` and that supports the same subcommands as `oai-gw` like `build`, `configure`, `run`, etc..
+However the same general principle should apply, using the `oai-enb` alias, that points at `/root/r2lab/rhubarbe-images/oai-enb.sh` and that supports the same subcommands as `oai-gw` like `base`, `builds`, `configure`, `run`, etc..
+
+So in a nutshell
+
+* `oai-as-enb`
+* `oai base`
+* save as `oai-enb-base`
+* `oai-as-enb`
+* `oai builds`
+* save as `oai-enb-builds`
 
 
-## Pushing tmp code
+## Pushing tmp code to enb fit11
 
 ```
 # laptop
-r push1 rsync -av oai-enb.sh nodes.sh $(plr faraday):
-# faraday
-r push2 rsync -av oai-enb.sh nodes.sh fit11:/tmp
+r push1 rsync -av oai-*.sh nodes.sh $(plr faraday):
+# root@faraday
+r push2@fit11 rsync -av oai-*.sh nodes.sh fit11:/tmp/
 ```
 
 
@@ -37,7 +46,7 @@ ln -s r2lab/infra/user-env/nodes.sh .bash_aliases
 This has the side effect of defining convenience bash functions like e.g.
 
 * `help` : micro help
-* `gitup` : run git pull in the git repos `/root/r2lab, `/root/openair-cn` and `/root/openairinterface5g` when present
+* `gitup` : run git pull in the git repos `/root/r2lab`, `/root/openair-cn` and `/root/openairinterface5g` when present
 * `bashrc` : reload `r2lab/infra/user-env/nodes.sh`
 * `oai-gw` : run `oai-gw.sh` - for the 5g gateway node - requires a subcommand
 * `oai-enb` : run `oai-enb.sh` - for the 5g eNodeB node - requires a subcommand
@@ -45,11 +54,13 @@ This has the side effect of defining convenience bash functions like e.g.
 
 ## Pushing tmp code
 
+## Pushing tmp code to gw fit16
+
 ```
 # laptop
-r push1 rsync -av oai-gw.sh nodes.sh $(plr faraday):
+r push1 rsync -av oai-*.sh nodes.sh $(plr faraday):
 # faraday
-r push2 rsync -av oai-gw.sh nodes.sh fit16:/tmp
+r push2@fit16 rsync -av oai-*.sh nodes.sh fit16:/tmp/
 ```
 
 ## Base

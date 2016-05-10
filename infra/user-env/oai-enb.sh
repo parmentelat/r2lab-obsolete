@@ -48,6 +48,8 @@ available=""
 
 ####################
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
+lte_log="$run_dir/enb.log"
+logs="$lte_log"
 conf_dir=/root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
 template=enb.band7.tm1.usrpb210.epc.remote.conf
 config=r2lab.conf
@@ -64,40 +66,29 @@ function places() {
 }
 
 ####################
+function apt-update() {
+    apt-get update
+    apt-get upgrade -y
+}
+
+# would make sense to add more stuff in the base image - see the NEWS file
+base_packages="git libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential libffi-dev
+texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsfonts imagemagick-common 
+ gdb ruby flex bison gfortran xterm mysql-common python-pip python-numpy qtcore4-l10n tcl tk xorg-sgml-doctools
+"
+
+####################
 available="$available base"
 function base() {
 
-    echo "WARNING: function 'base' : this is untested code .."
-
-
-    OPENAIR_HOME=/root/openairinterface5g
-    # don't do this twice
-    grep -q OPENAIR ~/.bashrc >& /dev/null || cat >> $HOME/.bashrc <<EOF
-export OPENAIR_HOME=$OPENAIR_HOME
-export OPENAIR1_DIR=$OPENAIR_HOME/openair1
-export OPENAIR2_DIR=$OPENAIR_HOME/openair2
-export OPENAIR3_DIR=$OPENAIR_HOME/openair3
-export OPENAIRCN_DIR=$OPENAIR_HOME/openair-cn
-export OPENAIR_TARGETS=$OPENAIR_HOME/targets
-alias  oai='cd $OPENAIR_HOME'
-alias oai0='cd $OPENAIR0_DIR'
-alias oai1='cd $OPENAIR1_DIR'
-alias oai2='cd $OPENAIR2_DIR'
-alias oai3='cd $OPENAIR3_DIR'
-alias oait='cd $OPENAIR_TARGETS'
-alias oaiu='cd $OPENAIR2_DIR/UTIL'
-alias oais='cd $OPENAIR_TARGETS/SIMU/USER'
-alias oaiex='cd $OPENAIR_TARGETS/SIMU/EXAMPLES'
-EOF
+    gitup
 
     # apt-get requirements
-    apt-get update
-    apt-get install -y git
-    apt-get install -y libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential libffi-dev
+    apt-update
+    apt-get install -y $base_packages
 
     # 
-    echo "========== Running git clone for openair-cn and r2lab and openinterface5g (type enter to confirm)"
-    read _
+    echo "========== Running git clone for openair-cn and r2lab and openinterface5g"
     cd
     echo -n | \
 	openssl s_client -showcerts -connect gitlab.eurecom.fr:443 2>/dev/null | \
@@ -120,33 +111,68 @@ EOF
     echo "========== Done - save image in oai-enb-base"
 }
 
-available="$available builds"
-function builds() {
-
-    echo "WARNING: function 'builds' : this is untested code .."
-
+available="$available build-uhd"
+function build-uhd() {
     echo "========== Building UHD"
     cd
     git clone git://github.com/EttusResearch/uhd.git
     cd uhd
     mkdir build
     cd build
-    cmake ../
+    cmake ../host
     make
     make test
     make install
+}
+
+available="$available build-oai5g"
+function build-oai5g() {
+    OPENAIR_HOME=/root/openairinterface5g
+    # don't do this twice
+    grep -q OPENAIR ~/.bashrc >& /dev/null || cat >> $HOME/.bashrc <<EOF
+export OPENAIR_HOME=$OPENAIR_HOME
+export OPENAIR1_DIR=$OPENAIR_HOME/openair1
+export OPENAIR2_DIR=$OPENAIR_HOME/openair2
+export OPENAIR3_DIR=$OPENAIR_HOME/openair3
+export OPENAIRCN_DIR=$OPENAIR_HOME/openair-cn
+export OPENAIR_TARGETS=$OPENAIR_HOME/targets
+alias  oai='cd $OPENAIR_HOME'
+alias oai0='cd $OPENAIR0_DIR'
+alias oai1='cd $OPENAIR1_DIR'
+alias oai2='cd $OPENAIR2_DIR'
+alias oai3='cd $OPENAIR3_DIR'
+alias oait='cd $OPENAIR_TARGETS'
+alias oaiu='cd $OPENAIR2_DIR/UTIL'
+alias oais='cd $OPENAIR_TARGETS/SIMU/USER'
+alias oaiex='cd $OPENAIR_TARGETS/SIMU/EXAMPLES'
+EOF
+
+    source $HOME/.bashrc
 
     cd $HOME/openairinterface5g/cmake_targets/
     # xxx l'original avait une seule ligne :
     ./build_oai -I -w USRP 2>&1 | tee build_oai-1.log
     ./build_oai --eNB -c -w USRP 2>&1 | tee build_oai-2.log
 
-    cd $HOME/openairinterface5g/
-    sudo chmod +x ./targets/bin/init_nas_nos1
+    # from this point on, instructions are really unclear
+    #cd $HOME/openairinterface5g/
+    #sudo chmod +x ./targets/bin/init_nas_nos1
     # xxx ici à nouveau c'est pas clair
-    ./targets/bin/init_nas_nos1
+    #./targets/bin/init_nas_nos1
     # this appeared in the original instructions from T. Turletti
     # eNB # eNB ready to run
+
+}
+
+available="$available builds"
+function builds() {
+
+    gitup
+    cd
+    
+    build-uhd >& build-uhd.log
+
+    build-oai5g >& build-oai5g.log
 
     echo "========== Done - save image in oai-enb-builds"
 }
@@ -170,6 +196,7 @@ function define-gw() {
 
 available="$available configure"
 function configure() {
+
     [ -f $gw_id_file ] || {
 	echo "file $gw_id_file not found; you need to run $COMMAND define-gw first - exiting";
 	exit 1;
@@ -202,12 +229,43 @@ available="$available start"
 function start() {
     cd $run_dir
     echo "In $(pwd)"
-    echo "Running run_epc in background"
-    # --gdb is a possible additional option here
-    ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& run_epc.log &
     echo "Running lte-softmodem in background"
-    ./lte-softmodem -O $conf_dir/$config >& lte-softmodem.log &
+    ./lte-softmodem -O $conf_dir/$config >& $lte_log &
     cd - >& /dev/null
+}
+
+function _manage() {
+    # if $1 is 'stop' then the found processes are killed
+    mode=$1; shift
+    pids_l=$(pgrep lte-softmodem)
+    if [ -z "$pids_l$pids_r" ]; then
+	pids=""
+    else
+	pids="$pids_l $pids_r"
+    fi
+    if [ -z "$pids" ]; then
+	echo "No running process in lte-softmodem - exiting"
+	return 1
+    fi
+    echo "Found processes"
+    ps $pids
+    if [ "$mode" == 'stop' ]; then
+	echo "Killing $pids"
+	kill $pids
+	echo "Their status now"
+	ps $pids
+    fi
+}
+
+available="$available status"
+function status() { _manage; }
+available="$available stop"
+function stop() { _manage stop; }
+
+available="$available log"
+function log() {
+    for log in $logs; do [ -f $log ] || { echo "Touching $log"; touch $log; } done
+    tail -f $logs
 }
 
 ####################
