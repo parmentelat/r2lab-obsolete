@@ -16,23 +16,23 @@
 * log in as r2lab/r2lab
 
 
-## `utilities.sh`
+## `imaging-utils.sh`
 
-`rhubarbe-images/utilities.sh` is a script designed to **help** automate the various stages. 
+`rhubarbe-images/imaging-utils.sh` is a script designed to **help** automate the various stages. 
 **IMPORTANT** this script only is a help - make sure to read it before running it
 
 ```
-curl -O https://raw.githubusercontent.com/parmentelat/r2lab/master/rhubarbe-images/utilities.sh
-chmod +x utilities.sh
+curl -O https://raw.githubusercontent.com/parmentelat/r2lab/master/rhubarbe-images/imaging-utils.sh
+chmod +x imaging-utils.sh
 # And then
-./utilities.sh help
+./imaging-utils.sh help
 ```
 
 
 # 2016/04/25 - `ubuntu-14.04`
 
 * done on fit38 (had to disconnect the USRP usb first)
-* first time where `utilities.sh` was actually used, although I improved it a lot afterwards, so please use with care
+* first time where `imaging-utils.sh` was actually used, although I improved it a lot afterwards, so please use with care
 
 
 # 2016/04/22 - `ubuntu-16.04`
@@ -40,7 +40,7 @@ chmod +x utilities.sh
 * done on fit41 (and actually I should not have because the damn thing has is super slow when downloading pxefrisbee and I have no idea why)
 * created a USB stick from the `server` iso using USB Stick Creator on ubuntu
 * started with uploading a previous ubuntu image to be sure about the partitioning and `ext4` business 
-* otherwise the procedure was in line with what `utilities.sh` has, except done mostly manually
+* otherwise the procedure was in line with what `imaging-utils.sh` has, except done mostly manually
 
 # 2015/12/09: `ubuntu-12.04.5`
 
