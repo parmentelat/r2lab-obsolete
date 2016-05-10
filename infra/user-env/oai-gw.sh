@@ -112,6 +112,7 @@ EOF
 
 available="$available start"
 function start() {
+    data-up
     cd $run_dir
     echo "In $(pwd)"
     echo "Running run_epc in background"

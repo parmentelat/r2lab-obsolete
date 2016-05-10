@@ -60,6 +60,17 @@ function r2lab_id() {
     echo $id
 }    
 
+available="$available data-up"
+data_ifnames="data eth1"
+function data-up() {
+    for ifname in $data_ifnames; do
+	ip addr sh dev $ifname >& /dev/null && {
+	    echo Turning on data network on interface $ifname >&2-
+	    ifup $ifname >&2-
+	    break
+	}
+    done
+}
 
 ##########
 # the utility to select which function the oai alias should point to
@@ -95,8 +106,8 @@ available="$available oai-env"
 function oai-env() {
     _oai places > /tmp/oai-env
     source /tmp/oai-env
-    echo "Following vars now in your env" >2&-
-    echo ========== >2&-
+    echo "Following vars now in your env" >&2-
+    echo ========== >&2-
     cat /tmp/oai-env
 }
 
