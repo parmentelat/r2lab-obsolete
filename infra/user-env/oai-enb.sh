@@ -92,11 +92,11 @@ EOF
 
     # apt-get requirements
     apt-get update
-    apt-get install git
-    apt-get install libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential
+    apt-get install -y git
+    apt-get install -y libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential
 
     # 
-    echo "========== Running git clone for openair-cn and r2lab and openinterface5g"
+    echo "========== Running git clone for openair-cn and r2lab and openinterface5g (type enter to confirm)"
     read _
     cd
     echo -n | \
@@ -120,7 +120,7 @@ EOF
     echo "========== Done - save image in oai-enb-base"
 }
 
-available="$available $builds"
+available="$available builds"
 function builds() {
 
     echo "WARNING: function 'builds' : this is untested code .."
