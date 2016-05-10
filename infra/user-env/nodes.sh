@@ -102,9 +102,9 @@ function define-oai() {
     alias oai=_oai
 }
 available="$available oai-as-enb"
-function oai-as-enb() { define-oai enb.sh; echo function "'oai'" now defined; }
+function oai-as-enb() { define-oai enb.sh; echo function "'oai'" now defined; oai-env; }
 available="$available oai-as-gw"
-function oai-as-gw() { define-oai gw.sh; echo function "'oai'" now defined; }
+function oai-as-gw() { define-oai gw.sh; echo function "'oai'" now defined; oai-env; }
 
 available="$available oai-env"
 function oai-env() {
@@ -124,6 +124,11 @@ function locate_logs() {
     fi
 }
 	
+available="$available logs"
+function logs() {
+    ls $(locate_logs)
+}
+
 available="$available logs-tail"
 function logs-tail() {
     logfiles=$(locate_logs)
@@ -149,8 +154,7 @@ function logs-tgz() {
 ####################
 available="$available spy-sctp"
 function spy-sctp() {
-    ifname=$1; shift
-    [ -z "$ifname" ] && ifname=data
+    ifname=$(data-up)
     echo $spying for SCTP packets on interface $ifname
     tcpdump -i $ifname ip proto 132
 }
