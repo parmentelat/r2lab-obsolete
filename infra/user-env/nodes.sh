@@ -122,7 +122,7 @@ function locate_logs() {
 	
 available="$available logs-tail"
 function logs-tail() {
-    var logfiles=$(locate_logs)
+    logfiles=$(locate_logs)
     for logfile in $logfiles; do [ -f $logfile ] || { echo "Touching $logfile"; touch $logfile; } done
     tail -f $logfiles
 }
@@ -130,7 +130,7 @@ function logs-tail() {
 available="$available logs-grep"
 function logs-grep() {
     [[ -z "$@" ]] && { echo usage: $0 grep-arg..s; return; }
-    var logfiles=$(locate_logs)
+    logfiles=$(locate_logs)
     grep "$@" $logfiles
 }
 
@@ -138,7 +138,7 @@ available="$available logs-tgz"
 function logs-tgz() {
     output=$1; shift
     [ -z "$output" ] && { echo usage: $0 output; return; }
-    var logfiles=$(locate_logs)
+    logfiles=$(locate_logs)
     tar -czf $output.tgz $logfiles
     echo "Captured logs in $output.tgz"
 }    

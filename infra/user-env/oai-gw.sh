@@ -21,6 +21,7 @@ function places() {
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
     echo "config=$config"
+    echo "logs=\"$logs\""
 }
 
 

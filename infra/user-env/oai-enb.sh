@@ -48,7 +48,7 @@ available=""
 
 ####################
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
-lte_log="$run_dir/enb.log"
+lte_log="$run_dir/softmodem.log"
 logs="$lte_log"
 conf_dir=/root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
 template=enb.band7.tm1.usrpb210.epc.remote.conf
@@ -63,6 +63,7 @@ function places() {
     echo "conf_dir=$conf_dir"
     echo "template=$template"
     echo "config=$config"
+    echo "logs=\"$logs\""
 }
 
 ####################
