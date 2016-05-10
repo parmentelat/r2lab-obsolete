@@ -59,12 +59,18 @@ function r2lab_id() {
 }    
 
 
+# the utility to select which function the oai alias should point to
+available="$available oai-as-gw"
+function oai-as-gw() { alias oai=oai-gw; }
+available="$available oai-as-enb"
+function oai-as-enb() { alias oai=oai-enb; }
+
+## always expose these
 available="$available oai-gw"
 alias oai-gw=/root/r2lab/infra/user-env/oai-gw.sh
 
 available="$available oai-enb"
 alias oai-enb=/root/r2lab/infra/user-env/oai-enb.sh
-
 
 
 function help() { echo Available commands; echo "$available"; }

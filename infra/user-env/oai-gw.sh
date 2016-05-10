@@ -6,6 +6,20 @@ source $DIRNAME/nodes.sh
 
 available=""
 
+####################
+run_dir=/root/openair-cn/SCRIPTS
+conf_dir=/root/openair-cn/BUILD/EPC/
+config=epc.conf.in
+
+
+available="$available places"
+function places() {
+    echo "run_dir=$run_dir"
+    echo "conf_dir=$conf_dir"
+    echo "config=$config"
+}
+
+
 available="$available base"
 function base() {
 
@@ -36,32 +50,20 @@ function base() {
     cd
     cpufreq-info > cpufreq.info
 
-    echo "========== Done - save image in oai-epc+hss-base"
+    echo "========== Done - save image in oai-gw-base"
 }
 
-available="$available gitup"
-function gitup() {
-    here=$(pwd)
-    echo "========== Pulling git repos"
-    cd /root/openair-cn
-    git pull
-
-    cd /root/r2lab
-    git pull
-    cd $here
-}
-
-available="$available build"
-function build() {
+available="$available builds"
+function builds() {
     
     gitup
-    cd /root/openair-cn/SCRIPTS
+    cd $run_dir
     echo "========== Building HSS"
     ./build_hss -i 2>&1 | tee build_hss.log
     echo "========== Building EPC"
     ./build_epc -i 2>&1 | tee build_epc.log
 
-    echo "========== Done - save image in oai-epc+hss-builds"
+    echo "========== Done - save image in oai-gw-builds"
 }
 
 available="$available configure"
@@ -82,9 +84,9 @@ function configure() {
 	echo "127.0.1.1  $fitid.r2lab.fr $fitid" >> /etc/hosts
     fi
 
-    cd /root/openair-cn/BUILD/EPC/
-    echo "========== Checking for distrib file epc.conf.in.distrib"
-    [ -f epc.conf.in.distrib ] || cp epc.conf.in epc.conf.in.distrib
+    cd $conf_dir
+    echo "========== Checking for backup file $config.distrib"
+    [ -f $config.distrib ] || cp $config $config.distrib
     echo "========== Patching config file"
     sed -e s,xxx,$id,g <<EOF > epc-r2lab.sed
 s,eth0:1 *,data,g
@@ -96,17 +98,17 @@ s,192.168.12.17/24,192.168.2.xxx/24,g
 s,127.0.0.1:5656,/root/openair-cn/SCRIPTS/run_epc.out,g
 s,TAC = "15",TAC = "1",g
 EOF
-    sed -f epc-r2lab.sed epc.conf.in.distrib > epc.conf.in
+    sed -f epc-r2lab.sed $config.distrib > $config
 
     echo "========== Rebuilding hss and epc configs"
-    cd /root/openair-cn/SCRIPTS
+    cd $run_dir
     ./build_hss --clean --clean-certificates --local-mme --fqdn fit$fitid.r2lab.fr 2>&1 | tee build_hss-run2.log
     ./build_epc --clean --clean-certificates --local-hss 2>&1 | tee build_epc.run2.log
 }
 
 available="$available start"
 function start() {
-    cd /root/openair-cn/SCRIPTS
+    cd $run_dir
     echo "In $(pwd)"
     echo "Running run_epc in background"
     # --gdb is a possible additional option here
@@ -140,7 +142,7 @@ function stop() { _manage stop; }
 
 available="$available log"
 function log() {
-    cd /root/openair-cn/SCRIPTS
+    cd $run_dir
     targets="run_epc.log run_epc.out run_hss.log"
     for target in $targets; do [ -f $target ] || touch $target; done
     tail -f $targets

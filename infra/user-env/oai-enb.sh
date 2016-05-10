@@ -40,18 +40,116 @@
 ### 
 ###
 
-DIRNAME=$(dirname $0)
+DIRNAME=$(dirname "$0")
+echo loading $DIRNAME/nodes.sh
 source $DIRNAME/nodes.sh
 
 available=""
 
 ####################
-conf_dir=/root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
+conf_dir=/root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
 template=enb.band7.tm1.usrpb210.epc.remote.conf
-gw_id_file=/root/oai-gw.id
+config=r2lab.conf
 
+gw_id_file=/root/oai-gw.id
 requires_chmod_x="/root/openairinterface5g/targets/RT/USER/init_b200.sh"
+
+available="$available places"
+function places() {
+    echo "run_dir=$run_dir"
+    echo "conf_dir=$conf_dir"
+    echo "template=$template"
+    echo "config=$config"
+}
+
+####################
+available="$available base"
+function base() {
+
+    echo "WARNING: function 'base' : this is untested code .."
+
+
+    OPENAIR_HOME=/root/openairinterface5g
+    # don't do this twice
+    grep -q OPENAIR ~/.bashrc >& /dev/null || cat >> $HOME/.bashrc <<EOF
+export OPENAIR_HOME=$OPENAIR_HOME
+export OPENAIR1_DIR=$OPENAIR_HOME/openair1
+export OPENAIR2_DIR=$OPENAIR_HOME/openair2
+export OPENAIR3_DIR=$OPENAIR_HOME/openair3
+export OPENAIRCN_DIR=$OPENAIR_HOME/openair-cn
+export OPENAIR_TARGETS=$OPENAIR_HOME/targets
+alias  oai='cd $OPENAIR_HOME'
+alias oai0='cd $OPENAIR0_DIR'
+alias oai1='cd $OPENAIR1_DIR'
+alias oai2='cd $OPENAIR2_DIR'
+alias oai3='cd $OPENAIR3_DIR'
+alias oait='cd $OPENAIR_TARGETS'
+alias oaiu='cd $OPENAIR2_DIR/UTIL'
+alias oais='cd $OPENAIR_TARGETS/SIMU/USER'
+alias oaiex='cd $OPENAIR_TARGETS/SIMU/EXAMPLES'
+EOF
+
+    # apt-get requirements
+    apt-get update
+    apt-get install git
+    apt-get install libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential
+
+    # 
+    echo "========== Running git clone for openair-cn and r2lab and openinterface5g"
+    read _
+    cd
+    echo -n | \
+	openssl s_client -showcerts -connect gitlab.eurecom.fr:443 2>/dev/null | \
+	sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >> \
+	    /etc/ssl/certs/ca-certificates.crt
+    git clone https://gitlab.eurecom.fr/oai/openair-cn.git
+    git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git
+    # this is probably useless, but well
+    git clone https://github.com/parmentelat/r2lab.git
+
+    echo "========== Setting up cpufrequtils"
+    apt-get install -y cpufrequtils
+    echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
+    update-rc.d ondemand disable
+    /etc/init.d/cpufrequtils restart
+    # this seems to be purely informative ?
+    cd
+    cpufreq-info > cpufreq.info
+
+    echo "========== Done - save image in oai-enb-base"
+}
+
+available="$available $builds"
+function builds() {
+
+    echo "WARNING: function 'builds' : this is untested code .."
+
+    echo "========== Building UHD"
+    cd
+    git clone git://github.com/EttusResearch/uhd.git
+    cd uhd
+    mkdir build
+    cd build
+    cmake ../
+    make
+    make test
+    make install
+
+    cd $HOME/openairinterface5g/cmake_targets/
+    # xxx l'original avait une seule ligne :
+    ./build_oai -I -w USRP 2>&1 | tee build_oai-1.log
+    ./build_oai --eNB -c -w USRP 2>&1 | tee build_oai-2.log
+
+    cd $HOME/openairinterface5g/
+    sudo chmod +x ./targets/bin/init_nas_nos1
+    # xxx ici à nouveau c'est pas clair
+    ./targets/bin/init_nas_nos1
+    # this appeared in the original instructions from T. Turletti
+    # eNB # eNB ready to run
+
+    echo "========== Done - save image in oai-enb-builds"
+}
 
 available="$available define-gw"
 function define-gw() {
@@ -84,6 +182,10 @@ function configure() {
     fitid=fit$id
     
     cd $conf_dir
+    ### xxx TMP : we use eth1 instead of data
+    # note that this requires changes in
+    # /etc/network/interfaces as well
+    # /etc/udev/rules.d/70..blabla as well
     cat <<EOF > oai-enb.sed
 s,mobile_network_code =.*,mobile_network_code = "95";,
 s,192.168.12.170,192.168.2.$gw_id,
@@ -91,18 +193,10 @@ s,eth4,data,
 s,192.168.12.242/24,192.168.2.$id/24,g
 EOF
     echo in $(pwd)
-    sed -f oai-enb.sed < $template > r2lab.conf
-    echo "Overwrote r2lab.conf in $(pwd)"
+    sed -f oai-enb.sed < $template > $config
+    echo "Overwrote $config in $(pwd)"
     cd - >& /dev/null
 }
-
-available="$available places"
-function places() {
-    echo "conf_dir=$conf_dir"
-    echo "template=$template"
-    echo "run_dir=$run_dir"
-}
-
 
 available="$available start"
 function start() {
@@ -112,7 +206,7 @@ function start() {
     # --gdb is a possible additional option here
     ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& run_epc.log &
     echo "Running lte-softmodem in background"
-    ./lte-softmodem -O $conf_dir/r2lab.conf >& lte-softmodem.log &
+    ./lte-softmodem -O $conf_dir/$config >& lte-softmodem.log &
     cd - >& /dev/null
 }
 
