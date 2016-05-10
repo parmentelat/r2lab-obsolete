@@ -62,11 +62,15 @@ function r2lab_id() {
 
 available="$available data-up"
 data_ifnames="data eth1"
+# can be used with ifname=$(data-up)
 function data-up() {
     for ifname in $data_ifnames; do
 	ip addr sh dev $ifname >& /dev/null && {
-	    echo Turning on data network on interface $ifname >&2-
-	    ifup $ifname >&2-
+	    ip link show $ifname | grep -q UP || {
+		echo Turning on data network on interface $ifname >&2-
+		ifup $ifname >&2-
+	    }
+	    echo $ifname
 	    break
 	}
     done

@@ -208,7 +208,7 @@ function configure() {
     gitup
     id=$(r2lab_id)
     fitid=fit$id
-    
+    ifname=$(data-up)
     cd $conf_dir
     ### xxx TMP : we use eth1 instead of data
     # note that this requires changes in
@@ -217,7 +217,7 @@ function configure() {
     cat <<EOF > oai-enb.sed
 s,mobile_network_code =.*,mobile_network_code = "95";,
 s,192.168.12.170,192.168.2.$gw_id,
-s,eth4,data,
+s,eth4,${ifname},
 s,192.168.12.242/24,192.168.2.$id/24,g
 EOF
     echo in $(pwd)
