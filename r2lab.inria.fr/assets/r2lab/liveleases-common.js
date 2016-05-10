@@ -169,27 +169,6 @@ function zombieLease(lease){
 }
 
 
-function delActionQueue(id){
-  var idx = actionsQueue.indexOf(id);
-  actionsQueue.splice(idx,1);
-}
-
-
-function resetZombieLeases(){
-  theZombieLeases = [];
-}
-
-
-function resetActionQueue(){
-  actionsQueue = [];
-}
-
-
-function resetCalendar(){
-  $('#calendar').fullCalendar('removeEvents');
-}
-
-
 function removeElementFromCalendar(id){
   $('#calendar').fullCalendar('removeEvents', id );
 }
@@ -578,6 +557,27 @@ function getColorLease(slice_title){
 }
 
 
+function delActionQueue(id){
+  var idx = actionsQueue.indexOf(id);
+  actionsQueue.splice(idx,1);
+}
+
+
+function resetZombieLeases(){
+  theZombieLeases = [];
+}
+
+
+function resetActionQueue(){
+  actionsQueue = [];
+}
+
+
+function resetCalendar(){
+  $('#calendar').fullCalendar('removeEvents');
+}
+
+
 function getLastSlice(){
   $.cookie.json = true;
   var last_slice = $.cookie("last-slice-data")
@@ -745,7 +745,7 @@ function parseLease(data){
   });
   buildSlicesBox(leases);
   if($(location).attr('pathname') == '/run.md'){
-    $.merge(leases, setNightlyAndPast()); //present in live-leases-book
+    $.merge(leases, setNightlyAndPast()); //present in run
   }
   return leases;
 }
