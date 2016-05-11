@@ -180,6 +180,7 @@ function builds() {
 
 available="$available define-gw"
 function define-gw() {
+    id="$1"; shift
     echo "=== define-gw allows you to store the identity of the node being used as a gateway"
     echo "=== example: define-gw 16"
     echo "=== this is stored in file $gw_id_file"
@@ -189,10 +190,8 @@ function define-gw() {
     else
 	echo "No gateway defined yet"
     fi
-    echo -n "Enter new gateway id (just a number) "
-    read id
     echo $id > $gw_id_file
-    echo "Node defined as the 5g gateway : " $(cat $gw_id_file)
+    echo "Node defined as the 5g gateway is now : " $(cat $gw_id_file)
 }
 
 available="$available configure"

@@ -629,8 +629,8 @@ doc-alt chmod-private-key "\n\t\tChmod private key so that ssh won't complain an
 ##########
 # we had to create a crontab-oriented proper shell-script to do this in ./restart-all.sh
 # to avoid code duplication we call that script here
-function restart-all () {
-    /root/r2lab/infra/scripts/restart-all.sh interactive
+function restart-omf () {
+    /root/r2lab/infra/scripts/restart-omf.sh interactive
 }
 doc-admin restart-all "Restart all 4 services omf-sfa, ntrc, openfire and dnsmasq"
 
@@ -709,3 +709,20 @@ doc-admin pull-bashrc alias
 ########## check nodes info
 function info () { -curl info "$@"; }
 doc-admin info "\tget info from CMC"
+
+##########
+# utility to untar a bunch of tgz files as obtained typically
+# from logs captured by the oai logs-tgz utility
+function un-tgz() {
+    if [[ -z "$@" ]]; then
+	echo "usage $0 tgz..files"
+	return
+    fi
+    for t in "$@"; do
+	b=$(basename $t .tgz)
+	echo Unwrapping $t in $b
+	mkdir $b
+	tar -C $b -xzf  $t
+    done
+}
+    

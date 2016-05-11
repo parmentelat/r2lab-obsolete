@@ -109,6 +109,108 @@ EOF
     cd $run_dir
     ./build_hss --clean --clean-certificates --local-mme --fqdn fit$fitid.r2lab.fr 2>&1 | tee build_hss-run2.log
     ./build_epc --clean --clean-certificates --local-hss 2>&1 | tee build_epc.run2.log
+
+    populate-db
+}
+
+# not declared in available since it's called by configure
+function populate-db() {
+    # insert our SIM in the hss db
+    # NOTE: setting the 'key' column raises a special issue as key is a keyword in
+    # the mysql syntax
+    # this will need to be fixed if it's important that we set a key
+
+# sample from the doc    
+# ('208930000000001',  '33638060010', NULL, NULL,
+#  'PURGED', '120', '50000000', '100000000', 
+#  '47', '0000000000', '3', 0x8BAF473F2F8FD09487CCCBD7097C6862,
+#  '1', '0', '', 0x00000000000000000000000000000000, '');
+###    insert_command="INSERT INTO users (imsi, msisdn, imei, imei_sv, 
+###                                       ms_ps_status, rau_tau_timer, ue_ambr_ul, ue_ambr_dl,
+###                                       access_restriction, mme_cap, mmeidentity_idmmeidentity, key,
+###                                       RFSP-Index, urrp_mme, sqn, rand, OPc) VALUES ("
+###    # imsi PRIMARY KEY
+###    insert_command="$insert_command '222220000000001',"
+###    # msisdn - unused but must be non-empty
+###    insert_command="$insert_command '33638060010',"
+###    # imei
+###    insert_command="$insert_command NULL,"
+###    # imei_sv
+###    insert_command="$insert_command NULL,"
+###    # ms_ps_status
+###    insert_command="$insert_command 'PURGED',"
+###    # rau_tau_timer
+###    insert_command="$insert_command '120',"
+###    # ue_ambr_ul upload ?
+###    insert_command="$insert_command '50000000',"
+###    # ue_ambr_dl download ?
+###    insert_command="$insert_command '100000000',"
+###    # access_restriction
+###    insert_command="$insert_command '47',"
+###    # mme_cap
+###    insert_command="$insert_command '0000000000',"
+###    # mmeidentity_idmmeidentity PRIMARY KEY
+###    insert_command="$insert_command '3',"
+###    # key
+###    insert_command="$insert_command '0x8BAF473F2F8FD09487CCCBD7097C6862',"
+###    # RFSP-Index
+###    insert_command="$insert_command '1',"
+###    # urrp_mme
+###    insert_command="$insert_command '0',"
+###    # sqn
+###    insert_command="$insert_command '',"
+###    # rand
+###    insert_command="$insert_command '0x00000000000000000000000000000000',"
+###    # OPc
+###    insert_command="$insert_command '');"
+
+    # from https://gitlab.eurecom.fr/oai/openairinterface5g/wikis/SIMInfo
+    # SIM card # 2
+
+    function name_value() {
+	name="$1"; shift
+	value="$1"; shift
+	last="$1"; shift
+	insert_command="$insert_command $value"
+	update_command="$update_command $name=$value"
+	if [ -n "$last" ]; then
+	    insert_command="$insert_command)"
+	else
+	    insert_command="$insert_command",
+	    update_command="$update_command",
+	fi
+    }
+
+    idmmeidentity=100
+    fdqn=fit$(r2lab_id).r2lab.fr
+	
+    # users table
+    insert_command="INSERT INTO users (imsi, msisdn, access_restriction, mmeidentity_idmmeidentity, \`key\`, sqn) VALUES ("
+    update_command="ON DUPLICATE KEY UPDATE "
+    name_value imsi "'208950000000002'"
+    name_value msisdn "'33638060010'"
+    name_value access_restriction "'47'"
+    name_value mmeidentity_idmmeidentity "'${idmmeidentity}'"
+    name_value "\`key\`" "0x8BAF473F2F8FD09487CCCBD7097C6862"
+    name_value sqn "'000000000020'" last
+
+#    mysql --user=root --password=linux -e 'select imsi from users where imsi like "20895%"' oai_db 
+
+    echo issuing SQL "$insert_command $update_command"
+    mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
+
+
+    # mmeidentity table
+    insert_command="INSERT INTO mmeidentity (idmmeidentity, mmehost, mmerealm) VALUES ("
+    update_command="ON DUPLICATE KEY UPDATE "
+
+    name_value idmmeidentity ${idmmeidentity}
+    name_value mmehost "'${fdqn}'"
+    name_value mmerealm "'r2lab.fr'" last
+    
+    echo issuing SQL "$insert_command $update_command"
+    mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
+    
 }
 
 available="$available start"
@@ -150,6 +252,11 @@ function status() { _manage; }
 available="$available stop"
 function stop() { _manage stop; }
 
+
+available="$available manage-db"
+function manage-db() {
+    mysql --user=root --password=linux oai_db
+}
 ####################
 define_main
 

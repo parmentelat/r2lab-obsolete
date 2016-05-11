@@ -115,7 +115,7 @@ function oai-env() {
     cat /tmp/oai-env
 }
 
-#################### a utility to deal with logs
+#################### a utility to deal with logs and configs
 function locate_logs() {
     if [ -n "$logs" ]; then
 	echo $logs
@@ -129,10 +129,17 @@ function logs() {
     ls $(locate_logs)
 }
 
+available="$available configs"
+function configs() {
+    ls $conf_dir/$config
+}
+
 available="$available logs-tail"
 function logs-tail() {
     logfiles=$(locate_logs)
-    for logfile in $logfiles; do [ -f $logfile ] || { echo "Touching $logfile"; touch $logfile; } done
+    for logfile in $logfiles; do
+	[ -f $logfile ] || { echo "Touching $logfile"; touch $logfile; }
+    done
     tail -f $logfiles
 }
 
@@ -148,8 +155,9 @@ function logs-tgz() {
     output=$1; shift
     [ -z "$output" ] && { echo usage: $0 output; return; }
     logfiles=$(locate_logs)
+    [ -n "$config" ] && logfiles="$logfiles $conf_dir/$config"
     tar -czf $output.tgz $logfiles
-    echo "Captured logs in $output.tgz"
+    echo "Captured logs (and config) in $output.tgz"
 }    
 ####################
 available="$available spy-sctp"
@@ -164,15 +172,13 @@ function define_main() {
 	if [[ -z "$@" ]]; then
 	    echo "========== Available subcommands $available"  >&2-
 	fi
-	for subcommand in "$@"; do
-	    echo "Running stage $subcommand"  >&2-
-	    case $subcommand in
-		env)
-		    echo "Use oai-env; not oai env" ;;
-		*)
-		    $subcommand ;;
-	    esac
-	done
+	subcommand="$1"; shift
+	case $subcommand in
+	    env)
+		echo "Use oai-env; not oai env" ;;
+	    *)
+		$subcommand "$@" ;;
+	esac
     }
 }
 
