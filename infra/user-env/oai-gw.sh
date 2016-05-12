@@ -238,6 +238,20 @@ function _manage() {
     pids="$(pgrep run_) $(pgrep mme_gw) $(pgrep oai_hss)"
     pids="$(echo $pids)"
 
+    if [ -z "$pids" ]; then
+	echo "No running process - exiting"
+	return 1
+    fi
+    echo "========== Found processes"
+    ps $pids
+    if [ "$mode" == 'stop' ]; then
+	echo "========== Killing $pids"
+	kill $pids
+	echo "========== Their status now"
+	ps $pids
+	echo "========== Clearing locks $locks"
+	rm -f $locks
+    fi
 }
 
 available="$available status"
