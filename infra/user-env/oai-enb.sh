@@ -41,7 +41,7 @@
 ###
 
 DIRNAME=$(dirname "$0")
-echo Loading $DIRNAME/nodes.sh  >&2-
+#echo Loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
 available=""
@@ -205,7 +205,7 @@ function configure() {
     echo "Using gateway $gw_id"
 
     gitup
-    id=$(r2lab_id)
+    id=$(r2lab-id)
     fitid=fit$id
     ifname=$(data-up)
     cd $conf_dir
@@ -227,9 +227,9 @@ EOF
 
 available="$available start"
 function start() {
-    data-up
+    echo Turning on interface $(data-up)
     cd $run_dir
-    echo "In $(pwd)"
+#    echo "In $(pwd)"
     echo "Running lte-softmodem in background"
     ./lte-softmodem -O $conf_dir/$config >& $lte_log &
     cd - >& /dev/null
@@ -238,22 +238,18 @@ function start() {
 function _manage() {
     # if $1 is 'stop' then the found processes are killed
     mode=$1; shift
-    pids_l=$(pgrep lte-softmodem)
-    if [ -z "$pids_l$pids_r" ]; then
-	pids=""
-    else
-	pids="$pids_l $pids_r"
-    fi
+    pids="$(pgrep lte-softmodem)"
+    pids="$(echo $pids)"
     if [ -z "$pids" ]; then
-	echo "No running process in lte-softmodem - exiting"
+	echo "========== No running process - exiting"
 	return 1
     fi
-    echo "Found processes"
+    echo "========== Found processes"
     ps $pids
     if [ "$mode" == 'stop' ]; then
-	echo "Killing $pids"
+	echo "========== Killing $pids"
 	kill $pids
-	echo "Their status now"
+	echo "========== Their status now"
 	ps $pids
     fi
 }

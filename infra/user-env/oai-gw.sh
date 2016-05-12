@@ -1,8 +1,12 @@
 #!/bin/bash
 
 DIRNAME=$(dirname "$0")
-echo Loading $DIRNAME/nodes.sh  >&2-
+#echo Loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
+
+realm="r2lab.fr"
+
+
 
 available=""
 
@@ -75,18 +79,18 @@ available="$available configure"
 function configure() {
 
     gitup
-    id=$(r2lab_id)
+    id=$(r2lab-id)
     fitid=fit$id
 
     echo "========== Turning on the data interface"
     ifup data
     echo "========== Refreshing the depmod index"
     depmod -a
-    if grep -q $fitid /etc/hosts; then
+    if grep -q $fitid /etc/hosts && grep -q hss /etc/hosts; then
 	echo $fitid already in /etc/hosts
     else
 	echo "========== Defining $fitid in /etc/hosts"
-	echo "127.0.1.1  $fitid.r2lab.fr $fitid" >> /etc/hosts
+	echo "127.0.1.1 $fitid $fitid.${realm} hss hss.${realm}" >> /etc/hosts
     fi
 
     cd $conf_dir
@@ -107,7 +111,8 @@ EOF
 
     echo "========== Rebuilding hss and epc configs"
     cd $run_dir
-    ./build_hss --clean --clean-certificates --local-mme --fqdn fit$fitid.r2lab.fr 2>&1 | tee build_hss-run2.log
+#    ./build_hss --clean --clean-certificates --local-mme --fqdn fit$fitid.${realm} 2>&1 | tee build_hss-run2.log
+    ./build_hss --clean --clean-certificates --local-mme 2>&1 | tee build_hss-run2.log
     ./build_epc --clean --clean-certificates --local-hss 2>&1 | tee build_epc.run2.log
 
     populate-db
@@ -182,7 +187,7 @@ function populate-db() {
     }
 
     idmmeidentity=100
-    fdqn=fit$(r2lab_id).r2lab.fr
+    fdqn=fit$(r2lab-id).${realm}
 	
     # users table
     insert_command="INSERT INTO users (imsi, msisdn, access_restriction, mmeidentity_idmmeidentity, \`key\`, sqn) VALUES ("
@@ -206,7 +211,7 @@ function populate-db() {
 
     name_value idmmeidentity ${idmmeidentity}
     name_value mmehost "'${fdqn}'"
-    name_value mmerealm "'r2lab.fr'" last
+    name_value mmerealm "'${realm}'" last
     
     echo issuing SQL "$insert_command $update_command"
     mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
@@ -215,9 +220,9 @@ function populate-db() {
 
 available="$available start"
 function start() {
-    data-up
+    echo Turning on interface $(data-up)
     cd $run_dir
-    echo "In $(pwd)"
+    # echo "In $(pwd)"
     echo "Running run_epc in background"
     # --gdb is a possible additional option here
     ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& $log_epc &
@@ -230,21 +235,9 @@ locks="/var/run/mme_gw.pid /var/run/oai_hss.pid"
 function _manage() {
     # if $1 is 'stop' then the found processes are killed
     mode=$1; shift
-    pids=$(pgrep run_)
-    if [ -z "$pids" ]; then
-	echo "No running process in run_ - exiting"
-	return 1
-    fi
-    echo "Found processes"
-    ps $pids
-    if [ "$mode" == 'stop' ]; then
-	echo "Killing $pids"
-	kill $pids
-	echo "Their status now"
-	ps $pids
-	echo "Clearing locks $locks"
-	rm -f $locks
-    fi
+    pids="$(pgrep run_) $(pgrep mme_gw) $(pgrep oai_hss)"
+    pids="$(echo $pids)"
+
 }
 
 available="$available status"
