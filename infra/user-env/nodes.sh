@@ -117,7 +117,9 @@ function oai-env() {
 
 #################### a utility to deal with logs and configs
 function locate_logs() {
-    if [ -n "$logs" ]; then
+    if [[ -n "$@" ]] ; then
+	echo "$@"
+    elif [ -n "$logs" ]; then
 	echo $logs
     else
 	echo No logs defined - Please define the "'logs'" shell variable  >&2-
@@ -126,7 +128,7 @@ function locate_logs() {
 	
 available="$available logs"
 function logs() {
-    ls $(locate_logs)
+    ls $(locate_logs "$@")
 }
 
 available="$available configs"
@@ -136,7 +138,7 @@ function configs() {
 
 available="$available logs-tail"
 function logs-tail() {
-    logfiles=$(locate_logs)
+    logfiles=$(locate_logs "$@")
     for logfile in $logfiles; do
 	[ -f $logfile ] || { echo "Touching $logfile"; touch $logfile; }
     done
