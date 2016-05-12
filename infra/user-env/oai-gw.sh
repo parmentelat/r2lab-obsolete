@@ -70,7 +70,7 @@ function builds() {
     echo "========== Building HSS"
     ./build_hss -i 2>&1 | tee build_hss.log
     echo "========== Building EPC"
-    ./build_epc -i 2>&1 | tee build_epc.log
+    ./build_epc -i -j 2>&1 | tee build_epc.log
 
     echo "========== Done - save image in oai-gw-builds"
 }
@@ -225,7 +225,8 @@ function start() {
     # echo "In $(pwd)"
     echo "Running run_epc in background"
     # --gdb is a possible additional option here
-    ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& $log_epc &
+    # --remove-gtpu-kmodule also is a possible additional option here
+    ./run_epc --set-nw-interfaces >& $log_epc &
     echo "Running run_hss in background"
     ./run_hss >& $log_hss &
 }
