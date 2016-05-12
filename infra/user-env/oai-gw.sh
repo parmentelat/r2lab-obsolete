@@ -106,6 +106,8 @@ s,eth0,data,g
 s,192.168.12.17/24,192.168.2.xxx/24,g
 s,127.0.0.1:5656,${syslog_epc},g
 s,TAC = "15",TAC = "1",g
+s,192.168.106.12,138.96.0.10,g
+s,192.168.12.100,138.96.0.11,g
 EOF
     sed -f epc-r2lab.sed $config.distrib > $config
 
