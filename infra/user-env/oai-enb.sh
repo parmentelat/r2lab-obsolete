@@ -44,7 +44,7 @@ DIRNAME=$(dirname "$0")
 #echo Loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
-available=""
+doc-sep "oai commands" 
 
 ####################
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
@@ -57,19 +57,12 @@ config=r2lab.conf
 gw_id_file=/root/oai-gw.id
 requires_chmod_x="/root/openairinterface5g/targets/RT/USER/init_b200.sh"
 
-available="$available places"
 function places() {
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
     echo "template=$template"
     echo "config=$config"
     echo "logs=\"$logs\""
-}
-
-####################
-function apt-update() {
-    apt-get update
-    apt-get upgrade -y
 }
 
 # would make sense to add more stuff in the base image - see the NEWS file
@@ -79,7 +72,7 @@ texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsf
 "
 
 ####################
-available="$available base"
+doc-fun base "\tThe script to install base software on top of a raw image" 
 function base() {
 
     gitup
@@ -112,7 +105,7 @@ function base() {
     echo "========== Done - save image in oai-enb-base"
 }
 
-available="$available build-uhd"
+doc-fun build-uhd "builds UHD from github.com/EttusResearch/uhd.git"
 function build-uhd() {
     echo "========== Building UHD"
     cd
@@ -126,7 +119,7 @@ function build-uhd() {
     make install
 }
 
-available="$available build-oai5g"
+doc-fun build-oai5g "builds oai5g" 
 function build-oai5g() {
     OPENAIR_HOME=/root/openairinterface5g
     # don't do this twice
@@ -165,7 +158,7 @@ EOF
 
 }
 
-available="$available builds"
+doc-fun builds "\truns both builds"
 function builds() {
 
     gitup
@@ -178,7 +171,7 @@ function builds() {
     echo "========== Done - save image in oai-enb-builds"
 }
 
-available="$available define-gw"
+doc-fun define-gw "defines the id of the oai gateway; e.g. oai define-gw 16"
 function define-gw() {
     id="$1"; shift
     echo "=== define-gw allows you to store the identity of the node being used as a gateway"
@@ -194,7 +187,7 @@ function define-gw() {
     echo "Node defined as the 5g gateway is now : " $(cat $gw_id_file)
 }
 
-available="$available configure"
+doc-fun configure "Configures eNodeB"
 function configure() {
 
     [ -f $gw_id_file ] || {
@@ -225,7 +218,7 @@ EOF
     cd - >& /dev/null
 }
 
-available="$available start"
+doc-fun start "\tStarts lte-softmodem" 
 function start() {
     echo Turning on interface $(data-up)
     cd $run_dir
@@ -254,9 +247,9 @@ function _manage() {
     fi
 }
 
-available="$available status"
+doc-fun status "\tDisplays the status of the lte-softmodem processes"
 function status() { _manage; }
-available="$available stop"
+doc-fun stop "\tDisplays the status of the lte-softmodem processes"
 function stop() { _manage stop; }
 
 ####################

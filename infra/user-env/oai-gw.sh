@@ -6,10 +6,6 @@ source $DIRNAME/nodes.sh
 
 realm="r2lab.fr"
 
-
-
-available=""
-
 ####################
 run_dir=/root/openair-cn/SCRIPTS
 log_epc=$run_dir/run_epc.log
@@ -20,7 +16,9 @@ conf_dir=/root/openair-cn/BUILD/EPC/
 config=epc.conf.in
 
 
-available="$available places"
+doc-sep "oai commands" 
+
+doc-fun places "List environment variables"
 function places() {
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
@@ -29,7 +27,7 @@ function places() {
 }
 
 
-available="$available base"
+doc-fun base "\tThe script to install base software on top of a raw image" 
 function base() {
 
     echo "========== Installing mysql-server - select apache2 and set password=linux"
@@ -62,7 +60,7 @@ function base() {
     echo "========== Done - save image in oai-gw-base"
 }
 
-available="$available builds"
+doc-fun builds "\tBuilds hss and epc and installs dependencies" 
 function builds() {
     
     gitup
@@ -75,7 +73,7 @@ function builds() {
     echo "========== Done - save image in oai-gw-builds"
 }
 
-available="$available configure"
+doc-fun configure "tweaks local files, and runs build_hss and build_epc"
 function configure() {
 
     gitup
@@ -220,7 +218,7 @@ function populate-db() {
     
 }
 
-available="$available start"
+doc-fun start "\tStarts hss + epc"
 function start() {
     echo Turning on interface $(data-up)
     cd $run_dir
@@ -258,13 +256,13 @@ function _manage() {
     fi
 }
 
-available="$available status"
+doc-fun status "\tDisplays the status of the epc and hss processes"
 function status() { _manage; }
-available="$available stop"
+doc-fun stop "\tStops the epc and hss processes & clears locks"
 function stop() { _manage stop; }
 
 
-available="$available manage-db"
+doc-fun manage-db "Runs mysql on the oai_db database" 
 function manage-db() {
     mysql --user=root --password=linux oai_db
 }

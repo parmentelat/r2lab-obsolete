@@ -23,8 +23,13 @@ function doc-fun () {
 }
 
 function doc-sep() {
-    _help_message="$_help_message\n---------------"
-}
+    name="$1"; shift
+    if [ -z "$name" ] ; then
+	_help_message="$_help_message\n---------------"
+    else
+	_help_message="$_help_message\n============================== $name"
+    fi
+} 
 ##########
 doc-fun gitup "\tUpdate /root/r2lab from git repo (as well as OAI repos if found)"
 git_repos="/root/r2lab /root/openair-cn /root/openairinterface5g"
@@ -47,6 +52,11 @@ function bashrc() { echo "Reloading ~/.bashrc"; source ~/.bashrc; }
 doc-fun refresh "\tgitup + bashrc"
 function refresh() { gitup /root/r2lab; bashrc; }
 
+doc-fun apt-update "refresh all packages with apt-get"
+function apt-update() {
+    apt-get update
+    apt-get upgrade -y
+}
 ##########
 doc-sep
 
@@ -257,7 +267,6 @@ function logs-grep() {
 }
 
 doc-fun logs-tgz "Captures logs (from \$logs) and config (from \$conf_dir/\$config) in a tgz"
-available="$available logs-tgz"
 function logs-tgz() {
     output=$1; shift
     [ -z "$output" ] && { echo usage: $0 output; return; }
@@ -271,7 +280,7 @@ function logs-tgz() {
 function define_main() {
     function main() {
 	if [[ -z "$@" ]]; then
-	    echo "========== Available subcommands $available"  >&2-
+	    help
 	fi
 	subcommand="$1"; shift
 	case $subcommand in
@@ -282,6 +291,5 @@ function define_main() {
 	esac
     }
 }
-
 
 function help() { echo -e $_help_message; }
