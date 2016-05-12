@@ -249,7 +249,8 @@ function _manage() {
 	kill $pids
 	echo "========== Their status now"
 	ps $pids
-	echo "========== Clearing locks $locks"
+	echo "========== Clearing locks"
+	echo "$locks"
 	rm -f $locks
     fi
 }
