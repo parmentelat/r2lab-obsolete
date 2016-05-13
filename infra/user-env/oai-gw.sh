@@ -225,8 +225,7 @@ function start() {
     # echo "In $(pwd)"
     echo "Running run_epc in background"
     # --gdb is a possible additional option here
-    # --remove-gtpu-kmodule also is a possible additional option here
-    ./run_epc --set-nw-interfaces >& $log_epc &
+    ./run_epc --set-nw-interfaces --remove-gptu-kmodule >& $log_epc &
     echo "Running run_hss in background"
     ./run_hss >& $log_hss &
 }
