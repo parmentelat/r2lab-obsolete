@@ -112,8 +112,8 @@ EOF
 
     echo "========== Rebuilding hss and epc configs"
     cd $run_dir
-#    ./build_hss --clean --clean-certificates --local-mme --fqdn fit$fitid.${realm} 2>&1 | tee build_hss-run2.log
-    ./build_hss --clean --clean-certificates --local-mme 2>&1 | tee build_hss-run2.log
+    ./build_hss --clean --clean-certificates --local-mme --fqdn fit$fitid.${realm} 2>&1 | tee build_hss-run2.log
+#    ./build_hss --clean --clean-certificates --local-mme 2>&1 | tee build_hss-run2.log
     ./build_epc --clean --clean-certificates --local-hss 2>&1 | tee build_epc.run2.log
 
     populate-db
