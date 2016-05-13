@@ -814,7 +814,9 @@ def new_list_nodes(nodes):
         elif '-' in nodes:
             nodes = nodes.strip("[]").split('-')
             nodes = range(int(nodes[0]), int(nodes[1])+1)
-
+        else:
+            nodes = [nodes]
+            
     new_list_nodes = map(str, nodes)
     for k, v in enumerate(new_list_nodes):
         if int(v) < 10:
