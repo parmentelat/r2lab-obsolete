@@ -86,12 +86,10 @@ function r2lab-id() {
 }    
 
 doc-fun data-up "turn up the data interface; returns the interface name (should be data)"
-# xxx should maybe better use wait-forinterface-on-driver e1000e
+# should maybe better use wait-forinterface-on-driver e1000e
 data_ifnames="data"
 # can be used with ifname=$(data-up)
 function data-up() {
-    ### XXX temporary for test on bemol : turning it off
-    return 0
     for ifname in $data_ifnames; do
 	ip addr sh dev $ifname >& /dev/null && {
 	    ip link show $ifname | grep -q UP || {

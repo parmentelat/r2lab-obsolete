@@ -109,7 +109,9 @@ doc-fun init "turns on data, runs depmod, checks /etc/hosts"
 function init() {
     gitup
 
-    echo "========== Turning on interface" $(data-up)
+    # would turn on data only on faraday
+    # but in fact this is not required while we use the 'control' interface
+    # hostname | grep -q faraday && echo "========== Turning on interface" $(data-up)
     echo "========== Checking /etc/hosts"
     check-etc-hosts
     if [ -n "$runs_epc" ]; then
@@ -128,6 +130,13 @@ function configure() {
     configure-epc
 }
 
+# nominally we'd like to use the data network
+# however this is not available on bemol so for now
+# we switch to using control
+# should not be a big deal..
+epc_ifname=control
+epc_subnet=3
+
 doc-fun configure-epc "configures epc"
 function configure-epc() {
 
@@ -141,13 +150,13 @@ function configure-epc() {
     [ -f $config.distrib ] || cp $config $config.distrib
     echo "========== Patching config file"
     sed -e s,xxx,$id,g <<EOF > epc-r2lab.sed
-s,eth0:1 *,data,g
-s,192.170.0.1/24,192.168.2.xxx/24,g
-s,eth0:2 *,data,g
-s,192.170.1.1/24,192.168.2.xxx/24,g
-s,eth0,data,g
-s,192.168.12.17/24,192.168.2.xxx/24,g
-s,127.0.0.1:5656,${syslog_epc},g
+s,eth0:1 *,${epc_ifname},g
+s,192.170.0.1/24,192.168.${epc_subnet}.xxx/24,g
+s,eth0:2 *,${epc_ifname},g
+s,192.170.1.1/24,192.168.${epc_subnet}.xxx/24,g
+s,eth0,${epc_ifname},g
+s,192.168.12.17/24,192.168.${epc_subnet}.xxx/24,g
+s,127.0.0.1:5656,${log_epc},g
 s,TAC = "15",TAC = "1",g
 s,192.188.2.0/24,192.168.10.0/24,g
 s,192.188.8.0/24,192.168.11.0/24,g
@@ -289,7 +298,6 @@ function populate-db() {
 
 doc-fun start "starts the hss and/or epc service(s)"
 function start() {
-    echo Turning on interface $(data-up)
     cd $run_dir
     if [ -n "$runs_hss" ]; then
 	echo "Running run_hss in background"
