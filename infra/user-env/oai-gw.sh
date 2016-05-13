@@ -82,7 +82,10 @@ function builds() {
     [ -n "$runs_hss" ] && ./build_hss -i 2>&1 | tee build_hss.build.log
     echo "========== Building EPC"
     [ -n "$runs_epc" ] ./build_epc -i 2>&1 | tee build_epc-i.build.log
-    [ -n "$runs_epc" ] ./build_epc -j 2>&1 | tee build_epc-j.build.log
+    # this was not actually run in oai-gw-builds2
+    # it looks like it won't run fine at that early stage
+    # that's why it is mentioned in init again
+    # [ -n "$runs_epc" ] ./build_epc -j -f 2>&1 | tee build_epc-j.build.log
 
     echo "========== Done - save image in oai-gw-builds"
 }
@@ -105,9 +108,8 @@ function check-etc-hosts() {
 }
 	
     
-doc-fun init "turns on data, runs depmod, checks /etc/hosts"
+doc-fun init "checks /etc/hosts, rebuilds gtpu and runs depmod"
 function init() {
-    gitup
 
     # would turn on data only on faraday
     # but in fact this is not required while we use the 'control' interface
