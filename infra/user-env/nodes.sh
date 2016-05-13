@@ -19,7 +19,9 @@ function doc-fun () {
   [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
   [ "$docstring" == 'alias1' ] && docstring="\t$(alias $fun)"
   [ "$docstring" == 'function' ] && docstring=$(type $fun)
-  _help_message="$_help_message\n$fun\t$docstring"
+  length=$(wc -c <<< $fun)
+  [ $length -ge 16 ] && docstring="\n\t\t$docstring"
+  _help_message="$_help_message\n$fun\r\t\t$docstring"
 }
 
 function doc-sep() {
@@ -31,7 +33,7 @@ function doc-sep() {
     fi
 } 
 ##########
-doc-fun gitup "\tUpdate /root/r2lab from git repo (as well as OAI repos if found)"
+doc-fun gitup "updates /root/r2lab from git repo (as well as OAI repos if found)"
 git_repos="/root/r2lab /root/openair-cn /root/openairinterface5g"
 function gitup() {
     [[ -n "$@" ]] && repos="$@" || repos="$git_repos"
@@ -45,11 +47,11 @@ function gitup() {
 }
 
 # reload this file after a gitup
-doc-fun bashrc "\treload ~/.bashrc"
+doc-fun bashrc "reload ~/.bashrc"
 function bashrc() { echo "Reloading ~/.bashrc"; source ~/.bashrc; }
 
 # update and reload
-doc-fun refresh "\tgitup + bashrc"
+doc-fun refresh "gitup + bashrc"
 function refresh() { gitup /root/r2lab; bashrc; }
 
 doc-fun apt-update "refresh all packages with apt-get"
@@ -83,11 +85,13 @@ function r2lab-id() {
     echo $id
 }    
 
-doc-fun data-up "\tTurn up the data interface; returns the interface name (should be data)"
+doc-fun data-up "turn up the data interface; returns the interface name (should be data)"
 # xxx should maybe better use wait-forinterface-on-driver e1000e
 data_ifnames="data"
 # can be used with ifname=$(data-up)
 function data-up() {
+    ### XXX temporary for test on bemol : turning it off
+    return 0
     for ifname in $data_ifnames; do
 	ip addr sh dev $ifname >& /dev/null && {
 	    ip link show $ifname | grep -q UP || {
@@ -100,7 +104,7 @@ function data-up() {
     done
 }
 
-doc-fun list-interfaces "List the current status of all interfaces"
+doc-fun list-interfaces "list the current status of all interfaces"
 function list-interfaces () {
     set +x
     for f in /sys/class/net/*; do
@@ -114,7 +118,7 @@ function list-interfaces () {
     done
 }
 
-doc-fun details-on-interface "\n\t\tGives extensive details on one interface"
+doc-fun details-on-interface "gives extensive details on one interface"
 function details-on-interface () {
     dev=$1; shift
     echo ==================== ip addr sh $dev
@@ -127,7 +131,7 @@ function details-on-interface () {
     iw dev $dev info
 }    
 
-doc-fun find-interface-by-driver "\n\t\treturns first interface bound to given driver"
+doc-fun find-interface-by-driver "returns first interface bound to given driver"
 function find-interface-by-driver () {
     set +x
     search_driver=$1; shift
@@ -144,7 +148,7 @@ function find-interface-by-driver () {
 
 # wait for one interface to show up using this driver
 # prints interface name on stdout
-doc-fun wait-for-interface-on-driver "\n\t\tlocates and waits for device bound to provided driver, returns its name"
+doc-fun wait-for-interface-on-driver "locates and waits for device bound to provided driver, returns its name"
 function wait-for-interface-on-driver() {
     driver=$1; shift
     while true; do
@@ -160,7 +164,7 @@ function wait-for-interface-on-driver() {
     done
 }
 
-doc-fun wait-for-device "Wait for device to be up or down; example: wait-for-device data up"
+doc-fun wait-for-device "wait for device to be up or down; example: wait-for-device data up"
 function wait-for-device () {
     set +x
     dev=$1; shift
@@ -201,19 +205,26 @@ function define-oai() {
 	$script "$@"
     }
     alias oai=_oai
+    alias o=_oai
 }
 
 doc-sep
 
-doc-fun oai-as-gw "Defines the 'oai' command to work on an oai gateway, and related env. vars"
+doc-fun oai-as-gw "defines the 'oai' command for a HSS+EPC oai gateway, and related env. vars"
 function oai-as-gw() { define-oai gw.sh; echo function "'oai'" now defined; oai-env; }
 
-doc-fun oai-as-gw "Defines the 'oai' command to work on an oai eNodeB, and related env. vars"
+doc-fun oai-as-hss "defines the 'oai' command for a HSS-only oai box, and related env. vars"
+function oai-as-hss() { define-oai hss.sh; echo function "'oai'" now defined; oai-env; }
+
+doc-fun oai-as-epc "defines the 'oai' command for an EPC-only oai box, and related env. vars"
+function oai-as-epc() { define-oai epc.sh; echo function "'oai'" now defined; oai-env; }
+
+doc-fun oai-as-enb "defines the 'oai' command for an oai eNodeB, and related env. vars"
 function oai-as-enb() { define-oai enb.sh; echo function "'oai'" now defined; oai-env; }
 
-doc-fun oai-env "\tDisplays and loads env variables related to oai"
+doc-fun oai-env "displays and loads env variables related to oai"
 function oai-env() {
-    _oai places > /tmp/oai-env
+    _oai showenv > /tmp/oai-env
     source /tmp/oai-env
     echo "Following vars now in your env" >&2-
     echo ========== >&2-
@@ -240,17 +251,17 @@ function locate_logs() {
     fi
 }
 	
-doc-fun logs "\tdoes ls on the logs as defined in \$logs"
+doc-fun logs "does ls on the logs as defined in \$logs"
 function logs() {
     ls $(locate_logs "$@")
 }
 
-doc-fun configs "\tdoes ls on the config file as defined in \$conf_dir/\$config"
+doc-fun configs "does ls on the config file as defined in \$conf_dir/\$config"
 function configs() {
     ls $conf_dir/$config
 }
 
-doc-fun logs-tail "Runs tail -f on the logs files  (see logs)"
+doc-fun logs-tail "runs tail -f on the logs files  (see logs)"
 function logs-tail() {
     logfiles=$(locate_logs "$@")
     for logfile in $logfiles; do
@@ -259,14 +270,14 @@ function logs-tail() {
     tail -f $logfiles
 }
 
-doc-fun logs-grep "Runs grep on the logs files  (see logs)"
+doc-fun logs-grep "runs grep on the logs files  (see logs)"
 function logs-grep() {
     [[ -z "$@" ]] && { echo usage: $0 grep-arg..s; return; }
     logfiles=$(locate_logs)
     grep "$@" $logfiles
 }
 
-doc-fun logs-tgz "Captures logs (from \$logs) and config (from \$conf_dir/\$config) in a tgz"
+doc-fun logs-tgz "captures logs (from \$logs) and config (from \$conf_dir/\$config) in a tgz"
 function logs-tgz() {
     output=$1; shift
     [ -z "$output" ] && { echo usage: $0 output; return; }

@@ -4,22 +4,35 @@ DIRNAME=$(dirname "$0")
 #echo Loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
+COMMAND=$(basename "$0")
+case $COMMAND in
+    oai-gw*)
+	runs_epc=true; runs_hss=true ;;
+    oai-hss*)
+	runs_epc=;     runs_hss=true ;;
+    oai-epc*)
+	runs_epc=true; runs_hss=     ;;
+esac
+    
+
 realm="r2lab.fr"
 
 ####################
 run_dir=/root/openair-cn/SCRIPTS
-log_epc=$run_dir/run_epc.log
-syslog_epc=$run_dir/run_epc.syslog
-log_hss=$run_dir/run_hss.log
+[ -n "$runs_epc" ] && log_epc=$run_dir/run_epc.log
+[ -n "$runs_epc" ] && syslog_epc=$run_dir/run_epc.syslog
+[ -n "$runs_hss" ] && log_hss=$run_dir/run_hss.log
 logs="$log_epc $syslog_epc $log_hss"
 conf_dir=/root/openair-cn/BUILD/EPC/
-config=epc.conf.in
+[ -n "$runs_epc" ] && config=epc.conf.in
 
 
-doc-sep "oai commands" 
+doc-sep "oai subcommands; run e.g. oai start"
 
-doc-fun places "List environment variables"
-function places() {
+doc-fun showenv "list environment variables"
+function showenv() {
+    echo "runs_hss=$runs_hss"
+    echo "runs_epc=$runs_epc"
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
     echo "config=$config"
@@ -27,7 +40,7 @@ function places() {
 }
 
 
-doc-fun base "\tThe script to install base software on top of a raw image" 
+doc-fun base "the script to install base software on top of a raw image" 
 function base() {
 
     echo "========== Installing mysql-server - select apache2 and set password=linux"
@@ -60,37 +73,62 @@ function base() {
     echo "========== Done - save image in oai-gw-base"
 }
 
-doc-fun builds "\tBuilds hss and epc and installs dependencies" 
+doc-fun builds "builds hss and epc and installs dependencies" 
 function builds() {
     
     gitup
     cd $run_dir
     echo "========== Building HSS"
-    ./build_hss -i 2>&1 | tee build_hss.log
+    [ -n "$runs_hss" ] && ./build_hss -i 2>&1 | tee build_hss.build.log
     echo "========== Building EPC"
-    ./build_epc -i 2>&1 | tee build_epc-i.log
-    ./build_epc -j 2>&1 | tee build_epc-j.log
+    [ -n "$runs_epc" ] ./build_epc -i 2>&1 | tee build_epc-i.build.log
+    [ -n "$runs_epc" ] ./build_epc -j 2>&1 | tee build_epc-j.build.log
 
     echo "========== Done - save image in oai-gw-builds"
 }
 
-doc-fun configure "tweaks local files, and runs build_hss and build_epc"
-function configure() {
+function clean-hosts() {
+    sed --in-place '/fit/d' /etc/hosts
+}
+doc-fun check-etc-hosts "adjusts /etc/hosts; run with hss as first arg to define hss"
+function check-etc-hosts() {
+    clean-hosts
 
-    gitup
     id=$(r2lab-id)
     fitid=fit$id
+    
+    if [ -n "$runs_hss" ]; then
+	echo "127.0.1.1 $fitid $fitid.${realm} hss hss.${realm}" >> /etc/hosts
+    else
+	echo "127.0.1.1 $fitid $fitid.${realm}" >> /etc/hosts
+    fi
+}
+	
+    
+doc-fun init "turns on data, runs depmod, checks /etc/hosts"
+function init() {
+    gitup
 
-    echo "========== Turning on the data interface"
-    ifup data
+    echo "========== Turning on interface" $(data-up)
     echo "========== Refreshing the depmod index"
     depmod -a
-    if grep -q $fitid /etc/hosts && grep -q hss /etc/hosts; then
-	echo $fitid already in /etc/hosts
-    else
-	echo "========== Defining $fitid in /etc/hosts"
-	echo "127.0.1.1 $fitid $fitid.${realm} hss hss.${realm}" >> /etc/hosts
-    fi
+    echo "========== Checking /etc/hosts"
+    check-etc-hosts
+}
+
+doc-fun configure "configure hss and/or epc"
+function configure() {
+    configure-hss
+    configure-epc
+}
+
+doc-fun configure-epc "configures epc"
+function configure-epc() {
+
+    [ -n "$runs_epc" ] || { echo skipping $0 ; return; }
+
+    id=$(r2lab-id)
+    fitid=fit$id
 
     cd $conf_dir
     echo "========== Checking for backup file $config.distrib"
@@ -110,12 +148,34 @@ s,192.168.12.100,138.96.0.11,g
 EOF
     sed -f epc-r2lab.sed $config.distrib > $config
 
-    echo "========== Rebuilding hss and epc configs"
+    echo "========== Reconfiguring epc"
     cd $run_dir
-    ./build_hss --clean --clean-certificates --local-mme --fqdn fit$fitid.${realm} 2>&1 | tee build_hss-run2.log
-#    ./build_hss --clean --clean-certificates --local-mme 2>&1 | tee build_hss-run2.log
-    ./build_epc --clean --clean-certificates --local-hss 2>&1 | tee build_epc.run2.log
+    if [ -n "$runs_hss" ]; then
+	# both services are local
+	./build_epc --clean --clean-certificates --local-hss --realm ${realm} 2>&1 | tee build_epc.conf.log
+    else
+	# xxx todo
+	./build_epc --clean --clean-certificates --remote-hss hss.${realm} --realm ${realm} 2>&1 | tee build_epc.conf.log
+    fi
+}
 
+doc-fun configure-hss "configures hss"
+function configure-hss() {
+
+    [ -n "$runs_hss" ] || { echo skipping $0 ; return; }
+
+    fitid=fit$(r2lab-id)
+
+    echo "========== Reconfiguring hss"
+    cd $run_dir
+    if [ -n "$runs_epc" ]; then
+	# both services are local
+	./build_hss --clean --clean-certificates --fqdn hss.${realm} --install-hss-files --local-mme 2>&1 | tee build_hss.conf.log
+    else
+	# xxx todo
+	./build_hss --clean --clean-certificates --fqdn hss.${realm} --install-hss-files 2>&1 | tee build_hss.conf.log
+    fi
+	
     populate-db
 }
 
@@ -219,28 +279,34 @@ function populate-db() {
     
 }
 
-doc-fun start "\tStarts hss + epc"
+doc-fun start "starts the hss and/or epc service(s)"
 function start() {
     echo Turning on interface $(data-up)
     cd $run_dir
-    # echo "In $(pwd)"
-    echo "Running run_epc in background"
-    # --gdb is a possible additional option here
-    ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& $log_epc &
-    echo "Running run_hss in background"
-    ./run_hss >& $log_hss &
+    if [ -n "$runs_hss" ]; then
+	echo "Running run_hss in background"
+	./run_hss >& $log_hss &
+    fi
+    if [ -n "$runs_epc" ]; then
+	echo "Running run_epc in background"
+	# --gdb is a possible additional option here
+	./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& $log_epc &
+    fi
 }
 
-locks="/var/run/mme_gw.pid /var/run/oai_hss.pid"
+locks=""
+[ -n "$runs_hss" ] && locks="$locks /var/run/mme_gw.pid /var/run/oai_hss.pid"
 
 function _manage() {
     # if $1 is 'stop' then the found processes are killed
     mode=$1; shift
-    pids="$(pgrep run_) $(pgrep mme_gw) $(pgrep oai_hss)"
+    pids=""
+    [ -n "$runs_hss" ] && pids="$pids $(pgrep run_hss) $(pgrep mme_gw) $(pgrep oai_hss)"
+    [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc)"
     pids="$(echo $pids)"
 
     if [ -z "$pids" ]; then
-	echo "No running process - exiting"
+	echo "No running process"
 	return 1
     fi
     echo "========== Found processes"
@@ -256,13 +322,13 @@ function _manage() {
     fi
 }
 
-doc-fun status "\tDisplays the status of the epc and hss processes"
+doc-fun status "displays the status of the epc and/or hss processes"
 function status() { _manage; }
-doc-fun stop "\tStops the epc and hss processes & clears locks"
+doc-fun stop "stops the epc and/or hss processes & clears locks"
 function stop() { _manage stop; }
 
 
-doc-fun manage-db "Runs mysql on the oai_db database" 
+doc-fun manage-db "runs mysql on the oai_db database" 
 function manage-db() {
     mysql --user=root --password=linux oai_db
 }

@@ -44,7 +44,7 @@ DIRNAME=$(dirname "$0")
 #echo Loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
-doc-sep "oai commands" 
+doc-sep "oai subcommands; run e.g. oai start"
 
 ####################
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
@@ -57,7 +57,8 @@ config=r2lab.conf
 gw_id_file=/root/oai-gw.id
 requires_chmod_x="/root/openairinterface5g/targets/RT/USER/init_b200.sh"
 
-function places() {
+doc-fun showenv "list environment variables"
+function showenv() {
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
     echo "template=$template"
@@ -72,7 +73,7 @@ texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsf
 "
 
 ####################
-doc-fun base "\tThe script to install base software on top of a raw image" 
+doc-fun base "\tthe script to install base software on top of a raw image" 
 function base() {
 
     gitup
@@ -171,7 +172,7 @@ function builds() {
     echo "========== Done - save image in oai-enb-builds"
 }
 
-doc-fun define-gw "defines the id of the oai gateway; e.g. oai define-gw 16"
+doc-fun define-gw "defines the id of the oai EPC; e.g. oai define-gw 16"
 function define-gw() {
     id="$1"; shift
     echo "=== define-gw allows you to store the identity of the node being used as a gateway"
@@ -187,7 +188,7 @@ function define-gw() {
     echo "Node defined as the 5g gateway is now : " $(cat $gw_id_file)
 }
 
-doc-fun configure "Configures eNodeB"
+doc-fun configure "configures eNodeB (requires define-gw)"
 function configure() {
 
     [ -f $gw_id_file ] || {
@@ -218,7 +219,7 @@ EOF
     cd - >& /dev/null
 }
 
-doc-fun start "\tStarts lte-softmodem" 
+doc-fun start "starts lte-softmodem" 
 function start() {
     echo Turning on interface $(data-up)
     cd $run_dir
@@ -234,7 +235,7 @@ function _manage() {
     pids="$(pgrep lte-softmodem)"
     pids="$(echo $pids)"
     if [ -z "$pids" ]; then
-	echo "========== No running process - exiting"
+	echo "========== No running process"
 	return 1
     fi
     echo "========== Found processes"
@@ -247,9 +248,9 @@ function _manage() {
     fi
 }
 
-doc-fun status "\tDisplays the status of the lte-softmodem processes"
+doc-fun status "displays the status of the lte-softmodem processes"
 function status() { _manage; }
-doc-fun stop "\tDisplays the status of the lte-softmodem processes"
+doc-fun stop "displays the status of the lte-softmodem processes"
 function stop() { _manage stop; }
 
 ####################
