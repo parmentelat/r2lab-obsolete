@@ -110,10 +110,16 @@ function init() {
     gitup
 
     echo "========== Turning on interface" $(data-up)
-    echo "========== Refreshing the depmod index"
-    depmod -a
     echo "========== Checking /etc/hosts"
     check-etc-hosts
+    if [ -n "$runs_epc" ]; then
+	echo "========== Rebuilding the GTPU module"
+	cd $run_dir
+	./build_epc -j -f
+    fi
+    echo "========== Refreshing the depmod index"
+    depmod -a
+    
 }
 
 doc-fun configure "configure hss and/or epc"
