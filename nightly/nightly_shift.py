@@ -37,8 +37,8 @@ VERSIONS_ALIAS  = ['u-1410',           'u-1504',           'f-21',          'f-2
 VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',     'fedora 21',     'fedora 22',      'fedora 23']
 VERSIONS        = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
 
-#SEND_RESULTS_TO = 'mario.zancanaro@inria.fr, thierry.parmentelat@inria.fr, thierry.turletti@inria.fr, walid.dabbous@inria.fr, mohamed-naoufal.mahfoudi@inria.fr'
-SEND_RESULTS_TO = 'mario.zancanaro@inria.fr'
+SEND_RESULTS_TO = 'mario.zancanaro@inria.fr; thierry.parmentelat@inria.fr; thierry.turletti@inria.fr; walid.dabbous@inria.fr; mohamed-naoufal.mahfoudi@inria.fr'
+#SEND_RESULTS_TO = 'mario.zancanaro@inria.fr'
 
 phases          = {}
 loaded_nodes    = {}
@@ -483,9 +483,9 @@ def summary_in_mail(nodes):
 
         title = 'Nightly Routine of {}: Issues!'.format(date('%d/%m/%Y'))
 
-    cmd = 'mail -a "Content-type: text/html" -s "{}" {} <<< "{}"'.format(title, to, body)
-    result = execute(cmd)
-    # send_email("root@faraday.inria.fr", to, title, body)
+    # cmd = 'mail -a "Content-type: text/html" -s "{}" {} <<< "{}"'.format(title, to, body)
+    # result = execute(cmd)
+    send_email("root@faraday.inria.fr", to, title, body)
 
 
 
@@ -816,7 +816,7 @@ def new_list_nodes(nodes):
             nodes = range(int(nodes[0]), int(nodes[1])+1)
         else:
             nodes = [nodes]
-            
+
     new_list_nodes = map(str, nodes)
     for k, v in enumerate(new_list_nodes):
         if int(v) < 10:
