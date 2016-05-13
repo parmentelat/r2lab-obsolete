@@ -347,6 +347,16 @@ doc-fun manage-db "runs mysql on the oai_db database"
 function manage-db() {
     mysql --user=root --password=linux oai_db
 }
+
+####################
+doc-fun spy-sctp "expects an interface name and then runs tcpdump on the SCTP traffic"
+function spy-sctp() {
+    ifname=${epc_ifname}
+    echo $spying for SCTP packets on interface $ifname
+    tcpdump -i $ifname ip proto 132
+}
+
+
 ####################
 define_main
 

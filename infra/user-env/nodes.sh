@@ -229,14 +229,6 @@ function oai-env() {
     cat /tmp/oai-env
 }
 
-####################
-doc-fun spy-sctp "expects an interface name and then runs tcpdump on the SCTP traffic"
-function spy-sctp() {
-    ifname=$(data-up)
-    echo $spying for SCTP packets on interface $ifname
-    tcpdump -i $ifname ip proto 132
-}
-
 doc-sep
 #################### a utility to deal with logs and configs
 function locate_logs() {
