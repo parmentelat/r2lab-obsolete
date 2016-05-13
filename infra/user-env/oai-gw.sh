@@ -301,14 +301,15 @@ function start() {
 }
 
 locks=""
-[ -n "$runs_hss" ] && locks="$locks /var/run/mme_gw.pid /var/run/oai_hss.pid"
+[ -n "$runs_hss" ] && locks="$locks /var/run/oai_hss.pid"
+[ -n "$runs_epc" ] && locks="$locks /var/run/mme_gw.pid"
 
 function _manage() {
     # if $1 is 'stop' then the found processes are killed
     mode=$1; shift
     pids=""
-    [ -n "$runs_hss" ] && pids="$pids $(pgrep run_hss) $(pgrep mme_gw) $(pgrep oai_hss)"
-    [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc)"
+    [ -n "$runs_hss" ] && pids="$pids $(pgrep run_hss) $(pgrep oai_hss)"
+    [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc) $(pgrep mme_gw)"
     pids="$(echo $pids)"
 
     if [ -z "$pids" ]; then
