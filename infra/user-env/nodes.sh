@@ -283,8 +283,9 @@ function logs-tgz() {
     [ -z "$output" ] && { echo usage: $0 output; return; }
     logfiles=$(locate_logs)
     [ -n "$config" ] && logfiles="$logfiles $conf_dir/$config"
-    tar -czf $output.tgz $logfiles
-    echo "Captured logs (and config) in $output.tgz"
+    outpath=$HOME/$output.tgz
+    tar -czf $outpath $logfiles
+    echo "Captured logs (and config) in $outpath"
 }    
 
 ### do not document : a simple utlity for the oai*.sh stubs
