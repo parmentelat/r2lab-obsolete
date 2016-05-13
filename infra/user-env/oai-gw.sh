@@ -114,11 +114,9 @@ function init() {
     # hostname | grep -q faraday && echo "========== Turning on interface" $(data-up)
     echo "========== Checking /etc/hosts"
     check-etc-hosts
-    if [ -n "$runs_epc" ]; then
-	echo "========== Rebuilding the GTPU module"
-	cd $run_dir
-	./build_epc -j -f
-    fi
+    echo "========== Rebuilding the GTPU module"
+    cd $run_dir
+    ./build_epc -j -f
     echo "========== Refreshing the depmod index"
     depmod -a
     
