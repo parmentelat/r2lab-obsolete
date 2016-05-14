@@ -54,7 +54,6 @@ conf_dir=/root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
 template=enb.band7.tm1.usrpb210.epc.remote.conf
 config=r2lab.conf
 
-gw_id_file=/root/oai-gw.id
 requires_chmod_x="/root/openairinterface5g/targets/RT/USER/init_b200.sh"
 
 doc-fun showenv "list environment variables"
@@ -172,30 +171,12 @@ function builds() {
     echo "========== Done - save image in oai-enb-builds"
 }
 
-doc-fun define-gw "defines the id of the oai EPC; e.g. oai define-gw 16"
-function define-gw() {
-    id="$1"; shift
-    echo "=== define-gw allows you to store the identity of the node being used as a gateway"
-    echo "=== example: define-gw 16"
-    echo "=== this is stored in file $gw_id_file"
-    echo "=== it is required before you can use the configure subcommand"
-    if [ -f $gw_id_file ]; then
-	echo "Current setting is " $(cat $gw_id_file)
-    else
-	echo "No gateway defined yet"
-    fi
-    echo $id > $gw_id_file
-    echo "Node defined as the 5g gateway is now : " $(cat $gw_id_file)
-}
-
 doc-fun configure "configures eNodeB (requires define-gw)"
 function configure() {
 
-    [ -f $gw_id_file ] || {
-	echo "file $gw_id_file not found; you need to run $COMMAND define-gw first - exiting";
-	exit 1;
-    }
-    gw_id=$(cat $gw_id_file)
+    gw_id=$(get-peer)
+    [ -z "$gw_id" ] && { echo "no peer defined"; return; }
+
     echo "Using gateway $gw_id"
 
     gitup

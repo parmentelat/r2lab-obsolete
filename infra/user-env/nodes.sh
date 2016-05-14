@@ -278,6 +278,34 @@ function logs-tgz() {
     echo "Captured logs (and config) in $outpath"
 }    
 
+doc-sep
+
+peer_id_file=/root/peer.id
+doc-fun define-peer "defines the id of a peer - stores it in $peer_id_file; e.g. define-peer 16"
+function define-peer() {
+    id="$1"; shift
+    echo "=== define-peer allows you to store the identity of the node being used as a gateway"
+    echo "=== example: define-peer 16"
+    echo "=== this is stored in file $peer_id_file"
+    echo "=== it is required by some setups that need to know where to reach another service"
+    if [ -f $peer_id_file ]; then
+	echo "Current setting is " $(cat $peer_id_file)
+    else
+	echo "No gateway defined yet"
+    fi
+    echo $id > $peer_id_file
+    echo "Peer now defined as : " $(cat $peer_id_file)
+}
+
+doc-fun get-peer "retrieve the value defined with define-peer"
+function get-peer() {
+    if [ ! -f $peer_id_file ]; then
+	echo "ERRROR: you need to run define-peer first" >&2-
+    else
+	echo $(cat $peer_id_file)
+    fi
+}
+
 ### do not document : a simple utlity for the oai*.sh stubs
 function define_main() {
     function main() {

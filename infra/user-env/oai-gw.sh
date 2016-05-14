@@ -15,7 +15,14 @@ case $COMMAND in
 esac
     
 
+# nominally we'd like to use the data network
+# however this is not available on bemol so for now
+# we switch to using control
+# should not be a big deal..
 realm="r2lab.fr"
+epc_ifname=control
+epc_subnet=3
+
 
 ####################
 run_dir=/root/openair-cn/SCRIPTS
@@ -84,7 +91,8 @@ function builds() {
     [ -n "$runs_epc" ] ./build_epc -i 2>&1 | tee build_epc-i.build.log
     # this was not actually run in oai-gw-builds2
     # it looks like it won't run fine at that early stage
-    # that's why it is mentioned in init again
+    # that's why it is done in 'init' instead
+    # and I even suspect it works fine only after configure in fact...
     # [ -n "$runs_epc" ] ./build_epc -j -f 2>&1 | tee build_epc-j.build.log
 
     echo "========== Done - save image in oai-gw-builds"
@@ -93,6 +101,7 @@ function builds() {
 function clean-hosts() {
     sed --in-place '/fit/d' /etc/hosts
 }
+
 doc-fun check-etc-hosts "adjusts /etc/hosts; run with hss as first arg to define hss"
 function check-etc-hosts() {
     clean-hosts
@@ -100,10 +109,19 @@ function check-etc-hosts() {
     id=$(r2lab-id)
     fitid=fit$id
     
-    if [ -n "$runs_hss" ]; then
+    if [ -n "$runs_hss" -a -n "$runs_epc" ]; then
+	# box runs both services
 	echo "127.0.1.1 $fitid $fitid.${realm} hss hss.${realm}" >> /etc/hosts
-    else
+    elif [ -n "$runs_hss" ]; then
+	# HSS only
 	echo "127.0.1.1 $fitid $fitid.${realm}" >> /etc/hosts
+    else
+	# EPC only : need to know where the hss server is running
+	hss_id=$(get-peer)
+	[ -z "$hss_id" ] && { echo "ERROR: no peer defined"; return; }
+	echo "Using hss $gw_id"
+	echo "127.0.1.1 $fitid $fitid.${realm}" >> /etc/hosts
+	echo "192.168.${epc_subnet}.${hss_id} hss hss.${realm}" >> /etc/hosts
     fi
 }
 	
@@ -129,13 +147,6 @@ function configure() {
     configure-hss
     configure-epc
 }
-
-# nominally we'd like to use the data network
-# however this is not available on bemol so for now
-# we switch to using control
-# should not be a big deal..
-epc_ifname=control
-epc_subnet=3
 
 doc-fun configure-epc "configures epc"
 function configure-epc() {
