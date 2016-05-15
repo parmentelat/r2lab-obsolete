@@ -56,6 +56,11 @@ config=r2lab.conf
 
 requires_chmod_x="/root/openairinterface5g/targets/RT/USER/init_b200.sh"
 
+realm="r2lab.fr"
+oai_ifname=control
+oai_subnet=3
+
+
 doc-fun showenv "list environment variables"
 function showenv() {
     echo "run_dir=$run_dir"
@@ -182,7 +187,6 @@ function configure() {
     gitup
     id=$(r2lab-id)
     fitid=fit$id
-    ifname=$(data-up)
     cd $conf_dir
     ### xxx TMP : we use eth1 instead of data
     # note that this requires changes in
@@ -190,9 +194,9 @@ function configure() {
     # /etc/udev/rules.d/70..blabla as well
     cat <<EOF > oai-enb.sed
 s,mobile_network_code =.*,mobile_network_code = "95";,
-s,192.168.12.170,192.168.2.$gw_id,
-s,eth4,${ifname},
-s,192.168.12.242/24,192.168.2.$id/24,g
+s,192.168.12.170,192.168.${oai_subnet}.$gw_id,
+s,eth4,${oai_ifname},
+s,192.168.12.242/24,192.168.${oai_subnet}.$id/24,g
 EOF
     echo in $(pwd)
     sed -f oai-enb.sed < $template > $config

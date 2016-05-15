@@ -20,8 +20,8 @@ esac
 # we switch to using control
 # should not be a big deal..
 realm="r2lab.fr"
-epc_ifname=control
-epc_subnet=3
+oai_ifname=control
+oai_subnet=3
 
 
 ####################
@@ -116,14 +116,14 @@ function check-etc-hosts() {
     elif [ -n "$runs_hss" ]; then
 	# HSS only
 	echo "127.0.1.1 $fitid $fitid.${realm}" >> /etc/hosts
-	echo "192.168.${epc_subnet}.${id} hss hss.${realm}" >> /etc/hosts
+	echo "192.168.${oai_subnet}.${id} hss hss.${realm}" >> /etc/hosts
     else
 	# EPC only : need to know where the hss server is running
 	hss_id=$(get-peer)
 	[ -z "$hss_id" ] && { echo "ERROR: no peer defined"; return; }
 	echo "Using hss $gw_id"
 	echo "127.0.1.1 $fitid $fitid.${realm}" >> /etc/hosts
-	echo "192.168.${epc_subnet}.${hss_id} hss hss.${realm}" >> /etc/hosts
+	echo "192.168.${oai_subnet}.${hss_id} hss hss.${realm}" >> /etc/hosts
     fi
 }
 	
@@ -163,12 +163,12 @@ function configure-epc() {
     [ -f $config.distrib ] || cp $config $config.distrib
     echo "========== Patching config file"
     sed -e s,xxx,$id,g <<EOF > epc-r2lab.sed
-s,eth0:1 *,${epc_ifname},g
-s,192.170.0.1/24,192.168.${epc_subnet}.xxx/24,g
-s,eth0:2 *,${epc_ifname},g
-s,192.170.1.1/24,192.168.${epc_subnet}.xxx/24,g
-s,eth0,${epc_ifname},g
-s,192.168.12.17/24,192.168.${epc_subnet}.xxx/24,g
+s,eth0:1 *,${oai_ifname},g
+s,192.170.0.1/24,192.168.${oai_subnet}.xxx/24,g
+s,eth0:2 *,${oai_ifname},g
+s,192.170.1.1/24,192.168.${oai_subnet}.xxx/24,g
+s,eth0,${oai_ifname},g
+s,192.168.12.17/24,192.168.${oai_subnet}.xxx/24,g
 s,127.0.0.1:5656,${syslog_epc},g
 s,TAC = "15",TAC = "1",g
 s,192.188.2.0/24,192.168.10.0/24,g
