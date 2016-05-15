@@ -277,8 +277,13 @@ function populate-db() {
     }
 
     idmmeidentity=100
-    fdqn=fit$(r2lab-id).${realm}
-	
+    # this runs in the hss box
+    if [ -n "$runs_epc" ] ; then
+	mmehost=fit$(r2lab-id).${realm}
+    else
+	epc_id=$(get-peer)
+	mmehost=${epc_id}.${realm}
+    fi	
     # users table
     insert_command="INSERT INTO users (imsi, msisdn, access_restriction, mmeidentity_idmmeidentity, \`key\`, sqn) VALUES ("
     update_command="ON DUPLICATE KEY UPDATE "
@@ -300,7 +305,7 @@ function populate-db() {
     update_command="ON DUPLICATE KEY UPDATE "
 
     name_value idmmeidentity ${idmmeidentity}
-    name_value mmehost "'${fdqn}'"
+    name_value mmehost "'${mmehost}'"
     name_value mmerealm "'${realm}'" last
     
     echo issuing SQL "$insert_command $update_command"
