@@ -283,7 +283,7 @@ function populate-db() {
 	mmehost=fit$(r2lab-id).${realm}
     else
 	epc_id=$(get-peer)
-	mmehost=${epc_id}.${realm}
+	mmehost=fit${epc_id}.${realm}
     fi	
     # users table
     insert_command="INSERT INTO users (imsi, msisdn, access_restriction, mmeidentity_idmmeidentity, \`key\`, sqn) VALUES ("
