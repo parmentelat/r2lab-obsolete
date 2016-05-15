@@ -100,6 +100,7 @@ function builds() {
 
 function clean-hosts() {
     sed --in-place '/fit/d' /etc/hosts
+    sed --in-place '/hss/d' /etc/hosts
 }
 
 doc-fun check-etc-hosts "adjusts /etc/hosts; run with hss as first arg to define hss"
