@@ -114,7 +114,7 @@ function check-etc-hosts() {
 	echo "127.0.1.1 $fitid $fitid.${realm} hss hss.${realm}" >> /etc/hosts
     elif [ -n "$runs_hss" ]; then
 	# HSS only
-	echo "127.0.1.1 $fitid $fitid.${realm}" >> /etc/hosts
+	echo "127.0.1.1 $fitid $fitid.${realm} hss hss.${realm}" >> /etc/hosts
     else
 	# EPC only : need to know where the hss server is running
 	hss_id=$(get-peer)
