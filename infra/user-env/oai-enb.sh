@@ -1,50 +1,15 @@
 #!/bin/bash
-# configuration was about editing this file
-# /root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/enb.band7.tm1.usrpb210.epc.remote.conf
-# in which we have
-#
-# * changed this line (was 92)
-#     mobile_network_code =  "95";
-#
-# * changed this section to denote the remote (i.e. epc+hss) IP
-#     mme_ip_address      = ( {ipv4 = "192.168.2.16";
-#                              ipv6="192:168:30::17";
-#                              active="yes";
-#                              preference="ipv4";});
-#
-# changed the local IP address and interface name here
-#
-#     NETWORK_INTERFACES :
-#    {
-#        ENB_INTERFACE_NAME_FOR_S1_MME            = "data";
-#        ENB_IPV4_ADDRESS_FOR_S1_MME              = "192.168.2.11/24";
-#
-#        ENB_INTERFACE_NAME_FOR_S1U               = "data";
-#        ENB_IPV4_ADDRESS_FOR_S1U                 = "192.168.2.11/24";
-#        ENB_PORT_FOR_S1U                         = 2152; # Spec 2152
-#    };
-#
-# 
-#
-# then to run the node we did
-### cd /root/openairinterface5g/cmake_targets/lte_build_oai/build
-### ./lte-softmodem -O /root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/enb.band7.tm1.usrpb210.epc.remote.conf
-### 
-### # need to align these 
-### 
-### epc:          {MCC="208" ; MNC="95";  TAC = "1"; },                                  # YOUR TAI CONFIG HERE
-### 
-### with
-### 
-### enb:    tracking_area_code  =  "1";
-### 
-###
+
+# WARNING: start from the lowlatency image !
+ 
 
 DIRNAME=$(dirname "$0")
 #echo Loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
 doc-sep "oai subcommands; run e.g. oai start"
+
+source $DIRNAME/oai-common.sh
 
 ####################
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
@@ -61,8 +26,12 @@ oai_ifname=control
 oai_subnet=3
 
 
-doc-fun showenv "list environment variables"
-function showenv() {
+doc-fun dumpvars "list environment variables"
+function dumpvars() {
+    echo "oai_role=${oai_role}"
+    echo "oai_ifname=${oai_ifname}"
+    echo "oai_subnet=${oai_subnet}"
+    echo "oai_realm=${oai_realm}"
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
     echo "template=$template"
@@ -153,14 +122,13 @@ EOF
     ./build_oai -I -w USRP 2>&1 | tee build_oai-1.log
     ./build_oai --eNB -c -w USRP 2>&1 | tee build_oai-2.log
 
-    # from this point on, instructions are really unclear
+    # initial instructions from T. Turletti mentioned this
     #cd $HOME/openairinterface5g/
     #sudo chmod +x ./targets/bin/init_nas_nos1
-    # xxx ici à nouveau c'est pas clair
     #./targets/bin/init_nas_nos1
-    # this appeared in the original instructions from T. Turletti
-    # eNB # eNB ready to run
-
+    # In fact I found this script instead
+    #./cmake_targets/tools/init_nas_nos1
+    # but since it was for a soft phone initially I skip it from the builds image
 }
 
 doc-fun builds "\truns both builds"

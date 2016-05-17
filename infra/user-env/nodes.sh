@@ -4,7 +4,7 @@
 # on these images, we have a symlink
 # /root/.bash_aliases
 # that point at
-# /root/r2lab/infra/userenv/nodes.sh
+# /root/r2lab/infra/user-env/nodes.sh
 # 
 #
 
@@ -180,6 +180,7 @@ function wait-for-device () {
     done
 }
 
+doc-sep
 ##########
 # the utility to select which function the oai alias should point to
 # in most cases, we just want oai to be an alias to e.g.
@@ -190,15 +191,21 @@ function wait-for-device () {
 # the place where the standard (git) scripts are located
 oai_scripts=/root/r2lab/infra/user-env
 
+# the mess with /tmp is so that scripts can get tested before they are committed
+# it can be dangerous though, as nodes.sh is also loaded at login-time, so beware..
+
 function define-oai() {
-    # suffix should be gw.sh or enb.sh
-    suffix=$1; shift
+    # oai_role should be gw or epc or hss or enb
+    oai_role=$1; shift
     function _oai() {
-	candidates="/tmp $oai_scripts"
+	local candidates="/tmp $oai_scripts"
+	local candidate=""
+	local script=""
 	for candidate in $candidates; do
-	    script=$candidate/oai-$suffix
-	    [ -f $script ] && break;
+	    local path=$candidate/oai-${oai_role}.sh
+	    [ -f $path ] && { script=$path; break; }
 	done
+	[ -n "$script" ] || { echo "Cannot locate oai-${oai_role}.sh" >&2-; return; }
 	echo Invoking script $script >&2-
 	$script "$@"
     }
@@ -206,28 +213,27 @@ function define-oai() {
     alias o=_oai
 }
 
-doc-sep
+doc-fun oai-loadvars "displays and loads env variables related to oai"
+function oai-loadvars() {
+    _oai dumpvars > /root/oai-vars
+    source /root/oai-vars
+    echo "=== Following vars now in your env" >&2-
+    cat /root/oai-vars
+    echo === >&2-
+}
+
 
 doc-fun oai-as-gw "defines the 'oai' command for a HSS+EPC oai gateway, and related env. vars"
-function oai-as-gw() { define-oai gw.sh; echo function "'oai'" now defined; oai-env; }
+function oai-as-gw() { define-oai gw; echo function "'oai'" now defined; oai-loadvars; }
 
 doc-fun oai-as-hss "defines the 'oai' command for a HSS-only oai box, and related env. vars"
-function oai-as-hss() { define-oai hss.sh; echo function "'oai'" now defined; oai-env; }
+function oai-as-hss() { define-oai hss; echo function "'oai'" now defined; oai-loadvars; }
 
 doc-fun oai-as-epc "defines the 'oai' command for an EPC-only oai box, and related env. vars"
-function oai-as-epc() { define-oai epc.sh; echo function "'oai'" now defined; oai-env; }
+function oai-as-epc() { define-oai epc; echo function "'oai'" now defined; oai-loadvars; }
 
 doc-fun oai-as-enb "defines the 'oai' command for an oai eNodeB, and related env. vars"
-function oai-as-enb() { define-oai enb.sh; echo function "'oai'" now defined; oai-env; }
-
-doc-fun oai-env "displays and loads env variables related to oai"
-function oai-env() {
-    _oai showenv > /tmp/oai-env
-    source /tmp/oai-env
-    echo "Following vars now in your env" >&2-
-    echo ========== >&2-
-    cat /tmp/oai-env
-}
+function oai-as-enb() { define-oai enb; echo function "'oai'" now defined; echo role=$oai_role; oai-loadvars; }
 
 doc-sep
 #################### a utility to deal with logs and configs
@@ -304,22 +310,6 @@ function get-peer() {
     else
 	echo $(cat $peer_id_file)
     fi
-}
-
-### do not document : a simple utlity for the oai*.sh stubs
-function define_main() {
-    function main() {
-	if [[ -z "$@" ]]; then
-	    help
-	fi
-	subcommand="$1"; shift
-	case $subcommand in
-	    env)
-		echo "Use oai-env; not oai env" ;;
-	    *)
-		$subcommand "$@" ;;
-	esac
-    }
 }
 
 function help() { echo -e $_help_message; }

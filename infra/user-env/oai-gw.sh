@@ -4,6 +4,10 @@ DIRNAME=$(dirname "$0")
 #echo Loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
+doc-sep "oai subcommands; run e.g. oai start"
+
+source $DIRNAME/oai-common.sh
+
 COMMAND=$(basename "$0")
 case $COMMAND in
     oai-gw*)
@@ -15,15 +19,6 @@ case $COMMAND in
 esac
     
 
-# nominally we'd like to use the data network
-# however this is not available on bemol so for now
-# we switch to using control
-# should not be a big deal..
-realm="r2lab.fr"
-oai_ifname=control
-oai_subnet=3
-
-
 ####################
 run_dir=/root/openair-cn/SCRIPTS
 [ -n "$runs_epc" ] && log_epc=$run_dir/run_epc.log
@@ -34,10 +29,11 @@ conf_dir=/root/openair-cn/BUILD/EPC/
 [ -n "$runs_epc" ] && config=epc.conf.in
 
 
-doc-sep "oai subcommands; run e.g. oai start"
-
-doc-fun showenv "list environment variables"
-function showenv() {
+doc-fun dumpvars "list environment variables"
+function dumpvars() {
+    echo "oai_role=${oai_role}"
+    echo "oai_ifname=${oai_ifname}"
+    echo "oai_subnet=${oai_subnet}"
     echo "runs_hss=$runs_hss"
     echo "runs_epc=$runs_epc"
     echo "run_dir=$run_dir"
@@ -112,18 +108,18 @@ function check-etc-hosts() {
     
     if [ -n "$runs_hss" -a -n "$runs_epc" ]; then
 	# box runs both services
-	echo "127.0.1.1 $fitid $fitid.${realm} hss hss.${realm}" >> /etc/hosts
+	echo "127.0.1.1 $fitid $fitid.${oai_realm} hss hss.${oai_realm}" >> /etc/hosts
     elif [ -n "$runs_hss" ]; then
 	# HSS only
-	echo "127.0.1.1 $fitid $fitid.${realm}" >> /etc/hosts
-	echo "192.168.${oai_subnet}.${id} hss hss.${realm}" >> /etc/hosts
+	echo "127.0.1.1 $fitid $fitid.${oai_realm}" >> /etc/hosts
+	echo "192.168.${oai_subnet}.${id} hss hss.${oai_realm}" >> /etc/hosts
     else
 	# EPC only : need to know where the hss server is running
 	hss_id=$(get-peer)
 	[ -z "$hss_id" ] && { echo "ERROR: no peer defined"; return; }
 	echo "Using hss $gw_id"
-	echo "127.0.1.1 $fitid $fitid.${realm}" >> /etc/hosts
-	echo "192.168.${oai_subnet}.${hss_id} hss hss.${realm}" >> /etc/hosts
+	echo "127.0.1.1 $fitid $fitid.${oai_realm}" >> /etc/hosts
+	echo "192.168.${oai_subnet}.${hss_id} hss hss.${oai_realm}" >> /etc/hosts
     fi
 }
 	
@@ -182,10 +178,10 @@ EOF
     cd $run_dir
     if [ -n "$runs_hss" ]; then
 	# both services are local
-	./build_epc --clean --clean-certificates --local-hss --realm ${realm} 2>&1 | tee build_epc.conf.log
+	./build_epc --clean --clean-certificates --local-hss --realm ${oai_realm} 2>&1 | tee build_epc.conf.log
     else
 	# xxx todo
-	./build_epc --clean --clean-certificates --remote-hss hss.${realm} --realm ${realm} 2>&1 | tee build_epc.conf.log
+	./build_epc --clean --clean-certificates --remote-hss hss.${oai_realm} --realm ${oai_realm} 2>&1 | tee build_epc.conf.log
     fi
 }
 
@@ -200,10 +196,10 @@ function configure-hss() {
     cd $run_dir
     if [ -n "$runs_epc" ]; then
 	# both services are local
-	./build_hss --clean --clean-certificates --fqdn hss.${realm} --install-hss-files --local-mme 2>&1 | tee build_hss.conf.log
+	./build_hss --clean --clean-certificates --fqdn hss.${oai_realm} --install-hss-files --local-mme 2>&1 | tee build_hss.conf.log
     else
 	# xxx todo
-	./build_hss --clean --clean-certificates --fqdn hss.${realm} --install-hss-files 2>&1 | tee build_hss.conf.log
+	./build_hss --clean --clean-certificates --fqdn hss.${oai_realm} --install-hss-files 2>&1 | tee build_hss.conf.log
     fi
 	
     populate-db
@@ -280,26 +276,31 @@ function populate-db() {
     idmmeidentity=100
     # this runs in the hss box
     if [ -n "$runs_epc" ] ; then
-	mmehost=fit$(r2lab-id).${realm}
+	mmehost=fit$(r2lab-id).${oai_realm}
     else
 	epc_id=$(get-peer)
-	mmehost=fit${epc_id}.${realm}
+	mmehost=fit${epc_id}.${oai_realm}
     fi	
-    # users table
-    insert_command="INSERT INTO users (imsi, msisdn, access_restriction, mmeidentity_idmmeidentity, \`key\`, sqn) VALUES ("
-    update_command="ON DUPLICATE KEY UPDATE "
-    name_value imsi "'208950000000002'"
-    name_value msisdn "'33638060010'"
-    name_value access_restriction "'47'"
-    name_value mmeidentity_idmmeidentity "'${idmmeidentity}'"
-    name_value "\`key\`" "0x8BAF473F2F8FD09487CCCBD7097C6862"
-    name_value sqn "'000000000020'" last
 
-#    mysql --user=root --password=linux -e 'select imsi from users where imsi like "20895%"' oai_db 
+###    
+###    # users table
+###    insert_command="INSERT INTO users (imsi, msisdn, access_restriction, mmeidentity_idmmeidentity, \`key\`, sqn) VALUES ("
+###    update_command="ON DUPLICATE KEY UPDATE "
+###    name_value imsi "'208950000000002'"
+###    name_value msisdn "'33638060010'"
+###    name_value access_restriction "'47'"
+###    name_value mmeidentity_idmmeidentity "'${idmmeidentity}'"
+###    name_value "\`key\`" "0x8BAF473F2F8FD09487CCCBD7097C6862"
+###    name_value sqn "'000000000020'" last
+###
+####    mysql --user=root --password=linux -e 'select imsi from users where imsi like "20895%"' oai_db 
+###
+###    echo issuing SQL "$insert_command $update_command"
+###    mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
 
-    echo issuing SQL "$insert_command $update_command"
-    mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
-
+    hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000002;"
+    echo HACK issuing SQL "$hack_command"
+    mysql --user=root --password=linux -e "$hack_command" oai_db
 
     # mmeidentity table
     insert_command="INSERT INTO mmeidentity (idmmeidentity, mmehost, mmerealm) VALUES ("
@@ -307,7 +308,7 @@ function populate-db() {
 
     name_value idmmeidentity ${idmmeidentity}
     name_value mmehost "'${mmehost}'"
-    name_value mmerealm "'${realm}'" last
+    name_value mmerealm "'${oai_realm}'" last
     
     echo issuing SQL "$insert_command $update_command"
     mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
@@ -367,15 +368,6 @@ doc-fun manage-db "runs mysql on the oai_db database"
 function manage-db() {
     mysql --user=root --password=linux oai_db
 }
-
-####################
-doc-fun spy-sctp "expects an interface name and then runs tcpdump on the SCTP traffic"
-function spy-sctp() {
-    ifname=${epc_ifname}
-    echo $spying for SCTP packets on interface $ifname
-    tcpdump -i $ifname ip proto 132
-}
-
 
 ####################
 define_main
