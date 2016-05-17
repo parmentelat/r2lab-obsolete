@@ -43,27 +43,4 @@ function spy-sctp() {
     $command
 }
 
-doc-fun demo "set ups nodes for the skype demo - based on their id"
-function demo() {
-    case $(r2lab-id) in
-	38)
-	    oai-as-hss
-	    define-peer 39 ;;
-	39)
-	    oai-as-epc
-	    define-peer 38 ;;
-	23)
-	    oai-as-hss
-	    define-peer 16 ;;
-	16)
-	    oai-as-epc
-	    define-peer 23 ;;
-	11)
-	    oai-as-enb
-	    define-peer 16 ;;
-    esac
-    echo "running as a $suffix"
-    echo "peer=$(get-peer)"
-}
-
 doc-sep

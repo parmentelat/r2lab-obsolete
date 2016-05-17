@@ -288,19 +288,14 @@ doc-sep
 
 peer_id_file=/root/peer.id
 doc-fun define-peer "defines the id of a peer - stores it in $peer_id_file; e.g. define-peer 16"
+# define-peer allows you to store the identity of the node being used as a gateway
+# example: define-peer 16
+# this is stored in file $peer_id_file
+# it is required by some setups that need to know where to reach another service
 function define-peer() {
     id="$1"; shift
-    echo "=== define-peer allows you to store the identity of the node being used as a gateway"
-    echo "=== example: define-peer 16"
-    echo "=== this is stored in file $peer_id_file"
-    echo "=== it is required by some setups that need to know where to reach another service"
-    if [ -f $peer_id_file ]; then
-	echo "Current setting is " $(cat $peer_id_file)
-    else
-	echo "No gateway defined yet"
-    fi
-    echo $id > $peer_id_file
-    echo "Peer now defined as : " $(cat $peer_id_file)
+    [ -n "$id" ] && echo $id > $peer_id_file
+    echo "=== Peer now defined as : " $(cat $peer_id_file)
 }
 
 doc-fun get-peer "retrieve the value defined with define-peer"
@@ -310,6 +305,29 @@ function get-peer() {
     else
 	echo $(cat $peer_id_file)
     fi
+}
+
+doc-fun demo "set ups nodes for the skype demo - based on their id"
+function demo() {
+    case $(r2lab-id) in
+	38)
+	    oai-as-hss
+	    define-peer 39 ;;
+	39)
+	    oai-as-epc
+	    define-peer 38 ;;
+	23)
+	    oai-as-hss
+	    define-peer 16 ;;
+	16)
+	    oai-as-epc
+	    define-peer 23 ;;
+	11)
+	    oai-as-enb
+	    define-peer 16 ;;
+    esac
+    echo "running as a $suffix"
+    echo "peer=$(get-peer)"
 }
 
 function help() { echo -e $_help_message; }
