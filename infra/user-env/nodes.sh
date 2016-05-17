@@ -196,7 +196,7 @@ oai_scripts=/root/r2lab/infra/user-env
 
 function define-oai() {
     # oai_role should be gw or epc or hss or enb
-    oai_role=$1; shift
+    export oai_role=$1; shift
     function _oai() {
 	local candidates="/tmp $oai_scripts"
 	local candidate=""
