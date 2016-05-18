@@ -180,7 +180,7 @@ function start() {
     cd $run_dir
 #    echo "In $(pwd)"
     echo "Running lte-softmodem in background"
-    ./lte-softmodem -W -O $conf_dir/$config >& $lte_log &
+    ./lte-softmodem -W --ulsch-max-errors 100 -O $conf_dir/$config >& $lte_log &
     cd - >& /dev/null
 }
 
