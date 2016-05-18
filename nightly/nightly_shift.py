@@ -38,7 +38,7 @@ VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',     'fedora 21',     'fed
 VERSIONS        = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
 
 # SEND_RESULTS_TO  = ['mario.zancanaro@inria.fr', 'thierry.parmentelat@inria.fr', 'thierry.turletti@inria.fr', 'walid.dabbous@inria.fr', 'mohamed-naoufal.mahfoudi@inria.fr']
-SEND_RESULTS_TO = 'fit-r2lab-users@inria.fr'
+SEND_RESULTS_TO = ['fit-r2lab-users@inria.fr']
 
 phases          = {}
 loaded_nodes    = {}
