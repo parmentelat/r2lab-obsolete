@@ -165,9 +165,9 @@ s,mobile_network_code =.*,mobile_network_code = "95";,
 s,192.168.12.170,192.168.${oai_subnet}.$gw_id,
 s,eth4,${oai_ifname},
 s,192.168.12.242/24,192.168.${oai_subnet}.$id/24,g
-s,tx_gain.*,tx_gain = 85;,
-s,rx_gain.*,rx_gain = 85;,
 EOF
+# s,tx_gain.*,tx_gain = 80;,
+# s,rx_gain.*,rx_gain = 80;,
     echo in $(pwd)
     sed -f oai-enb.sed < $template > $config
     echo "Overwrote $config in $(pwd)"
