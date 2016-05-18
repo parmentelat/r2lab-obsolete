@@ -14,11 +14,12 @@ function define_main() {
 	    help
 	fi
 	subcommand="$1"; shift
-	case $subcommand in
-	    env)
-		echo "Use oai-env; not oai env" ;;
-	    *)
+	# accept only subcommands that match a function
+	case $(type -t $subcommand) in
+	    function)
 		$subcommand "$@" ;;
+	    *) 
+		echo "$subcommand not a function - exiting" ;;
 	esac
     }
 }
