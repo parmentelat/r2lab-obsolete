@@ -180,7 +180,7 @@ function start() {
     cd $run_dir
 #    echo "In $(pwd)"
     echo "Running lte-softmodem in background"
-    ./lte-softmodem -O $conf_dir/$config >& $lte_log &
+    ./lte-softmodem -W -O $conf_dir/$config >& $lte_log &
     cd - >& /dev/null
 }
 
