@@ -326,7 +326,7 @@ function demo() {
 	    oai-as-enb
 	    define-peer 16 ;;
     esac
-    echo "running as a $suffix"
+    echo "running as a ${oai_role}"
     echo "peer=$(get-peer)"
 }
 
