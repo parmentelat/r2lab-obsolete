@@ -41,7 +41,7 @@ function sctp() {
     [ -n "$output" ] && {
 	local file="${output}-${oai_role}.pcap"
 	echo "Capturing (unbuffered) into $file"
-	command="$command -w $file --packet-buffered"
+	command="$command -w $file -U"
     }
     echo Running $command
     $command
