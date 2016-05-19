@@ -34,12 +34,15 @@ function ldump() {
     logs-tgz $1-${oai_role}
 }
 
-doc-fun spy-sctp "tcpdump the SCTP traffic on interface ${oai_ifname} - with one arg, stores into a .pcap"
-function spy-sctp() {
+doc-fun sctp "tcpdump the SCTP traffic on interface ${oai_ifname} - with one arg, stores into a .pcap"
+function sctp() {
     local output="$1"; shift
-    local args=""
-    [ -n "$output" ] && args="-w ${output}-${oai_role}.pcap"
-    command="tcpdump -i ${oai_ifname} ip proto 132 $args"
+    command="tcpdump -i ${oai_ifname} ip proto 132"
+    [ -n "$output" ] && {
+	local file="${output}-${oai_role}.pcap"
+	echo "Capturing (unbuffered) into $file"
+	command="$command -w $file --packet-buffered"
+    }
     echo Running $command
     $command
 }
