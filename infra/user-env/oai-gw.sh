@@ -149,7 +149,7 @@ function configure() {
 doc-fun configure-epc "configures epc"
 function configure-epc() {
 
-    [ -n "$runs_epc" ] || { echo skipping $0 ; return; }
+    [ -n "$runs_epc" ] || { echo not running epc - skipping ; return; }
 
     id=$(r2lab-id)
     fitid=fit$id
@@ -188,7 +188,7 @@ EOF
 doc-fun configure-hss "configures hss"
 function configure-hss() {
 
-    [ -n "$runs_hss" ] || { echo skipping $0 ; return; }
+    [ -n "$runs_hss" ] || { echo not running hss - skipping ; return; }
 
     fitid=fit$(r2lab-id)
 
@@ -299,7 +299,7 @@ function populate-db() {
 ###    mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
 
     hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000002;"
-    echo HACK issuing SQL "$hack_command"
+    echo issuing HACK SQL "$hack_command"
     mysql --user=root --password=linux -e "$hack_command" oai_db
 
     # mmeidentity table
