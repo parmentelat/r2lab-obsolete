@@ -165,6 +165,7 @@ s,mobile_network_code =.*,mobile_network_code = "95";,
 s,192.168.12.170,192.168.${oai_subnet}.$gw_id,
 s,eth4,${oai_ifname},
 s,192.168.12.242/24,192.168.${oai_subnet}.$id/24,g
+s,pucch_p0_Nominal.*,pucch_p0_Nominal = -96;,
 EOF
 # s,tx_gain.*,tx_gain = 80;,
 # s,rx_gain.*,rx_gain = 80;,
