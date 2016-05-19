@@ -260,13 +260,22 @@ doc-nodes "(r)off" "\tturn selected nodes off (rhubarbe off)"
 alias rreset="rhubarbe reset"
 alias reset=rreset
 doc-nodes "(r)reset" "reset selected nodes (rhubarbe reset)"
+
 alias rstatus="rhubarbe status"
 doc-nodes "rstatus" "\tshow status (on or off) selected nodes (rhubarbe status)"
 alias st=rstatus
 doc-nodes "st" "\tlike rstatus (status is a well-known command on ubuntu)"
+
 alias rinfo="rhubarbe info"
 alias info=rinfo
 doc-nodes "(r)info" "\tget version info from selected nodes CMC (rhubarbe info)"
+
+alias rwait="rhubarbe wait"
+doc-nodes rwait "\twait for nodes to be reachable through ssh (rhubarbe wait)"
+alias rw=rwait
+doc-nodes rw alias1
+
+
 alias rusrpon="rhubarbe usrpon"
 doc-nodes "rusrpon" "\tturn selected nodes usrpon (rhubarbe usrpon)"
 alias uon=rusrpon
@@ -279,13 +288,15 @@ alias rusrpstatus="rhubarbe usrpstatus"
 doc-nodes "rusrpstatus" "show status (usrpon or usrpoff) of selected nodes USRP (rhubarbe usrpstatus)"
 alias ust=rusrpstatus
 doc-nodes "ust" alias1
+
 alias rload="rhubarbe load"
 doc-nodes rload "\tload image (specify with -i) on selected nodes (rhubarbe load)"
 alias rsave="rhubarbe save"
 doc-nodes rsave "\tsave image from one node (rhubarbe save)"
-alias rwait="rhubarbe wait"
-doc-nodes rwait "\twait for nodes to be reachable through ssh (rhubarbe wait)"
-alias rstatus="rhubarbe status"
+alias rshare="rhubarbe share"
+doc-nodes rshare "\tshare image with community (rhubarbe share)"
+
+
 # map command [args]
 # -> run command on $NODES
 # e.g. map hostname
