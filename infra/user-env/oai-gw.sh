@@ -46,14 +46,16 @@ function dumpvars() {
 doc-fun base "the script to install base software on top of a raw image" 
 function base() {
 
-    echo "========== Installing mysql-server - select apache2 and set password=linux"
+    echo "========== Installing mysql-server - select apache2 and set password=linux - press enter .."
     read _
     apt-get install -y mysql-server
 
     echo "========== Installing phpmyadmin - provide mysql-server password as linux and set password=admin"
+    echo "Press enter .."
+    read _
     apt-get install -y phpmyadmin
 
-    echo "========== Running git clone for openair-cn and r2lab"
+    echo "========== Running git clone for openair-cn and r2lab - press enter .."
     read _
     cd
     echo -n | \
@@ -84,12 +86,12 @@ function builds() {
     echo "========== Building HSS"
     [ -n "$runs_hss" ] && ./build_hss -i 2>&1 | tee build_hss.build.log
     echo "========== Building EPC"
-    [ -n "$runs_epc" ] ./build_epc -i 2>&1 | tee build_epc-i.build.log
+    [ -n "$runs_epc" ] && ./build_epc -i 2>&1 | tee build_epc-i.build.log
     # this was not actually run in oai-gw-builds2
     # it looks like it won't run fine at that early stage
     # that's why it is done in 'init' instead
     # and I even suspect it works fine only after configure in fact...
-    # [ -n "$runs_epc" ] ./build_epc -j -f 2>&1 | tee build_epc-j.build.log
+    # [ -n "$runs_epc" ] && ./build_epc -j -f 2>&1 | tee build_epc-j.build.log
 
     echo "========== Done - save image in oai-gw-builds"
 }
