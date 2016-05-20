@@ -21,11 +21,6 @@ config=r2lab.conf
 
 requires_chmod_x="/root/openairinterface5g/targets/RT/USER/init_b200.sh"
 
-realm="r2lab.fr"
-oai_ifname=control
-oai_subnet=3
-
-
 doc-fun dumpvars "list environment variables"
 function dumpvars() {
     echo "oai_role=${oai_role}"

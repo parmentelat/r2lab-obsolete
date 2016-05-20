@@ -329,6 +329,7 @@ function demo() {
     echo "========== Demo setup on node $(r2lab-id)"
     echo "running as a ${oai_role}"
     echo "config uses peer=$(get-peer)"
+    echo "using interface ${oai_ifname} on subnet ${oai_subnet}"
 }
 
 function help() { echo -e $_help_message; }
