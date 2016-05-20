@@ -441,7 +441,9 @@ def summary_in_mail(nodes):
             <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/shuffle.png" style="width:25px;height:25px;">o.s.</td>\n \
             <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/zombie.png" style="width:25px;height:25px;">zombie</td>\n \
             <td>&nbsp;&nbsp;</td>\n \
-            <td colspan="3"></td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/FFFFFF-0.png" style="width:25px;height:25px;"><br>old o.s.</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/FFFFFF-0.png" style="width:25px;height:25px;"><br>to</td>\n \
+            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/FFFFFF-0.png" style="width:25px;height:25px;"><br>new o.s.</td>\n \
             </tr>'
 
     for node in sorted(list_of_bug_nodes):
