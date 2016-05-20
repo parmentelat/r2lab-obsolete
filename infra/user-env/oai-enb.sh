@@ -177,7 +177,7 @@ EOF
 
 doc-fun start "starts lte-softmodem" 
 function start() {
-    echo Turning on interface $(data-up)
+    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     cd $run_dir
 #    echo "In $(pwd)"
     echo "Running lte-softmodem in background"

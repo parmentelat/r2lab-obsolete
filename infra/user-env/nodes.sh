@@ -295,7 +295,7 @@ doc-fun define-peer "defines the id of a peer - stores it in $peer_id_file; e.g.
 function define-peer() {
     id="$1"; shift
     [ -n "$id" ] && echo $id > $peer_id_file
-    echo "=== Peer now defined as : " $(cat $peer_id_file)
+    echo "peer now defined as : " $(cat $peer_id_file)
 }
 
 doc-fun get-peer "retrieve the value defined with define-peer"
@@ -326,8 +326,9 @@ function demo() {
 	    oai-as-enb
 	    define-peer 16 ;;
     esac
+    echo "========== Demo setup on node $(r2lab-id)"
     echo "running as a ${oai_role}"
-    echo "peer=$(get-peer)"
+    echo "config uses peer=$(get-peer)"
 }
 
 function help() { echo -e $_help_message; }

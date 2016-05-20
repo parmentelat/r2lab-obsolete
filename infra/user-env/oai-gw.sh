@@ -129,9 +129,6 @@ function check-etc-hosts() {
 doc-fun init "checks /etc/hosts, rebuilds gtpu and runs depmod"
 function init() {
 
-    # would turn on data only on faraday
-    # but in fact this is not required while we use the 'control' interface
-    # hostname | grep -q faraday && echo "========== Turning on interface" $(data-up)
     echo "========== Checking /etc/hosts"
     check-etc-hosts
     echo "========== Rebuilding the GTPU module"
@@ -319,6 +316,7 @@ function populate-db() {
 
 doc-fun start "starts the hss and/or epc service(s)"
 function start() {
+    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     cd $run_dir
     if [ -n "$runs_hss" ]; then
 	echo "Running run_hss in background"

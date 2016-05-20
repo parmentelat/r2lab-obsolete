@@ -3,8 +3,8 @@
 # we switch to using control
 # should not be a big deal..
 oai_realm="r2lab.fr"
-oai_ifname=control
-oai_subnet=3
+oai_ifname=data
+oai_subnet=2
 
 
 ### do not document : a simple utlity for the oai*.sh stubs
