@@ -236,7 +236,9 @@ doc-fun oai-as-enb "defines the 'oai' command for an oai eNodeB, and related env
 function oai-as-enb() { define-oai enb; echo function "'oai'" now defined; echo role=$oai_role; oai-loadvars; }
 
 doc-sep
+
 #################### a utility to deal with logs and configs
+# this needs to be rewritten - used in the oai-scripts
 function locate_logs() {
     if [[ -n "$@" ]] ; then
 	echo "$@"
@@ -306,6 +308,16 @@ function get-peer() {
 	echo $(cat $peer_id_file)
     fi
 }
+
+doc-fun dump-dmesg "run dmesg every second and stores into /root/dmesg/dmesg-hh-mm-ss"
+function dump-dmesg() {
+    mkdir -p /root/dmesg
+    while true; do
+	dmesg > /root/dmesg/dmesg-$(date +"%H-%M-%S")
+	echo -n "."
+	sleep 1
+    done	 
+}    
 
 doc-fun demo "set ups nodes for the skype demo - based on their id"
 function demo() {
