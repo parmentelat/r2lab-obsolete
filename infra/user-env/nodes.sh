@@ -54,6 +54,17 @@ function bashrc() { echo "Reloading ~/.bashrc"; source ~/.bashrc; }
 doc-fun refresh "gitup + bashrc"
 function refresh() { gitup /root/r2lab; bashrc; }
 
+doc-fun init-clock "Sets date from ntp"
+function init-clock() {
+    type ntpdate >& /dev/null && {
+	echo "Running ntpdate faraday3"
+	ntpdate faraday3
+    } || {
+	echo "ERROR: cannot init clock - ntpdate not found"
+	return 1
+    }
+}
+
 doc-fun apt-update "refresh all packages with apt-get"
 function apt-update() {
     apt-get update

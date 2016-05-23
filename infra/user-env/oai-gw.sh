@@ -126,9 +126,11 @@ function check-etc-hosts() {
 }
 	
     
-doc-fun init "checks /etc/hosts, rebuilds gtpu and runs depmod"
+doc-fun init "sync clock from NTP, checks /etc/hosts, rebuilds gtpu and runs depmod"
 function init() {
 
+    echo "========== Sync clock at NTP"
+    init-clock
     echo "========== Checking /etc/hosts"
     check-etc-hosts
     echo "========== Rebuilding the GTPU module"
