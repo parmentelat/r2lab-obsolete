@@ -133,6 +133,9 @@ function init() {
     init-clock
     echo "========== Checking /etc/hosts"
     check-etc-hosts
+    echo "========== Checking out the master branch in openair-cn"
+    cd ~/openair-cn
+    select-cn master
     echo "========== Rebuilding the GTPU module"
     cd $run_dir
     ./build_epc -j -f
@@ -140,6 +143,20 @@ function init() {
     depmod -a
     
 }
+
+function select-cn() {
+    branch=$1; shift
+    cd /root/openair-cn
+    git reset --hard HEAD
+    git checkout --force $branch
+    cd -
+}
+
+doc-fun cn-master "switches to the master branch in openair-cn"
+function cn-master() { select-cn master; }
+doc-fun cn-unstable "switches to the unstable branch in openair-cn"
+function cn-unstable() { select-cn unstable; }
+
 
 doc-fun configure "configure hss and/or epc"
 function configure() {
