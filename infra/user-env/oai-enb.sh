@@ -14,8 +14,7 @@ source $DIRNAME/oai-common.sh
 ####################
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
 lte_log="$run_dir/softmodem.log"
-lte_pcap="$run_dir/softmodem.pcap"
-logs="$lte_log $lte_pcap"
+logs="$lte_log"
 conf_dir=/root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
 template=enb.band7.tm1.usrpb210.epc.remote.conf
 config=r2lab.conf
