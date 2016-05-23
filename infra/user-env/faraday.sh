@@ -5,28 +5,24 @@ _doc_nodes="#################### commands that work on a selection of nodes"
 _doc_alt="#################### other commands"
 _doc_admin="#################### admin commands"
 
-function doc-nodes () {
-  fun=$1; shift;
-  docstring=$1; shift
-  [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
-  [ "$docstring" == 'alias1' ] && docstring="\t$(alias $fun)"
-  [ "$docstring" == 'function' ] && docstring=$(type $fun)
-  _doc_nodes="$_doc_nodes\n$fun\t$docstring"
+# sort of decorator to define the doc-* functions
+# the job here is to add to one of the 3 variables
+# _doc_* above, in general a single line with function name and explanation
+function _doc_helper () {
+    msg_varname=$1; shift
+    fun=$1; shift;
+    docstring="$*"
+    [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
+    [ "$docstring" == 'function' ] && docstring=$(type $fun)
+    length=$(wc -c <<< $fun)
+    [ $length -ge 16 ] && docstring="\n\t\t$docstring"
+    assign="$msg_varname=\"${!msg_varname}\n$fun\r\t\t$docstring\""
+    eval "$assign"
 }
 
-function doc-alt () {
-  fun=$1; shift;
-  docstring=$1; shift
-  [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
-  _doc_alt="$_doc_alt\n$fun\t$docstring"
-}
-
-function doc-admin () {
-  fun=$1; shift;
-  docstring=$1; shift
-  [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
-  _doc_admin="$_doc_admin\n$fun\t$docstring"
-}
+function doc-nodes()	{ _doc_helper _doc_nodes "$@"; }
+function doc-alt()	{ _doc_helper _doc_alt "$@"; }
+function doc-admin()	{ _doc_helper _doc_admin "$@"; }
 
 function help-nodes () { echo -e $_doc_nodes; }
 function help-alt () { echo -e $_doc_alt; }
@@ -178,7 +174,7 @@ function nodes () {
     echo "export NBNODES=$(nbnodes)"
 }
 alias n=nodes
-doc-nodes nodes "\t(alias n) show or define currently selected nodes; eg nodes 1-10,12 13 ~5"
+doc-nodes nodes "(alias n) show or define currently selected nodes; eg nodes 1-10,12 13 ~5"
 
 
 function nbnodes () {
@@ -248,53 +244,53 @@ doc-nodes focus-nodes-on "restrict current selection to nodes that are ON"
 
 ### first things first
 alias rleases="rhubarbe leases"
-doc-nodes rleases "\tdisplay current leases (rhubarbe leases)"
+doc-nodes rleases "display current leases (rhubarbe leases)"
 
 #
 alias ron="rhubarbe on"
 alias on=ron
-doc-nodes "(r)on" "\tturn selected nodes on (rhubarbe on)"
+doc-nodes "(r)on" "turn selected nodes on (rhubarbe on)"
 alias roff="rhubarbe off"
 alias off=roff
-doc-nodes "(r)off" "\tturn selected nodes off (rhubarbe off)"
+doc-nodes "(r)off" "turn selected nodes off (rhubarbe off)"
 alias rreset="rhubarbe reset"
 alias reset=rreset
 doc-nodes "(r)reset" "reset selected nodes (rhubarbe reset)"
 
 alias rstatus="rhubarbe status"
-doc-nodes "rstatus" "\tshow status (on or off) selected nodes (rhubarbe status)"
+doc-nodes "rstatus" "show status (on or off) selected nodes (rhubarbe status)"
 alias st=rstatus
-doc-nodes "st" "\tlike rstatus (status is a well-known command on ubuntu)"
+doc-nodes "st" "like rstatus (status is a well-known command on ubuntu)"
 
 alias rinfo="rhubarbe info"
 alias info=rinfo
-doc-nodes "(r)info" "\tget version info from selected nodes CMC (rhubarbe info)"
+doc-nodes "(r)info" "get version info from selected nodes CMC (rhubarbe info)"
 
 alias rwait="rhubarbe wait"
-doc-nodes rwait "\twait for nodes to be reachable through ssh (rhubarbe wait)"
+doc-nodes rwait "wait for nodes to be reachable through ssh (rhubarbe wait)"
 alias rw=rwait
-doc-nodes rw alias1
+doc-nodes rw alias
 
 
 alias rusrpon="rhubarbe usrpon"
-doc-nodes "rusrpon" "\tturn selected nodes usrpon (rhubarbe usrpon)"
+doc-nodes "rusrpon" "turn selected nodes usrpon (rhubarbe usrpon)"
 alias uon=rusrpon
-doc-nodes "uon" alias1
+doc-nodes "uon" alias
 alias rusrpoff="rhubarbe usrpoff"
 doc-nodes "rusrpoff" "turn selected nodes usrpoff (rhubarbe usrpoff)"
 alias uoff=rusrpoff
-doc-nodes uoff alias1
+doc-nodes uoff alias
 alias rusrpstatus="rhubarbe usrpstatus"
 doc-nodes "rusrpstatus" "show status (usrpon or usrpoff) of selected nodes USRP (rhubarbe usrpstatus)"
 alias ust=rusrpstatus
-doc-nodes "ust" alias1
+doc-nodes "ust" alias
 
 alias rload="rhubarbe load"
-doc-nodes rload "\tload image (specify with -i) on selected nodes (rhubarbe load)"
+doc-nodes rload "load image (specify with -i) on selected nodes (rhubarbe load)"
 alias rsave="rhubarbe save"
-doc-nodes rsave "\tsave image from one node (rhubarbe save)"
+doc-nodes rsave "save image from one node (rhubarbe save)"
 alias rshare="rhubarbe share"
-doc-nodes rshare "\tshare image with community (rhubarbe share)"
+doc-nodes rshare "share image with community (rhubarbe share)"
 
 
 # map command [args]
@@ -307,10 +303,10 @@ function map () {
 	ssh root@$node "$@"
     done
 }
-doc-nodes map "\trun an ssh command on all selected nodes"
+doc-nodes map "run an ssh command on all selected nodes"
 
 alias rimages="rhubarbe images"
-doc-nodes rimages "\tdisplay available images (rhubarbe images)"
+doc-nodes rimages "display available images (rhubarbe images)"
 
 alias load-fedora="rload -i fedora"
 doc-nodes load-fedora alias
@@ -375,15 +371,15 @@ function -curl () {
 
 # using curl - just in case - should not be used
 function con () { -curl on "$@" ; }
-doc-alt con "\tturn on node through its CMC - using curl"
+doc-alt con "turn on node through its CMC - using curl"
 function coff () { -curl off "$@" ; }
-doc-alt coff "\tturn off node through its CMC - using curl"
+doc-alt coff "turn off node through its CMC - using curl"
 function creset () { -curl reset "$@" ; }
-doc-alt creset "\treset node through its CMC - using curl"
+doc-alt creset "reset node through its CMC - using curl"
 alias cstatus="-curl status "$@" ; "
-doc-alt cstatus "\tshow node CMC status - using curl"
+doc-alt cstatus "show node CMC status - using curl"
 alias cinfo="-curl info "$@" ; "
-doc-alt cinfo "\tshow node CMC info - using curl"
+doc-alt cinfo "show node CMC info - using curl"
 
 # function 'wn' is part of the 'miscell' bash component
 function wait () {
@@ -393,7 +389,7 @@ function wait () {
     done
 }
 # don't document as it's probably not avail. to users - see rwait
-#doc-nodes wait "\twait for all nodes to respond to ping on their control interface"
+#doc-nodes wait "wait for all nodes to respond to ping on their control interface"
 
 ####################
 # reload these tools
@@ -411,7 +407,7 @@ function t7000 () {
     tcpdump $options -i $control_dev port 7000
     set +x
 }
-doc-admin t7000 "\ttcpdump on port 7000 on the control interface"
+doc-admin t7000 "tcpdump on port 7000 on the control interface"
 
 function nitos-restart () {
     service omf-sfa stop
@@ -425,12 +421,12 @@ function nitos-running-frisbees () {
     pids=$(pgrep frisbee)
     [ -z "$pids" ] && echo No running frisbee || ps $pids
 }
-doc-admin nitos-running-frisbees "\n\t\tlist running instances of the frisbee server"
+doc-admin nitos-running-frisbees "list running instances of the frisbee server"
 
 function nitos-frisbee-bandwidth () {
     grep bandwidth /etc/nitos_testbed_rc/frisbee_proxy_conf.yaml
 }
-doc-admin nitos-frisbee-bandwidth "\n\t\tshow configured bandwidth"
+doc-admin nitos-frisbee-bandwidth "show configured bandwidth"
 
 ####################
 ### utilities to switch the frisbee binaries
@@ -444,7 +440,7 @@ function pxe-old () {
     echo old pxe-frisbee config
     pxe-config
 }
-doc-admin pxe-old "\tDO NOT USE THIS - Configure the system to use old frisbee binaries!"
+doc-admin pxe-old "DO NOT USE THIS - Configure the system to use old frisbee binaries!"
 
 # this is to use ours
 function pxe-new () {
@@ -455,7 +451,7 @@ function pxe-new () {
     echo new pxe-frisbee config
     pxe-config
 }
-doc-admin pxe-new "\tDO NOT USE THIS - Configure the system to use new frisbee binaries!"
+doc-admin pxe-new "DO NOT USE THIS - Configure the system to use new frisbee binaries!"
 
 # and this lists the current config
 function pxe-config () {
@@ -506,7 +502,7 @@ doc-admin nextboot-list "display pxelinux symlink, if found"
 alias nextboot-clean="-nextboot clean"
 doc-admin nextboot-clean "remove any pxelinux symlink for selected nodes"
 alias nextboot-frisbee="-nextboot pxefrisbee"
-doc-admin nextboot-frisbee "\n\t\tcreate pxelinux symlink so that node reboots on the pxefrisbee image"
+doc-admin nextboot-frisbee "create pxelinux symlink so that node reboots on the pxefrisbee image"
 alias nextboot-vivid="-nextboot pxevivid"
 doc-admin nextboot-vivid "create pxelinux symlink so that node reboots on the vivid image - temporary"
 alias nextboot-mini="-nextboot pxemini"
@@ -540,9 +536,9 @@ function -nextboot-all () {
 }
 
 function nextboot-listall () { -nextboot-all list; }
-doc-alt nextboot-listall "\n\t\tlist all pxelinux symlinks" 
+doc-alt nextboot-listall "list all pxelinux symlinks" 
 function nextboot-cleanall () { -nextboot-all clean; }
-doc-alt nextboot-cleanall "\n\t\tremove all pxelinux symlinks" 
+doc-alt nextboot-cleanall "remove all pxelinux symlinks" 
 
 ####################
 # for now we use a different port for bemol and faraday
@@ -581,8 +577,8 @@ function -do-first () {
 alias ss="-do-first ssh"
 alias tn="-do-first telnet"
 
-doc-nodes ss "\tEnter first selected node using ssh\n\t\targ if present is taken as a node, not a command" 
-doc-admin tn "\tEnter first selected node using telnet - ditto" 
+doc-nodes ss "Enter first selected node using ssh\n\t\targ if present is taken as a node, not a command" 
+doc-admin tn "Enter first selected node using telnet - ditto" 
 
 #################### manually run a old or new frisbee server
 function serve_ubuntu_old () {
@@ -611,7 +607,7 @@ alias logs-omf-sfa="tail -f /var/log/upstart/omf-sfa.log"
 doc-admin logs-omf-sfa alias
 
 alias nitos-frisbeed-calls="grep frisbeed /var/log/upstart/ntrc_frisbee.log | grep command"
-doc-admin nitos-frisbeed-calls "\n\t\textract previously invoked frisbeed commands from logs"
+doc-admin nitos-frisbeed-calls "extract previously invoked frisbeed commands from logs"
 
 # talk to switches
 function sw-c007 () { ssh switch-c007; }
@@ -620,7 +616,7 @@ function sw-reboot () { ssh switch-reboot; }
 function sw-control () { ssh switch-control; }
 function ping-switches () { for i in c007 data reboot control; do pnv switch-$i; done ; }
 alias sw=ping-switches
-doc-admin sw "\tping all 4 faraday switches"
+doc-admin sw "ping all 4 faraday switches"
 
 ##########
 function net-names () {
@@ -635,7 +631,7 @@ doc-admin net-names "display network interface names"
 function chmod-private-key () {
     chmod 600 ~/.ssh/id_rsa
 }
-doc-alt chmod-private-key "\n\t\tChmod private key so that ssh won't complain anymore"
+doc-alt chmod-private-key "Chmod private key so that ssh won't complain anymore"
 
 ##########
 # we had to create a crontab-oriented proper shell-script to do this in ./restart-all.sh
@@ -671,7 +667,7 @@ function init-user-env () {
 
     CURL="curl -k $CURL_CERT"
 
-    CURL_JSON='-H "Accept: application/json" -H "Content-Type:application/json"'
+    CURL_JSON="-H 'Accept: application/json' -H 'Content-Type:application/json'"
 
     CJ="$CURL $CURL_JSON"
 
@@ -681,21 +677,21 @@ function init-user-env () {
 
 init-user-env
 
-doc-alt CURL "\tenv. variable: CURL=$CURL"
-doc-alt CJ "\tenv. variable: CJ=$CJ"
-doc-alt RU "\tenv. variable: RU=$RU"
+doc-alt CURL "env. variable: CURL=$CURL"
+doc-alt CJ env. variable: CJ=$CJ
+doc-alt RU "env. variable: RU=$RU"
 
 function slice () {
     [ -n "$1" ] && SLICE=$1
     echo Using SLICE=$SLICE
 }
-doc-alt slice "\tDisplay current slice (and optionnally set it)"
+doc-alt slice "Display current slice (and optionnally set it)"
 
 function GET () {
     request=$1; shift
     $CURL $RU/$request
 }
-doc-alt GET "\tIssue a REST GET api call - expects one arguments like 'accounts' or 'accounts?name=onelab.inria.r2lab.admin'"
+doc-alt GET "Issue a REST GET api call - expects one arguments like 'accounts' or 'accounts?name=onelab.inria.r2lab.admin'"
 
 function get-my-account () { GET accounts?name=$SLICE ; }
 doc-alt get-my-account "Displays current account $SLICE as obtained by REST"
@@ -719,7 +715,7 @@ doc-admin pull-bashrc alias
 
 ########## check nodes info
 function info () { -curl info "$@"; }
-doc-admin info "\tget info from CMC"
+doc-admin info "get info from CMC"
 
 ##########
 # utility to untar a bunch of tgz files as obtained typically

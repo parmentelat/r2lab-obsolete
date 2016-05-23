@@ -4,7 +4,7 @@ DIRNAME=$(dirname "$0")
 #echo Loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
-doc-sep "oai subcommands; run e.g. oai start"
+doc-sep "#################### subcommands to the oai command (alias o)"
 
 source $DIRNAME/oai-common.sh
 

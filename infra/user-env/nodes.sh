@@ -11,25 +11,31 @@
 unalias ls 2> /dev/null
 
 ########## micro doc tool
-_help_message=""
+_doc_nodes="#################### commands available on each r2lab node"
 
-function doc-fun () {
-  fun=$1; shift;
-  docstring=$1; shift
-  [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
-  [ "$docstring" == 'alias1' ] && docstring="\t$(alias $fun)"
-  [ "$docstring" == 'function' ] && docstring=$(type $fun)
-  length=$(wc -c <<< $fun)
-  [ $length -ge 16 ] && docstring="\n\t\t$docstring"
-  _help_message="$_help_message\n$fun\r\t\t$docstring"
+# sort of decorator to define the doc-* functions
+# the job here is to add to one of the 3 variables
+# _doc_* above, in general a single line with function name and explanation
+function _doc_helper () {
+    msg_varname=$1; shift
+    fun=$1; shift;
+    docstring="$*"
+    [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
+    [ "$docstring" == 'function' ] && docstring=$(type $fun)
+    length=$(wc -c <<< $fun)
+    [ $length -ge 16 ] && docstring="\n\t\t$docstring"
+    assign="$msg_varname=\"${!msg_varname}\n$fun\r\t\t$docstring\""
+    eval "$assign"
 }
+
+function doc-fun()	{ _doc_helper _doc_nodes "$@"; }
 
 function doc-sep() {
     name="$1"; shift
     if [ -z "$name" ] ; then
-	_help_message="$_help_message\n---------------"
+	_doc_nodes="$_doc_nodes\n---------------"
     else
-	_help_message="$_help_message\n============================== $name"
+	_doc_nodes="$_doc_nodes\n============================== $name"
     fi
 } 
 ##########
@@ -365,4 +371,4 @@ function demo() {
     echo "using interface ${oai_ifname} on subnet ${oai_subnet}"
 }
 
-function help() { echo -e $_help_message; }
+function help() { echo -e $_doc_nodes; }
