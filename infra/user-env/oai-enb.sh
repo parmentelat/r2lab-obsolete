@@ -41,7 +41,7 @@ texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsf
 "
 
 ####################
-doc-fun base "\tthe script to install base software on top of a raw image" 
+doc-fun base "the script to install base software on top of a raw image" 
 function base() {
 
     gitup
@@ -126,7 +126,7 @@ EOF
     # but since it was for a soft phone initially I skip it from the builds image
 }
 
-doc-fun builds "\truns both builds"
+doc-fun builds "runs both builds"
 function builds() {
 
     gitup
