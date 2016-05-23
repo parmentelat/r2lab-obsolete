@@ -179,7 +179,6 @@ EOF
 	# both services are local
 	./build_epc --clean --clean-certificates --local-hss --realm ${oai_realm} 2>&1 | tee build_epc.conf.log
     else
-	# xxx todo
 	./build_epc --clean --clean-certificates --remote-hss hss.${oai_realm} --realm ${oai_realm} 2>&1 | tee build_epc.conf.log
     fi
 }

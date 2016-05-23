@@ -309,6 +309,7 @@ function get-peer() {
     fi
 }
 
+#################### debugging
 doc-fun dump-dmesg "run dmesg every second and stores into /root/dmesg/dmesg-hh-mm-ss"
 function dump-dmesg() {
     mkdir -p /root/dmesg
@@ -318,6 +319,15 @@ function dump-dmesg() {
 	sleep 1
     done	 
 }    
+
+doc-fun unbuf-var-log-syslog "reconfigures rsyslog to write in /var/sys/syslog unbuffered on ubuntu"
+function unbuf-var-log-syslog() {
+    # 
+    local conf=/etc/rsyslog.d/50-default.conf
+    sed --in-place -e s,-/var/log/syslog,/var/log/syslog, $conf
+    service rsyslog restart
+    echo "Writing to /var/log/syslog is now unbeffered"
+}
 
 doc-fun demo "set ups nodes for the skype demo - based on their id"
 function demo() {
