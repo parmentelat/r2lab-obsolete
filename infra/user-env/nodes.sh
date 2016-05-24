@@ -46,7 +46,7 @@ function gitup() {
     for repo in $repos; do
 	[ -d $repo ] || continue;
 	echo "========== Updating $repo"
-	cd /root/r2lab
+	cd $repo
 	git pull
 	cd - >& /dev/null
     done
