@@ -13,7 +13,8 @@ case ${oai_ifname} in
     data)
 	oai_subnet=2 ;;
     *)
-	echo "ERROR cannot set oai_subnet ;;esac
+	echo "ERROR cannot set oai_subnet" ;;
+esac
 
 
 ### do not document : a simple utlity for the oai*.sh stubs
