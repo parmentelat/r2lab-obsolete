@@ -3,8 +3,8 @@
 # we switch to using control
 # should not be a big deal..
 oai_realm="r2lab.fr"
-oai_ifname=control
-oai_cn_branch=master
+oai_ifname=data
+oai_cn_branch=unstable
 
 
 case ${oai_ifname} in
