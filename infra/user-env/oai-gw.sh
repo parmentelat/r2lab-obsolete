@@ -189,8 +189,10 @@ function configure-epc() {
     [ -n "$runs_epc" ] || { echo not running epc - skipping ; return; }
 
     if [ -z "$new_config_mode" ]; then
+	echo EPC config OLD STYLE
 	-configure-epc-old-style
     else
+	echo EPC config NEW STYLE
 	-configure-epc-new-style
     fi
 }
@@ -233,6 +235,7 @@ EOF
 
 ####################
 function -configure-epc-new-style() {
+    mkdir -p /usr/local/etc/oai
     local id=$(r2lab-id)
     local fitid=fit$id
     local localip="192.168.${oai_subnet}.${id}/24"
