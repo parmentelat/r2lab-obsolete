@@ -254,53 +254,55 @@ function oai-as-enb() { define-oai enb; echo function "'oai'" now defined; echo 
 
 doc-sep
 
-#################### a utility to deal with logs and configs
-# this needs to be rewritten - used in the oai-scripts
-function locate_logs() {
-    if [[ -n "$@" ]] ; then
-	echo "$@"
-    elif [ -n "$logs" ]; then
-	echo $logs
-    else
-	echo No logs defined - Please define the "'logs'" shell variable  >&2-
+########## utilities to deal with a set of files of the same kind
+function create-file-category() {
+    catname=$1; shift
+    plural=${catname}s
+    codefile='/tmp/def-cat'
+    cat << EOF > $codefile
+function add-to-${plural}() {
+    _${plural}="\$_${plural} \$@";
+}
+# get-logs will just echo $_logs, while get-logs <anything> will issue
+# a warning on stderr if the result is empty
+function get-${plural}() {
+    if [ -n "\$1" -a -z "\$_${plural}" ]; then
+        echo "The \'_${plural}\' env. variable is empty - Use add-to-${plural} to define some"  >&2-
     fi
+    echo \$_${plural};
 }
-	
-doc-fun logs "does ls on the logs as defined in \$logs"
-function logs() {
-    ls $(locate_logs "$@")
+function ls-${plural}() {
+    local files=\$(get-${plural} "\$@")
+    [ -n "\$files" ] && ls \$files
 }
-
-doc-fun configs "does ls on the config file as defined in \$conf_dir/\$config"
-function configs() {
-    ls $conf_dir/$config
+function grep-${plural}() {
+    [[ -z "\$@" ]] && { echo usage: grep-${plural} grep-arg..s; return; }
+    grep "\$@" \$(ls-${plural})
 }
-
-doc-fun logs-tail "runs tail -f on the logs files  (see logs)"
-function logs-tail() {
-    logfiles=$(locate_logs "$@")
-    for logfile in $logfiles; do
-	[ -f $logfile ] || { echo "Touching $logfile"; touch $logfile; }
-    done
-    tail -f $logfiles
+EOF
+    source $codefile
 }
 
-doc-fun logs-grep "runs grep on the logs files  (see logs)"
-function logs-grep() {
-    [[ -z "$@" ]] && { echo usage: $0 grep-arg..s; return; }
-    logfiles=$(locate_logs)
-    grep "$@" $logfiles
-}
+# this will define add-to-logs and get-logs
+create-file-category log
+create-file-category data
+create-file-category config
 
-doc-fun logs-tgz "captures logs (from \$logs) and config (from \$conf_dir/\$config) in a tgz"
-function logs-tgz() {
+
+doc-fun ls-logs     "list (using ls) the log files defined with add-to-logs"
+doc-fun grep-logs   "run grep on logs, e.g grep-logs -i open"
+doc-fun ls-configs  "lists config files declared with add-to-configs"
+doc-fun ls-datas    "you got the idea; you have also grep-configs and similar combinations"
+
+doc-fun capture-all "captures logs and datas and configs in a tgz"
+function capture-all() {
     output=$1; shift
-    [ -z "$output" ] && { echo usage: $0 output; return; }
-    logfiles=$(locate_logs)
-    [ -n "$config" ] && logfiles="$logfiles $conf_dir/$config"
+    [ -z "$output" ] && { echo usage: capture-all output; return; }
+    allfiles="$(ls-logs) $(ls-configs) $(ls-datas)"
     outpath=$HOME/$output.tgz
-    tar -czf $outpath $logfiles
-    echo "Captured logs (and config) in $outpath"
+    tar -czf $outpath $allfiles
+    echo "Captured in $outpath the following files:"
+    ls -l $allfiles
 }    
 
 doc-sep
@@ -355,6 +357,9 @@ function demo() {
 	39)
 	    oai-as-epc
 	    define-peer 38 ;;
+	04)
+	    oai-as-enb
+	    define-peer 39 ;;
 	23)
 	    oai-as-hss
 	    define-peer 16 ;;

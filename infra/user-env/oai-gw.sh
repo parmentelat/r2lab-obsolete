@@ -20,14 +20,19 @@ esac
     
 
 ####################
+# support for two config mechanisms.. sigh..
+[ "${oai_cn_branch}" == master ] && new_config_mode="" || new_config_mode=true
+
 run_dir=/root/openair-cn/SCRIPTS
 [ -n "$runs_epc" ] && log_epc=$run_dir/run_epc.log
 [ -n "$runs_epc" ] && syslog_epc=$run_dir/run_epc.syslog
 [ -n "$runs_hss" ] && log_hss=$run_dir/run_hss.log
-logs="$log_epc $syslog_epc $log_hss"
+add-to-logs $log_epc $syslog_epc $log_hss
 conf_dir=/root/openair-cn/BUILD/EPC/
-[ -n "$runs_epc" ] && config=epc.conf.in
-
+[ -n "$runs_epc" ] && {
+    [ -z "$new_config_mode" ] && config=epc.conf.in || : # xxx todo
+}
+add-to-configs $conf_dir/$config
 
 doc-fun dumpvars "list environment variables"
 function dumpvars() {
@@ -38,8 +43,10 @@ function dumpvars() {
     echo "runs_epc=$runs_epc"
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
-    echo "config=$config"
-    echo "logs=\"$logs\""
+    echo "configs=$(get-configs)"
+    echo "logs=$(get-logs)"
+    echo "datas=$(get-datas)"
+    echo "new_config_mode=$new_config_mode"
 }
 
 
@@ -84,15 +91,18 @@ function builds() {
     gitup
     cd $run_dir
     echo "========== Building HSS"
-    [ -n "$runs_hss" ] && ./build_hss -i 2>&1 | tee build_hss.build.log
+    [ -n "$runs_hss" ] && ./build_hss -i 2>&1 | tee build-hss.build.log
     echo "========== Building EPC"
-    [ -n "$runs_epc" ] && ./build_epc -i 2>&1 | tee build_epc-i.build.log
-    # this was not actually run in oai-gw-builds2
+    if [ -n "$runs_epc" ]; then
+	if [ -z "$new_config_mode" ]; then
+	    ./build_epc -i 2>&1 | tee build-epc-i.log
+	else
+	    ./build_mme -i 2>&1 | tee build-spgw-i.log
+	    ./build_spgw -i 2>&1 | tee build-spgw-i.log
+	fi
+    fi
+    # building the kernel module : deferred to the init step
     # it looks like it won't run fine at that early stage
-    # that's why it is done in 'init' instead
-    # and I even suspect it works fine only after configure in fact...
-    # [ -n "$runs_epc" ] && ./build_epc -j -f 2>&1 | tee build_epc-j.build.log
-
     echo "========== Done - save image in oai-gw-builds"
 }
 
@@ -133,30 +143,29 @@ function init() {
     init-clock
     echo "========== Checking /etc/hosts"
     check-etc-hosts
-    echo "========== Checking out the master branch in openair-cn"
+    echo "========== Checking out the ${oai_cn_branch} branch in openair-cn"
     cd ~/openair-cn
-    select-cn master
+    cn-branch ${oai_cn_branch}
     echo "========== Rebuilding the GTPU module"
     cd $run_dir
-    ./build_epc -j -f
+    if [ -z "$new_config_mode" ]; then
+	./build_epc -j -f 2>&1 | tee build-epc-j.log
+    else
+	./build_spgw -j -f 2>&1 | tee build-spgw-j.log
+    fi
     echo "========== Refreshing the depmod index"
     depmod -a
     
 }
 
-function select-cn() {
+doc-fun cn-branch "select branch in openair-cn; typically master or unstable"
+function cn-branch() {
     branch=$1; shift
     cd /root/openair-cn
     git reset --hard HEAD
     git checkout --force $branch
     cd -
 }
-
-doc-fun cn-master "switches to the master branch in openair-cn"
-function cn-master() { select-cn master; }
-doc-fun cn-unstable "switches to the unstable branch in openair-cn"
-function cn-unstable() { select-cn unstable; }
-
 
 doc-fun configure "configure hss and/or epc"
 function configure() {
@@ -196,9 +205,17 @@ EOF
     cd $run_dir
     if [ -n "$runs_hss" ]; then
 	# both services are local
-	./build_epc --clean --clean-certificates --local-hss --realm ${oai_realm} 2>&1 | tee build_epc.conf.log
+	build_args="--clean"
+	[ -z "$new_config_mode" ] && build_args="$build_args --local-hss --realm ${oai_realm}"
     else
-	./build_epc --clean --clean-certificates --remote-hss hss.${oai_realm} --realm ${oai_realm} 2>&1 | tee build_epc.conf.log
+	# MME only
+	build_args="--clean"
+	[ -z "$new_config_mode" ] && build_args="$build_args --remote-hss hss.${oai_realm} --realm ${oai_realm}"
+    fi
+    if [ -z "$new_config_mode" ]; then
+	./build_epc --clean-certificates $build_args 2>&1 | tee build-epc-conf.log
+    else
+	./build_mme $build_args 2>&1 | tee build-mme-conf.log
     fi
 }
 
@@ -211,12 +228,17 @@ function configure-hss() {
 
     echo "========== Reconfiguring hss"
     cd $run_dir
+    if [ -z "$new_config_mode" ]; then
+	build_args="--clean-certificates --fqdn hss.${oai_realm} --install-hss-files"
+    else
+	build_args=""
+    fi
     if [ -n "$runs_epc" ]; then
 	# both services are local
-	./build_hss --clean --clean-certificates --fqdn hss.${oai_realm} --install-hss-files --local-mme 2>&1 | tee build_hss.conf.log
+	./build_hss --clean ${build_args}  --local-mme 2>&1 | tee build-hss-conf.log
     else
 	# xxx todo
-	./build_hss --clean --clean-certificates --fqdn hss.${oai_realm} --install-hss-files 2>&1 | tee build_hss.conf.log
+	./build_hss --clean ${build_args} 2>&1 | tee build-hss-conf.log
     fi
 	
     populate-db
@@ -342,8 +364,12 @@ function start() {
     fi
     if [ -n "$runs_epc" ]; then
 	echo "Running run_epc in background"
-	# --gdb is a possible additional option here
-	./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& $log_epc &
+	if [ -z "$new_config_mode" ]; then
+	    # --gdb is a possible additional option here
+	    ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& $log_epc &
+	else
+	    ./run_mme --set-nw-interfaces >& $log_epc &
+	fi
     fi
 }
 
@@ -356,7 +382,7 @@ function _manage() {
     mode=$1; shift
     pids=""
     [ -n "$runs_hss" ] && pids="$pids $(pgrep run_hss) $(pgrep oai_hss)"
-    [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc) $(pgrep mme_gw)"
+    [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc) $(pgrep run_mme) $(pgrep mme_gw)"
     pids="$(echo $pids)"
 
     if [ -z "$pids" ]; then

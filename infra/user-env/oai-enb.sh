@@ -14,12 +14,15 @@ source $DIRNAME/oai-common.sh
 ####################
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
 lte_log="$run_dir/softmodem.log"
-logs="$lte_log"
+add-to-logs $lte_log
+lte_pcap="$run_dir/softmodem.pcap"
+add-to-datas $lte_pcap
 conf_dir=/root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
 template=enb.band7.tm1.usrpb210.epc.remote.conf
 config=r2lab.conf
+add-to-configs $conf_dir/$config
 
-requires_chmod_x="/root/openairinterface5g/targets/RT/USER/init_b200.sh"
+#requires_chmod_x="/root/openairinterface5g/targets/RT/USER/init_b200.sh"
 
 doc-fun dumpvars "list environment variables"
 function dumpvars() {
@@ -30,8 +33,9 @@ function dumpvars() {
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
     echo "template=$template"
-    echo "config=$config"
-    echo "logs=\"$logs\""
+    echo "configs=$(get-configs)"
+    echo "logs=$(get-logs)"
+    echo "datas=$(get-datas)"
 }
 
 # would make sense to add more stuff in the base image - see the NEWS file

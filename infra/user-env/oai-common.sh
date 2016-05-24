@@ -5,13 +5,14 @@
 oai_realm="r2lab.fr"
 oai_ifname=data
 oai_subnet=2
-
+oai_cn_branch=master
 
 ### do not document : a simple utlity for the oai*.sh stubs
 function define_main() {
     function main() {
 	if [[ -z "$@" ]]; then
 	    help
+	    return
 	fi
 	subcommand="$1"; shift
 	# accept only subcommands that match a function
