@@ -3,9 +3,18 @@
 # we switch to using control
 # should not be a big deal..
 oai_realm="r2lab.fr"
-oai_ifname=data
-oai_subnet=2
+oai_ifname=control
 oai_cn_branch=master
+
+
+case ${oai_ifname} in
+    control)
+	oai_subnet=3 ;;
+    data)
+	oai_subnet=2 ;;
+    *)
+	echo "ERROR cannot set oai_subnet ;;esac
+
 
 ### do not document : a simple utlity for the oai*.sh stubs
 function define_main() {
