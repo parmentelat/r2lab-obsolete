@@ -35,6 +35,10 @@ function define_main() {
     }
 }
 
+doc-fun logs "tail-logs"
+function logs() {
+    tail-logs
+}
 doc-fun capture "expects one arg - capture logs and datas and configs under provided name, suffixed with -\$oai_role"
 function capture() {
     capture-all $1-${oai_role}
