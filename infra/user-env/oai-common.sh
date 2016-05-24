@@ -35,14 +35,9 @@ function define_main() {
     }
 }
 
-doc-fun ltail "logs-tail"
-function ltail() {
-    logs-tail
-}
-
-doc-fun ldump "expects one arg - logs-tgz under proper name based on \$oai_role"
-function ldump() {
-    logs-tgz $1-${oai_role}
+doc-fun capture "expects one arg - capture logs and datas and configs under provided name, suffixed with -\$oai_role"
+function capture() {
+    capture-all $1-${oai_role}
 }
 
 doc-fun sctp "tcpdump the SCTP traffic on interface ${oai_ifname} - with one arg, stores into a .pcap"

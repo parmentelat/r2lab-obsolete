@@ -259,7 +259,7 @@ doc-sep
 function create-file-category() {
     catname=$1; shift
     plural=${catname}s
-    codefile='/tmp/def-cat'
+    codefile='/tmp/def-category'
     cat << EOF > $codefile
 function add-to-${plural}() {
     _${plural}="\$_${plural} \$@";
@@ -279,6 +279,13 @@ function ls-${plural}() {
 function grep-${plural}() {
     [[ -z "\$@" ]] && { echo usage: grep-${plural} grep-arg..s; return; }
     grep "\$@" \$(ls-${plural})
+}
+function tail-${plural}() {
+    local files="\$(ls-${plural})"
+    for file in \$files; do
+	[ -f \$file ] || { echo "Touching \$file"; touch \$file; }
+    done
+    tail -f \$files
 }
 EOF
     source $codefile
