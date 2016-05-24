@@ -24,22 +24,23 @@ esac
 [ "${oai_cn_branch}" == master ] && new_config_mode="" || new_config_mode=true
 
 run_dir=/root/openair-cn/SCRIPTS
-[ -n "$runs_epc" ] && log_epc=$run_dir/run_epc.log
-[ -n "$runs_hss" ] && log_hss=$run_dir/run_hss.log
-add-to-logs $log_epc $syslog_epc $log_hss
+[ -n "$runs_hss" ] && { log_hss=$run_dir/run_hss.log; add-to-logs $log_hss; }
 [ -n "$runs_epc" ] && {
     if [ -z "$new_config_mode" ]; then
+	log_epc=$run_dir/run_epc.log
 	syslog_epc=$run_dir/run_epc.syslog
-	add-to-logs $syslog_epc
+	add-to-logs $log_epc $syslog_epc
 	conf_dir=/root/openair-cn/BUILD/EPC/
 	config=epc.conf.in
 	add-to-configs $conf_dir/$config
     else
+	log_mme=$run_dir/mme.log; add-to-logs $log_mme
 	out_mme=$run_dir/mme.out; add-to-logs $out_mme
 	out_spgw=$run_dir/spgw.out; add-to-logs $out_spgw
 	template_dir=/root/openair-cn/ETC/
 	conf_dir=/usr/local/etc/oai
 	add-to-configs $conf_dir/mme.conf
+	add-to-configs $conf_dir/freeDiameter/mme_fd.conf
 	add-to-configs $conf_dir/spgw.conf
     fi
 }
@@ -222,7 +223,7 @@ s,192.168.12.100,138.96.0.11,g
 EOF
     sed -f epc-r2lab.sed $config.distrib > $config
 
-    echo "========== Reconfiguring epc"
+    echo "========== Rebuilding epc"
     cd $run_dir
     if [ -n "$runs_hss" ]; then
 	# both services are local
@@ -235,40 +236,55 @@ EOF
 
 ####################
 function -configure-epc-new-style() {
-    mkdir -p /usr/local/etc/oai
+    mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
     local fitid=fit$id
     local localip="192.168.${oai_subnet}.${id}/24"
 
     cd $template_dir
     cat > mme-r2lab.sed <<EOF
-s,RUN_MODE.*=.*,RUN_MODE = "OTHER";,
-s,REALM.*=.*,REALM = "${oai_realm}";,
-s,.*YOUR GUMMEI CONFIG HERE,{MCC="208" ; MNC="95"; MME_GID="4" ; MME_CODE="1"; },
-s,{MCC="208" ; MNC="93";  TAC = "15"; }.*,{MCC="208" ; MNC="95";  TAC = "1"; },
-s,MME_INTERFACE_NAME_FOR_S1_MME.*=.*,MME_INTERFACE_NAME_FOR_S1_MME = "${oai_ifname}";,
-s,MME_IPV4_ADDRESS_FOR_S1_MME.*=.*,MME_IPV4_ADDRESS_FOR_S1_MME = "${localip}";,
-s,MME_INTERFACE_NAME_FOR_S11_MME.*=.*,MME_INTERFACE_NAME_FOR_S11_MME = "${oai_ifname}";,
-s,MME_IPV4_ADDRESS_FOR_S11_MME.*=.*,MME_IPV4_ADDRESS_FOR_S11_MME = "${localip}";,
-s,SGW_IPV4_ADDRESS_FOR_S11.*=.*,SGW_IPV4_ADDRESS_FOR_S11 = "${localip}";,
-s,"CONSOLE","${out_mme}",
+s|RUN_MODE.*=.*|RUN_MODE = "OTHER";|
+s|REALM.*=.*|REALM = "${oai_realm}";|
+s|.*YOUR GUMMEI CONFIG HERE|{MCC="208" ; MNC="95"; MME_GID="4" ; MME_CODE="1"; }|
+s|{MCC="208" ; MNC="93";  TAC = "15"; }.*|{MCC="208" ; MNC="95";  TAC = "1"; },|
+s|MME_INTERFACE_NAME_FOR_S1_MME.*=.*|MME_INTERFACE_NAME_FOR_S1_MME = "${oai_ifname}";|
+s|MME_IPV4_ADDRESS_FOR_S1_MME.*=.*|MME_IPV4_ADDRESS_FOR_S1_MME = "${localip}";|
+s|MME_INTERFACE_NAME_FOR_S11_MME.*=.*|MME_INTERFACE_NAME_FOR_S11_MME = "${oai_ifname}";|
+s|MME_IPV4_ADDRESS_FOR_S11_MME.*=.*|MME_IPV4_ADDRESS_FOR_S11_MME = "${localip}";|
+s|SGW_IPV4_ADDRESS_FOR_S11.*=.*|SGW_IPV4_ADDRESS_FOR_S11 = "${localip}";|
+s|"CONSOLE"|"${out_mme}"|
 EOF
+    echo "(Over)writing $conf_dir/mme.conf"
     sed -f mme-r2lab.sed < mme.conf > $conf_dir/mme.conf
+
+    cat > mme_fd-r2lab.sed <<EOF
+s|Identity.*=.*|Identity=${fitid}.${oai_realm};|
+s|Realm.*=.*|Realm=${oai_realm};|
+EOF
+    echo "(Over)writing $conf_dir/freeDiameter/mme_fd.conf"
+    sed -f mme_fd-r2lab.sed < mme_fd.conf > $conf_dir/freeDiameter/mme_fd.conf
     
     cat > spgw-r2lab.sed <<EOF
-s,SGW_INTERFACE_NAME_FOR_S11.*=.*,SGW_INTERFACE_NAME_FOR_S11 = "${oai_ifname}";,
-s,SGW_IPV4_ADDRESS_FOR_S11.*=.*,SGW_IPV4_ADDRESS_FOR_S11 = "${localip}";,
-s,SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP.*=.*,SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP = "${oai_ifname}";,
-s,SGW_IPV4_ADDRESS_FOR_S1U_S12_S4_UP.*=.*,SGW_IPV4_ADDRESS_FOR_S1U_S12_S4_UP = "${localip}";,
-s,OUTPUT.*=.*,OUTPUT = "${out_spgw}";,
-s,PGW_INTERFACE_NAME_FOR_SGI.*=.*,PGW_INTERFACE_NAME_FOR_SGI = "${oai_ifname}";,
-s,PGW_IPV4_ADDRESS_FOR_SGI.*=.*,PGW_IPV4_ADDRESS_FOR_SGI = "${localip}";,
-s,DEFAULT_DNS_IPV4_ADDRESS.*=.*,DEFAULT_DNS_IPV4_ADDRESS = "138.96.0.10";,
-s,DEFAULT_DNS_SEC_IPV4_ADDRESS.*=.*,DEFAULT_DNS_SEC_IPV4_ADDRESS = "138.96.0.11";,
-s,192.188.2.0/24,192.168.10.0/24,g
-s,192.188.8.0/24,192.168.11.0/24,g
+s|SGW_INTERFACE_NAME_FOR_S11.*=.*|SGW_INTERFACE_NAME_FOR_S11 = "${oai_ifname}";|
+s|SGW_IPV4_ADDRESS_FOR_S11.*=.*|SGW_IPV4_ADDRESS_FOR_S11 = "${localip}";|
+s|SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP.*=.*|SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP = "${oai_ifname}";|
+s|SGW_IPV4_ADDRESS_FOR_S1U_S12_S4_UP.*=.*|SGW_IPV4_ADDRESS_FOR_S1U_S12_S4_UP = "${localip}";|
+s|OUTPUT.*=.*|OUTPUT = "${out_spgw}";|
+s|PGW_INTERFACE_NAME_FOR_SGI.*=.*|PGW_INTERFACE_NAME_FOR_SGI = "${oai_ifname}";|
+s|PGW_IPV4_ADDRESS_FOR_SGI.*=.*|PGW_IPV4_ADDRESS_FOR_SGI = "${localip}";|
+s|DEFAULT_DNS_IPV4_ADDRESS.*=.*|DEFAULT_DNS_IPV4_ADDRESS = "138.96.0.10";|
+s|DEFAULT_DNS_SEC_IPV4_ADDRESS.*=.*|DEFAULT_DNS_SEC_IPV4_ADDRESS = "138.96.0.11";|
+s|192.188.2.0/24|192.168.10.0/24|g
+s|192.188.8.0/24|192.168.11.0/24|g
 EOF
+    echo "(Over)writing $conf_dir/spgw.conf"
     sed -f spgw-r2lab.sed < spgw.conf > $conf_dir/spgw.conf
+
+    echo "========== Rebuilding mme"
+    cd $run_dir
+    # option --debug is in the doc but not in the code
+    ./build_mme --clean 
+    ./build_mme --daemon
 
 }
 
@@ -416,12 +432,13 @@ function start() {
 	./run_hss >& $log_hss &
     fi
     if [ -n "$runs_epc" ]; then
-	echo "Running run_epc in background"
 	if [ -z "$new_config_mode" ]; then
+	    echo "Running run_epc in background"
 	    # --gdb is a possible additional option here
 	    ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& $log_epc &
 	else
-	    ./run_mme --set-nw-interfaces >& $log_epc &
+	    echo "Starting mme daemon"
+	    ./run_mme --daemon >& $log_mme &
 	fi
     fi
 }
