@@ -213,8 +213,8 @@ s,eth0,${oai_ifname},g
 s,192.168.12.17/24,192.168.${oai_subnet}.${id}/24,g
 s,127.0.0.1:5656,${syslog_epc},g
 s,TAC = "15",TAC = "1",g
-s,192.188.2.0/24,192.168.10.0/24,g
-s,192.188.8.0/24,192.168.11.0/24,g
+s,192.188.2.0/24,192.168.100.0/24,g
+s,192.188.8.0/24,192.168.101.0/24,g
 s,192.168.106.12,138.96.0.10,g
 s,192.168.12.100,138.96.0.11,g
 EOF
@@ -262,6 +262,8 @@ s,PGW_INTERFACE_NAME_FOR_SGI.*=.*,PGW_INTERFACE_NAME_FOR_SGI = "${oai_ifname}";,
 s,PGW_IPV4_ADDRESS_FOR_SGI.*=.*,PGW_IPV4_ADDRESS_FOR_SGI = "${localip}";,
 s,DEFAULT_DNS_IPV4_ADDRESS.*=.*,DEFAULT_DNS_IPV4_ADDRESS = "138.96.0.10";,
 s,DEFAULT_DNS_SEC_IPV4_ADDRESS.*=.*,DEFAULT_DNS_SEC_IPV4_ADDRESS = "138.96.0.11";,
+s,192.188.2.0/24,192.168.10.0/24,g
+s,192.188.8.0/24,192.168.11.0/24,g
 EOF
     sed -f spgw-r2lab.sed < spgw.conf > $conf_dir/spgw.conf
 
