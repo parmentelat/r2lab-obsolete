@@ -47,7 +47,8 @@ function gitup() {
 	[ -d $repo ] || continue;
 	echo "========== Updating $repo"
 	cd $repo
-	git pull
+	git reset --hard HEAD
+	git pull 
 	cd - >& /dev/null
     done
 }
