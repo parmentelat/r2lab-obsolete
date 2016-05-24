@@ -258,8 +258,8 @@ EOF
     sed -f mme-r2lab.sed < mme.conf > $conf_dir/mme.conf
 
     cat > mme_fd-r2lab.sed <<EOF
-s|Identity.*=.*|Identity=${fitid}.${oai_realm};|
-s|Realm.*=.*|Realm=${oai_realm};|
+s|Identity.*=.*|Identity="${fitid}.${oai_realm}";|
+s|Realm.*=.*|Realm="${oai_realm}";|
 EOF
     echo "(Over)writing $conf_dir/freeDiameter/mme_fd.conf"
     sed -f mme_fd-r2lab.sed < mme_fd.conf > $conf_dir/freeDiameter/mme_fd.conf
