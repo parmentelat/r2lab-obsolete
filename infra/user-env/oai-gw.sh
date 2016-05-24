@@ -25,14 +25,24 @@ esac
 
 run_dir=/root/openair-cn/SCRIPTS
 [ -n "$runs_epc" ] && log_epc=$run_dir/run_epc.log
-[ -n "$runs_epc" ] && syslog_epc=$run_dir/run_epc.syslog
 [ -n "$runs_hss" ] && log_hss=$run_dir/run_hss.log
 add-to-logs $log_epc $syslog_epc $log_hss
-conf_dir=/root/openair-cn/BUILD/EPC/
 [ -n "$runs_epc" ] && {
-    [ -z "$new_config_mode" ] && config=epc.conf.in || : # xxx todo
+    if [ -z "$new_config_mode" ]; then
+	syslog_epc=$run_dir/run_epc.syslog
+	add-to-logs $syslog_epc
+	conf_dir=/root/openair-cn/BUILD/EPC/
+	config=epc.conf.in
+	add-to-configs $conf_dir/$config
+    else
+	out_mme=$run_dir/mme.out; add-to-logs $out_mme
+	out_spgw=$run_dir/spgw.out; add-to-logs $out_spgw
+	template_dir=/root/openair-cn/ETC/
+	conf_dir=/usr/local/etc/oai
+	add-to-configs $conf_dir/mme.conf
+	add-to-configs $conf_dir/spgw.conf
+    fi
 }
-add-to-configs $conf_dir/$config
 
 doc-fun dumpvars "list environment variables"
 function dumpvars() {
@@ -178,6 +188,15 @@ function configure-epc() {
 
     [ -n "$runs_epc" ] || { echo not running epc - skipping ; return; }
 
+    if [ -z "$new_config_mode" ]; then
+	-configure-epc-old-style
+    else
+	-configure-epc-new-style
+    fi
+}
+
+####################
+function -configure-epc-old-style() {
     id=$(r2lab-id)
     fitid=fit$id
 
@@ -185,13 +204,13 @@ function configure-epc() {
     echo "========== Checking for backup file $config.distrib"
     [ -f $config.distrib ] || cp $config $config.distrib
     echo "========== Patching config file"
-    sed -e s,xxx,$id,g <<EOF > epc-r2lab.sed
+    cat > epc-r2lab.sed <<EOF 
 s,eth0:1 *,${oai_ifname},g
-s,192.170.0.1/24,192.168.${oai_subnet}.xxx/24,g
+s,192.170.0.1/24,192.168.${oai_subnet}.${id}/24,g
 s,eth0:2 *,${oai_ifname},g
-s,192.170.1.1/24,192.168.${oai_subnet}.xxx/24,g
+s,192.170.1.1/24,192.168.${oai_subnet}.${id}/24,g
 s,eth0,${oai_ifname},g
-s,192.168.12.17/24,192.168.${oai_subnet}.xxx/24,g
+s,192.168.12.17/24,192.168.${oai_subnet}.${id}/24,g
 s,127.0.0.1:5656,${syslog_epc},g
 s,TAC = "15",TAC = "1",g
 s,192.188.2.0/24,192.168.10.0/24,g
@@ -205,18 +224,47 @@ EOF
     cd $run_dir
     if [ -n "$runs_hss" ]; then
 	# both services are local
-	build_args="--clean"
-	[ -z "$new_config_mode" ] && build_args="$build_args --local-hss --realm ${oai_realm}"
+	./build_epc --clean --clean-certificates --local-hss --realm ${oai_realm} 2>&1 | tee build-epc-conf.log
     else
 	# MME only
-	build_args="--clean"
-	[ -z "$new_config_mode" ] && build_args="$build_args --remote-hss hss.${oai_realm} --realm ${oai_realm}"
+	./build_epc --clean --clean-certificates --remote-hss hss.${oai_realm} --realm ${oai_realm} 2>&1 | tee build-epc-conf.log
     fi
-    if [ -z "$new_config_mode" ]; then
-	./build_epc --clean-certificates $build_args 2>&1 | tee build-epc-conf.log
-    else
-	./build_mme $build_args 2>&1 | tee build-mme-conf.log
-    fi
+}
+
+####################
+function -configure-epc-new-style() {
+    local id=$(r2lab-id)
+    local fitid=fit$id
+    local localip="192.168.${oai_subnet}.${id}/24"
+
+    cd $template_dir
+    cat > mme-r2lab.sed <<EOF
+s,RUN_MODE.*=.*,RUN_MODE = "OTHER";,
+s,REALM.*=.*,REALM = "${oai_realm}";,
+s,.*YOUR GUMMEI CONFIG HERE,{MCC="208" ; MNC="95"; MME_GID="4" ; MME_CODE="1"; },
+s,{MCC="208" ; MNC="93";  TAC = "15"; }.*,{MCC="208" ; MNC="95";  TAC = "1"; },
+s,MME_INTERFACE_NAME_FOR_S1_MME.*=.*,MME_INTERFACE_NAME_FOR_S1_MME = "${oai_ifname}";,
+s,MME_IPV4_ADDRESS_FOR_S1_MME.*=.*,MME_IPV4_ADDRESS_FOR_S1_MME = "${localip}";,
+s,MME_INTERFACE_NAME_FOR_S11_MME.*=.*,MME_INTERFACE_NAME_FOR_S11_MME = "${oai_ifname}";,
+s,MME_IPV4_ADDRESS_FOR_S11_MME.*=.*,MME_IPV4_ADDRESS_FOR_S11_MME = "${localip}";,
+s,SGW_IPV4_ADDRESS_FOR_S11.*=.*,SGW_IPV4_ADDRESS_FOR_S11 = "${localip}";,
+s,"CONSOLE","${out_mme}",
+EOF
+    sed -f mme-r2lab.sed < mme.conf > $conf_dir/mme.conf
+    
+    cat > spgw-r2lab.sed <<EOF
+s,SGW_INTERFACE_NAME_FOR_S11.*=.*,SGW_INTERFACE_NAME_FOR_S11 = "${oai_ifname}";,
+s,SGW_IPV4_ADDRESS_FOR_S11.*=.*,SGW_IPV4_ADDRESS_FOR_S11 = "${localip}";,
+s,SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP.*=.*,SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP = "${oai_ifname}";,
+s,SGW_IPV4_ADDRESS_FOR_S1U_S12_S4_UP.*=.*,SGW_IPV4_ADDRESS_FOR_S1U_S12_S4_UP = "${localip}";,
+s,OUTPUT.*=.*,OUTPUT = "${out_spgw}";,
+s,PGW_INTERFACE_NAME_FOR_SGI.*=.*,PGW_INTERFACE_NAME_FOR_SGI = "${oai_ifname}";,
+s,PGW_IPV4_ADDRESS_FOR_SGI.*=.*,PGW_IPV4_ADDRESS_FOR_SGI = "${localip}";,
+s,DEFAULT_DNS_IPV4_ADDRESS.*=.*,DEFAULT_DNS_IPV4_ADDRESS = "138.96.0.10";,
+s,DEFAULT_DNS_SEC_IPV4_ADDRESS.*=.*,DEFAULT_DNS_SEC_IPV4_ADDRESS = "138.96.0.11";,
+EOF
+    sed -f spgw-r2lab.sed < spgw.conf > $conf_dir/spgw.conf
+
 }
 
 doc-fun configure-hss "configures hss"
