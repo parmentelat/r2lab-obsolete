@@ -47,12 +47,11 @@ skip_header: yes
   <script type="text/javascript" src="/assets/r2lab/liveslices.js"></script>
   <style type="text/css"> @import url("/assets/r2lab/liveslices.css"); </style>
   <div class="modal fade" id="slice_modal" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           <h4 class="modal-title" id="myModalSlice">Manage Slices</h4>
-          <a href='#' onClick=renew_slice('0','onelab.inria.mario.tutorial');>.</a>
         </div>
         <div class="modal-body" id="list-slices">
           ...

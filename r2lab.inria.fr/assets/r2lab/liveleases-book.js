@@ -1,7 +1,7 @@
 // this requires omfrest.js and liveleases-common.js
 
 $(document).ready(function() {
-  var version = '1.32';
+  var version = '1.33';
 
   function buildCalendar(theEvents) {
     var today  = moment().format("YYYY-MM-DD");
