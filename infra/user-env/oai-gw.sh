@@ -467,8 +467,9 @@ function _manage() {
 	kill $pids
 	echo "========== Their status now"
 	ps $pids
-	echo "========== Clearing locks $(ls-locks)"
-	rm -f $(ls-locks)
+	locks=$(ls-locks 2> /dev/null)
+	echo "========== Clearing locks $locks"
+	rm -f $locks
     fi
 }
 
