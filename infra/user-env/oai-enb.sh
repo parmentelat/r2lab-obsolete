@@ -33,9 +33,10 @@ function dumpvars() {
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
     echo "template=$template"
-    echo "configs=$(get-configs)"
-    echo "logs=$(get-logs)"
-    echo "datas=$(get-datas)"
+    echo "_configs=\"$(get-configs)\""
+    echo "_logs=\"$(get-logs)\""
+    echo "_datas=\"$(get-datas)\""
+    echo "_locks=\"$(get-locks)\""
 }
 
 # would make sense to add more stuff in the base image - see the NEWS file

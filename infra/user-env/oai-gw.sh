@@ -49,16 +49,18 @@ run_dir=/root/openair-cn/SCRIPTS
 doc-fun dumpvars "list environment variables"
 function dumpvars() {
     echo "oai_role=${oai_role}"
+    echo "oai_cn_branch=${oai_cn_branch}"
     echo "oai_ifname=${oai_ifname}"
     echo "oai_subnet=${oai_subnet}"
     echo "runs_hss=$runs_hss"
     echo "runs_epc=$runs_epc"
     echo "run_dir=$run_dir"
+    echo "template_dir=$template_dir"
     echo "conf_dir=$conf_dir"
-    echo "configs=$(get-configs)"
-    echo "logs=$(get-logs)"
-    echo "datas=$(get-datas)"
-    echo "new_config_mode=$new_config_mode"
+    echo "_configs=\"$(get-configs)\""
+    echo "_logs=\"$(get-logs)\""
+    echo "_datas=\"$(get-datas)\""
+    echo "_locks=\"$(get-locks)\""
 }
 
 
