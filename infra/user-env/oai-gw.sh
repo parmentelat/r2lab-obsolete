@@ -19,9 +19,18 @@ case $COMMAND in
 esac
     
 
+##########
+# computes oai_cn_branch from actual git repo
+cd /root/openair-cn
+oai_cn_branch=$(git branch | fgrep '*' | sed -e 's,* ,,')
+cd - >& /dev/null
+
 ####################
 # support for two config mechanisms.. sigh..
 [ "${oai_cn_branch}" == master ] && new_config_mode="" || new_config_mode=true
+
+echo "cn branch = ${oai_cn_branch}"
+echo "new config mode = ${new_config_mode}"
 
 run_dir=/root/openair-cn/SCRIPTS
 [ -n "$runs_hss" ] && { log_hss=$run_dir/run_hss.log; add-to-logs $log_hss; }
@@ -49,7 +58,6 @@ run_dir=/root/openair-cn/SCRIPTS
 doc-fun dumpvars "list environment variables"
 function dumpvars() {
     echo "oai_role=${oai_role}"
-    echo "oai_cn_branch=${oai_cn_branch}"
     echo "oai_ifname=${oai_ifname}"
     echo "oai_subnet=${oai_subnet}"
     echo "runs_hss=$runs_hss"
