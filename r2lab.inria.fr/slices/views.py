@@ -104,7 +104,7 @@ class SlicesProxy(OmfRestView):
             new_expire = time.localtime(now + 61 * day)
             record['valid_until'] = time.strftime(wire_timeformat,
                                                   new_expire)
-            record['closed_at'] = record['valid_until']
+            record['closed_at'] = ''
 
         self.init_omf_sfa_proxy()
         js = self.loop.run_until_complete(self.co_update_slice(record))
