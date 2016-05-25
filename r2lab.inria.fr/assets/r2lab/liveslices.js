@@ -47,8 +47,8 @@ $(document).ready(function() {
       var responses = JSON.parse(xhttp.responseText);
     	  $(body).html("<div class='row'>\
                         <div class='col-md-4'><b>name</b></div>\
-                        <div class='col-md-3'><b>expiration date</b></div>\
-                        <div class='col-md-3'><b>account date</b></div>\
+                        <div class='col-md-3'><b>slice expiration date</b></div>\
+                        <div class='col-md-3'><b>account expiration date</b></div>\
                         <div class='col-md-2'>&nbsp;</div>\
                       </div>");
     	  for (i = 0; i < responses.length; i++) {
