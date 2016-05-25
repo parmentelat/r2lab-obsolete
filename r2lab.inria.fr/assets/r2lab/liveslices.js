@@ -115,14 +115,16 @@ var renew_slice = function(element, slicename) {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
       var answer = JSON.parse(xhttp.responseText);
       console.log(answer);
-      $('#datetime_expiration'+element).removeClass('in_red');
-      $('#datetime_expiration'+element).addClass('in_green');
-      $('#datetime_expiration'+element).html(moment(answer['valid_until']).format("YY-MM-DD HH:mm"));
 
-      $('#datetime_closed'+element).removeClass('in_red');
-      $('#datetime_closed'+element).addClass('in_green');
-      $('#datetime_closed'+element).html(moment(answer['closed_at']).format("YY-MM-DD HH:mm"));
-      $('#icon_'+element).html('');
+      get_slices("list-slices", r2lab_slices);
+      // $('#datetime_expiration'+element).removeClass('in_red');
+      // $('#datetime_expiration'+element).addClass('in_green');
+      // $('#datetime_expiration'+element).html(moment(answer['valid_until']).format("YY-MM-DD HH:mm"));
+      //
+      // $('#datetime_closed'+element).removeClass('in_red');
+      // $('#datetime_closed'+element).addClass('in_green');
+      // $('#datetime_closed'+element).html(moment(answer['closed_at']).format("YY-MM-DD HH:mm"));
+      // $('#icon_'+element).html('');
     }
   });
 }
