@@ -95,6 +95,7 @@ $(document).ready(function() {
   function main(){
     partial();
     get_slices("list-slices", r2lab_slices);
+    console.log(r2lab_slices);
   }
 
 
