@@ -3,7 +3,7 @@
 # we switch to using control
 # should not be a big deal..
 oai_realm="r2lab.fr"
-oai_ifname=data
+oai_ifname=control
 oai_cn_branch=unstable
 
 
@@ -33,6 +33,13 @@ function define_main() {
 		echo "$subcommand not a function - exiting" ;;
 	esac
     }
+}
+
+function run-in-log() {
+    local log=$1; shift
+    local command="$@"
+    echo ===== $command
+    $command 2>&1 | tee $log
 }
 
 doc-fun logs "tail-logs"

@@ -28,7 +28,6 @@ doc-fun dumpvars "list environment variables"
 function dumpvars() {
     echo "oai_role=${oai_role}"
     echo "oai_ifname=${oai_ifname}"
-    echo "oai_subnet=${oai_subnet}"
     echo "oai_realm=${oai_realm}"
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
@@ -119,8 +118,8 @@ EOF
 
     cd $HOME/openairinterface5g/cmake_targets/
     # xxx l'original avait une seule ligne :
-    ./build_oai -I -w USRP 2>&1 | tee build_oai-1.log
-    ./build_oai --eNB -c -w USRP 2>&1 | tee build_oai-2.log
+    run-in-log build-oai-1.log ./build_oai -I -w USRP
+    run-in-log build-oai-2.log ./build_oai --eNB -c -w USRP
 
     # initial instructions from T. Turletti mentioned this
     #cd $HOME/openairinterface5g/
@@ -131,8 +130,8 @@ EOF
     # but since it was for a soft phone initially I skip it from the builds image
 }
 
-doc-fun builds "runs both builds"
-function builds() {
+doc-fun image "runs builds uhd and oai5g for an oai image"
+function image() {
 
     gitup
     cd
@@ -144,8 +143,8 @@ function builds() {
     echo "========== Done - save image in oai-enb-builds"
 }
 
-doc-fun configure "configures eNodeB (requires define-gw)"
-function configure() {
+doc-fun build "configure and build eNodeB (requires define-peer)"
+function build() {
 
     gw_id=$(get-peer)
     [ -z "$gw_id" ] && { echo "no peer defined"; return; }
