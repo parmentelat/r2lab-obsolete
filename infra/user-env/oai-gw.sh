@@ -445,8 +445,8 @@ function start() {
 }
 
 locks=""
-[ -n "$runs_hss" ] && locks="$locks /var/run/oai_hss.pid"
-[ -n "$runs_epc" ] && locks="$locks /var/run/mme_gw.pid"
+[ -n "$runs_hss" ] && add-to-locks /var/run/oai_hss.pid
+[ -n "$runs_epc" ] && add-to-locks /var/run/mme_gw.pid /var/run/mme.pid /var/run/mmed.pid /var/run/spgw.pid
 
 function _manage() {
     # if $1 is 'stop' then the found processes are killed
@@ -467,9 +467,8 @@ function _manage() {
 	kill $pids
 	echo "========== Their status now"
 	ps $pids
-	echo "========== Clearing locks"
-	echo "$locks"
-	rm -f $locks
+	echo "========== Clearing locks $(ls-locks)"
+	rm -f $(ls-locks)
     fi
 }
 

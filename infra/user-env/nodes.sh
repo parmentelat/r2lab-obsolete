@@ -295,6 +295,7 @@ EOF
 create-file-category log
 create-file-category data
 create-file-category config
+create-file-category lock
 
 
 doc-fun ls-logs     "list (using ls) the log files defined with add-to-logs"
