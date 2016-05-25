@@ -284,8 +284,6 @@ EOF
     cd $run_dir
     # option --debug is in the doc but not in the code
     ./build_mme --clean 
-    ./build_mme --daemon
-
 }
 
 doc-fun configure-hss "configures hss"
