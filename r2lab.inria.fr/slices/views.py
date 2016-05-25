@@ -46,7 +46,7 @@ class SlicesProxy(OmfRestView):
     def get_slices(self, record):
         """
         retrieve account objects
-        if 'names' is provided in the input record, it should contain a 
+        if 'names' is provided in the input record, it should contain a
         list of slicenames (hrns) and only these will be probed then
         otherwise all slices are returned
         """
@@ -83,7 +83,7 @@ class SlicesProxy(OmfRestView):
         js = yield from self.omf_sfa_proxy.REST_as_json(url, "GET", None)
         return js
 
-    
+
     def renew_slice(self, record):
         """
         renew a slice
@@ -104,6 +104,7 @@ class SlicesProxy(OmfRestView):
             new_expire = time.localtime(now + 61 * day)
             record['valid_until'] = time.strftime(wire_timeformat,
                                                   new_expire)
+            record['closed_at'] = record['valid_until']
 
         self.init_omf_sfa_proxy()
         js = self.loop.run_until_complete(self.co_update_slice(record))
@@ -118,5 +119,3 @@ class SlicesProxy(OmfRestView):
         result = yield from self.omf_sfa_proxy.REST_as_json("accounts", "PUT", slice_request)
         logger.info("omf_sfa PUT -> {}".format(result))
         return result
-        
-        
