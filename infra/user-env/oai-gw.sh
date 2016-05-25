@@ -26,8 +26,12 @@ oai_cn_branch=$(git branch | fgrep '*' | sed -e 's,* ,,')
 cd - >& /dev/null
 
 ####################
-# support for two config mechanisms.. sigh..
-[ "${oai_cn_branch}" == master ] && new_config_mode="" || new_config_mode=true
+# 
+case ${oai_cn_branch} in
+    unstable)   new_config_mode="true" ;;
+    master)	new_config_mode="" ;;
+    *)		new_config_mode="" ;;
+esac
 
 echo "cn branch = ${oai_cn_branch}"
 echo "new config mode = ${new_config_mode}"
@@ -180,13 +184,14 @@ function init() {
     
 }
 
-doc-fun cn-branch "select branch in openair-cn; typically master or unstable"
+doc-fun cn-branch "select branch in openair-cn; typically master or unstable or v0.3.1"
 function cn-branch() {
     branch=$1; shift
     cd /root/openair-cn
     git reset --hard HEAD
+    rm BUILD/EPC/epc.conf.in
     git checkout --force $branch
-    cd -
+    cd - >& /dev/null
 }
 
 doc-fun configure "configure hss and/or epc"
