@@ -90,6 +90,9 @@ class SlicesProxy(OmfRestView):
 
         * mandatory argument is 'name' that should hold a valid hrn
         * optional argument is 'valid_until' that should then in the
+        * about record['closed_at'] = '' It's not enought give a future date.
+                                         The slice is booked only when this date is empty
+                                         This is the reason of closed_at is '' (empty)
         omf-sfa timestamp format
           if not provided the slice is renewed until 2 months from now
         """

@@ -46,9 +46,8 @@ $(document).ready(function() {
 
       var responses = JSON.parse(xhttp.responseText);
     	  $(body).html("<div class='row'>\
-                        <div class='col-md-4'><b>name</b></div>\
-                        <div class='col-md-3'><b>slice expiration date</b></div>\
-                        <div class='col-md-3'><b>account expiration date</b></div>\
+                        <div class='col-md-6'><b>name</b></div>\
+                        <div class='col-md-4'><b>expiration date</b></div>\
                         <div class='col-md-2'>&nbsp;</div>\
                       </div>");
     	  for (i = 0; i < responses.length; i++) {
@@ -58,34 +57,29 @@ $(document).ready(function() {
           var closed     = response['closed_at'];
           //var expiration = '2016-01-22T09:25:31Z';
 
-          var s_class   = ['in_green','in_green'];
-          var s_message = ['valid', 'valid'];
+          var s_class   = 'in_green';
+          var s_message = 'valid';
+          var which_one = ['', ''];
           var s_icon    = '';
+          var the_date  = moment(expiration).format("YYYY-MM-DD HH:mm");
           if (isPastDate(expiration) || isPastDate(closed)){
             sendMessage('One or more of your slices had expired. Click \
                         <a href="#" data-toggle="modal" data-target="#slice_modal">here</a>\
                         to manage it and renew it!', 'attention');
 
-            if (isPastDate(expiration)){
-              s_class[0]   = 'in_red';
-              s_message[0] = 'expired';
-            }
             if (isPastDate(closed)){
-              s_class[1]   = 'in_red';
-              s_message[1] = 'expired';
+              the_date  = moment(closed).format("YYYY-MM-DD HH:mm");
             }
 
             s_icon = "<a href='#' rel='tooltip' title='renew'>\
                        <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+i+"','"+slicename+"');></span>\
                      </a>";
           }
+
           $(body).append("<div class='row'>\
-                            <div class='col-md-4'>"+slicename+"</div>\
-                            <div class='col-md-3' id='datetime_expiration"+i+"'>\
-                              <span class="+s_class[0]+">"+moment(expiration).format("YY-MM-DD HH:mm")+"<span>\
-                            </div>\
-                            <div class='col-md-3' id='datetime_closed"+i+"'>\
-                              <span class="+s_class[1]+">"+moment(closed).format("YY-MM-DD HH:mm")+"<span>\
+                            <div class='col-md-6'>"+slicename+"</div>\
+                            <div class='col-md-4' id='datetime_expiration"+i+"'>\
+                              <span class="+s_class+">"+the_date+"<span>\
                             </div>\
                             <div class='col-md-2' id='icon_"+i+"'>"+s_icon+"</div>\
                           </div>");
@@ -118,11 +112,7 @@ var renew_slice = function(element, slicename) {
 
       $('#datetime_expiration'+element).removeClass('in_red');
       $('#datetime_expiration'+element).addClass('in_green');
-      $('#datetime_expiration'+element).html(moment(answer['valid_until']).format("YY-MM-DD HH:mm"));
-
-      $('#datetime_closed'+element).removeClass('in_red');
-      $('#datetime_closed'+element).addClass('in_green');
-      $('#datetime_closed'+element).html(moment(answer['closed_at']).format("YY-MM-DD HH:mm"));
+      $('#datetime_expiration'+element).html(moment(answer['valid_until']).format("YYYY-MM-DD HH:mm"));
       $('#icon_'+element).html('');
     }
   });
