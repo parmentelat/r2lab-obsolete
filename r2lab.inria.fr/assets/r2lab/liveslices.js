@@ -71,6 +71,8 @@ $(document).ready(function() {
               the_date  = moment(closed).format("YYYY-MM-DD HH:mm");
             }
 
+            s_class   = 'in_red';
+            s_message = 'expired';
             s_icon = "<a href='#' rel='tooltip' title='renew'>\
                        <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+i+"','"+slicename+"');></span>\
                      </a>";
