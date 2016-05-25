@@ -36,6 +36,7 @@ run_dir=/root/openair-cn/SCRIPTS
     else
 	log_mme=$run_dir/mme.log; add-to-logs $log_mme
 	out_mme=$run_dir/mme.out; add-to-logs $out_mme
+	log_spgw=$run_dir/spgw.log; add-to-logs $log_spgw
 	out_spgw=$run_dir/spgw.out; add-to-logs $out_spgw
 	template_dir=/root/openair-cn/ETC/
 	conf_dir=/usr/local/etc/oai
@@ -283,7 +284,7 @@ EOF
     echo "========== Rebuilding mme"
     cd $run_dir
     # option --debug is in the doc but not in the code
-    ./build_mme --clean 
+    ./build_mme --clean --daemon
 }
 
 doc-fun configure-hss "configures hss"
@@ -435,8 +436,10 @@ function start() {
 	    # --gdb is a possible additional option here
 	    ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& $log_epc &
 	else
-	    echo "Starting mme daemon"
-	    ./run_mme --daemon >& $log_mme &
+	    echo "Starting mme in background"
+	    ./run_mme >& $log_mme &
+	    echo "Starting spgw in background"
+	    ./run_spgw >& $log_spgw &
 	fi
     fi
 }
@@ -450,7 +453,7 @@ function _manage() {
     mode=$1; shift
     pids=""
     [ -n "$runs_hss" ] && pids="$pids $(pgrep run_hss) $(pgrep oai_hss)"
-    [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc) $(pgrep run_mme) $(pgrep mme_gw)"
+    [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc) $(pgrep run_mme) $(pgrep mme_gw) $(pgrep spgw)"
     pids="$(echo $pids)"
 
     if [ -z "$pids" ]; then
