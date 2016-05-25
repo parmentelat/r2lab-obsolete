@@ -81,10 +81,10 @@ $(document).ready(function() {
           }
           $(body).append("<div class='row'>\
                             <div class='col-md-4'>"+slicename+"</div>\
-                            <div class='col-md-3' id='datetime_"+i+"'>\
+                            <div class='col-md-3' id='datetime_expiration"+i+"'>\
                               <span class="+s_class[0]+">"+moment(expiration).format("YY-MM-DD HH:mm")+"<span>\
                             </div>\
-                            <div class='col-md-3' id='datetime_"+i+"'>\
+                            <div class='col-md-3' id='datetime_closed"+i+"'>\
                               <span class="+s_class[1]+">"+moment(closed).format("YY-MM-DD HH:mm")+"<span>\
                             </div>\
                             <div class='col-md-2' id='icon_"+i+"'>"+s_icon+"</div>\
@@ -115,9 +115,13 @@ var renew_slice = function(element, slicename) {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
       var answer = JSON.parse(xhttp.responseText);
       console.log(answer);
-      $('#datetime_'+element).removeClass('in_red');
-      $('#datetime_'+element).addClass('in_green');
-      $('#datetime_'+element).html(moment(answer['valid_until']).format("YYYY-MM-DD HH:mm"));
+      $('#datetime_expiration'+element).removeClass('in_red');
+      $('#datetime_expiration'+element).addClass('in_green');
+      $('#datetime_expiration'+element).html(moment(answer['valid_until']).format("YY-MM-DD HH:mm"));
+
+      $('#datetime_closed'+element).removeClass('in_red');
+      $('#datetime_closed'+element).addClass('in_green');
+      $('#datetime_closed'+element).html(moment(answer['closed_at']).format("YY-MM-DD HH:mm"));
       $('#icon_'+element).html('');
     }
   });
