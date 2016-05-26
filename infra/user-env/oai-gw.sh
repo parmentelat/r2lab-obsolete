@@ -294,6 +294,7 @@ s|MME_IPV4_ADDRESS_FOR_S11_MME.*=.*|MME_IPV4_ADDRESS_FOR_S11_MME = "127.0.2.1/8"
 s|SGW_IPV4_ADDRESS_FOR_S11.*=.*|SGW_IPV4_ADDRESS_FOR_S11 = "127.0.3.1/8";|
 s|"CONSOLE"|"${out_mme}"|
 /MNC="93".*},/d
+s|MNC="93"|MNC="95"|
 EOF
     echo "(Over)writing $conf_dir/mme.conf"
     sed -f mme-r2lab.sed < mme.conf > $conf_dir/mme.conf
@@ -326,11 +327,15 @@ EOF
 
     cd $run_dir
     echo "===== generating certificates"
-    ./check_mme_s6a_certificate /usr/local/etc/oai/freeDiameter ${oai_realm}
+    ./check_mme_s6a_certificate /usr/local/etc/oai/freeDiameter ${fitid}.${oai_realm}
 
     echo "========== Rebuilding mme"
     # option --debug is in the doc but not in the code
     run-in-log build-mme.log ./build_mme --clean
+    
+    echo "========== Rebuilding spgw"
+    run-in-log build-spgw.log ./build_spgw --clean
+    
 }
 
 function build-hss() {
