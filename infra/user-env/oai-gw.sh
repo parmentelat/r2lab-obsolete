@@ -90,6 +90,7 @@ run_dir=/root/openair-cn/SCRIPTS
 	add-to-configs $conf_dir/mme.conf
 	add-to-configs $conf_dir/freeDiameter/mme_fd.conf
 	add-to-configs $conf_dir/spgw.conf
+	add-to-datas /etc/hosts
     fi
 }
 
@@ -319,8 +320,8 @@ s|PGW_INTERFACE_NAME_FOR_SGI.*=.*|PGW_INTERFACE_NAME_FOR_SGI = "${oai_ifname}";|
 s|PGW_IPV4_ADDRESS_FOR_SGI.*=.*|PGW_IPV4_ADDRESS_FOR_SGI = "${localip}";|
 s|DEFAULT_DNS_IPV4_ADDRESS.*=.*|DEFAULT_DNS_IPV4_ADDRESS = "138.96.0.10";|
 s|DEFAULT_DNS_SEC_IPV4_ADDRESS.*=.*|DEFAULT_DNS_SEC_IPV4_ADDRESS = "138.96.0.11";|
-s|192.188.2.0/24|192.168.10.0/24|g
-s|192.188.8.0/24|192.168.11.0/24|g
+s|192.188.0.0/24|192.168.10.0/24|g
+s|192.188.1.0/24|192.168.11.0/24|g
 EOF
     echo "(Over)writing $conf_dir/spgw.conf"
     sed -f spgw-r2lab.sed < spgw.conf > $conf_dir/spgw.conf
