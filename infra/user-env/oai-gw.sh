@@ -65,7 +65,7 @@ echo "new_config_mode=\"${new_config_mode}\"" >&2-
 
 run_dir=/root/openair-cn/SCRIPTS
 [ -n "$runs_hss" ] && {
-    log_hss=$run_dir/run_hss.log
+    log_hss=$run_dir/hss.log
     add-to-logs $log_hss
     template_dir=/root/openair-cn/ETC/
     conf_dir=/usr/local/etc/oai
