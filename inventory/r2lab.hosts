@@ -17,6 +17,8 @@ ff02::2 ip6-allrouters
 192.168.4.103   switch-control
 192.168.4.104   switch-c007
 192.168.4.36    wlab36
+192.168.4.200   mac
+192.168.4.210   macusb
 
 ##########
 192.168.1.1	reboot01

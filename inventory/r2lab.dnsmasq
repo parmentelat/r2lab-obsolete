@@ -14,7 +14,9 @@
 #dhcp-host=d0:67:e5:d6:ae:fe,switch-c007,192.168.4.104
 
 # the apple ethernet-to-thunderbolt adapter in the room
-dhcp-host=6c:40:08:b6:c1:7e,mac,192.168.4.1
+dhcp-host=6c:40:08:b6:c1:7e,mac,192.168.4.200
+# the apple ethernet-to-usb for ratapignata - used to control a 5g phone
+dhcp-host=6c:40:08:b6:c1:7e,macusb,192.168.4.201
 
 ##########
 dhcp-host=net:control,00:03:1d:0e:03:19,192.168.3.1,fit01
