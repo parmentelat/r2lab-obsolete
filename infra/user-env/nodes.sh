@@ -357,12 +357,6 @@ function unbuf-var-log-syslog() {
     echo "Writing to /var/log/syslog is now unbeffered"
 }
 
-function demo-init-git() {
-    cd /root/openair-cn
-    git fetch origin
-    cd - >& /dev/null
-}
-
 doc-fun demo "set ups nodes for the skype demo - based on their id"
 function demo() {
     demo-init-git
@@ -370,12 +364,10 @@ function demo() {
 	38)
 	    oai-as-hss
 	    define-peer 39
-	    o cn-branch master
 	    ;;
 	39)
 	    oai-as-epc
 	    define-peer 38
-	    o cn-branch v0.3.1
 	    ;;
 	04)
 	    oai-as-enb
@@ -384,12 +376,10 @@ function demo() {
 	23)
 	    oai-as-hss
 	    define-peer 16
-	    o cn-branch master
 	    ;;
 	16)
 	    oai-as-epc
 	    define-peer 23
-	    o cn-branch v0.3.1
 	    ;;
 	11)
 	    oai-as-enb

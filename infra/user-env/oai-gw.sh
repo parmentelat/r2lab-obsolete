@@ -20,16 +20,37 @@ esac
     
 
 ##########
+doc-fun cn-git-fetch "run fetch origin in openair-cn git repo"
+function cn-git-fetch() {
+    cd /root/openair-cn
+    git fetch origin
+    cd - >& /dev/null
+}
+
 # computes oai_cn_branch from actual git repo
-doc-fun get-cn-branch "Display the branch that openair-cn currently sits on"
-function get-cn-branch() {
+doc-fun cn-git-get-branch "Display the branch that openair-cn currently sits on"
+function cn-git-get-branch() {
     cd /root/openair-cn
     local branch=$(git branch | fgrep '*' | sed -e 's,* ,,')
     cd - >& /dev/null
     echo $branch
 }
 
-oai_cn_branch=$(get-cn-branch)
+doc-fun cn-git-select-branch "select branch in openair-cn; typically master or unstable or v0.3.1"
+function cn-git-select-branch() {
+    branch=$1; shift
+    if [ -z "$branch" ]; then
+	cn-git-get-branch
+    else
+	cd /root/openair-cn
+	git reset --hard HEAD
+	rm BUILD/EPC/epc.conf.in
+	git checkout --force $branch
+	cd - >& /dev/null
+    fi
+}
+
+oai_cn_branch=$(cn-git-get-branch)
 
 ####################
 # 
@@ -43,7 +64,14 @@ echo "cn_branch=\"${oai_cn_branch}\"" >&2-
 echo "new_config_mode=\"${new_config_mode}\"" >&2-
 
 run_dir=/root/openair-cn/SCRIPTS
-[ -n "$runs_hss" ] && { log_hss=$run_dir/run_hss.log; add-to-logs $log_hss; }
+[ -n "$runs_hss" ] && {
+    log_hss=$run_dir/run_hss.log
+    add-to-logs $log_hss
+    template_dir=/root/openair-cn/ETC/
+    conf_dir=/usr/local/etc/oai
+    add-to-configs $conf_dir/hss.conf
+    add-to-configs $conf_dir/freeDiameter/hss_fd.conf
+}
 [ -n "$runs_epc" ] && {
     if [ -z "$new_config_mode" ]; then
 	log_epc=$run_dir/run_epc.log
@@ -167,28 +195,14 @@ function check-etc-hosts() {
 }
 	
     
-doc-fun cn-branch "select branch in openair-cn; typically master or unstable or v0.3.1"
-function cn-branch() {
-    branch=$1; shift
-    if [ -z "$branch" ]; then
-	get-cn-branch
-    else
-	cd /root/openair-cn
-	git reset --hard HEAD
-	rm BUILD/EPC/epc.conf.in
-	git checkout --force $branch
-	cd - >& /dev/null
-    fi
-}
-
 doc-fun init "sync clock from NTP, checks /etc/hosts, rebuilds gtpu and runs depmod"
 function init() {
 
     echo "========== Sync clock at NTP"
     init-clock
     echo "========== Checking out the ${oai_cn_branch} branch in openair-cn"
-    cd ~/openair-cn
-    cn-branch ${oai_cn_branch}
+#    cd ~/openair-cn
+#    cn-git-select-branch ${oai_cn_branch}
     echo "========== Rebuilding the GTPU module"
     cd $run_dir
     if [ -z "$new_config_mode" ]; then
@@ -310,11 +324,11 @@ EOF
     echo "(Over)writing $conf_dir/spgw.conf"
     sed -f spgw-r2lab.sed < spgw.conf > $conf_dir/spgw.conf
 
+    cd $run_dir
     echo "===== generating certificates"
     ./check_mme_s6a_certificate /usr/local/etc/oai/freeDiameter ${oai_realm}
 
     echo "========== Rebuilding mme"
-    cd $run_dir
     # option --debug is in the doc but not in the code
     run-in-log build-mme.log ./build_mme --clean
 }
@@ -362,16 +376,16 @@ s|@MYSQL_user@|root|
 s|@MYSQL_pass@|linux|
 EOF
     echo "(Over)writing $conf_dir/hss.conf"
-    sed -f mme-r2lab.sed < hss.conf > $conf_dir/hss.conf
+    sed -f hss-r2lab.sed < hss.conf > $conf_dir/hss.conf
 
     cat > hss_fd-r2lab.sed <<EOF
 s|openair4G.eur|${oai_realm}|
 EOF
 
     echo "(Over)writing $conf_dir/freeDiameter/hss_fd.conf"
-    sed -f mme-r2lab.sed < hss_fd.conf > $conf_dir/freeDiameter/hss_fd.conf
+    sed -f hss_fd-r2lab.sed < hss_fd.conf > $conf_dir/freeDiameter/hss_fd.conf
     echo "(Over)writing $conf_dir/freeDiameter/acl.conf"
-    sed -f mme-r2lab.sed < acl.conf > $conf_dir/freeDiameter/acl.conf
+    sed -f hss_fd-r2lab.sed < acl.conf > $conf_dir/freeDiameter/acl.conf
 
     cd $run_dir
     if [ -n "$runs_epc" ]; then
@@ -382,11 +396,11 @@ EOF
 	run-in-log build-hss-remote.log ./build_hss --clean
     fi
 
+    cd $run_dir
     echo "===== generating certificates"
-    ./check_hss_s6a_certificate /usr/local/etc/oai/freeDiameter ${oai_realm}
+    ./check_hss_s6a_certificate /usr/local/etc/oai/freeDiameter hss.${oai_realm}
 
     echo "===== populating DB"
-    cd $run_dir
     # xxx ???
     ./hss_db_create localhost root linux hssadmin admin oai_db
     ./hss_db_import localhost root linux oai_db ../SRC/OAI_HSS/db/oai_db.sql
