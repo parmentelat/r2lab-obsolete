@@ -78,8 +78,8 @@ function base() {
     echo "========== Done - save image in oai-enb-base"
 }
 
-doc-fun build-uhd "builds UHD from github.com/EttusResearch/uhd.git"
-function build-uhd() {
+doc-fun build-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
+function build-uhd-ettus() {
     echo "========== Building UHD"
     cd
     git clone git://github.com/EttusResearch/uhd.git
@@ -90,6 +90,14 @@ function build-uhd() {
     make
     make test
     make install
+}
+
+doc-fun build-uhd-oai "build UHD using the OAI recipe" 
+function build-uhd-oai() {
+    gitup
+    cd /root/openairinterface5g/cmake_targets
+    ./build_oai -w USRP -I
+    # saved in oai-enb-oaiuhd 
 }
 
 doc-fun build-oai5g "builds oai5g" 
@@ -136,15 +144,20 @@ function image() {
     gitup
     cd
     
-    build-uhd >& build-uhd.log
+    build-uhd-ettus >& build-uhd-ettus.log
 
     build-oai5g >& build-oai5g.log
 
     echo "========== Done - save image in oai-enb-builds"
 }
 
-doc-fun build "configure and build eNodeB (requires define-peer)"
+doc-fun build "build eNodeB"
 function build() {
+    echo "empty build on enb" 
+}
+
+doc-fun configure "configure eNodeB (requires define-peer)"
+function configure() {
 
     gw_id=$(get-peer)
     [ -z "$gw_id" ] && { echo "no peer defined"; return; }
