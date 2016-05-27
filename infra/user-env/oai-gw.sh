@@ -27,15 +27,6 @@ function cn-git-fetch() {
     cd - >& /dev/null
 }
 
-# computes oai_cn_branch from actual git repo
-doc-fun cn-git-get-branch "Display the branch that openair-cn currently sits on"
-function cn-git-get-branch() {
-    cd /root/openair-cn
-    local branch=$(git branch | fgrep '*' | sed -e 's,* ,,')
-    cd - >& /dev/null
-    echo $branch
-}
-
 doc-fun cn-git-select-branch "select branch in openair-cn; typically master or unstable or v0.3.1"
 function cn-git-select-branch() {
     branch=$1; shift
@@ -50,16 +41,8 @@ function cn-git-select-branch() {
     fi
 }
 
-oai_cn_branch=$(cn-git-get-branch)
-
 ####################
 # 
-case ${oai_cn_branch} in
-    unstable)   echo "Using branch unstable : OK" ;;
-    *)		echo "Unsupported config style ${oai_cn_branch} - exiting"; return ;;
-esac
-
-echo "cn_branch=\"${oai_cn_branch}\"" >&2-
 
 run_dir=/root/openair-cn/SCRIPTS
 [ -n "$runs_hss" ] && {
@@ -184,11 +167,8 @@ function check-etc-hosts() {
 doc-fun init "sync clock from NTP, checks /etc/hosts, rebuilds gtpu and runs depmod"
 function init() {
 
-    echo "========== Sync clock at NTP"
     init-clock
-    echo "========== Checking out the ${oai_cn_branch} branch in openair-cn"
-#    cd ~/openair-cn
-#    cn-git-select-branch ${oai_cn_branch}
+    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     echo "========== Rebuilding the GTPU module"
     cd $run_dir
     run-in-log init-spgw-j.log ./build_spgw -j -f
@@ -449,15 +429,15 @@ function populate-db() {
 
 doc-fun start "starts the hss and/or epc service(s)"
 function start() {
-    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     cd $run_dir
     if [ -n "$runs_hss" ]; then
 	echo "Running run_hss in background"
 	./run_hss >& $log_hss &
     fi
     if [ -n "$runs_epc" ]; then
-	run-in-log $log_mme ./run_mme
-	run-in-log $log_spgw ./run_spgw -r
+	echo "Launching mme and spgw in background"
+	./run_mme >& $log_mme &
+	./run_spgw -r >& $log_spgw &
     fi
 }
 

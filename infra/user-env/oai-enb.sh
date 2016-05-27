@@ -190,11 +190,11 @@ EOF
 doc-fun init "initializes clock after NTP"
 function init() {
     init-clock
+    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
 }
 
 doc-fun start "starts lte-softmodem" 
 function start() {
-    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     cd $run_dir
 #    echo "In $(pwd)"
     echo "Running lte-softmodem in background"
