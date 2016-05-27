@@ -202,29 +202,13 @@ function start() {
     cd - >& /dev/null
 }
 
-function _manage() {
-    # if $1 is 'stop' then the found processes are killed
-    mode=$1; shift
-    pids="$(pgrep lte-softmodem)"
-    pids="$(echo $pids)"
-    if [ -z "$pids" ]; then
-	echo "========== No running process"
-	return 1
-    fi
-    echo "========== Found processes"
-    ps $pids
-    if [ "$mode" == 'stop' ]; then
-	echo "========== Killing $pids"
-	kill $pids
-	echo "========== Their status now"
-	ps $pids
-    fi
-}
+doc-fun status "displays the status of the softmodem-related processes"
+doc-fun stop "stops the softmodem-related processes"
 
-doc-fun status "displays the status of the lte-softmodem processes"
-function status() { _manage; }
-doc-fun stop "displays the status of the lte-softmodem processes"
-function stop() { _manage stop; }
+function -list-processes() {
+    pids="$(pgrep lte-softmodem)"
+    echo $pids
+}
 
 ####################
 define_main

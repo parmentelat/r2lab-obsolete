@@ -445,37 +445,21 @@ locks=""
 [ -n "$runs_hss" ] && add-to-locks /var/run/oai_hss.pid
 [ -n "$runs_epc" ] && add-to-locks /var/run/mme_gw.pid /var/run/mme.pid /var/run/mmed.pid /var/run/spgw.pid
 
-function _manage() {
-    # if $1 is 'stop' then the found processes are killed
-    mode=$1; shift
+########################################
+doc-fun status "displays the status of the epc and/or hss processes"
+doc-fun stop "stops the epc and/or hss processes & clears locks"
+doc-fun status "displays the status of the softmodem-related processes"
+doc-fun stop "stops the softmodem-related processes"
+
+function -list-processes() {
     pids=""
     [ -n "$runs_hss" ] && pids="$pids $(pgrep run_hss) $(pgrep oai_hss)"
     [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc) $(pgrep run_mme) $(pgrep mme_gw) $(pgrep spgw)"
     pids="$(echo $pids)"
-
-    if [ -z "$pids" ]; then
-	echo "No running process"
-	return 1
-    fi
-    echo "========== Found processes"
-    ps $pids
-    if [ "$mode" == 'stop' ]; then
-	echo "========== Killing $pids"
-	kill $pids
-	echo "========== Their status now"
-	ps $pids
-	locks=$(ls-locks 2> /dev/null)
-	echo "========== Clearing locks $locks"
-	rm -f $locks
-    fi
+    echo $pids
 }
 
-doc-fun status "displays the status of the epc and/or hss processes"
-function status() { _manage; }
-doc-fun stop "stops the epc and/or hss processes & clears locks"
-function stop() { _manage stop; }
-
-
+##############################
 doc-fun manage-db "runs mysql on the oai_db database" 
 function manage-db() {
     mysql --user=root --password=linux oai_db
