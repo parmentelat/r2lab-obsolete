@@ -78,13 +78,17 @@ function base() {
     echo "========== Done - save image in oai-enb-base"
 }
 
-doc-fun build-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
-function build-uhd-ettus() {
-    echo "========== Building UHD"
+doc-fun image-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
+function image-uhd-ettus() {
     cd
-    git clone git://github.com/EttusResearch/uhd.git
-    cd uhd
-    mkdir build
+    echo "========== Building UHD from ettus git repo"
+    if [ -d uhd ]; then
+	cd uhd; git pull
+    else
+	git clone git://github.com/EttusResearch/uhd.git
+	cd uhd
+    fi
+    mkdir -p build
     cd build
     cmake ../host
     make
@@ -92,16 +96,16 @@ function build-uhd-ettus() {
     make install
 }
 
-doc-fun build-uhd-oai "build UHD using the OAI recipe" 
-function build-uhd-oai() {
+doc-fun image-uhd-oai "build UHD using the OAI recipe" 
+function image-uhd-oai() {
     gitup
     cd /root/openairinterface5g/cmake_targets
-    ./build_oai -w USRP -I
+    run-in-log build-oai.log ./build_oai -w USRP -I
     # saved in oai-enb-oaiuhd 
 }
 
-doc-fun build-oai5g "builds oai5g" 
-function build-oai5g() {
+doc-fun image-oai5g "builds oai5g" 
+function image-oai5g() {
     OPENAIR_HOME=/root/openairinterface5g
     # don't do this twice
     grep -q OPENAIR ~/.bashrc >& /dev/null || cat >> $HOME/.bashrc <<EOF
@@ -138,15 +142,15 @@ EOF
     # but since it was for a soft phone initially I skip it from the builds image
 }
 
-doc-fun image "runs builds uhd and oai5g for an oai image"
+doc-fun image "builds uhd and oai5g for an oai image"
 function image() {
 
     gitup
     cd
     
-    build-uhd-ettus >& build-uhd-ettus.log
+    image-uhd-ettus >& image-uhd-ettus.log
 
-    build-oai5g >& build-oai5g.log
+    image-oai5g >& image-oai5g.log
 
     echo "========== Done - save image in oai-enb-builds"
 }
