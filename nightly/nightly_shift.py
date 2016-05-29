@@ -441,9 +441,6 @@ def summary_in_mail(nodes):
             <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/shuffle.png" style="width:25px;height:25px;">o.s.</td>\n \
             <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/zombie.png" style="width:25px;height:25px;">zombie</td>\n \
             <td>&nbsp;&nbsp;</td>\n \
-            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/FFFFFF-0.png" style="width:25px;height:25px;"><br>old o.s.</td>\n \
-            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/FFFFFF-0.png" style="width:25px;height:25px;"><br>to</td>\n \
-            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/FFFFFF-0.png" style="width:25px;height:25px;"><br>new o.s.</td>\n \
             </tr>'
 
     for node in sorted(list_of_bug_nodes):
@@ -456,11 +453,8 @@ def summary_in_mail(nodes):
                         <td style="text-align: center; font:{}</td>\n \
                         <td style="text-align: center; font:{}</td>\n \
                         <td></td>\n \
-                        <td style="text-align: center;"><span style="background:#828282; color:#fff; padding:4px; border-radius: 5px; display: inline-block; width: 120px;"">{}</span></td>\n \
-                        <td style="text-align: center; font:20px Arial, Tahoma, Sans-serif;">&nbsp; &#155; &nbsp;</td>\n \
-                        <td style="text-align: center;"><span style="background:#42c944; color:#fff; padding:4px; border-radius: 5px; display: inline-block; width: 120px;"">{}</span><td>\n \
                     </tr>\
-                    '.format(node, phases[int(node)]['ph1'], phases[int(node)]['ph2'], phases[int(node)]['ph3'], phases[int(node)]['ph4'], phases[int(node)]['ph5'], loaded_nodes[node]['old_os'], loaded_nodes[node]['new_os'] )
+                    '.format(node, phases[int(node)]['ph1'], phases[int(node)]['ph2'], phases[int(node)]['ph3'], phases[int(node)]['ph4'], phases[int(node)]['ph5'] )
         lines_fail += line_fail
     lines_fail = header + lines_fail
 
