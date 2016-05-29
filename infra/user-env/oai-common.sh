@@ -64,4 +64,31 @@ function sctp() {
     $command
 }
 
+##############################
+function -manage-processes() {
+    # use with list or stop
+    mode=$1; shift
+    pids="$@" 
+    if [ -z "$pids" ]; then
+	echo "========== No running process"
+	return 1
+    fi
+    echo "========== Found processes"
+    ps $pids
+    if [ "$mode" == 'stop' ]; then
+	echo "========== Killing $pids"
+	kill $pids
+	echo "========== Their status now"
+	ps $pids
+	if [ -n "$locks" ]; then
+	    echo "========== Clearing locks $locks"
+	    rm -f $locks
+	fi
+	
+    fi
+}
+
+function status() { -manage-processes status $(-list-processes); }
+function stop()   { -manage-processes stop   $(-list-processes); }
+
 doc-sep

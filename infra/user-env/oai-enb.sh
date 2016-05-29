@@ -78,13 +78,17 @@ function base() {
     echo "========== Done - save image in oai-enb-base"
 }
 
-doc-fun build-uhd "builds UHD from github.com/EttusResearch/uhd.git"
-function build-uhd() {
-    echo "========== Building UHD"
+doc-fun image-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
+function image-uhd-ettus() {
     cd
-    git clone git://github.com/EttusResearch/uhd.git
-    cd uhd
-    mkdir build
+    echo "========== Building UHD from ettus git repo"
+    if [ -d uhd ]; then
+	cd uhd; git pull
+    else
+	git clone git://github.com/EttusResearch/uhd.git
+	cd uhd
+    fi
+    mkdir -p build
     cd build
     cmake ../host
     make
@@ -92,8 +96,16 @@ function build-uhd() {
     make install
 }
 
-doc-fun build-oai5g "builds oai5g" 
-function build-oai5g() {
+doc-fun image-uhd-oai "build UHD using the OAI recipe" 
+function image-uhd-oai() {
+    gitup
+    cd /root/openairinterface5g/cmake_targets
+    run-in-log build-oai.log ./build_oai -w USRP -I
+    # saved in oai-enb-oaiuhd 
+}
+
+doc-fun image-oai5g "builds oai5g" 
+function image-oai5g() {
     OPENAIR_HOME=/root/openairinterface5g
     # don't do this twice
     grep -q OPENAIR ~/.bashrc >& /dev/null || cat >> $HOME/.bashrc <<EOF
@@ -130,21 +142,26 @@ EOF
     # but since it was for a soft phone initially I skip it from the builds image
 }
 
-doc-fun image "runs builds uhd and oai5g for an oai image"
+doc-fun image "builds uhd and oai5g for an oai image"
 function image() {
 
     gitup
     cd
     
-    build-uhd >& build-uhd.log
+    image-uhd-ettus >& image-uhd-ettus.log
 
-    build-oai5g >& build-oai5g.log
+    image-oai5g >& image-oai5g.log
 
     echo "========== Done - save image in oai-enb-builds"
 }
 
-doc-fun build "configure and build eNodeB (requires define-peer)"
+doc-fun build "build eNodeB"
 function build() {
+    echo "empty build on enb" 
+}
+
+doc-fun configure "configure eNodeB (requires define-peer)"
+function configure() {
 
     gw_id=$(get-peer)
     [ -z "$gw_id" ] && { echo "no peer defined"; return; }
@@ -177,11 +194,11 @@ EOF
 doc-fun init "initializes clock after NTP"
 function init() {
     init-clock
+    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
 }
 
 doc-fun start "starts lte-softmodem" 
 function start() {
-    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     cd $run_dir
 #    echo "In $(pwd)"
     echo "Running lte-softmodem in background"
@@ -189,29 +206,13 @@ function start() {
     cd - >& /dev/null
 }
 
-function _manage() {
-    # if $1 is 'stop' then the found processes are killed
-    mode=$1; shift
-    pids="$(pgrep lte-softmodem)"
-    pids="$(echo $pids)"
-    if [ -z "$pids" ]; then
-	echo "========== No running process"
-	return 1
-    fi
-    echo "========== Found processes"
-    ps $pids
-    if [ "$mode" == 'stop' ]; then
-	echo "========== Killing $pids"
-	kill $pids
-	echo "========== Their status now"
-	ps $pids
-    fi
-}
+doc-fun status "displays the status of the softmodem-related processes"
+doc-fun stop "stops the softmodem-related processes"
 
-doc-fun status "displays the status of the lte-softmodem processes"
-function status() { _manage; }
-doc-fun stop "displays the status of the lte-softmodem processes"
-function stop() { _manage stop; }
+function -list-processes() {
+    pids="$(pgrep lte-softmodem)"
+    echo $pids
+}
 
 ####################
 define_main

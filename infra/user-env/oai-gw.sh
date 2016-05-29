@@ -27,15 +27,6 @@ function cn-git-fetch() {
     cd - >& /dev/null
 }
 
-# computes oai_cn_branch from actual git repo
-doc-fun cn-git-get-branch "Display the branch that openair-cn currently sits on"
-function cn-git-get-branch() {
-    cd /root/openair-cn
-    local branch=$(git branch | fgrep '*' | sed -e 's,* ,,')
-    cd - >& /dev/null
-    echo $branch
-}
-
 doc-fun cn-git-select-branch "select branch in openair-cn; typically master or unstable or v0.3.1"
 function cn-git-select-branch() {
     branch=$1; shift
@@ -50,18 +41,8 @@ function cn-git-select-branch() {
     fi
 }
 
-oai_cn_branch=$(cn-git-get-branch)
-
 ####################
 # 
-case ${oai_cn_branch} in
-    unstable)   new_config_mode="true" ;;
-    master)	new_config_mode="" ;;
-    *)		new_config_mode="" ;;
-esac
-
-echo "cn_branch=\"${oai_cn_branch}\"" >&2-
-echo "new_config_mode=\"${new_config_mode}\"" >&2-
 
 run_dir=/root/openair-cn/SCRIPTS
 [ -n "$runs_hss" ] && {
@@ -73,25 +54,16 @@ run_dir=/root/openair-cn/SCRIPTS
     add-to-configs $conf_dir/freeDiameter/hss_fd.conf
 }
 [ -n "$runs_epc" ] && {
-    if [ -z "$new_config_mode" ]; then
-	log_epc=$run_dir/run_epc.log
-	syslog_epc=$run_dir/run_epc.syslog
-	add-to-logs $log_epc $syslog_epc
-	conf_dir=/root/openair-cn/BUILD/EPC/
-	config=epc.conf.in
-	add-to-configs $conf_dir/$config
-    else
-	log_mme=$run_dir/mme.log; add-to-logs $log_mme
-	out_mme=$run_dir/mme.out; add-to-logs $out_mme
-	log_spgw=$run_dir/spgw.log; add-to-logs $log_spgw
-	out_spgw=$run_dir/spgw.out; add-to-logs $out_spgw
-	template_dir=/root/openair-cn/ETC/
-	conf_dir=/usr/local/etc/oai
-	add-to-configs $conf_dir/mme.conf
-	add-to-configs $conf_dir/freeDiameter/mme_fd.conf
-	add-to-configs $conf_dir/spgw.conf
-	add-to-datas /etc/hosts
-    fi
+    log_mme=$run_dir/mme.log; add-to-logs $log_mme
+    out_mme=$run_dir/mme.out; add-to-logs $out_mme
+    log_spgw=$run_dir/spgw.log; add-to-logs $log_spgw
+    out_spgw=$run_dir/spgw.out; add-to-logs $out_spgw
+    template_dir=/root/openair-cn/ETC/
+    conf_dir=/usr/local/etc/oai
+    add-to-configs $conf_dir/mme.conf
+    add-to-configs $conf_dir/freeDiameter/mme_fd.conf
+    add-to-configs $conf_dir/spgw.conf
+    add-to-datas /etc/hosts
 }
 
 doc-fun dumpvars "list environment variables"
@@ -154,12 +126,8 @@ function image() {
     [ -n "$runs_hss" ] && run-in-log  build-hss-image.log ./build_hss -i
     echo "========== Building EPC"
     if [ -n "$runs_epc" ]; then
-	if [ -z "$new_config_mode" ]; then
-	    run-in-log build-epc-image-i.log ./build_epc -i
-	else
-	    run-in-log build-mme-image-i.log ./build_mme -i
-	    run-in-log build-spgw-image-i.log ./build_spgw -i
-	fi
+	run-in-log build-mme-image-i.log ./build_mme -i
+	run-in-log build-spgw-image-i.log ./build_spgw -i
     fi
     # building the kernel module : deferred to the init step
     # it looks like it won't run fine at that early stage
@@ -199,82 +167,47 @@ function check-etc-hosts() {
 doc-fun init "sync clock from NTP, checks /etc/hosts, rebuilds gtpu and runs depmod"
 function init() {
 
-    echo "========== Sync clock at NTP"
     init-clock
-    echo "========== Checking out the ${oai_cn_branch} branch in openair-cn"
-#    cd ~/openair-cn
-#    cn-git-select-branch ${oai_cn_branch}
+    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     echo "========== Rebuilding the GTPU module"
     cd $run_dir
-    if [ -z "$new_config_mode" ]; then
-	run-in-log init-epc-j.log ./build_epc -j -f
-    else
-	run-in-log init-spgw-j.log ./build_spgw -j -f
-    fi
+    run-in-log init-spgw-j.log ./build_spgw -j -f
     echo "========== Refreshing the depmod index"
     depmod -a
     
 }
 
-doc-fun build "configure and build hss and/or epc"
+doc-fun build "build hss and/or epc"
 function build() {
-    echo "========== Checking /etc/hosts"
-    check-etc-hosts
     build-hss
     build-epc
+}
+
+doc-fun configure "configure hss and/or epc"
+function configure() {
+    echo "========== Checking /etc/hosts"
+    check-etc-hosts
+    configure-hss
+    configure-epc
 }
 
 function build-epc() {
 
     [ -n "$runs_epc" ] || { echo not running epc - skipping ; return; }
 
-    if [ -z "$new_config_mode" ]; then
-	echo EPC config OLD STYLE
-	-build-epc-old-style
-    else
-	echo EPC config NEW STYLE
-	-build-epc-new-style
-    fi
-}
+    echo "========== Rebuilding mme"
+    # option --debug is in the doc but not in the code
+    run-in-log build-mme.log ./build_mme --clean
+    
+    echo "========== Rebuilding spgw"
+    run-in-log build-spgw.log ./build_spgw --clean
+    
+}    
 
-####################
-function -build-epc-old-style() {
-    id=$(r2lab-id)
-    fitid=fit$id
+function configure-epc() {
 
-    cd $conf_dir
-    echo "========== Checking for backup file $config.distrib"
-    [ -f $config.distrib ] || cp $config $config.distrib
-    echo "========== Patching config file"
-    cat > epc-r2lab.sed <<EOF 
-s,eth0:1 *,${oai_ifname},g
-s,192.170.0.1/24,192.168.${oai_subnet}.${id}/24,g
-s,eth0:2 *,${oai_ifname},g
-s,192.170.1.1/24,192.168.${oai_subnet}.${id}/24,g
-s,eth0,${oai_ifname},g
-s,192.168.12.17/24,192.168.${oai_subnet}.${id}/24,g
-s,127.0.0.1:5656,${syslog_epc},g
-s,TAC = "15",TAC = "1",g
-s,192.188.2.0/24,192.168.100.0/24,g
-s,192.188.8.0/24,192.168.101.0/24,g
-s,192.168.106.12,138.96.0.10,g
-s,192.168.12.100,138.96.0.11,g
-EOF
-    sed -f epc-r2lab.sed $config.distrib > $config
+    [ -n "$runs_epc" ] || { echo not running epc - skipping ; return; }
 
-    echo "========== Rebuilding epc"
-    cd $run_dir
-    if [ -n "$runs_hss" ]; then
-	# both services are local
-	run-in-log build-epc-local.log ./build_epc --clean --clean-certificates --local-hss --realm ${oai_realm}
-    else
-	# MME only
-	run-in-log build-epc-remote.log ./build_epc --clean --clean-certificates --remote-hss hss.${oai_realm}
-    fi
-}
-
-####################
-function -build-epc-new-style() {
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
     local fitid=fit$id
@@ -316,8 +249,8 @@ s|SGW_IPV4_ADDRESS_FOR_S11.*=.*|SGW_IPV4_ADDRESS_FOR_S11 = "127.0.3.1/8";|
 s|SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP.*=.*|SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP = "${oai_ifname}";|
 s|SGW_IPV4_ADDRESS_FOR_S1U_S12_S4_UP.*=.*|SGW_IPV4_ADDRESS_FOR_S1U_S12_S4_UP = "${localip}";|
 s|OUTPUT.*=.*|OUTPUT = "${out_spgw}";|
-s|PGW_INTERFACE_NAME_FOR_SGI.*=.*|PGW_INTERFACE_NAME_FOR_SGI = "${oai_ifname}";|
-s|PGW_IPV4_ADDRESS_FOR_SGI.*=.*|PGW_IPV4_ADDRESS_FOR_SGI = "${localip}";|
+s|PGW_INTERFACE_NAME_FOR_SGI.*=.*|PGW_INTERFACE_NAME_FOR_SGI = "control";|
+s|PGW_IPV4_ADDRESS_FOR_SGI.*=.*|PGW_IPV4_ADDRESS_FOR_SGI = "192.168.3.${id}/24";|
 s|DEFAULT_DNS_IPV4_ADDRESS.*=.*|DEFAULT_DNS_IPV4_ADDRESS = "138.96.0.10";|
 s|DEFAULT_DNS_SEC_IPV4_ADDRESS.*=.*|DEFAULT_DNS_SEC_IPV4_ADDRESS = "138.96.0.11";|
 s|192.188.0.0/24|192.168.10.0/24|g
@@ -330,45 +263,24 @@ EOF
     echo "===== generating certificates"
     ./check_mme_s6a_certificate /usr/local/etc/oai/freeDiameter ${fitid}.${oai_realm}
 
-    echo "========== Rebuilding mme"
-    # option --debug is in the doc but not in the code
-    run-in-log build-mme.log ./build_mme --clean
-    
-    echo "========== Rebuilding spgw"
-    run-in-log build-spgw.log ./build_spgw --clean
-    
 }
 
 function build-hss() {
+    cd $run_dir
+    if [ -n "$runs_epc" ]; then
+	# both services are local
+	# xxx never seen this setup yet
+	echo "ERROR : new-style config of HSS+EPC in the same box is unsupported"
+    else
+	run-in-log build-hss-remote.log ./build_hss --clean
+    fi
+}
+
+function configure-hss() {
 
     [ -n "$runs_hss" ] || { echo not running hss - skipping ; return; }
 
     fitid=fit$(r2lab-id)
-
-    if [ -z "$new_config_mode" ]; then
-	echo HSS config OLD STYLE
-	-build-hss-old-style
-    else
-	echo HSS config NEW STYLE
-	-build-hss-new-style
-    fi
-}
-
-function -build-hss-old-style() {
-
-    cd $run_dir
-    build_args="--clean-certificates --fqdn hss.${oai_realm} --install-hss-files"
-    if [ -n "$runs_epc" ]; then
-	# both services are local
-	run-in-log build-hss-local.log ./build_hss --clean ${build_args} --local-mme
-    else
-	run-in-log build-hss-remote.log ./build_hss --clean ${build_args}
-    fi
-
-    populate-db
-}
-
-function -build-hss-new-style() {
 
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
@@ -380,6 +292,7 @@ function -build-hss-new-style() {
     cat > hss-r2lab.sed <<EOF
 s|@MYSQL_user@|root|
 s|@MYSQL_pass@|linux|
+s|OPERATOR_key.*|OPERATOR_key = "11111111111111111111111111111111";|
 EOF
     echo "(Over)writing $conf_dir/hss.conf"
     sed -f hss-r2lab.sed < hss.conf > $conf_dir/hss.conf
@@ -392,15 +305,6 @@ EOF
     sed -f hss_fd-r2lab.sed < hss_fd.conf > $conf_dir/freeDiameter/hss_fd.conf
     echo "(Over)writing $conf_dir/freeDiameter/acl.conf"
     sed -f hss_fd-r2lab.sed < acl.conf > $conf_dir/freeDiameter/acl.conf
-
-    cd $run_dir
-    if [ -n "$runs_epc" ]; then
-	# both services are local
-	# xxx never seen this setup yet
-	echo "ERROR : new-style config of HSS+EPC in the same box is unsupported"
-    else
-	run-in-log build-hss-remote.log ./build_hss --clean
-    fi
 
     cd $run_dir
     echo "===== generating certificates"
@@ -525,24 +429,15 @@ function populate-db() {
 
 doc-fun start "starts the hss and/or epc service(s)"
 function start() {
-    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     cd $run_dir
     if [ -n "$runs_hss" ]; then
 	echo "Running run_hss in background"
 	./run_hss >& $log_hss &
     fi
     if [ -n "$runs_epc" ]; then
-	if [ -z "$new_config_mode" ]; then
-	    echo "Running run_epc in background"
-	    # --gdb is a possible additional option here
-	    # xxx Rohit says --set-nw-interfaces is useless and possibly dangerous
-	    ./run_epc --set-nw-interfaces --remove-gtpu-kmodule >& $log_epc &
-	else
-	    echo "Starting mme in background"
-	    ./run_mme >& $log_mme &
-	    echo "Starting spgw in background"
-	    ./run_spgw >& $log_spgw &
-	fi
+	echo "Launching mme and spgw in background"
+	./run_mme >& $log_mme &
+	./run_spgw -r >& $log_spgw &
     fi
 }
 
@@ -550,37 +445,21 @@ locks=""
 [ -n "$runs_hss" ] && add-to-locks /var/run/oai_hss.pid
 [ -n "$runs_epc" ] && add-to-locks /var/run/mme_gw.pid /var/run/mme.pid /var/run/mmed.pid /var/run/spgw.pid
 
-function _manage() {
-    # if $1 is 'stop' then the found processes are killed
-    mode=$1; shift
+########################################
+doc-fun status "displays the status of the epc and/or hss processes"
+doc-fun stop "stops the epc and/or hss processes & clears locks"
+doc-fun status "displays the status of the softmodem-related processes"
+doc-fun stop "stops the softmodem-related processes"
+
+function -list-processes() {
     pids=""
     [ -n "$runs_hss" ] && pids="$pids $(pgrep run_hss) $(pgrep oai_hss)"
     [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc) $(pgrep run_mme) $(pgrep mme_gw) $(pgrep spgw)"
     pids="$(echo $pids)"
-
-    if [ -z "$pids" ]; then
-	echo "No running process"
-	return 1
-    fi
-    echo "========== Found processes"
-    ps $pids
-    if [ "$mode" == 'stop' ]; then
-	echo "========== Killing $pids"
-	kill $pids
-	echo "========== Their status now"
-	ps $pids
-	locks=$(ls-locks 2> /dev/null)
-	echo "========== Clearing locks $locks"
-	rm -f $locks
-    fi
+    echo $pids
 }
 
-doc-fun status "displays the status of the epc and/or hss processes"
-function status() { _manage; }
-doc-fun stop "stops the epc and/or hss processes & clears locks"
-function stop() { _manage stop; }
-
-
+##############################
 doc-fun manage-db "runs mysql on the oai_db database" 
 function manage-db() {
     mysql --user=root --password=linux oai_db
