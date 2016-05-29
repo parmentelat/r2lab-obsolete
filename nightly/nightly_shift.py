@@ -303,13 +303,13 @@ def main(args):
     #=========================================
     # CHECK ZOMBIE (not turn off) NODES =====================
     print "-- INFO: check for zombie nodes"
-    wait_and_update_progress_bar(20)
+    wait_and_update_progress_bar(60)
     all_nodes   = to_str(nodes)
     zombie_nodes= []
     results     = {}
 
     for node in all_nodes:
-        wait_and_update_progress_bar(2)
+        wait_and_update_progress_bar(5)
         cmd = "curl reboot{}/status;".format(node)
         result = execute(cmd, key=node)
         results.update(result)
