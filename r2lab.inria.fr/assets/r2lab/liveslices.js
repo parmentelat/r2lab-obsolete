@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  var version = '1.34';
 
   function partial(){
     $('#partial_slices').load('slices.md');
@@ -165,8 +166,9 @@ $(document).ready(function() {
   }
 
   function main(){
+    console.log("liveslices version " + version);
     partial();
-    try_slices("list-slices", ["onelab.inria.oai.oai_build", "onelab.upmc.fit_demo.wireless_fit", "onelab.inria.r2lab.admin", "onelab.inria.mario.tutorial", "onelab.inria.testwd.walidtest", "onelab.inria.testwd.another_slice"]);
+    try_slices("list-slices", r2lab_slices);
   }
 
   main();

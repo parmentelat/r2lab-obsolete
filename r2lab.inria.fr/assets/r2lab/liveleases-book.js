@@ -215,7 +215,7 @@ $(document).ready(function() {
 
 
   function main (){
-    console.log("liveleases version " + version);
+    console.log("liveleases book version " + version);
     saveSomeColors();
     getLastSlice();
 
