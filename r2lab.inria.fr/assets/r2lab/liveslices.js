@@ -1,10 +1,16 @@
 $(document).ready(function() {
-  var version = '1.34';
+  var version = '1.35';
 
   function partial(){
     $('#partial_slices').load('slices.md');
   }
 
+
+  function idFormat(name){
+    var new_name = name;
+    new_name = name.replace(/[_\s]/g, '-').replace(/[^a-z0-9-\s]/gi, '');
+    return new_name
+  }
 
   function sendMessage(msg, type){
     var cls   = 'danger';
@@ -37,62 +43,7 @@ $(document).ready(function() {
   }
 
 
-  //STOLEN FROM THIERRY EXAMPLES
   var get_slices = function(id, names) {
-    var body = "#"+id;
-    var request = {};
-    if (names) request['names'] = names;
-    post_omfrest_request('/slices/get', request, function(xhttp) {
-      if (xhttp.readyState == 4 && xhttp.status == 200) {
-
-        var responses = JSON.parse(xhttp.responseText);
-    	  $(body).html("<div class='row'>\
-                        <div class='col-md-6'><b>name</b></div>\
-                        <div class='col-md-4'><b>expiration date</b></div>\
-                        <div class='col-md-2'>&nbsp;</div>\
-                      </div>");
-    	  for (i = 0; i < responses.length; i++) {
-          var response   = responses[i];
-          var slicename  = response['name'];
-          var expiration = response['valid_until'];
-          var closed     = response['closed_at'];
-          //var expiration = '2016-01-22T09:25:31Z';
-
-          var s_class   = 'in_green';
-          var s_message = 'valid';
-          var s_icon    = '';
-          var the_date  = moment(expiration).format("YYYY-MM-DD HH:mm");
-          if (isPastDate(expiration) || isPastDate(closed)){
-            sendMessage('One or more of your slices had expired. Click \
-                        <a href="#" data-toggle="modal" data-target="#slice_modal">here</a>\
-                        to manage it and renew it!', 'attention');
-
-            if (isPastDate(closed)){
-              the_date  = moment(closed).format("YYYY-MM-DD HH:mm");
-            }
-
-            s_class   = 'in_red';
-            s_message = 'expired';
-            s_icon = "<a href='#' rel='tooltip' title='renew'>\
-                       <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+i+"','"+slicename+"');></span>\
-                     </a>";
-          }
-
-          $(body).append("<div class='row'>\
-                            <div class='col-md-6'>"+slicename+"</div>\
-                            <div class='col-md-4' id='datetime_expiration"+i+"'>\
-                              <span class="+s_class+">"+the_date+"<span>\
-                            </div>\
-                            <div class='col-md-2' id='icon_"+i+"'>"+s_icon+"</div>\
-                          </div>");
-          $('a').tooltip();
-        }
-      }
-    });
-  }
-
-
-  var try_slices = function(id, names) {
     var body = "#"+id;
     $(body).html("<div class='row'>\
                     <div class='col-md-6'><b>name</b></div>\
@@ -110,6 +61,7 @@ $(document).ready(function() {
           var responses = JSON.parse(xhttp.responseText);
 
       	  for (i = 0; i < responses.length; i++) {
+
             var response   = responses[i];
             var slicename  = response['name'];
             var expiration = response['valid_until'];
@@ -132,16 +84,16 @@ $(document).ready(function() {
               s_class   = 'in_red';
               s_message = 'expired';
               s_icon = "<a href='#' rel='tooltip' title='renew'>\
-                         <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+i+"','"+slicename+"');></span>\
+                         <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+idFormat(slicename)+"','"+slicename+"');></span>\
                        </a>";
             }
 
             $(body).append("<div class='row'>\
                               <div class='col-md-6'>"+slicename+"</div>\
-                              <div class='col-md-4' id='datetime_expiration"+i+"'>\
+                              <div class='col-md-4' id='datetime_expiration"+idFormat(slicename)+"'>\
                                 <span class="+s_class+">"+the_date+"<span>\
                               </div>\
-                              <div class='col-md-2' id='icon_"+i+"'>"+s_icon+"</div>\
+                              <div class='col-md-2' id='icon_"+idFormat(slicename)+"'>"+s_icon+"</div>\
                             </div>");
             $('a').tooltip();
           }
@@ -154,10 +106,10 @@ $(document).ready(function() {
                    </a>";
           $(body).append("<div class='row'>\
                             <div class='col-md-6 "+s_class+"'>"+value+"</div>\
-                            <div class='col-md-4' id='datetime_expiration"+i+"'>\
+                            <div class='col-md-4' id='datetime_expiration_v"+index+"'>\
                               <span class="+s_class+"><span>\
                             </div>\
-                            <div class='col-md-2' id='icon_"+i+"'>"+s_icon+"</div>\
+                            <div class='col-md-2' id='icon_v_"+index+"'>"+s_icon+"</div>\
                           </div>");
             $('a').tooltip();
         }
@@ -168,7 +120,7 @@ $(document).ready(function() {
   function main(){
     console.log("liveslices version " + version);
     partial();
-    try_slices("list-slices", r2lab_slices);
+    get_slices("list-slices", r2lab_slices);
   }
 
   main();
