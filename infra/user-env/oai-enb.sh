@@ -61,10 +61,9 @@ function base() {
 	openssl s_client -showcerts -connect gitlab.eurecom.fr:443 2>/dev/null | \
 	sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >> \
 	    /etc/ssl/certs/ca-certificates.crt
-    git clone https://gitlab.eurecom.fr/oai/openair-cn.git
-    git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git
-    # this is probably useless, but well
-    git clone https://github.com/parmentelat/r2lab.git
+    [ -d openair-cn ] || git clone https://gitlab.eurecom.fr/oai/openair-cn.git
+    [ -d openairinterface5g ] || git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git
+    [ -d /root/r2lab ] || git clone https://github.com/parmentelat/r2lab.git
 
     echo "========== Setting up cpufrequtils"
     apt-get install -y cpufrequtils

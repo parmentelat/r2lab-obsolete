@@ -85,6 +85,8 @@ function dumpvars() {
 doc-fun base "the script to install base software on top of a raw image" 
 function base() {
 
+    gitup
+    echo "NOTE : the following installs expect input and cannot be run unattended" 
     echo "========== Installing mysql-server - select apache2 and set password=linux - press enter .."
     read _
     apt-get install -y mysql-server
@@ -94,16 +96,15 @@ function base() {
     read _
     apt-get install -y phpmyadmin
 
-    echo "========== Running git clone for openair-cn and r2lab - press enter .."
-    read _
+    echo "========== Running git clone for openair-cn and r2lab .."
     cd
     echo -n | \
 	openssl s_client -showcerts -connect gitlab.eurecom.fr:443 2>/dev/null | \
 	sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >> \
 	    /etc/ssl/certs/ca-certificates.crt
-    git clone https://gitlab.eurecom.fr/oai/openair-cn.git
+    [ -d openair-cn ] || git clone https://gitlab.eurecom.fr/oai/openair-cn.git
     # this is probably useless, but well
-    git clone https://github.com/parmentelat/r2lab.git
+    [ -d r2lab ] || git clone https://github.com/parmentelat/r2lab.git
 
     echo "========== Setting up cpufrequtils"
     apt-get install -y cpufrequtils
