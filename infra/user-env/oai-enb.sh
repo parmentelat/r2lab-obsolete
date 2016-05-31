@@ -206,12 +206,21 @@ function init() {
     [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
 }
 
-doc-fun start "starts lte-softmodem" 
+doc-fun start "starts lte-softmodemun with -d to turn on soft oscilloscope" 
 function start() {
-    cd $run_dir
+
+    oscillo=""
+    if [ -n "$1" ]; then
+	case $1 in
+	    -d) oscillo="-d" ;;
+	    *) echo "usage: image-oai5g [-d]"; return 1 ;;
+	esac
+    fi
+
+cd $run_dir
 #    echo "In $(pwd)"
     echo "Running lte-softmodem in background"
-    ./lte-softmodem -P softmodem.pcap --ulsch-max-errors 100 -O $conf_dir/$config >& $lte_log &
+    ./lte-softmodem -P softmodem.pcap --ulsch-max-errors 100 -O $conf_dir/$config $oscillo >& $lte_log &
     cd - >& /dev/null
 }
 
