@@ -114,9 +114,6 @@ function image-oai5g() {
 	esac
     fi
 
-    echo $oscillo
-    return
-
     OPENAIR_HOME=/root/openairinterface5g
     # don't do this twice
     grep -q OPENAIR ~/.bashrc >& /dev/null || cat >> $HOME/.bashrc <<EOF
