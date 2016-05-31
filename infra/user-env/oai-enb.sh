@@ -103,8 +103,20 @@ function image-uhd-oai() {
     # saved in oai-enb-oaiuhd 
 }
 
-doc-fun image-oai5g "builds oai5g" 
+doc-fun image-oai5g "builds oai5g - run with -x for building with software oscilloscope" 
 function image-oai5g() {
+
+    oscillo=""
+    if [ -n "$1" ]; then
+	case $1 in
+	    -x) oscillo="-x" ;;
+	    *) echo "usage: image-oai5g [-x]"; return 1 ;;
+	esac
+    fi
+
+    echo $oscillo
+    return
+
     OPENAIR_HOME=/root/openairinterface5g
     # don't do this twice
     grep -q OPENAIR ~/.bashrc >& /dev/null || cat >> $HOME/.bashrc <<EOF
@@ -130,7 +142,7 @@ EOF
     cd $HOME/openairinterface5g/cmake_targets/
     # xxx l'original avait une seule ligne :
     run-in-log build-oai-1.log ./build_oai -I -w USRP
-    run-in-log build-oai-2.log ./build_oai --eNB -c -w USRP
+    run-in-log build-oai-2.log ./build_oai --eNB -c -w ${oscillo} USRP
 
     # initial instructions from T. Turletti mentioned this
     #cd $HOME/openairinterface5g/
