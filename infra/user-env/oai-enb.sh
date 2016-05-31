@@ -232,6 +232,19 @@ function -list-processes() {
     echo $pids
 }
 
+doc-fun ureset "Reset the URSP attached to this node"
+function ureset() {
+    id=$(r2lab-id)
+    # WARNING this might not work on a node that
+    # is not in its nominal location, like node 42 that
+    # sits in slot 4
+    cmc="192.168.1.$id"
+    echo "Turning off USRP # $id"
+    curl http://$cmc/usrpoff
+    sleep 1
+    echo "Turning on USRP # $id"
+    curl http://$cmc/usrpon
+}
 ####################
 define_main
 
