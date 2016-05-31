@@ -139,7 +139,7 @@ EOF
     cd $HOME/openairinterface5g/cmake_targets/
     # xxx l'original avait une seule ligne :
     run-in-log build-oai-1.log ./build_oai -I -w USRP
-    run-in-log build-oai-2.log ./build_oai --eNB -c USRP
+    run-in-log build-oai-2.log ./build_oai --eNB -c -w USRP
     [ -n "$oscillo" ] && run-in-log build-oai-3.log ./build_oai -x
 
     # initial instructions from T. Turletti mentioned this
