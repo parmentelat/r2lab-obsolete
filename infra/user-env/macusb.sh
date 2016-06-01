@@ -17,3 +17,15 @@ function phone-status() {
 	*) echo "??? : got X${airplane_mode_on}X" ;;
     esac
 }
+
+function phone() {
+    mode=$1; shift
+    command=phone-$mode
+    what=$(type -t $command) && $command || echo "Unknown mode $mode"
+}
+	
+function refresh() {
+    cd ~/r2lab
+    git pull
+    source ~/.bash_profile
+}
