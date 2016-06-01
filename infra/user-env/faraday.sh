@@ -714,8 +714,8 @@ alias pull-bashrc="su faraday /home/faraday/r2lab/auto-update.sh"
 doc-admin pull-bashrc alias
 
 ########## check nodes info
-function info () { -curl info "$@"; }
 doc-admin info "get info from CMC"
+function info () { rhubarbe info "$@"; }
 
 ##########
 # utility to untar a bunch of tgz files as obtained typically
@@ -733,3 +733,6 @@ function un-tgz() {
     done
 }
     
+##########
+alias macusb="ssh tester@macusb"
+doc-alt macusb alias
