@@ -395,7 +395,12 @@ function wait () {
 # reload these tools
 alias reload="source /home/faraday/r2lab/infra/user-env/faraday.sh"
 # git pull and then reload; not allowed to everybody
-alias refresh="/home/faraday/r2lab/auto-update.sh; chown -R faraday:faraday ~faraday/r2lab; reload"
+function refresh() {
+    [ $(id -u) == 0 ] || { echo refresh must be run by root; return 1; }
+    /home/faraday/r2lab/auto-update.sh
+    chown -R faraday:faraday ~faraday/r2lab
+    reload
+}
 doc-alt refresh "install latest version of these utilities"
 
 ####################
