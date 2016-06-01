@@ -91,4 +91,12 @@ function -manage-processes() {
 function status() { -manage-processes status $(-list-processes); }
 function stop()   { -manage-processes stop   $(-list-processes); }
 
+##########
+doc-fun prepare " = init + build + configure"
+function prepare() {
+    init
+    build
+    configure
+}
+
 doc-sep
