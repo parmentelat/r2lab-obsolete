@@ -1,31 +1,60 @@
 ![](oai-nodes.pdf)
 
-# prep
+# prep infra
 
 **WARNING** 
 
 **USE node 19 for enb for now**
 
 ```
-#rload -i oai-gw-builds3 23
-#rload -i oai-gw-kgen-builds3 16
-#rload -i oai-enb-builds2 19
+### the HSS box
+n 23
 rload -i oai-gw-builds5 23 16
+```
+```
+### the EPC box
+n 16
+```
+```
+### the ENB box
+n 19
 rload -i oai-enb-builds-uhd394-oscillo 19
 ```
 
+# prep demo
+
+```
+### the scrambler box
+n 11
+rload -i oai-scrambler
+rwait
+ss
+demo
+refresh
+```
+```
+### the mac box to turn phone on or off
+macusb
+phone status
+```
+
 # common scenario
+
+for the 3 boxes
 
 ```
 rwait; ss
 ---
 refresh
 demo
-o init
-o build
-o configure
+o prepare
 o start
 o logs
+```
+
+# the scrambler
+
+```
 ```
 
 # Details
