@@ -184,10 +184,10 @@ function LiveTable() {
 	header_rows.append('th').html('Last O.S.');
 	header_rows.append('th').html('Last Image');
 	if (livetable_show_rxtx_rates) {
-	    header_rows.append('th').html('wl0-rx').attr('class','rxtx');
-	    header_rows.append('th').html('wl0-tx').attr('class','rxtx');
-	    header_rows.append('th').html('wl1-rx').attr('class','rxtx');
-	    header_rows.append('th').html('wl1-tx').attr('class','rxtx');
+	    header_rows.append('th').html('w0-rx').attr('class','rxtx');
+	    header_rows.append('th').html('w0-tx').attr('class','rxtx');
+	    header_rows.append('th').html('w1-rx').attr('class','rxtx');
+	    header_rows.append('th').html('w1-tx').attr('class','rxtx');
 	}
 	
     }
