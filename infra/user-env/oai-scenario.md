@@ -1,4 +1,4 @@
-![](oai-nodes.pdf)
+![](oai-nodes.001.png)
 
 # prep infra
 
