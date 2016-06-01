@@ -25,6 +25,7 @@ def drange(start, stop, step):
     return result
 
 rates_range = drange(0., 20. * 10**6, 6. * 10**5)
+image_radical_range = [ 'ubuntu-15.04', 'oai-scrambler', '', None ]
 ######## valid values for initializing
 field_possible_values = {
     'cmc_on_off' : [ 'on', 'off', 'fail' ],
@@ -39,6 +40,7 @@ field_possible_values = {
     'wlan1_rx_rate' : rates_range,
     'wlan1_tx_rate' : rates_range,
     'available' : [ None, 'ko'] + 3*['ok'],
+    'image_radical' : image_radical_range,
 }
 
 ####################    

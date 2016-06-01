@@ -27,9 +27,16 @@
 }
 
 #livetable_container td.os {
-/*    font-size:		20px;*/
-    color:		#000;
-    vertical-align:	middle;
+    font-size:	12px;
+    color:	navy;
+    text-align:	middle;
+}
+
+#livetable_container td.image {
+    font-family: Monaco, Courier-New;
+    font-size:   12px;
+    color:	 navy;
+    text-align:	 middle;
 }
 
 

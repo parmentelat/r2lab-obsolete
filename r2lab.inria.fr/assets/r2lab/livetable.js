@@ -40,7 +40,8 @@ var TableNode = function (id) {
 	undefined,			// on/off
 	undefined,			// ping
 	undefined,			// ssh
-	undefined			// os_release
+	undefined,			// os_release
+	undefined			// image_radical
     ];
 		 
     this.is_alive = function() {
@@ -82,6 +83,7 @@ var TableNode = function (id) {
 	    this.control_ssh == 'on' ? [ span_html('', 'fa fa-circle'), 'ok' ]
 	    : [ span_html('', 'fa fa-circle-o'), 'ko' ];
 	this.cells_data[col++] = this.release_cell(this.os_release);
+	this.cells_data[col++] = this.image_cell(this.image_radical)
 	// optional
 	if (livetable_show_rxtx_rates) {
 	    var alive = this.is_alive();
@@ -107,6 +109,13 @@ var TableNode = function (id) {
 	    return [ other_badge + ' (ssh OK)', klass ];
 	else
 	    return [ 'N/A', klass ];
+    }
+
+    this.image_cell = function(image_radical) {
+	var klass = 'image';
+	if (image_radical == undefined)
+	    return [ "n/a", klass ];
+	return [ image_radical, klass ];
     }
 
     // raw data is bits/s
@@ -173,11 +182,12 @@ function LiveTable() {
 	header_rows.append('th').html('Ping');
 	header_rows.append('th').html('Ssh');
 	header_rows.append('th').html('Last O.S.');
+	header_rows.append('th').html('Last Image');
 	if (livetable_show_rxtx_rates) {
-	    header_rows.append('th').html('wlan0-rx').attr('class','rxtx');
-	    header_rows.append('th').html('wlan0-tx').attr('class','rxtx');
-	    header_rows.append('th').html('wlan1-rx').attr('class','rxtx');
-	    header_rows.append('th').html('wlan1-tx').attr('class','rxtx');
+	    header_rows.append('th').html('wl0-rx').attr('class','rxtx');
+	    header_rows.append('th').html('wl0-tx').attr('class','rxtx');
+	    header_rows.append('th').html('wl1-rx').attr('class','rxtx');
+	    header_rows.append('th').html('wl1-tx').attr('class','rxtx');
 	}
 	
     }
