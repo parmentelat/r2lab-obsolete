@@ -255,7 +255,7 @@ function scramble() {
 	"-blast")  command="$command -g 90" ; message="blasting" ;;
 	*)         echo unknown option "$mode"; return ;;
     esac
-    echo "Running $command - pres Ctrl-C to exit"
+    echo "Running $command in foreground - press Enter at the prompt to exit"
     $command
 }
 
