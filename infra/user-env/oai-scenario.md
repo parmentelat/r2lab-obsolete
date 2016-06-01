@@ -1,13 +1,17 @@
 ![](oai-nodes.pdf)
 
-
 # prep
+
+**WARNING** 
+
+**USE node 19 for enb for now**
 
 ```
 #rload -i oai-gw-builds3 23
 #rload -i oai-gw-kgen-builds3 16
-rload -i oai-gw-builds4 23 16
-rload -i oai-enb-builds2 11
+#rload -i oai-enb-builds2 19
+rload -i oai-gw-builds5 23 16
+rload -i oai-enb-builds-uhd394-oscillo 19
 ```
 
 # common scenario
