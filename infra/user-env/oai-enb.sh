@@ -245,6 +245,20 @@ function ureset() {
     echo "Turning on USRP # $id"
     curl http://$cmc/usrpon
 }
+
+doc-fun scramble "shortcuts for scrambling the r2lab demo; use -blast to use max. gain"
+function scramble() {
+    mode=$1; shift
+    command="uhd_siggen -freq=2.53G --gaussian --amplitude=0.9"
+    case "$mode" in
+	"")        command="$command -g 73" ; message="perturbating" ;;
+	"-blast")  command="$command -g 90" ; message="blasting" ;;
+	*)         echo unknown option "$mode"; return ;;
+    esac
+    echo "Running $command - pres Ctrl-C to exit"
+    $command
+}
+
 ####################
 define_main
 
