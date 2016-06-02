@@ -282,7 +282,7 @@ var MapNode = function (node_spec) {
     }
 }
 
-var rxtx_height = function(d) { console.log("rxtx_height, d= " + d + " => " + rxtx_scale(d)); return rxtx_scale(d); };
+var rxtx_height = function(d) { return rxtx_scale(d); };
 var get_node_id = function(node) {return node.id;}
 
 //////////////////////////////
@@ -358,7 +358,7 @@ function LiveMap() {
     
     this.handle_json_status = function(json) {
 	// xxx somehow we get noise in the mix
-	if (json == "") {
+	if (json == "" || json == null) {
 	    console.log("Bloops..");
 	    return;
 	}
@@ -452,7 +452,7 @@ function LiveMap() {
 		})
 	    ;
 	    var ticks = ticks_groups.selectAll('rect')
-		.data(function(node){return node.rxtx;});
+		.data(function(node){return node ? node.rxtx || 0. : 0.;});
 	    ticks.enter()
 		.append('rect')
 		.attr('class', function(d, i) {return 'rxtx' + i;})

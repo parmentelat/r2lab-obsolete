@@ -27,6 +27,9 @@ function span_html(text, klass) {
     res += "</span>";
     return res;
 }
+
+var livetable_debug = false;
+
 //////////////////////////////
 var nb_nodes = 37;
 
@@ -92,7 +95,7 @@ var TableNode = function (id) {
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_rx_rate);
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_tx_rate);
 	}
-	//console.log("after update_from_news -> " + this.data);
+	if (livetable_debug) console.log("after update_from_news -> " + this.data);
     }
 
     this.release_cell = function(os_release) {
@@ -253,9 +256,14 @@ function LiveTable() {
 
     ////////// socket.io business
     this.handle_json_status = function(json) {
+	// xxx somehow we get noise in the mix
+	if (json == "" || json == null) {
+	    console.log("Bloops..");
+	    return;
+	}
 	try {
 	    var node_infos = JSON.parse(json);
-//	    console.log("handle_json_status - incoming " + node_infos.length + " node infos");
+	    if (livetable_debug) console.log("handle_json_status - incoming " + node_infos.length + " node infos");
 	    // first we write this data into the TableNode structures
 	    for (var i=0; i < node_infos.length; i++) {
 		var node_info = node_infos[i];
@@ -269,7 +277,6 @@ function LiveTable() {
 	    this.animate_changes(node_infos);
 	} catch(err) {
 	    if (json != "") {
-//	    console.log("Could not apply news - ignored  - JSON=<<" + json + ">>");
 	    console.log("Could not apply news - ignored  - JSON has " + json.length + " chars");
 	    console.log(err.stack);
 	    }

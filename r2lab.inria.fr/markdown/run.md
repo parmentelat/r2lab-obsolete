@@ -46,7 +46,7 @@ skip_header: yes
     <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
     <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
     <script>
-    livemap_show_rxtx_rates = true;
+//    livemap_show_rxtx_rates = true;
     livemap_space_x = 72;
     livemap_space_y = 87;
     livemap_radius_unavailable = 21;
@@ -67,7 +67,9 @@ skip_header: yes
       <br/>
       <table class="table table-condensed" id='livetable_container'> </table>
       <script type="text/javascript" src="/assets/r2lab/livetable.js"></script>
-      <script>livetable_show_rxtx_rates = true;</script>
+      <script>
+      //livetable_show_rxtx_rates = true;
+      </script>
       <style type="text/css"> @import url("/assets/r2lab/livetable.css"); </style>
     </div>
   </div>    
