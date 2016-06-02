@@ -282,7 +282,7 @@ var MapNode = function (node_spec) {
     }
 }
 
-var rxtx_height = function(d) { return rxtx_scale(d); };
+var rxtx_height = function(d) { console.log("rxtx_height, d= " + d + " => " + rxtx_scale(d)); return rxtx_scale(d); };
 var get_node_id = function(node) {return node.id;}
 
 //////////////////////////////
