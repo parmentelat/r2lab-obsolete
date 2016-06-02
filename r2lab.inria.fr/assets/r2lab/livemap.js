@@ -457,6 +457,7 @@ function LiveMap() {
 		.append('rect')
 		.attr('class', function(d, i) {return 'rxtx' + i;})
 		.attr('width', 3)
+		.attr('height', 0)
 		.attr('x', function(node){return node ? node.x : 0;})
 		.attr('y', function(node){return node ? node.y : 0;})
 		.attr('stroke', '#bbb')
