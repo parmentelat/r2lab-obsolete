@@ -358,7 +358,7 @@ def main(args):
     print "-- INFO: write in file"
     write_in_file(list(set(bug_node)))
 
-    print "-- INFO: write in file zombie
+    print "-- INFO: write in file zombie"
     write_in_file(list(set(zombie_nodes)), "nightly_zombie.txt" )
 
     print "-- INFO: end of main"
