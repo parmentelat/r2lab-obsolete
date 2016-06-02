@@ -63,8 +63,13 @@ class SlicesProxy(OmfRestView):
             # we already have a list
             js_s = self.loop.run_until_complete(asyncio.gather(*jobs, loop=self.loop))
             responses = [ json.loads(js) for js in js_s ]
+            responses_ok = [ response for response in responses if 'exception' not in response ]
+            responses_ko = [ response for response in responses if 'exception' in response ]
             slices = [ response['resource_response']['resource']
-                       for response in responses ]
+                       for response in responses_ok ]
+            for response_ko in responses_ko:
+                logger.warning("when probing for slices : ignoring response {}"
+                               .format(response_ko))
         ######## retrieve all slices in one shot
         else:
             js = self.loop.run_until_complete(self.co_get_slice())

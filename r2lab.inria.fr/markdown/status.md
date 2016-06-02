@@ -78,9 +78,11 @@ Below is the ground plan layout of the anechoic room which provides thirty-seven
 
 The nodes are arranged in a grid with ≈1.0m (vertical) and ≈1.15m (horizontal) of distance between them, except for the nodes 12, 16, 17, 20 and 23, 24, 27 which are the nodes surrounding the two columns of the room.
 
+<a name="accurate-layout">
 <center>
 	<img src="/assets/img/status.png" style="width:950px; height:592px;"/><br>
 	<!-- <center> Fig. 1 - Resources status</center> -->
 </center>
+</a>
 
 <br />
