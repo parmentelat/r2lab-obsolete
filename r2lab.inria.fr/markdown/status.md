@@ -16,7 +16,9 @@ at the bottom of this page](#accurate-layout).
   <div class="col-lg-10">
     <div id="livemap_container"></div>
     <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
-    <script>livemap_show_rxtx_rates = true;</script>
+    <script>
+    //livemap_show_rxtx_rates = true;
+    </script>
     <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
   </div>
 </div>
@@ -48,7 +50,9 @@ at the bottom of this page](#accurate-layout).
   <div class="col-lg-12">
     <table class="table table-condensed" id='livetable_container'> </table>
     <script type="text/javascript" src="/assets/r2lab/livetable.js"></script>
-    <script>livetable_show_rxtx_rates = true;</script>
+    <script>
+    //livetable_show_rxtx_rates = true;
+    </script>
     <style type="text/css"> @import url("/assets/r2lab/livetable.css"); </style>
   </div>
 </div>
