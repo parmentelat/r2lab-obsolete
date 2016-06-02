@@ -30,6 +30,8 @@ parser.add_argument("-V", "--version", default=None, dest="version",
                     help="O.S version to load")
 parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
                     help="Directory to save text file")
+parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="send_to_email",
+                    help="Email to receive the execution results")
 
 args = parser.parse_args()
 
@@ -38,7 +40,8 @@ VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',     'fedora 21',     'fed
 VERSIONS        = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
 
 # SEND_RESULTS_TO  = ['mario.zancanaro@inria.fr', 'thierry.parmentelat@inria.fr', 'thierry.turletti@inria.fr', 'walid.dabbous@inria.fr', 'mohamed-naoufal.mahfoudi@inria.fr']
-SEND_RESULTS_TO = ['fit-r2lab-users@inria.fr']
+send_to_email   = args.send_to_email
+SEND_RESULTS_TO = [str(send_to_email)] #default in args send_to_email: fit-r2lab-users@inria.fr
 
 phases          = {}
 loaded_nodes    = {}
@@ -346,13 +349,17 @@ def main(args):
     save_in_json(loaded_nodes, 'nightly')
 
     set_node_status(range(1,38), 'ok')
-    #set_node_status(zombie_nodes, 'ko')
+    set_node_status(zombie_nodes, 'ko')
     set_node_status(bug_node, 'ko')
 
     print "-- INFO: send email"
-    summary_in_mail(list(set(bug_node)))
+    summary_in_mail(list(set(bug_node + zombie_nodes)))
+
     print "-- INFO: write in file"
     write_in_file(list(set(bug_node)))
+
+    print "-- INFO: write in file zombie
+    write_in_file(list(set(zombie_nodes)), "nightly_zombie.txt" )
 
     print "-- INFO: end of main"
 
@@ -408,10 +415,10 @@ def create_phases_db(node):
 
 
 
-def write_in_file(text):
+def write_in_file(text, the_file="nightly.txt"):
     """save the results in a file for posterior use of it """
     dir_name  = args.text_dir
-    file_name = "nightly.txt"
+    file_name = the_file
 
     text = ', '.join(str(x) for x in text)
 
@@ -456,7 +463,34 @@ def summary_in_mail(nodes):
                     </tr>\
                     '.format(node, phases[int(node)]['ph1'], phases[int(node)]['ph2'], phases[int(node)]['ph3'], phases[int(node)]['ph4'], phases[int(node)]['ph5'] )
         lines_fail += line_fail
-    lines_fail = header + lines_fail
+
+    legend = '\
+            <tr>\n \
+                <td colspan="7"><br></td>\n \
+            </tr>\n \
+            <tr>\n \
+            <td style="font:9px helveticaneue, Arial, Tahoma, Sans-serif;">\n \
+                <span style="color: #525252;">\n \
+                &nbsp;<b>start:</b> <br>\n \
+                &nbsp;<b>ssh:</b>   <br>\n \
+                &nbsp;<b>load:</b>  <br>\n \
+                &nbsp;<b>O.S.:</b>  <br>\n \
+                &nbsp;<b>zombie:</b><br>\n \
+            </span>\n \
+            </td>\n \
+            <td colspan="6" style="font:9px helveticaneue, Arial, Tahoma, Sans-serif;">\n \
+                <span style="color: #525252;">\n \
+                &nbsp; node successfully started at the beginning of the routine check.<br>\n \
+                &nbsp; node was reachable through ssh.<br>\n \
+                &nbsp; the load command successfully completed.<br>\n \
+                &nbsp; node O.S. successfully changed and operational.<br>\n \
+                &nbsp; node cannot be switched off at the end of the test.<br>\n \
+                </span>\n \
+            </td>\n \
+            </tr>\
+            '
+
+    lines_fail = header + lines_fail + legend
 
     line_ok = '\
             <tr>\n \
