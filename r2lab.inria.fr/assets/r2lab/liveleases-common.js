@@ -502,15 +502,44 @@ function setActionsQueue(action, data){
     console.log('Someting went wrong in map actions.');
     return false;
   }
+  // xxx replace this with some more sensible code for showing errors
+  var display_error_message = alert;
   post_omfrest_request("/leases/"+verb, request, function(xhttp) {
     if (xhttp.readyState == 4) {
-      if (xhttp.status != 200) {
-	console.log("Something went wrong when managing leases with code " + xhttp.status);
-      } else {
-	console.log("upon ajax POST: xhttp.status = " + xhttp.status);
-	console.log("upon ajax POST: xhttp.responseText = " + xhttp.responseText);
-      }
+      // this triggers a refresh of the leases once the sidecar server answers back
       refreshLeases();
+      ////////// temporary
+      // in all cases, show the results in console, in case we'd need to improve this
+      // logic further on in the future
+      console.log("upon ajax POST: xhttp.status = " + xhttp.status +
+		  " and xhttp.responseText = " + xhttp.responseText);
+      ////////// what should remain
+      if (xhttp.status != 200) {
+	// this typically is a 500 error inside django
+	// hard to know what to expect..
+	display_error_message("Something went wrong when managing leases with code " + xhttp.status);
+      } else {
+	// the http POST has been successful, but a lot can happen still
+	// for starters, are we getting a JSON string ?
+	try {
+	  var obj = $.parseJSON(xhttp.responseText);
+	  if (obj['error']) {
+	    if (obj['error']['exception']) {
+	      if (obj['error']['exception']['reason']) {
+		display_error_message(obj['error']['exception']['reason']);
+	      } else {
+		display_error_message(obj['error']['exception']);
+	      }
+	    } else {
+	      display_error_message(obj['error']);
+	    }
+	  } else {
+	    display_error_message(obj);
+	  }
+	} catch(err) {
+	  display_error_message("unexpected error while anayzing django answer " + err);
+	}
+      }
     } 
   });
 }
