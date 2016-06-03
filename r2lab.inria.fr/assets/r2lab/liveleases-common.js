@@ -534,7 +534,7 @@ function setActionsQueue(action, data){
 	      sendMessage(obj['error']);
 	    }
 	  } else {
-	    sendMessage(obj);
+	    ;//sendMessage(obj);
 	  }
 	} catch(err) {
 	  sendMessage("unexpected error while anayzing django answer " + err);
