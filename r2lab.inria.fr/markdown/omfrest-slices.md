@@ -72,6 +72,3 @@ var renew_slice = function() {
 }
 $(function(){$('#renew-div').click(renew_slice);})
 </script>
-
-
-

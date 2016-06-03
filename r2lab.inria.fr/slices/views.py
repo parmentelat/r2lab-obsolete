@@ -1,16 +1,10 @@
-from django.shortcuts import render
-
 # Create your views here.
 
 import asyncio
 import json
 import time
 
-from django.shortcuts import render
-
 from django.views.generic import View
-
-from django.http import HttpResponse
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
