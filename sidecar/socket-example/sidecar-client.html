@@ -2,26 +2,13 @@
 <html>
   <head>
     <title>sidecar client</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; width: 100%; }
-      form input { border: 0; padding: 10px; width: 70%; margin-right: .5%; }
-      form button { width: 28%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0px; padding: 0; }
-      #messages li { padding: 5px 10px; }
-      ul.contents>li:nth-child(odd) { background: #eee; }
-      div.contents { margin: 20px; }
-      span.date { background: rgb(200,200,200); }
-      span.header { width: 25%; margin: 10px; }
-      .allpage { width: 100%; }
-    </style>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script src="http://code.jquery.com/jquery-2.1.4.js"></script>
     <script src="sidecar-client.js"></script>
+    <link type="text/css" rel="stylesheet" href="sidecar-client.css"/>
   </head>
   <body>
-    <div class="allpage" id="hostname"><span class="header">hostname</span>
+    <div class="allpage"><span class="header">sidecar hostname</span>
     <input id="hostname"/><button onclick="set_hostname()">Apply</button></div>
     <div id='requests'></div>
     <div id='contents'></div>

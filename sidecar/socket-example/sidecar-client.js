@@ -2,13 +2,39 @@
 var socket = undefined;
 
 var names = [ 'leases', 'status'];
+// max number of entries in each section
 var depths = []
 depths['leases'] = 2;
 depths['status'] = 40;
 
+// a function to prettify the leases message
+var pretty_lease = function(json) {
+    var js = $.parseJSON(json);
+    var leases = js[0]; // not quite sure what this is about
+    var html = "<ul>";
+    leases.forEach(function(lease) {
+	var l_html = "<li>";
+	l_html += "(" + lease['status'] + ") ";
+	l_html += lease['account']['name'] + " from " + lease['valid_from']
+	    + " until " + lease['valid_until'];
+//	console.log(lease);
+	l_html += "</li>";
+	html += l_html;
+    })
+    html += "</ul>";
+    return html;
+}
+
+var prettifiers = []
+prettifiers['leases'] = pretty_lease;
+
+// update the 'contents' <ul> and keep at most <depth> entries in there
 function update_contents(name, value) {
     var ul_name = '#ul-' + name;
-    var html = '<li><span class="date">' + new Date() + '</span>' + value + '</li>';
+    var details = value;
+    var prettifier = prettifiers[name];
+    if (prettifier) details = prettifier(details);
+    var html = '<li><span class="date">' + new Date() + '</span>' + details + '</li>';
     var depth = depths[name];
     var current = $(ul_name + '>li').length;
     if (current >= depth) {
@@ -20,11 +46,11 @@ function update_contents(name, value) {
 var populate = function() {
     names.forEach(function(name) {
 	// create form for the request input
-	var request_sender_html = '<div id="request-' + name + '"><span class="header">send Request ' + name + '</span>' +
-	    '<input id="' + name + '"/><button>Apply</button></div>';
+	var request_sender_html = '<div class="allpage" id="request-' + name + '"><span class="header">send Request ' + name + '</span>' +
+	    '<input id="' + name + '"/><button>Request update</button></div>';
 	$("#requests").append(request_sender_html);
-	var sender_html = '<div id="send-' + name + '"><span class="header">send raw (json) line as ' + name + '</span>' +
-	    '<input id="' + name + '"/><button>Apply</button></div>';
+	var sender_html = '<div class="allpage" id="send-' + name + '"><span class="header">send raw (json) line as ' + name + '</span>' +
+	    '<input id="' + name + '"/><button>Send raw line</button></div>';
 	$("#requests").append(sender_html);
 	// create div for the received contents
 	var contents_html = '<div class="contents" id=contents-"' + name + '">' +
@@ -42,7 +68,6 @@ function send(name, prefix, suffix) {
     var channel = 'chan-' + name + suffix ;
     var value = $('#' + prefix + name + ">input").val();
     console.log("emitting on channel " + channel + " : <" + value + ">");
-    console.log($('#' + prefix + name))
     socket.emit(channel, value);
     return false;
 }
@@ -69,15 +94,17 @@ function connect_sidecar(hostname) {
 }
 
 var set_hostname = function(e) {
-    var hostname = $('#hostname').val();
-    if (hostname == "")
+    var hostname = $('input#hostname').val();
+    if (hostname == "") {
 	hostname = "r2lab.inria.fr";
-    console.log(hostname);
+	$('input#hostname').val(hostname);
+    }
     connect_sidecar(hostname);
 }
 
 var init = function() {
     populate();
+    console.log('initing');
     set_hostname();
 }
 $(init);
