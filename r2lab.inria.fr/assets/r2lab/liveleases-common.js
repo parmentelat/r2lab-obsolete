@@ -1,9 +1,10 @@
+// -*- js-indent-level:2 -*-
 
 var my_slices_name      = r2lab_slices; // a list of slice hrns
 var my_slices_color     = [];
 var actionsQueue        = [];
 var actionsQueued       = [];
-var current_slice_name  = current_slice.name; //'onelab.inria.mario.tutorial';//current_slice.name
+var current_slice_name  = current_slice.name;
 var current_slice_color = '#DDD';
 var current_leases      = null;
 var color_pending       = '#000000';
@@ -430,7 +431,7 @@ function listenBroadcast(){
     setCurrentLeases(msg);
     resetActionsQueued();
     var leases = getCurrentLeases();
-    var leasesbooked = parseLease(leases);
+    var leasesbooked = parseLeases(leases);
     refreshCalendar(leasesbooked);
     setCurrentSliceBox(getCurrentSliceName());
   });
@@ -502,9 +503,15 @@ function setActionsQueue(action, data){
     return false;
   }
   post_omfrest_request("/leases/"+verb, request, function(xhttp) {
-    if (xhttp.readyState == 4 && xhttp.status == 200) {
-      wait_for_show = false;
-    }
+    if (xhttp.readyState == 4) {
+      if (xhttp.status != 200) {
+	console.log("Something went wrong when managing leases with code " + xhttp.status);
+      } else {
+	console.log("upon ajax POST: xhttp.status = " + xhttp.status);
+	console.log("upon ajax POST: xhttp.responseText = " + xhttp.responseText);
+      }
+      // refreshLeases();
+    } 
   });
 }
 
@@ -681,7 +688,8 @@ function refreshCalendar(events){
 
     var each_removing = $("#calendar").fullCalendar( 'clientEvents' );
     $.each(each_removing, function(k,obj){
-      //when click in month viwe all 'tousands' of nightly comes. Maybe reset when comeback from month view (not implemented)
+	//when click in month view all 'thousands' of nightly comes.
+	//Maybe reset when comeback from month view (not implemented)
       if (!isNightly(obj.title) && obj.title) {
         if(isRemoving(obj.title)){
           removeElementFromCalendar(obj.id);
@@ -710,7 +718,7 @@ function refreshCalendar(events){
 }
 
 
-function parseLease(data){
+function parseLeases(data){
   var parsedData = $.parseJSON(data);
   var leases = [];
   resetZombieLeases();

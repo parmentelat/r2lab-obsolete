@@ -39,7 +39,7 @@ skip_header: yes
       <script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
       <script type="text/javascript" src="/assets/r2lab/liveleases-common.js"></script>      
       <script type="text/javascript" src="/assets/r2lab/liveleases.js"></script>
-      <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
+      <div id="current-slice" data-current-slice-color="#000"></div>
     </div>
     <div class="col-md-7">
     <div id="livemap_container"></div>
