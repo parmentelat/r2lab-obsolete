@@ -24,6 +24,7 @@ import md.views
 import mfauth.views
 import leases.views
 import slices.views
+import users.views
 
 urlpatterns = [
     # default: empty or just / -> md/index.md
@@ -35,6 +36,7 @@ urlpatterns = [
     url(r'^logout/', mfauth.views.Logout.as_view()),
     url(r'^leases/(?P<verb>(add|update|delete))', leases.views.LeasesProxy.as_view()),
     url(r'^slices/(?P<verb>(get|renew))', slices.views.SlicesProxy.as_view()),
+    url(r'^users/(?P<verb>(get|renew))', users.views.UsersProxy.as_view()),
     # probably not useful
 #    url(r'^admin/', admin.site.urls),
 ] \
