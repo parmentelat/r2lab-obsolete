@@ -90,3 +90,24 @@ class OmfRestView(View):
             return responses[0]['resource_response']['resources'] 
         except KeyError:
             return [response['resource_response']['resource'] for response in responses]
+
+    # error checking what comes back from omf-sfa
+    def rain_check(self, post_result, action):
+        """
+        returns a tuple value, error
+        if error is set, it should be returned as an http response
+        otherwise value is guaranteed to have a 'resource_response' field
+        """
+        if not post_result:
+            return None, self.http_response_from_struct(
+                {'error' : "Could not {}".format(action)})
+        try:
+            parsed = json.loads(post_result)
+        except Exception as e:
+            return None, self.http_response_from_struct(
+                {'error' : str(e)})
+        if 'resource_response' not in parsed:
+            return None, self.http_response_from_struct({'error' : parsed})
+        return parsed, None
+
+        

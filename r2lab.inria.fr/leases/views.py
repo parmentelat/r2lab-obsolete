@@ -56,8 +56,10 @@ class LeasesProxy(OmfRestView):
         if error:
             return self.http_response_from_struct(error)
         self.init_omf_sfa_proxy()
-        js = self.loop.run_until_complete(self.co_add_lease(record))
-        result = json.loads(js)
+        post_result = self.loop.run_until_complete(self.co_add_lease(record))
+        result, error = self.rain_check(post_result, "add lease")
+        if error:
+            return error
         lease = result['resource_response']['resource']
         return self.http_response_from_struct(
             self.return_lease(lease))
@@ -85,8 +87,10 @@ class LeasesProxy(OmfRestView):
         if error:
             return self.http_response_from_struct(error)
         self.init_omf_sfa_proxy()
-        js = self.loop.run_until_complete(self.co_update_lease(record))
-        result = json.loads(js)
+        post_result = self.loop.run_until_complete(self.co_update_lease(record))
+        result, error = self.rain_check(post_result, "update lease")
+        if error:
+            return error
         lease = result['resource_response']['resource']
         return self.http_response_from_struct(
             self.return_lease(lease))
@@ -106,8 +110,10 @@ class LeasesProxy(OmfRestView):
         if error:
             return self.http_response_from_struct(error)
         self.init_omf_sfa_proxy()
-        js = self.loop.run_until_complete(self.co_delete_lease(record))
-        result = json.loads(js)
+        post_result = self.loop.run_until_complete(self.co_delete_lease(record))
+        result, error = self.rain_check(post_result, "delete lease")
+        if error:
+            return error
         ok = result['resource_response']['response']
         return self.http_response_from_struct(
             {'ok' : ok=="OK"})

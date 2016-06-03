@@ -61,10 +61,10 @@ class SlicesProxy(OmfRestView):
                 self.co_get_slice(slicename) for slicename in record['names']
             ]
             # we already have a list
-            js_s = self.loop.run_until_complete(asyncio.gather(*jobs, loop=self.loop))
-            responses = [ json.loads(js) for js in js_s ]
-            responses_ok = [ response for response in responses if 'exception' not in response ]
-            responses_ko = [ response for response in responses if 'exception' in response ]
+            post_result_s = self.loop.run_until_complete(asyncio.gather(*jobs, loop=self.loop))
+            responses = [ self.rain_check(post_result, "get slice") for post_result in post_result_s ]
+            responses_ok = [ result for result, error in responses if not error ]
+            responses_ko = [ error for result, error in responses if error ]
             slices = [ response['resource_response']['resource']
                        for response in responses_ok ]
             for response_ko in responses_ko:
@@ -72,8 +72,10 @@ class SlicesProxy(OmfRestView):
                                .format(response_ko))
         ######## retrieve all slices in one shot
         else:
-            js = self.loop.run_until_complete(self.co_get_slice())
-            response = json.loads(js)
+            post_result = self.loop.run_until_complete(self.co_get_slice())
+            response, error = self.rain_check(post_result, "get slices")
+            if error:
+                return error
             slices = response['resource_response']['resources']
             slices = [ slice for slice in slices
                        if slice['name'] not in ('__default__', ) ]
@@ -115,8 +117,10 @@ class SlicesProxy(OmfRestView):
             record['closed_at'] = ''
 
         self.init_omf_sfa_proxy()
-        js = self.loop.run_until_complete(self.co_update_slice(record))
-        response = json.loads(js)
+        post_result = self.loop.run_until_complete(self.co_update_slice(record))
+        response, error = self.rain_check(post_result, "renew slice")
+        if error:
+            return error
         slice = response['resource_response']['resource']
         return self.http_response_from_struct(slice)
 
