@@ -18,7 +18,7 @@ from django.views.decorators.csrf import csrf_protect
 from r2lab.settings import logger
 from r2lab.omfrestview import OmfRestView
 
-wire_timeformat = "%Y-%m-%dT%H:%M:%S%Z"
+from r2lab.isotime import expiration_date
 
 # Create your views here.
 class SlicesProxy(OmfRestView):
@@ -108,12 +108,9 @@ class SlicesProxy(OmfRestView):
         if error:
             return self.http_response_from_struct(error)
         if 'valid_until' not in record:
-            now = time.time()
             day = 24*3600
             # 2 months is 61 days
-            new_expire = time.localtime(now + 61 * day)
-            record['valid_until'] = time.strftime(wire_timeformat,
-                                                  new_expire)
+            record['valid_until'] = expiration_date(61*day)
             record['closed_at'] = ''
 
         self.init_omf_sfa_proxy()
