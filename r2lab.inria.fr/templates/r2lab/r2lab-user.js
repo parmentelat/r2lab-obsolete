@@ -6,6 +6,7 @@ r2lab_user = {{r2lab_context.mfuser|jsonify|safe}};
 // shortcuts
 r2lab_email = {{r2lab_context.mfuser.email|jsonify|safe}};
 r2lab_hrn = {{r2lab_context.mfuser.hrn|jsonify|safe}};
+r2lab_urn = {{r2lab_context.mfuser.urn|jsonify|safe}};
 // slices
 r2lab_slices = {{r2lab_context.slices|jsonify|safe}};
 // initialize current_slice

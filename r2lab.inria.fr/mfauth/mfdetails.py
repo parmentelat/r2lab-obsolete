@@ -76,6 +76,9 @@ def manifold_details(url, email, password, logger):
         hrns = [ val_d['user_hrn'] for val_d in val_d_s ]
         if hrns:
             hrn = hrns[0]
+        urns = [ val_d['user_urn'] for val_d in val_d_s ]
+        if urns:
+            urn = urns[0]
             
     except Exception as e:
         logger.exception("mfdetails: Could not retrieve user's slices")
@@ -88,6 +91,7 @@ def manifold_details(url, email, password, logger):
     person_config = json.loads(person['config'])
     user = { 'email' : person['email'],
              'hrn' : hrn,
+             'urn' : urn,
              'authority' : person_config['authority'],
              'firstname' : person_config['firstname'],
              'lastname' : person_config['lastname'],
