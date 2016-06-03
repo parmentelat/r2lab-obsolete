@@ -12,7 +12,7 @@ var color_removing      = '#000000';
 var keepOldEvent        = null;
 var theZombieLeases     = [];
 var socket              = io.connect("http://r2lab.inria.fr:443");
-var version             = '1.33';
+var version             = '1.34';
 var refresh             = true;
 var currentTimezone     = 'local';
 
