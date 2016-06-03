@@ -12,7 +12,7 @@ var color_removing      = '#000000';
 var keepOldEvent        = null;
 var theZombieLeases     = [];
 var socket              = io.connect("http://r2lab.inria.fr:443");
-var version             = '1.32';
+var version             = '1.34';
 var refresh             = true;
 var currentTimezone     = 'local';
 
@@ -517,7 +517,7 @@ function setActionsQueue(action, data){
       if (xhttp.status != 200) {
 	// this typically is a 500 error inside django
 	// hard to know what to expect..
-	display_error_message("Something went wrong when managing leases with code " + xhttp.status);
+	sendMessage("Something went wrong when managing leases with code " + xhttp.status);
       } else {
 	// the http POST has been successful, but a lot can happen still
 	// for starters, are we getting a JSON string ?
@@ -526,21 +526,21 @@ function setActionsQueue(action, data){
 	  if (obj['error']) {
 	    if (obj['error']['exception']) {
 	      if (obj['error']['exception']['reason']) {
-		display_error_message(obj['error']['exception']['reason']);
+		sendMessage(obj['error']['exception']['reason']);
 	      } else {
-		display_error_message(obj['error']['exception']);
+		sendMessage(obj['error']['exception']);
 	      }
 	    } else {
-	      display_error_message(obj['error']);
+	      sendMessage(obj['error']);
 	    }
 	  } else {
-	    display_error_message(obj);
+	    sendMessage(obj);
 	  }
 	} catch(err) {
-	  display_error_message("unexpected error while anayzing django answer " + err);
+	  sendMessage("unexpected error while anayzing django answer " + err);
 	}
       }
-    } 
+    }
   });
 }
 
@@ -718,8 +718,8 @@ function refreshCalendar(events){
 
     var each_removing = $("#calendar").fullCalendar( 'clientEvents' );
     $.each(each_removing, function(k,obj){
-	//when click in month view all 'thousands' of nightly comes.
-	//Maybe reset when comeback from month view (not implemented)
+	  //when click in month view all 'thousands' of nightly comes.
+	  //Maybe reset when comeback from month view (not implemented)
       if (!isNightly(obj.title) && obj.title) {
         if(isRemoving(obj.title)){
           removeElementFromCalendar(obj.id);
@@ -730,9 +730,9 @@ function refreshCalendar(events){
         else if (!isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
           removeElementFromCalendar(obj.id);
         }
-        // else if (isPresent(obj.id, actionsQueue) && isPending(obj.title) && !obj.uuid ){
-        //   removeElementFromCalendar(obj.id);
-        // }
+        else if (/*isPresent(obj.id, actionsQueue) &&*/ isPending(obj.title) && !obj.uuid ){
+          removeElementFromCalendar(obj.id);
+        }
       }
     });
 
