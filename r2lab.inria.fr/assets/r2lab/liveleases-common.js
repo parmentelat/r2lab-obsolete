@@ -787,3 +787,5 @@ function parseLeases(data){
   }
   return leases;
 }
+
+console.log("liveleases common version " + version);
