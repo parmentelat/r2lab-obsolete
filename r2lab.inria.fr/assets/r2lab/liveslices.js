@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  var version = '1.35';
+  var version = '1.36';
 
   function partial(){
     $('#partial_slices').load('slices.md');
