@@ -442,30 +442,30 @@ function updateLeases(action, event){
   if (action == 'addLease') {
     setActionsQueue('add', event);
     sendBroadcast('add', event);
-    setTimeout(function(){
-      refreshLeases();
-    }, 2000);
+//    setTimeout(function(){
+//      refreshLeases();
+//    }, 2000);
   }
   else if (action == 'delLease'){
     if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
       removeElementFromCalendar(event.id);
-      setTimeout(function(){
-        refreshLeases();
-      }, 2000);
+//      setTimeout(function(){
+//        refreshLeases();
+//      }, 2000);
     } else {
       setActionsQueue('del', event);
       sendBroadcast('del', event);
-      setTimeout(function(){
-        refreshLeases();
-      }, 2000);
+//      setTimeout(function(){
+//        refreshLeases();
+//      }, 2000);
     }
   }
   else if (action == 'editLease'){
     setActionsQueue('edit', event);
     sendBroadcast('edit', event);
-    setTimeout(function(){
-      refreshLeases();
-    }, 2000);
+//    setTimeout(function(){
+//      refreshLeases();
+//    }, 2000);
   }
 }
 
@@ -510,7 +510,7 @@ function setActionsQueue(action, data){
 	console.log("upon ajax POST: xhttp.status = " + xhttp.status);
 	console.log("upon ajax POST: xhttp.responseText = " + xhttp.responseText);
       }
-      // refreshLeases();
+      refreshLeases();
     } 
   });
 }
@@ -682,6 +682,7 @@ function refreshCalendar(events){
   if(refresh){
 
     $.each(events, function(key, event){
+      console.log("refreshCalendar : lease = "+ event.title + ":" + event.start + " .. " + event.end);
       removeElementFromCalendar(event.id);
       $('#calendar').fullCalendar('renderEvent', event, true);
     });
