@@ -56,63 +56,70 @@ $(document).ready(function() {
       request['names'] = [value];
 
       post_omfrest_request('/slices/get', request, function(xhttp) {
-        if (xhttp.readyState == 4 && xhttp.status == 200) {
 
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
           var responses = JSON.parse(xhttp.responseText);
 
-      	  for (i = 0; i < responses.length; i++) {
+          if (responses.length > 0) {
+        	  for (i = 0; i < responses.length; i++) {
 
-            var response   = responses[i];
-            var slicename  = response['name'];
-            var expiration = response['valid_until'];
-            var closed     = response['closed_at'];
-            //var expiration = '2016-01-22T09:25:31Z';
+              var response   = responses[i];
+              var slicename  = response['name'];
+              var expiration = response['valid_until'];
+              var closed     = response['closed_at'];
+              //var expiration = '2016-01-22T09:25:31Z';
 
-            var s_class   = 'in_green';
-            var s_message = 'valid';
-            var s_icon    = '';
-            var the_date  = moment(expiration).format("YYYY-MM-DD HH:mm");
-            if (isPastDate(expiration) || isPastDate(closed)){
-              sendMessage('One or more of your slices had expired. Click \
-                          <a href="#" data-toggle="modal" data-target="#slice_modal">here</a>\
-                          to manage it and renew it!', 'attention');
+              var s_class   = 'in_green';
+              var s_message = 'valid';
+              var s_icon    = '';
+              var the_date  = moment(expiration).format("YYYY-MM-DD HH:mm");
+              if (isPastDate(expiration) || isPastDate(closed)){
+                sendMessage('One or more of your slices had expired. Click \
+                            <a href="#" data-toggle="modal" data-target="#slice_modal">here</a>\
+                            to manage it and renew it!', 'attention');
 
-              if (isPastDate(closed)){
-                the_date  = moment(closed).format("YYYY-MM-DD HH:mm");
+                if (isPastDate(closed)){
+                  the_date  = moment(closed).format("YYYY-MM-DD HH:mm");
+                }
+
+                s_class   = 'in_red';
+                s_message = 'expired';
+                s_icon = "<a href='#' rel='tooltip' title='renew'>\
+                           <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+idFormat(slicename)+"','"+slicename+"');></span>\
+                         </a>";
               }
 
-              s_class   = 'in_red';
-              s_message = 'expired';
-              s_icon = "<a href='#' rel='tooltip' title='renew'>\
-                         <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+idFormat(slicename)+"','"+slicename+"');></span>\
-                       </a>";
+              $(body).append("<div class='row'>\
+                                <div class='col-md-6'>"+slicename+"</div>\
+                                <div class='col-md-4' id='datetime_expiration"+idFormat(slicename)+"'>\
+                                  <span class="+s_class+">"+the_date+"<span>\
+                                </div>\
+                                <div class='col-md-2' id='icon_"+idFormat(slicename)+"'>"+s_icon+"</div>\
+                              </div>");
+              $('a').tooltip();
             }
+          }
+          else {
+            sendMessage('One or more of your slices had expired, is not available or does not exist. Click \
+                        <a href="#" data-toggle="modal" data-target="#slice_modal">here</a>\
+                        to manage it and renew it!', 'attention');
 
+            s_message = "slice not available or does not exist";
+            s_class   = 'in_red';
+            s_icon = "<a href='#' rel='popover' title='"+s_message+"'>\
+                       <span class='glyphicon glyphicon-ban-circle "+s_class+"'></span>\
+                     </a>";
             $(body).append("<div class='row'>\
-                              <div class='col-md-6'>"+slicename+"</div>\
-                              <div class='col-md-4' id='datetime_expiration"+idFormat(slicename)+"'>\
-                                <span class="+s_class+">"+the_date+"<span>\
+                              <div class='col-md-6 "+s_class+"'>"+value+"</div>\
+                              <div class='col-md-4' id='datetime_expiration_v"+index+"'>\
+                                <span class="+s_class+"><span>\
                               </div>\
-                              <div class='col-md-2' id='icon_"+idFormat(slicename)+"'>"+s_icon+"</div>\
+                              <div class='col-md-2' id='icon_v_"+index+"'>"+s_icon+"</div>\
                             </div>");
-            $('a').tooltip();
+              $('a').tooltip();
           }
         }
-        else if (xhttp.readyState == 4 && xhttp.status != 200) {
-          s_message = "slice not available or does not exist";
-          s_class   = 'in_red';
-          s_icon = "<a href='#' rel='popover' title='"+s_message+"'>\
-                     <span class='glyphicon glyphicon-ban-circle "+s_class+"'></span>\
-                   </a>";
-          $(body).append("<div class='row'>\
-                            <div class='col-md-6 "+s_class+"'>"+value+"</div>\
-                            <div class='col-md-4' id='datetime_expiration_v"+index+"'>\
-                              <span class="+s_class+"><span>\
-                            </div>\
-                            <div class='col-md-2' id='icon_v_"+index+"'>"+s_icon+"</div>\
-                          </div>");
-            $('a').tooltip();
-        }
+
       });
     });
   }
@@ -121,6 +128,7 @@ $(document).ready(function() {
     console.log("liveslices version " + version);
     partial();
     get_slices("list-slices", r2lab_slices);
+    //get_slices("list-slices", ['onelab.inria.mario.tutorial','onelab.inria.testwd.another_slice','onelsssab.inria.testwd.another_slice']);
   }
 
   main();
