@@ -1,6 +1,6 @@
 // -*- js-indent-level:2 -*-
 
-var my_slices_name      = r2lab_slices; // a list of slice hrns
+var my_slices_name      = r2lab_slicenames; // a list of slice hrns
 var my_slices_color     = [];
 var actionsQueue        = [];
 var actionsQueued       = [];

@@ -34,7 +34,7 @@ class ManifoldBackend:
             password = token['password']
             request = token['request']
 
-            session, auth, mfuser, slices = manifold_details(self.manifold_url, email, password, logger)
+            session, auth, mfuser, slicenames = manifold_details(self.manifold_url, email, password, logger)
             if session is None or mfuser is None:
                 return None
             logger.debug("SESSION : {}".format(session.keys()))
@@ -46,7 +46,7 @@ class ManifoldBackend:
             request.session['r2lab_context'] = {'session' : session,
                                                 'auth': auth,
                                                 'mfuser': mfuser,
-                                                'slices' : slices,
+                                                'slicenames' : slicenames,
                                                 'manifold_url' : self.manifold_url,
             }
 

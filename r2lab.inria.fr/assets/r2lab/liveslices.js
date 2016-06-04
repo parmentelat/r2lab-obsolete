@@ -127,8 +127,7 @@ $(document).ready(function() {
   function main(){
     console.log("liveslices version " + version);
     partial();
-    get_slices("list-slices", r2lab_slices);
-    //get_slices("list-slices", ['onelab.inria.mario.tutorial','onelab.inria.testwd.another_slice','onelsssab.inria.testwd.another_slice']);
+    get_slices("list-slices", r2lab_slicenames);
   }
 
   main();

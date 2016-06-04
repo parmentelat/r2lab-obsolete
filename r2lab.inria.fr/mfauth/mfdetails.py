@@ -21,7 +21,7 @@ def manifold_details(url, email, password, logger):
     * user : a flat structure with at least the following keys
       * email, hrn, authority
       * firstname, lastname
-    * slices : the list of slice hrns that the person is in
+    * slicenames : the list of slice hrns that the person is in
 
     in case of failure, return tuple with same size with only None's
     """
@@ -65,13 +65,13 @@ def manifold_details(url, email, password, logger):
     # so it would be best to refuse logging in and to provide this kind of hint
     # we don't report login_message properly yet though...
     hrn = "<unknown_hrn>"
-    slices = []
+    slicenames = []
     try:
         # xxx use ManifoldResult ?
         # this is a list of dicts that have a 'slices' field
         val_d_s = mf_result['value']
         logger.info("slices from manifold={}".format(val_d_s))
-        slices = [ nm for val_d in val_d_s for nm in val_d['slices'] ]
+        slicenames = [ nm for val_d in val_d_s for nm in val_d['slices'] ]
         # in fact there is only one of these dicts because we have specified myslice:user
         hrns = [ val_d['user_hrn'] for val_d in val_d_s ]
         if hrns:
@@ -97,7 +97,7 @@ def manifold_details(url, email, password, logger):
              'lastname' : person_config['lastname'],
              }
 
-    return session, auth, user, slices
+    return session, auth, user, slicenames
 
 ####################
 if __name__ == '__main__':
