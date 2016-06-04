@@ -26,10 +26,10 @@ See also `users/view.py`
 
 <script>
 // an example of how to retrieve users
-var get_users = function(id, urns) {
+var get_users = function(id, urn) {
     var sel = "#"+id;
     var request = {};
-    if (urns) request['urns'] = urns;
+    if (urn) request['urn'] = urn;
     post_omfrest_request('/users/get', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
 	 // decoding
@@ -55,9 +55,8 @@ $(function(){
   $('#getall-div').click(function() {
     get_users('getall');});
   $('#get1-div').click(function() {
-    get_users("get1", ["urn:publicid:IDN+onelab:inria+user+walid_dabbous"]);});
+    get_users("get1", "urn:publicid:IDN+onelab:inria+user+walid_dabbous");});
   $('#getme-div').click(function() {
-    get_users("getme", [r2lab_urn]);});
+    get_users("getme", r2lab_urn);});
 });
 </script>
-

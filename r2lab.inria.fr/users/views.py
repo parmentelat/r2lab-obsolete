@@ -49,31 +49,35 @@ class UsersProxy(OmfRestView):
         a REST URL that allows to pull only one name
         This means that all users are pulled no matter what
 
-        Now, if 'urns' is provided in the input record, it should contain a
-        list of urns and only these will be returned
+        Now, if 'urn' is provided in the input record, it should contain a
+        URN and only this one will be returned
 
         otherwise all users are returned
         """
-        error = self.check_record(record, (), ('urns', ))
+        error = self.check_record(record, (), ('urn', ))
         if error:
             return self.http_response_from_struct(error)
         self.init_omf_sfa_proxy()
 
-        post_result = self.loop.run_until_complete(self.co_get_user())
-        response, error = self.rain_check(post_result, "get users")
+        if 'urn' in record:
+            post_result = self.loop.run_until_complete(self.co_get_user(record['urn']))
+            response, error = self.rain_check(post_result, "get user")
+        else:
+            post_result = self.loop.run_until_complete(self.co_get_users())
+            response, error = self.rain_check(post_result, "get users")
         if error:
             return error
         users = response['resource_response']['resources']
-        if 'urns' in record:
-            print("input = {} - filtering on {}".format(len(users), record['urns']));
-            users = [ user for user in users
-                         if user['urn'] in record['urns'] ]
-            print("output = {}".format(len(users)));
         return self.http_response_from_struct(users)
 
-    # xxx would be nice to be able to filter right at the API level
     @asyncio.coroutine
-    def co_get_user(self):
-        url = "users" 
-        js = yield from self.omf_sfa_proxy.REST_as_json(url, "GET", None)
+    def co_get_users(self):
+        js = yield from self.omf_sfa_proxy.REST_as_json("users", "GET", None)
+        return js
+
+    @asyncio.coroutine
+    def co_get_user(self, urn):
+        encoded_urn = urn.replace("+", "%2b")
+        path = "users?urn={}".format(encoded_urn)
+        js = yield from self.omf_sfa_proxy.REST_as_json(path, "GET", None)
         return js
