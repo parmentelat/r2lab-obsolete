@@ -7,8 +7,12 @@ from manifoldapi.manifoldapi    import ManifoldException
 
 from .mfdetails import manifold_details
 
+from r2lab.omfsfauser import get_r2lab_user
+
 from r2lab.settings import manifold_url as config_manifold_url
 from r2lab.settings import logger
+
+debug = True
 
 class ManifoldBackend:
     """
@@ -36,9 +40,17 @@ class ManifoldBackend:
 
             session, auth, mfuser, slicenames = manifold_details(self.manifold_url, email, password, logger)
             if session is None or mfuser is None:
+                if debug:
+                    print("could not get or missing manifold details")
                 return None
-            logger.debug("SESSION : {}".format(session.keys()))
+            if debug:
+                print("SESSION keys: {}".format(session.keys()))
             
+            ### get a more relevant list of slices right at the r2lab portal
+            r2lab_user = get_r2lab_user(mfuser['urn'])
+            if debug:
+                print("r2lab_user = {}".format(r2lab_user))
+
             # extend request to save this environment
             # auth and session['expires'] may be of further interest
             # we cannot expose just 'api' because it can't be marshalled in JSON
@@ -47,6 +59,7 @@ class ManifoldBackend:
                                                 'auth': auth,
                                                 'mfuser': mfuser,
                                                 'slicenames' : slicenames,
+                                                'accounts' : r2lab_user['accounts'],
                                                 'manifold_url' : self.manifold_url,
             }
 

@@ -42,7 +42,8 @@ var get_users = function(id, urn) {
 	   var urn = response['urn'];
 	   var label = "<b>urn = " + urn + "</b><ul>";
 	   response['accounts'].forEach(function(account) {
-	     label += "<li> in slice " + account['name'] + " valid_until " + account['valid_until'] + "</li>";
+	     label += "<li> in slice " + account['name'] +
+	     " valid_until " + account['valid_until'] + "</li>";
 	   });
 	   label += "</ul>";
            $(sel).append("<li>"+label+"</li>");
