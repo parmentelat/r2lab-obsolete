@@ -45,9 +45,9 @@ $(document).ready(function() {
 
   var get_slices = function(id, names) {
     var body = "#"+id;
-    $(body).html("<div class='row'>\
-                    <div class='col-md-6'><b>name</b></div>\
-                    <div class='col-md-4'><b>expiration date</b></div>\
+    $(body).html("<div class='row slice_header'>\
+                    <div class='col-md-6'>Name</div>\
+                    <div class='col-md-4'>Expiration Date</div>\
                     <div class='col-md-2'>&nbsp;</div>\
                   </div>");
     $.each( names, function( index, value ){
