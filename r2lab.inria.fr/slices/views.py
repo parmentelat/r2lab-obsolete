@@ -56,7 +56,8 @@ class SlicesProxy(OmfRestView):
             ]
             # we already have a list
             post_result_s = self.loop.run_until_complete(asyncio.gather(*jobs, loop=self.loop))
-            responses = [ self.rain_check(post_result, "get slice") for post_result in post_result_s ]
+            responses = [ self.rain_check(post_result, "get slice", error_as_http=False)
+                          for post_result in post_result_s ]
             responses_ok = [ result for result, error in responses if not error ]
             responses_ko = [ error for result, error in responses if error ]
             slices = [ response['resource_response']['resource']
