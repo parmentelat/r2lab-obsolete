@@ -1,3 +1,4 @@
+// -*- js-indent-level:2 -*-
 // this requires omfrest.js and liveleases-common.js
 
 $(document).ready(function() {
