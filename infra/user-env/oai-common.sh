@@ -103,7 +103,8 @@ function prepare() {
 doc-fun restart " = stop + sleep 1 + start"
 function restart() {
     stop
-    sleep 1
+    # wait for a little longer if not on hss
+    [ -n "$runs_hss" ] && sleep 1 || sleep 3
     start
 }
 
