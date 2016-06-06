@@ -1,6 +1,7 @@
 title: R2lab Scheduler
 tab: book
 skip_header: yes
+require_login: true
 <!--float_menu_template: r2lab/float-menu-slices.html-->
 
 <div class="container">
