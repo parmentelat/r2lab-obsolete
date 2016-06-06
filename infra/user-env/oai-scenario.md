@@ -18,7 +18,14 @@ n 16
 ```
 ### the ENB box
 n 19
-rload -i oai-enb-builds-uhd394-oscillo 19
+#rload -i oai-enb-builds-uhd394-oscillo 19
+rload -i oai-enb-builds2 19
+```
+
+```
+### the scambler box
+n 11
+rload -i oai-scrambler 11
 ```
 
 # prep demo

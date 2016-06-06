@@ -99,4 +99,12 @@ function prepare() {
     configure
 }
 
+##########
+doc-fun restart " = stop + sleep 1 + start"
+function restart() {
+    stop
+    sleep 1
+    start
+}
+
 doc-sep
