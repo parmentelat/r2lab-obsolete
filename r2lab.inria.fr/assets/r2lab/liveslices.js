@@ -60,6 +60,10 @@ $(document).ready(function() {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
           var responses = JSON.parse(xhttp.responseText);
 
+	  var slice_manage_invitation = '\
+One or more of your slices has expired. \
+<a href="#" data-toggle="modal" data-target="#slice_modal">\
+Click here to renew it!</a>';
           if (responses.length > 0) {
         	  for (i = 0; i < responses.length; i++) {
 
@@ -74,9 +78,7 @@ $(document).ready(function() {
               var s_icon    = '';
               var the_date  = moment(expiration).format("YYYY-MM-DD HH:mm");
               if (isPastDate(expiration) || isPastDate(closed)){
-                sendMessage('One or more of your slices had expired. Click \
-                            <a href="#" data-toggle="modal" data-target="#slice_modal">here</a>\
-                            to manage it and renew it!', 'attention');
+                  sendMessage(slice_manage_invitation, 'attention');
 
                 if (isPastDate(closed)){
                   the_date  = moment(closed).format("YYYY-MM-DD HH:mm");
@@ -100,9 +102,7 @@ $(document).ready(function() {
             }
           }
           else {
-            sendMessage('One or more of your slices had expired, is not available or does not exist. Click \
-                        <a href="#" data-toggle="modal" data-target="#slice_modal">here</a>\
-                        to manage it and renew it!', 'attention');
+            sendMessage(slice_manage_invitation, 'attention');
 
             s_message = "slice not available or does not exist";
             s_class   = 'in_red';
