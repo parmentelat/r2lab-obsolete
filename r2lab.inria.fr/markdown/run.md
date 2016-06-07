@@ -36,10 +36,10 @@ require_login: true
       <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
       <style type="text/css"> @import url("/assets/css/fullcalendar.css"); </style>
 
-      <style type="text/css"> @import url("/assets/r2lab/liveleases.css"); </style>
+      <style type="text/css"> @import url("/assets/r2lab/liveleases-run.css"); </style>
       <script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
       <script type="text/javascript" src="/assets/r2lab/liveleases-common.js"></script>      
-      <script type="text/javascript" src="/assets/r2lab/liveleases.js"></script>
+      <script type="text/javascript" src="/assets/r2lab/liveleases-run.js"></script>
       <div id="current-slice" data-current-slice-color="#000"></div>
     </div>
     <div class="col-md-7">
@@ -83,7 +83,9 @@ require_login: true
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	  <span aria-hidden="true">&times;</span>
+	</button>
         <h4 class="modal-title" id="myModalSlice">Manage Slices</h4>
       </div>
       <div class="modal-body" id="list-slices">
