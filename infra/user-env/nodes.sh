@@ -394,4 +394,16 @@ function demo() {
     echo "using interface ${oai_ifname} on subnet ${oai_subnet}"
 }
 
+# long names are tcp-segmentation-offload udp-fragmentation-offload
+# generic-segmentation-offload generic-receive-offload
+doc-fun offload-off "turn off various offload features on specified wired interface" 
+function offload-off () {
+    ifname=$1; shift
+    for feature in tso ufo gso gro ; do
+	command="ethtool -K $ifname $feature off"
+	echo $command
+	$command
+    done
+}
+
 function help() { echo -e $_doc_nodes; }
