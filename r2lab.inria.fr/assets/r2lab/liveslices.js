@@ -107,7 +107,7 @@ Click here to renew it!</a>';
             s_message = "slice not available or does not exist";
             s_class   = 'in_red';
             s_icon = "<a href='#' rel='popover' title='"+s_message+"'>\
-                       <span class='glyphicon glyphicon-ban-circle "+s_class+"'></span>\
+                       <span class='glyphicon glyphicon-exclamation-sign "+s_class+"'></span>\
                      </a>";
             $(body).append("<div class='row'>\
                               <div class='col-md-6 "+s_class+"'>"+value+"</div>\
