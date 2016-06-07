@@ -92,22 +92,29 @@ class OmfRestView(View):
             return [response['resource_response']['resource'] for response in responses]
 
     # error checking what comes back from omf-sfa
-    def rain_check(self, post_result, action):
+    def rain_check(self, post_result, action, error_as_http=True):
         """
         returns a tuple value, error
         if error is set, it should be returned as an http response
         otherwise value is guaranteed to have a 'resource_response' field
+        
+        if error_as_http is True, the error part, when relevant, is a http_response
+        otherwise it's just a string
         """
+        def wrap_error(error_string):
+            return error_string if not error_as_http else \
+                self.http_response_from_struct({'error' : error_string})
+
         if not post_result:
-            return None, self.http_response_from_struct(
-                {'error' : "Could not {}".format(action)})
+            return None, wrap_error("Could not {}".format(action))
         try:
             parsed = json.loads(post_result)
         except Exception as e:
-            return None, self.http_response_from_struct(
-                {'error' : str(e)})
+            return None, wrap_error(str(e))
         if 'resource_response' not in parsed:
-            return None, self.http_response_from_struct({'error' : parsed})
+            try:
+                error = parsed['exception']['reason']
+            except:
+                error = str(parsed)
+            return None, wrap_error(error)
         return parsed, None
-
-        

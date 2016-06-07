@@ -16,6 +16,7 @@ var version             = '1.34';
 var refresh             = true;
 var currentTimezone     = 'local';
 
+var liveleases_debug = false;
 
 function setSlice(element){
   var element_color = element.css("background-color");
@@ -391,43 +392,41 @@ function isZombie(obj){
 // via django
 function refreshLeases(){
   msg = "INIT";
-  // console.log("sending on chan-leases-request -> " + msg);
-  console.log("sending on chan-leases-request");
+  if (liveleases_debug) console.log("sending on chan-leases-request -> " + msg);
   socket.emit('chan-leases-request', msg);
 }
 
 
 function sendBroadcast(action, data){
   var msg = [action, JSON.stringify(data)];
-  // console.log("sending on chan-leases-broadcast -> " + msg);
-  console.log("sending on chan-leases-broadcast");
+  if (liveleases_debug) console.log("sending on chan-leases-broadcast -> " + msg);
   socket.emit('chan-leases-broadcast', msg);
 }
 
 
 function listenBroadcast(){
     socket.on('chan-leases-broadcast', function(msg){
-    console.log("incoming chan-leases-broadcast");
-    var action = msg[0];
+      if (liveleases_debug) console.log("incoming chan-leases-broadcast");
+      var action = msg[0];
 
-    if (action == 'add'){
-      var lease  = createLeaseFromJson(msg[1]);
-      $('#calendar').fullCalendar('renderEvent', lease, true );
-    }
-    else if (action == 'edit'){
-      var lease  = createLeaseFromJson(msg[1]);
-      removeElementFromCalendar(lease.id);
-      $('#calendar').fullCalendar('renderEvent', lease, true );
-    }
-    else if (action == 'del'){
-      var lease  = createLeaseFromJson(msg[1]);
-      removeElementFromCalendar(lease.id);
-      $('#calendar').fullCalendar('renderEvent', lease, true );
-    }
-  });
+      if (action == 'add'){
+	var lease  = createLeaseFromJson(msg[1]);
+	$('#calendar').fullCalendar('renderEvent', lease, true );
+      }
+      else if (action == 'edit'){
+	var lease  = createLeaseFromJson(msg[1]);
+	removeElementFromCalendar(lease.id);
+	$('#calendar').fullCalendar('renderEvent', lease, true );
+      }
+      else if (action == 'del'){
+	var lease  = createLeaseFromJson(msg[1]);
+	removeElementFromCalendar(lease.id);
+	$('#calendar').fullCalendar('renderEvent', lease, true );
+      }
+    });
 
   socket.on('chan-leases', function(msg){
-    console.log("incoming chan-leases");
+    if (liveleases_debug) console.log("incoming chan-leases");
     setCurrentLeases(msg);
     resetActionsQueued();
     var leases = getCurrentLeases();
@@ -511,8 +510,8 @@ function setActionsQueue(action, data){
       ////////// temporary
       // in all cases, show the results in console, in case we'd need to improve this
       // logic further on in the future
-      console.log("upon ajax POST: xhttp.status = " + xhttp.status +
-		  " and xhttp.responseText = " + xhttp.responseText);
+      if (liveleases_debug) console.log("upon ajax POST: xhttp.status = " + xhttp.status +
+					" and xhttp.responseText = " + xhttp.responseText);
       ////////// what should remain
       if (xhttp.status != 200) {
 	// this typically is a 500 error inside django
@@ -711,7 +710,8 @@ function refreshCalendar(events){
   if(refresh){
 
     $.each(events, function(key, event){
-      console.log("refreshCalendar : lease = "+ event.title + ":" + event.start + " .. " + event.end);
+      if (liveleases_debug) console.log("refreshCalendar : lease = "+ event.title + ":" +
+					event.start + " .. " + event.end);
       removeElementFromCalendar(event.id);
       $('#calendar').fullCalendar('renderEvent', event, true);
     });
@@ -770,7 +770,8 @@ function parseLeases(data){
         var request = {"uuid" : newLease.uuid};
         post_omfrest_request('/leases/delete', request, function(xhttp) {
           if (xhttp.readyState == 4 && xhttp.status == 200) {
-            ;//console.log(request);
+            if (liveleases_debug) console.log("return from /leases/delete");
+            if (liveleases_debug) console.log(request);
           }
         });
       }
