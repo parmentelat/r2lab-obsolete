@@ -5,8 +5,8 @@ tab: platform
 **Thirty-seven** nodes are available in R2lab to provide a modern testbed infra structure. The nodes are distributed in a grid layout and are customizable, allowing great variety of experimentation scenarios.
 
 <h2 class="text-center" style="color:green;" >
-full control and granted access<br>
-<span class="text-muted lead">The nodes are totally open and a full granted user access is provided</span><br>
+Full control and access to bare metal<br>
+<span class="text-muted lead">The nodes are totally open and users can install any software stack they need</span><br>
 </h2>
 
 <hr class="featurette-divider">
@@ -21,8 +21,7 @@ full control and granted access<br>
 		&nbsp; This implies that you can run, reboot, load, and reload disparate operating system in each node. A full access to the node is handled by a remote access and a root user is available during your experimentation.
   </div>
 
-  <div class="col-md-2">
-  </div>
+  <div class="col-md-2"> </div>
   
   <div class="col-md-5">
   	<span>
@@ -38,56 +37,48 @@ full control and granted access<br>
   <div class="col-md-7"> 
   <span>
     <h3>Node details</h3>
-    <i style="font-size:2em;" class="pull-left glyphicon glyphicon-signal" aria-hidden="true"></i>
+    <i style="font-size:2em;" class="pull-left glyphicon glyphicon-signal" aria-hidden="true">&nbsp;</i>
   </span>
-  &nbsp; Our anechoic chamber is equipped with powerful nodes which allows to run high-level OS Linux. It &nbsp; enables to run many applications and advanced experimentations.
+Our anechoic chamber is equipped with powerful nodes that can run high-level OS Linux. They can run many applications and advanced experimentations.
 
-  Part of the nodes will be connected to **USRP** software radio devices. Details of the devices are provided below.
-  <br>
-  <br>
-  **The [Nitos](http://nitlab.inf.uth.gr/NITlab/) X50 nodes are:**
-  <p>
-  **2 Wireless Interfaces** Atheros 802.11 a/b/g and Atheros  802.11 a/b/g/n (MIMO);  **CPU** Intel Core i7-2600 processor; 
-  **RAM** kingston 4GB HYPERX BLU DDR3; 8M **Cache**, at 3.40GHz.
-  </p>
-  **Future USRP nodes:**
-  <p>
-  [**USRP** N210](http://www.ettus.com/product/details/UN210-KIT), [**USRP** B210](http://www.ettus.com/product/details/UB210-KIT), **USRP**2 and **USRP**1.
-  </p>
-  
-  <p>
-  The [Nitos](http://nitlab.inf.uth.gr/NITlab/) nodes embed **three wired interfaces**, which are used for:
-  </p>
-  **CM card**:<br>
-  A small web server run in a Chassis Manager Card (CM card) to control and monitor the nodes. The CM card answer HTTP requests to expose on/off actions, status and others like: 
-  <br>
-  - Remote on/off and reset of a NITOS node<br>
-  - Monitoring of the node's status (on or off)<br>
-  - Remote reset of the CM Card<br>
-  - Auto-reset safeguards, in case of a hang<br>
-  - Monitoring of the Power Supply Unit voltage integrity<br>
-  <!-- - External environmental conditions monitoring (temperature, humidity, light intensity)<br>
-  - Internal node temperature monitoring<br> -->
-  <br> 
-  The CM card interface is available at: 192.168.**1**.<font color="red">**xx**</font>, where <font color="red">**xx**</font> are the node number.
-  <br>
-  <br>
+  <hr>
 
-  **Experiment interface**:<br>
-  The experiment interface offers wired connectivity between nodes and
-  to the infrastructure; this is entirely dedicated to experimenters -
-  and is not turned on by default, but can easily be enabled from the
-  node using DHCP, in which case it becomes available at: 192.168.**2**.<font color="green">**xx**</font>. This interface will not be available in case the Nitos node is attached to a **USRP**2 or **N210** device.
-  
-  <br>
-  <br>
-  **Control interface( OMF)**:<br>
-  OMF is a Testbed Control, Measurement and Management Framework. It was developed for wireless testbed platforms and had being extended to support features and facilities for testbed's control, measurement, and management.
-  The CI OMF interface is available at: 192.168.**3**.<font color="blue">**xx**</font>.
-  
-  <br>
-  <br>
+<h3>All nodes</h3>
+All 37 nodes are based on [Nitos X50](http://nitlab.inf.uth.gr/NITlab/) and feature
+ <ul>
+  <li>State of the art motherboard
+   <ul>
+    <li>CPU Intel Core i7-2600 processor</li>
+    <li>4Gb RAM</li>
+    <li>240 Gb SSD</li>
+   </ul>
+  <li>2 Wireless Interfaces, dedicated to experimentation, 3 antennas each&nbsp;:
+   <ul>
+    <li>Atheros 802.11 93xx a/b/g/n</li>
+    <li>and/or Intel 5300</li>
+    </ul>
+  </li>
+  <li> 3 wired interfaces used for&nbsp;:
+   <ul>
+    <li>Remote power and reset management</li>
+    <li>Control, used by the testbed management framework for providing access - 192.168.3.<font color="red">**nn**</font>, where <font color="red">**nn**</font> is the node number</li>
+    <li>Data, dedicated to experimentation - 192.168.2.<font color="red">**nn**</font></li>
+   </ul>
+  </li>
+ </ul>  
 
+<hr>
+  <h3>USRP nodes</h3>
+
+  Some nodes are equipped with USRP extensions, for SDR-based experiments&nbsp;:
+  <ul>
+  <li>Based on [USRP N210](http://www.ettus.com/product/details/UN210-KIT),</li>
+  <li>or on [USRP B210](http://www.ettus.com/product/details/UB210-KIT), featuring USRP2 and USRP1.</li>
+  <li>both models from [ETTUS](http://www.ettus.com)</li>
+  <li>also remote-controllable for reset-like operations</li>
+  <li>Current deployment: 4 nodes - target: 10 nodes</li>
+  </ul>
+  
   </div>
   <div class="col-md-3">
     <br>
@@ -95,8 +86,8 @@ full control and granted access<br>
     <center>Fig. 1 - Resource/Node Icarus</center>
     <br>
     <br>
-    <br>
     <img src="/assets/img/node_interface_2.jpg" width="300px">
     <center>Fig. 2 - Resource/Node Icarus</center>
   </div>
 </div>
+
