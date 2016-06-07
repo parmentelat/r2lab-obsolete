@@ -2,6 +2,10 @@ title: Latest news, infos and incidents...
 tab: news
 ---
 
+### June 6
+
+* Replacement of battery on nodes 7, 14, 18, 29 and 30 to deal with hang issues when restarting.
+
 ### March 17
 
 * The 3d printed boxes are ready to ship
@@ -42,7 +46,7 @@ tab: news
   * and to inspect current reservations (`rhubarbe leases`)
   * as well as a monitoring tool (this is what feeds the [livemap](status.md#livemap) and [livetable](status.md#livetable) views
 
-* As a result, it is now possible for us to expose a single resource named `37nodes` to the onelab portal, thus materializing the fact that the whole testbed is actually reserved 
+* As a result, it is now possible for us to expose a single resource named `37nodes` to the onelab portal, thus materializing the fact that the whole testbed is actually reserved
 
 ### November 10
 
