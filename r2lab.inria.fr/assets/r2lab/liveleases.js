@@ -204,7 +204,7 @@ $(document).ready(function() {
     buildCalendar(setNightlyAndPast());
     setCurrentSliceBox(getCurrentSliceName());
 
-    listenBroadcast();
+    listenLeases();
     refreshLeases();
 
     $('.fc-day-header').html('today');

@@ -397,34 +397,7 @@ function refreshLeases(){
 }
 
 
-function sendBroadcast(action, data){
-  var msg = [action, JSON.stringify(data)];
-  if (liveleases_debug) console.log("sending on chan-leases-broadcast -> " + msg);
-  socket.emit('chan-leases-broadcast', msg);
-}
-
-
-function listenBroadcast(){
-    socket.on('chan-leases-broadcast', function(msg){
-      if (liveleases_debug) console.log("incoming chan-leases-broadcast");
-      var action = msg[0];
-
-      if (action == 'add'){
-	var lease  = createLeaseFromJson(msg[1]);
-	$('#calendar').fullCalendar('renderEvent', lease, true );
-      }
-      else if (action == 'edit'){
-	var lease  = createLeaseFromJson(msg[1]);
-	removeElementFromCalendar(lease.id);
-	$('#calendar').fullCalendar('renderEvent', lease, true );
-      }
-      else if (action == 'del'){
-	var lease  = createLeaseFromJson(msg[1]);
-	removeElementFromCalendar(lease.id);
-	$('#calendar').fullCalendar('renderEvent', lease, true );
-      }
-    });
-
+function listenLeases(){
   socket.on('chan-leases', function(msg){
     if (liveleases_debug) console.log("incoming chan-leases");
     setCurrentLeases(msg);
@@ -440,31 +413,16 @@ function listenBroadcast(){
 function updateLeases(action, event){
   if (action == 'addLease') {
     setActionsQueue('add', event);
-    sendBroadcast('add', event);
-//    setTimeout(function(){
-//      refreshLeases();
-//    }, 2000);
   }
   else if (action == 'delLease'){
     if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
       removeElementFromCalendar(event.id);
-//      setTimeout(function(){
-//        refreshLeases();
-//      }, 2000);
     } else {
       setActionsQueue('del', event);
-      sendBroadcast('del', event);
-//      setTimeout(function(){
-//        refreshLeases();
-//      }, 2000);
     }
   }
   else if (action == 'editLease'){
     setActionsQueue('edit', event);
-    sendBroadcast('edit', event);
-//    setTimeout(function(){
-//      refreshLeases();
-//    }, 2000);
   }
 }
 
