@@ -220,7 +220,7 @@ $(document).ready(function() {
     saveSomeColors();
     getLastSlice();
 
-    resetActionsQueued();
+    resetActionsQueue();
     buildInitialSlicesBox(getMySlicesName());
     buildCalendar(setNightlyAndPast());
     setCurrentSliceBox(getCurrentSliceName());

@@ -16,7 +16,7 @@ var version             = '1.34';
 var refresh             = true;
 var currentTimezone     = 'local';
 
-var liveleases_debug = false;
+var liveleases_debug = true;
 
 function setSlice(element){
   var element_color = element.css("background-color");
@@ -249,7 +249,7 @@ function addElementToCalendar(element){
 }
 
 
-function resetActionsQueued(){
+function resetActionsQueue(){
   actionsQueued = [];
 }
 
@@ -259,7 +259,7 @@ function getActionsQueued(){
 }
 
 
-function setActionsQueued(title, start, end){
+function queueAction(title, start, end){
   var local_id = null;
   local_id = getLocalId(title, start, end);
   actionsQueued.push(local_id);
@@ -322,24 +322,6 @@ function createLease(lease){
 }
 
 
-function createLeaseFromJson(data){
-  var lease = $.parseJSON(data);
-  newLease             = new Object();
-  newLease.id          = lease['id'];
-  newLease.uuid        = lease['uuid'];
-  newLease.title       = lease['title'];
-  newLease.start       = lease['start'];
-  newLease.end         = lease['end'];
-  newLease.overlap     = lease['overlap'];;
-  newLease.editable    = lease['editable'];;
-  newLease.selectable  = lease['rendering'];
-  newLease.color       = lease['color'];
-  newLease.textColor   = lease['textColor'];
-
-  return newLease;
-}
-
-
 function isPastDate(end){
   var past = false;
   if(moment().diff(end, 'minutes') > 0){
@@ -396,12 +378,29 @@ function refreshLeases(){
   socket.emit('chan-leases-request', msg);
 }
 
+// show action immediately before it becomes confirmed
+function showImmediate(action, event) {
+  if (liveleases_debug) console.log("showImmediate");
+  if (action == 'add'){
+    var lease  = createLease(event);
+    console.log("adding lease "+lease);
+    $('#calendar').fullCalendar('renderEvent', lease, true );
+  } else if (action == 'edit'){
+    var lease  = createLease(event);
+    removeElementFromCalendar(lease.id);
+    $('#calendar').fullCalendar('renderEvent', lease, true );
+  } else if (action == 'del'){
+    var lease  = createLease(event);
+    removeElementFromCalendar(lease.id);
+    $('#calendar').fullCalendar('renderEvent', lease, true );
+  }
+}
 
 function listenLeases(){
   socket.on('chan-leases', function(msg){
     if (liveleases_debug) console.log("incoming chan-leases");
     setCurrentLeases(msg);
-    resetActionsQueued();
+    resetActionsQueue();
     var leases = getCurrentLeases();
     var leasesbooked = parseLeases(leases);
     refreshCalendar(leasesbooked);
@@ -412,17 +411,18 @@ function listenLeases(){
 
 function updateLeases(action, event){
   if (action == 'addLease') {
+    showImmediate('add', event);
     setActionsQueue('add', event);
-  }
-  else if (action == 'delLease'){
+  } else if (action == 'editLease'){
+    showImmediate('edit', event);
+    setActionsQueue('edit', event);
+  } else if (action == 'delLease') {
     if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
       removeElementFromCalendar(event.id);
     } else {
       setActionsQueue('del', event);
+      showImmediate('del', event);
     }
-  }
-  else if (action == 'editLease'){
-    setActionsQueue('edit', event);
   }
 }
 
@@ -735,7 +735,7 @@ function parseLeases(data){
       }
       else {
         leases.push(newLease);
-        setActionsQueued(newLease.title, newLease.start, newLease.end);
+        queueAction(newLease.title, newLease.start, newLease.end);
       }
 
     });
