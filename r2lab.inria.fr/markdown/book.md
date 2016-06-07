@@ -36,6 +36,7 @@ require_login: true
       <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
       <style type="text/css"> @import url("/assets/css/fullcalendar.css"); </style>
 
+      <style type="text/css"> @import url("/assets/r2lab/liveleases-common.css"); </style>
       <style type="text/css"> @import url("/assets/r2lab/liveleases-book.css"); </style>
       <script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
       <script type="text/javascript" src="/assets/r2lab/liveleases-common.js"></script>
