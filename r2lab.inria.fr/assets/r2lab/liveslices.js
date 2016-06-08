@@ -75,7 +75,9 @@ Click here to renew it!</a>';
 
               var s_class   = 'in_green';
               var s_message = 'valid';
-              var s_icon    = '';
+              var s_icon = "<a href='#' rel='tooltip' title='renew'>\
+                         <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+idFormat(slicename)+"','"+slicename+"');></span>\
+                       </a>";
               var the_date  = moment(expiration).format("YYYY-MM-DD HH:mm");
               if (isPastDate(expiration) || isPastDate(closed)){
                   sendMessage(slice_manage_invitation, 'attention');
@@ -86,9 +88,6 @@ Click here to renew it!</a>';
 
                 s_class   = 'in_red';
                 s_message = 'expired';
-                s_icon = "<a href='#' rel='tooltip' title='renew'>\
-                           <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+idFormat(slicename)+"','"+slicename+"');></span>\
-                         </a>";
               }
 
               $(body).append("<div class='row'>\
@@ -146,8 +145,9 @@ var renew_slice = function(element, slicename) {
 
       $('#datetime_expiration'+element).removeClass('in_red');
       $('#datetime_expiration'+element).addClass('in_green');
+      $('#datetime_expiration'+element).toggle("pulsate").toggle("highlight");
       $('#datetime_expiration'+element).html(moment(answer['valid_until']).format("YYYY-MM-DD HH:mm"));
-      $('#icon_'+element).html('');
+      // $('#icon_'+element).html('');
     }
   });
 }
