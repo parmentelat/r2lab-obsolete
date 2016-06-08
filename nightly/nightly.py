@@ -444,20 +444,18 @@ def write_in_file(text, the_file):
 
 
 
-def save_data_in_txt(nodes, the_file, answer='short'):
+def save_data_in_txt(results, the_file, answer='short'):
     """save the results in a file for posterior use of it """
     dir_name  = args.text_dir
     file_name = the_file
-
     number_of_phases = 5
-
     all_nodes = ''
-    for node in nodes:
+    for node in results:
         fail   = False
         text   = ''
         failed = ''
         for ph in range(number_of_phases):
-            if phases[node]["ph{}".format(ph+1)] is 'ko':
+            if results[node]["ph{}".format(ph+1)] is 'ko':
                 failed = failed + map_phases(ph+1,answer)
                 fail = True
 
@@ -915,12 +913,21 @@ def format_nodes(nodes, avoid=None):
 
 
 
-def save_data_in_json(results, file_name):
-    """ Save the results in a json file """
+def save_data_in_json(results, the_file):
+    """ Save the result in a json file """
     dir = args.text_dir
-    file_name = "{}".format(file_name)
+    file_name = the_file
+    number_of_phases = 5
+    all_nodes = {}
+    for node in results:
+        for ph in range(number_of_phases):
+            if results[node]["ph{}".format(ph+1)] is 'ko':
+                try:
+                    all_nodes[str(node)].update( { "ph{}".format(ph+1) : 'ko'} )
+                except Exception as e:
+                    all_nodes.update( {str(node) : { "ph{}".format(ph+1) : 'ko'}} )
 
-    temp_results = {"date" : str(date()), "data" : results}
+    temp_results = {"date" : str(date()), "data" : all_nodes}
 
     with open(os.path.join(dir, file_name), "a") as js:
         js.write(json.dumps(temp_results)+"\n")
