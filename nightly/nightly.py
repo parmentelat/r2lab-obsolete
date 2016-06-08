@@ -453,13 +453,17 @@ def save_data_in_txt(nodes, the_file, answer='short'):
 
     all_nodes = ''
     for node in nodes:
+        fail   = False
         text   = ''
         failed = ''
         for ph in range(number_of_phases):
             if phases[node]["ph{}".format(ph+1)] is 'ko':
                 failed = failed + map_phases(ph+1,answer)
-        text = text + str(node) + '('+failed[:-1]+')'
-        all_nodes = all_nodes + text +', '
+                fail = True
+
+        if fail:
+            text = text + str(node) + '('+failed+')'
+            all_nodes = all_nodes + text +', '
     all_nodes = all_nodes[:-2]
 
     with open(os.path.join(dir_name, file_name), "a") as fl:
