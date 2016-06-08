@@ -104,7 +104,7 @@ doc-fun restart " = stop + sleep 1 + start"
 function restart() {
     stop
     # wait for a little longer if not on hss
-    [ -n "$runs_hss" ] && sleep 1 || sleep 3
+    [ -n "$runs_hss" ] && sleep 1 || sleep 8
     start
 }
 

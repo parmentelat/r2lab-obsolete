@@ -1,37 +1,63 @@
 ![](oai-nodes.001.png)
 
-# prep infra
-
 **WARNING** 
 
 **USE node 19 for enb for now**
 
+# prep infra
+
+## the HSS box
+
 ```
-### the HSS box
 n 23
 rload -i oai-gw-builds5 23 16
+rwait -t 120
+ss
+refresh
+demo
 ```
+
+## the EPC box
+
 ```
-### the EPC box
 n 16
+rwait -t 500
+ss
+refresh
+demo
+offload-off data
+offload-off control
+
+cd ~/openair-cn/SRC/SGW
+emacs sgw_config.c
+
 ```
+## the ENB box
+
 ```
-### the ENB box
 n 19
-#rload -i oai-enb-builds-uhd394-oscillo 19
-rload -i oai-enb-builds2 19
+#rload -i oai-enb-builds-uhd394-oscillo 
+rload -i oai-enb-builds2
+rwait -t 300
+ss
+refresh
+demo
+offload-off data
+ifconfig data mtu 1536
 ```
 
-```
-### the scambler box
-n 11
-rload -i oai-scrambler 11
-```
+## MAC controlling the phone
 
-# prep demo
+*Screen sharing* -> faraday.inria.fr -> tester/tester++
 
 ```
-### the scrambler box
+phone status
+```
+
+
+## the scrambler box
+
+```
 n 11
 rload -i oai-scrambler
 rwait
@@ -39,21 +65,12 @@ ss
 demo
 refresh
 ```
-```
-### the mac box to turn phone on or off
-macusb
-phone status
-```
 
 # common scenario
 
 for the 3 boxes
 
 ```
-rwait; ss
----
-refresh
-demo
 o prepare
 o start
 o logs

@@ -396,10 +396,11 @@ function demo() {
 
 # long names are tcp-segmentation-offload udp-fragmentation-offload
 # generic-segmentation-offload generic-receive-offload
+# plus, udp-fragmentation-offload is fixed on our nodes
 doc-fun offload-off "turn off various offload features on specified wired interface" 
 function offload-off () {
     ifname=$1; shift
-    for feature in tso ufo gso gro ; do
+    for feature in tso gso gro ; do
 	command="ethtool -K $ifname $feature off"
 	echo $command
 	$command

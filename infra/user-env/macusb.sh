@@ -18,6 +18,11 @@ function phone-status() {
     esac
 }
 
+function phone-reboot() {
+    "echo REBOOTING phone ..."
+    adb shell am broadcast -a android.intent.action.BOOT_COMPLETED
+}
+
 function phone() {
     mode=$1; shift
     command=phone-$mode
