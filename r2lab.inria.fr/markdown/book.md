@@ -72,10 +72,12 @@ require_login: true
 <br/>
 R2lab platform is reset every night. A time slot from <strong>3 a.m.</strong> until
 <strong>5 a.m.</strong> is reserved to execute this job.
-All times on this website are expressed wrt the <strong>CET timezone</strong>, which is UTC+1 in winter, and UTC+2 in summer.
 
 <br/>
 In any case, please make sure to save your experiments once you are done, as the next user will probably reload an image on your nodes.
+
+<br/>
+All times on this website are expressed wrt the <strong>CET timezone</strong>, which is UTC+1 in winter, and UTC+2 in summer.
 </div>
 
 </div>
