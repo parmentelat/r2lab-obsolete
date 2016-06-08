@@ -20,7 +20,7 @@ require_login: true
     <div class="col-md-2">
       <div id="wrap">
         <div id="manage_slices">
-          <button type="button" data-toggle="modal" data-target="#slice_modal" class="fc-button fc-state-default fc-corner-left fc-corner-right">manage your slices</button>
+          <button type="button" data-toggle="modal" data-target="#slice_modal" class="fc-button fc-state-default fc-corner-left fc-corner-right sd">manage your slices</button>
         </div>
         <div id="my-slices">
           <h4 align="center">drag & drop booking</h4>

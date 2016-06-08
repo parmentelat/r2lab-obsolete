@@ -13,9 +13,18 @@
 
 #manage_slices {
   font-size: 12px;
-  margin-left: 35px;
+  margin-left: 34px;
   margin-top: 1px;
   float: left;
+}
+
+.sd {
+  padding: 3px 7px;
+  font-size: 12px;
+  line-height: normal;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
 }
 
 #calendar {
