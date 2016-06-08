@@ -19,13 +19,13 @@ require_login: true
   <div class="row" id="all">
     <div class="col-md-2">
       <div id="wrap">
+        <div id="manage_slices">
+          <button type="button" data-toggle="modal" data-target="#slice_modal" class="fc-button fc-state-default fc-corner-left fc-corner-right">manage your slices</button>
+        </div>
         <div id="my-slices">
           <h4 align="center">drag & drop booking</h4>
         </div>
         <div style="clear:both"></div>
-      </div>
-      <div id="manage_slices">
-        <a href="#" data-toggle="modal" data-target="#slice_modal">manage your slices</a>
       </div>
     </div>
     <div class="col-md-10">
