@@ -12,3 +12,5 @@ __pycache__
 db.sqlite3
 file.txt
 nightly_zombie.txt
+nightly_data.json
+nightly_data.txt

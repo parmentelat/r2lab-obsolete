@@ -338,7 +338,6 @@ def main(args):
     print " "
 
     print "-- INFO: summary of reset routine"
-    save_log_in_json(loaded_nodes, 'nightly_log')
     for key, value in sorted(loaded_nodes.iteritems()):
         print "node: #{} ".format(key)
         print "old:   {} ".format(value['old_os'])
@@ -356,10 +355,12 @@ def main(args):
     summary_in_mail(list(set(bug_node + zombie_nodes)))
 
     print "-- INFO: write in file"
+    #this is the old file containing all info since we start nightly
     write_in_file(list(set(bug_node)), "nightly.txt")
 
-    print "-- INFO: write in file zombie"
-    write_in_file(list(set(zombie_nodes)), "nightly_zombie.txt" )
+    print "-- INFO: write in file in new format"
+    save_data_in_txt (phases, "nightly_data.txt" )
+    save_data_in_json(phases, "nightly_data.json")
 
     print "-- INFO: end of main"
 
@@ -392,13 +393,12 @@ def parse_results_from_load(text):
 
 
 def update_phases_db(node, the_phase):
-    """ set fail for the node n in the phase """
-
+    """ unset fail for the node n in the phase """
     if not type(node) is list:
-        phases[int(node)]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: #42c944;">&#8226;'
+        phases[int(node)]["ph{}".format(the_phase)] = 'ok'
     else:
         for n in node:
-            phases[int(n)]["ph{}".format(the_phase)] = '32px Arial, Tahoma, Sans-serif; color: #42c944;">&#8226;'
+            phases[int(n)]["ph{}".format(the_phase)] = 'ok'
 
 
 
@@ -408,14 +408,30 @@ def create_phases_db(node):
     number_of_phases = 5
     all_phases = {}
     for n in range(number_of_phases):
-        all_phases["ph{}".format(n+1)] = '18px Arial, Tahoma, Sans-serif; color: red;">&#215;'
+        all_phases["ph{}".format(n+1)] = 'ko'
 
     phases.update({int(node) : all_phases})
 
 
 
 
-def write_in_file(text, the_file="nightly.txt"):
+def parse_phases_db_in_style(phase_result):
+    """ parsing the result to css layout """
+    new_phase = ""
+
+    #in regular case
+    if phase_result is "ok":
+        new_phase = '32px Arial, Tahoma, Sans-serif; color: #42c944;">&#8226;'
+    #in fail case
+    elif phase_result is "ko":
+        new_phase = '18px Arial, Tahoma, Sans-serif; color: red;">&#215;'
+
+    return new_phase
+
+
+
+
+def write_in_file(text, the_file):
     """save the results in a file for posterior use of it """
     dir_name  = args.text_dir
     file_name = the_file
@@ -424,6 +440,30 @@ def write_in_file(text, the_file="nightly.txt"):
 
     with open(os.path.join(dir_name, file_name), "a") as fl:
         fl.write("{}: {}\n".format(date(),text))
+
+
+
+
+def save_data_in_txt(nodes, the_file, answer='short'):
+    """save the results in a file for posterior use of it """
+    dir_name  = args.text_dir
+    file_name = the_file
+
+    number_of_phases = 5
+
+    all_nodes = ''
+    for node in nodes:
+        text   = ''
+        failed = ''
+        for ph in range(number_of_phases):
+            if phases[node]["ph{}".format(ph+1)] is 'ko':
+                failed = failed + map_phases(ph+1,answer)
+        text = text + str(node) + '('+failed[:-1]+')'
+        all_nodes = all_nodes + text +', '
+    all_nodes = all_nodes[:-2]
+
+    with open(os.path.join(dir_name, file_name), "a") as fl:
+        fl.write("{}: {}\n".format(date(),all_nodes))
 
 
 
@@ -461,7 +501,7 @@ def summary_in_mail(nodes):
                         <td style="text-align: center; font:{}</td>\n \
                         <td></td>\n \
                     </tr>\
-                    '.format(node, phases[int(node)]['ph1'], phases[int(node)]['ph2'], phases[int(node)]['ph3'], phases[int(node)]['ph4'], phases[int(node)]['ph5'] )
+                    '.format(node, parse_phases_db_in_style(phases[int(node)]['ph1']), parse_phases_db_in_style(phases[int(node)]['ph2']), parse_phases_db_in_style(phases[int(node)]['ph3']), parse_phases_db_in_style(phases[int(node)]['ph4']), parse_phases_db_in_style(phases[int(node)]['ph5']) )
         lines_fail += line_fail
 
     legend = '\
@@ -474,7 +514,7 @@ def summary_in_mail(nodes):
                 &nbsp;<b>start:</b> <br>\n \
                 &nbsp;<b>ssh:</b>   <br>\n \
                 &nbsp;<b>load:</b>  <br>\n \
-                &nbsp;<b>O.S.:</b>  <br>\n \
+                &nbsp;<b>o.s.:</b>  <br>\n \
                 &nbsp;<b>zombie:</b><br>\n \
             </span>\n \
             </td>\n \
@@ -483,13 +523,12 @@ def summary_in_mail(nodes):
                 &nbsp; node successfully started at the beginning of the routine check.<br>\n \
                 &nbsp; node was reachable through ssh.<br>\n \
                 &nbsp; the load command successfully completed.<br>\n \
-                &nbsp; node O.S. successfully changed and operational.<br>\n \
+                &nbsp; node o.s. successfully changed and operational.<br>\n \
                 &nbsp; node cannot be switched off at the end of the test.<br>\n \
                 </span>\n \
             </td>\n \
             </tr>\
             '
-
     lines_fail = header + lines_fail + legend
 
     line_ok = '\
@@ -499,18 +538,15 @@ def summary_in_mail(nodes):
             </tr>\n \
             '
 
-
     body = email_body()
     body = body.replace("[THE DATE]", date('%d/%m/%Y'))
 
     if len(list_of_bug_nodes) < 1:
         body = body.replace("[THE CONTENT]", line_ok)
-
         title = 'Nightly Routine of {}: Perfect!'.format(date('%d/%m/%Y'))
 
     elif len(list_of_bug_nodes) >= 1:
         body = body.replace("[THE CONTENT]", lines_fail)
-
         title = 'Nightly Routine of {}: Issues!'.format(date('%d/%m/%Y'))
 
     # cmd = 'mail -a "Content-type: text/html" -s "{}" {} <<< "{}"'.format(title, to, body)
@@ -875,14 +911,37 @@ def format_nodes(nodes, avoid=None):
 
 
 
-def save_log_in_json(results, file_name):
-    """ Save the result in a json file """
-
+def save_data_in_json(results, file_name):
+    """ Save the results in a json file """
     dir = args.text_dir
-    file_name = "{}.json".format(file_name)
+    file_name = "{}".format(file_name)
 
-    with open(os.path.join(dir, file_name), "w") as js:
-        js.write(json.dumps(results))
+    temp_results = {"date" : str(date()), "data" : results}
+
+    with open(os.path.join(dir, file_name), "a") as js:
+        js.write(json.dumps(temp_results)+"\n")
+
+
+
+
+def map_phases(phase, answer='short'):
+    """ gives a human name for each phase instead of ph1, ph2, ... """
+    normal_human_name = ['', 'start', 'ssh', 'load', 'o.s.', 'zombie']
+    short_human_name  = ['', 't',     's',    'l',   'o',    'z'     ]
+    number_human_name = ['', '1',     '2',    '3',   '4',    '5'     ]
+    # just in case of giveen 'ph1' as phase
+    if type(phase) is str:
+        phase = phase.replace('ph', '')
+    if   answer is 'short':
+        new_name = short_human_name[int(phase)]
+    elif answer is 'number':
+        new_name = number_human_name[int(phase)]
+    elif answer is 'normal':
+        new_name = normal_human_name[int(phase)]
+    else:
+        new_name = normal_human_name[int(phase)]
+
+    return new_name
 
 
 
