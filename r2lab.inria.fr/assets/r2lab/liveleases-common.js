@@ -355,7 +355,7 @@ function sendMessage(msg, type){
   $('#messages').removeClass().addClass('alert alert-'+cls);
   $('#messages').html("<strong>"+title+"</strong> "+msg);
   $('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
-  $('#messages').delay(5000).fadeOut();
+  $('#messages').delay(30000).fadeOut();
 }
 
 
