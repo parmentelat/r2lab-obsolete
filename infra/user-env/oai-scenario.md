@@ -25,12 +25,6 @@ rwait -t 500
 ss
 refresh
 demo
-offload-off data
-offload-off control
-
-cd ~/openair-cn/SRC/SGW
-emacs sgw_config.c
-
 ```
 ## the ENB box
 
@@ -42,8 +36,6 @@ rwait -t 300
 ss
 refresh
 demo
-offload-off data
-ifconfig data mtu 1536
 ```
 
 ## MAC controlling the phone

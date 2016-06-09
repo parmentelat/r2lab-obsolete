@@ -19,7 +19,7 @@ function phone-status() {
 }
 
 function phone-reboot() {
-    "echo REBOOTING phone ..."
+    echo "REBOOTING phone ..."
     adb shell am broadcast -a android.intent.action.BOOT_COMPLETED
 }
 
