@@ -187,7 +187,7 @@ function init() {
     echo "========== patching sgw_config.c to set MTU to 1536"
     pushd /root/openair-cn/SRC/SGW >& /dev/null
     # do not run gitup on purpose
-    sed --in-place -e 's,modprobe xt_GTPUSP gtpu_enb_port=,modprobe xt_GTPUSP mtu=1536 gtpu_enb_port=,' sgw_config.c
+#    sed --in-place -e 's,modprobe xt_GTPUSP gtpu_enb_port=,modprobe xt_GTPUSP mtu=1536 gtpu_enb_port=,' sgw_config.c
     echo "--- visual check"
     git diff
 }
