@@ -13,18 +13,29 @@
 
 #manage_slices {
   font-size: 12px;
-  margin-left: 34px;
-  margin-top: 1px;
+  margin-left: 10px;
+  margin-top: 40px;
   float: left;
+  width: 100%;
 }
 
 .sd {
   padding: 3px 7px;
-  font-size: 12px;
+  font-size: 15px;
+  width: 170px;
+  height: 60px;
+  font-family: ubunturegular, Arial, helvetica, sans-serif;
+  background-color: #4CAF50; /* Green */
+  color: #575757;
+  border: 1px solid #00A0D0; /* 4CAF50 Green */
   line-height: normal;
   -webkit-border-radius: 4px;
      -moz-border-radius: 4px;
           border-radius: 4px;
+}
+
+.col-md-2 {
+  padding: 0px 0px;
 }
 
 #calendar {
@@ -47,22 +58,28 @@
 }
 
 #my-slices {
-  margin: 13px 10px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  margin: 17px 10px;
   padding: 0;
   font-size: 12px;
   float: left;
   width: 170px;
-  height: 478px;
+  height: 398px;
   padding: 0 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #00A0D0; /*#ccc;*/
   background: #eee;
   text-align: left;
 }
 
 #my-slices h4 {
-  font-size: 12px;
+  font-family: ubunturegular, Arial, helvetica, sans-serif;
+  font-size: 15px;
   margin-top: 0;
   padding-top: 1em;
+  color: #575757;
 }
 
 #my-slices .fc-event {
@@ -94,7 +111,8 @@
   padding: .3em;
 	border-radius: 2px;
   color: #fff;
-	border: 0px solid #3a87ad; /* default BORDER color */
+  /*border: 0px solid #3a87ad;*/
+  border: .1em dotted #fff;
 	background-color: #3a87ad; /* default BACKGROUND color */
 	font-weight: normal; /* undo jqui's ui-widget-header bold */
 }
