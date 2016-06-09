@@ -100,11 +100,13 @@ function prepare() {
 }
 
 ##########
-doc-fun restart " = stop + sleep 1 + start"
+doc-fun restart " = stop [+ sleep] + start; give delay as arg1 - defaults to 1"
 function restart() {
+    delay=$1; shift
+    [ -z "$delay" ] && delay=1
     stop
-    # wait for a little longer if not on hss
-    [ -n "$runs_hss" ] && sleep 1 || sleep 8
+    echo ===== sleeping for $delay seconds
+    sleep $delay
     start
 }
 
