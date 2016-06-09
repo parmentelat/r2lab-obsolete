@@ -469,7 +469,7 @@ doc-fun stop "stops the softmodem-related processes"
 function -list-processes() {
     pids=""
     [ -n "$runs_hss" ] && pids="$pids $(pgrep run_hss) $(pgrep oai_hss)"
-    [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc) $(pgrep run_mme) $(pgrep mme_gw) $(pgrep spgw)"
+    [ -n "$runs_epc" ] && pids="$pids $(pgrep run_epc) $(pgrep mme) $(pgrep mme_gw) $(pgrep spgw)"
     pids="$(echo $pids)"
     echo $pids
 }
