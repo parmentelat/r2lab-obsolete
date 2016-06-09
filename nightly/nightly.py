@@ -264,6 +264,7 @@ def main(args):
                     if node in bug_node: bug_node.remove(node)
                     isok = 'yes'
                     update_phases_db(node, 4)
+                    update_phases_db(node, 3) # if changed
                 else:
                     isok = 'no'
                     bug_node.append(node)
@@ -272,6 +273,7 @@ def main(args):
                     if node in bug_node: bug_node.remove(node)
                     isok = 'yes'
                     update_phases_db(node, 4)
+                    update_phases_db(node, 3) # if changed
                 else:
                     isok = 'no'
                     bug_node.append(node)
@@ -356,11 +358,14 @@ def main(args):
 
     print "-- INFO: write in file"
     #this is the old file containing all info since we start nightly
-    write_in_file(list(set(bug_node)), "nightly.txt")
+    write_in_file(list(set(bug_node + zombie_nodes))), "nightly.txt")
 
     print "-- INFO: write in file in new format"
     save_data_in_txt (phases, "nightly_data.txt" )
     save_data_in_json(phases, "nightly_data.json")
+
+    print "-- DEBUG: phases"
+    print phases
 
     print "-- INFO: end of main"
 
@@ -386,6 +391,7 @@ def parse_results_from_load(text):
         found.append(text[idx-back_in : idx].split(split_by)[1])
 
     found = map(lambda each:each.strip("fit"), found)
+    found = list(set(found))
 
     return found
 
@@ -395,10 +401,16 @@ def parse_results_from_load(text):
 def update_phases_db(node, the_phase):
     """ unset fail for the node n in the phase """
     if not type(node) is list:
-        phases[int(node)]["ph{}".format(the_phase)] = 'ok'
+        try:
+            phases[int(node)]["ph{}".format(the_phase)] = 'ok'
+        except Exception as e:
+            print '-- ERROR: node {} is NOT in the list!'.format(node)
     else:
         for n in node:
-            phases[int(n)]["ph{}".format(the_phase)] = 'ok'
+            try:
+                phases[int(n)]["ph{}".format(the_phase)] = 'ok'
+            except Exception as e:
+                print '-- ERROR: node {} is NOT in the list!'.format(n)
 
 
 

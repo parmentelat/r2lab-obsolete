@@ -23,8 +23,8 @@ class Parallel (threading.Thread):
 
     def run(self):
         self.output = execute(self.command, self.host_name, self.host_user, self.key)
-        
-        
+
+
     def stop(self):
         self._Thread__stop()
 
@@ -34,7 +34,7 @@ class Parallel (threading.Thread):
 
 
     def output(self):
-        return self.output 
+        return self.output
 
 
 def execute(command, host_name='localhost', host_user='root', key='node'):
@@ -58,8 +58,16 @@ def execute(command, host_name='localhost', host_user='root', key='node'):
 
     stdout    = ec.trace(app, "stdout")
     exitcode  = ec.trace(app, 'exitcode')
+    print "-- DEBUG: output from load "
+    print stdout
+    print exitcode
+    print "-- "
 
     results = {}
     results.update({ str(key) : {'exitcode' : exitcode, 'stdout' : stdout}})
+
+    print "-- DEBUG: results from load "
+    print results
+    print "-- "
 
     return results
