@@ -66,9 +66,9 @@ demo
 refresh
 ```
 
-# common scenario
+# Run it
 
-for the 3 boxes
+## common scenario for the 3 boxes
 
 ```
 o prepare
@@ -76,32 +76,27 @@ o start
 o logs
 ```
 
-# the scrambler
+## the scrambler
 
 ```
+o scrambler [-blast]
 ```
 
-# Details
-
 *****
 *****
 *****
 
-# ONGOING
 
-* have rebuilt image `oai-enb-builds`
+# Various notes
 
-# DB report
+
+## DB report
 
 ```
 select imsi, imei, access_restriction,  mmeidentity_idmmeidentity from users where imsi = 208950000000002;
 
 select * from mmeidentity where mmerealm='r2lab.fr' ;
 ```
-
-# `build_hss` 
-
- * patched version in my own repo, which is what the master branch on the images point at
 
 # NOTES on generic kernel
 
