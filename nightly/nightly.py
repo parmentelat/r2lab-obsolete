@@ -358,7 +358,7 @@ def main(args):
 
     print "-- INFO: write in file"
     #this is the old file containing all info since we start nightly
-    write_in_file(list(set(bug_node + zombie_nodes))), "nightly.txt")
+    write_in_file(list(set(bug_node + zombie_nodes)), "nightly.txt")
 
     print "-- INFO: write in file in new format"
     save_data_in_txt (phases, "nightly_data.txt" )
