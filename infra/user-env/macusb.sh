@@ -35,3 +35,8 @@ function refresh() {
     git pull
     source ~/.bash_profile
 }
+
+
+# to set LTE only - except that sqlite3 is not known
+#adb shell sqlite3 /data/data/com.android.providers.settings/databases/settings.db "update global SET value=11 WHERE name='preferred_network_mode'"
+#adb shell sqlite3 /data/data/com.android.providers.settings/databases/settings.db "select value FROM secure WHERE name='preferred_network_mode'"
