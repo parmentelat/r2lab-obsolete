@@ -190,7 +190,7 @@ function init() {
     sed --in-place -e 's,modprobe xt_GTPUSP gtpu_enb_port=,modprobe xt_GTPUSP mtu=1536 gtpu_enb_port=,' sgw_config.c
     sed --in-place -e 's,1463,1428,' pgw_pco.c pgw_config.c
     echo "--- visual check"
-    git diff
+    git diff | cat
 }
 
 doc-fun build "build hss and/or epc"
