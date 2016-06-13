@@ -79,9 +79,6 @@ def main(args):
     print "-- INFO: turn on nodes"
     all_nodes = name_node(nodes)
 
-
-    #------------------------------------------
-    # Uncomment the line below to use CURL format "on" command
     cmd = command_in_curl(all_nodes, 'on')
     results = execute(cmd)
 
@@ -129,6 +126,20 @@ def main(args):
             os = name_os(result[node]['stdout'])
             old_os.update( {node : {'os' : os}} )
             update_phases_db(node, 2)
+
+
+    #=========================================
+    # TURN OFF ALL NODES =====================
+    print "-- INFO: turn off nodes"
+    all_nodes = name_node(nodes)
+
+    cmd = command_in_curl(all_nodes, 'off')
+    results = execute(cmd)
+
+    if error_presence(results):
+        print "** ERROR: turn off not executed"
+    else:
+        print "-- INFO: nodes turned off"
 
 
     #=========================================
@@ -216,6 +227,34 @@ def main(args):
             else:
                 print "-- INFO: nodes were loaded"
 
+
+    #=========================================
+    # TURN OFF ALL NODES =====================
+    print "-- INFO: turn off nodes"
+    all_nodes = name_node(nodes)
+
+    cmd = command_in_curl(all_nodes, 'off')
+    results = execute(cmd)
+
+    if error_presence(results):
+        print "** ERROR: turn off not executed"
+    else:
+        print "-- INFO: nodes turned off"
+
+    wait_and_update_progress_bar(30)
+    #=========================================
+    # TURN OFF ALL NODES =====================
+    print "-- INFO: turn on nodes"
+    all_nodes = name_node(nodes)
+
+    cmd = command_in_curl(all_nodes, 'on')
+    results = execute(cmd)
+
+    if error_presence(results):
+        print "** ERROR: turn on not executed"
+    else:
+        print "-- INFO: nodes turned on"
+    wait_and_update_progress_bar(30)
 
     #=========================================
     # CHECK AGAIN THE OS =====================
