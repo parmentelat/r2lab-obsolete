@@ -243,7 +243,7 @@ def main(args):
 
     wait_and_update_progress_bar(30)
     #=========================================
-    # TURN OFF ALL NODES =====================
+    # TURN ON ALL NODES =====================
     print "-- INFO: turn on nodes"
     all_nodes = name_node(nodes)
 
@@ -320,20 +320,10 @@ def main(args):
             loaded_nodes.update( { node : {'old_os' : oldos, 'new_os' : newos, 'changed' : isok}} )
 
 
-    #=========================================
+    #==========================================
     # TURN OFF ALL NODES ======================
     print "-- INFO: turn off nodes"
     all_nodes = name_node(nodes)
-
-    #------------------------------------------
-    # Uncomment the two lines below to use OMF format "on" command
-    #all_nodes = stringfy_list(all_nodes)
-    # cmd = "omf6 tell -t {} -a off".format(all_nodes)
-
-    # OR
-
-    #------------------------------------------
-    # Uncomment the line below to use CURL format "on" command
     cmd = command_in_curl(all_nodes, 'off')
 
     results = execute(cmd)
