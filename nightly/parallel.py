@@ -58,16 +58,8 @@ def execute(command, host_name='localhost', host_user='root', key='node'):
 
     stdout    = ec.trace(app, "stdout")
     exitcode  = ec.trace(app, 'exitcode')
-    print "-- DEBUG: output from load "
-    print stdout
-    print exitcode
-    print "-- "
 
     results = {}
     results.update({ str(key) : {'exitcode' : exitcode, 'stdout' : stdout}})
-
-    print "-- DEBUG: results from load "
-    print results
-    print "-- "
 
     return results
