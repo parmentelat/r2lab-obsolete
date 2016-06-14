@@ -15,7 +15,6 @@ import time
 import sys
 import re
 import json
-from parallel import Parallel
 
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
@@ -35,9 +34,9 @@ parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="s
 
 args = parser.parse_args()
 
-VERSIONS_ALIAS  = ['u-1410',           'u-1504',           'f-21',          'f-22',           'f-23']
-VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',     'fedora 21',     'fedora 22',      'fedora 23']
-VERSIONS        = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
+VERSIONS_ALIAS  = ['u-1410',           'u-1504',            'u-1604',           'f-21',          'f-22',           'f-23']
+VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',      'ubuntu 16.04',     'fedora 21',     'fedora 22',      'fedora 23']
+VERSIONS        = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz',  'ubuntu-16.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
 
 # SEND_RESULTS_TO  = ['mario.zancanaro@inria.fr', 'thierry.parmentelat@inria.fr', 'thierry.turletti@inria.fr', 'walid.dabbous@inria.fr', 'mohamed-naoufal.mahfoudi@inria.fr']
 send_to_email   = args.send_to_email
@@ -135,14 +134,11 @@ def main(args):
     versions_names = VERSIONS_NAMES
     grouped_os_list = build_grouped_os_list(old_os)
     cmds= []
-    do_execute = False
     executions = 1 #(divide from the total nodes - 1 means total_nodes/1)
 
     # in case of have the version specified in the command line - do it for all
     if not None is version:
         print "-- INFO: version given"
-        do_execute = True
-
         splited_group = split(nodes, executions)
         for sub_list_nodes in splited_group:
             all_nodes = name_node(sub_list_nodes)
@@ -153,10 +149,8 @@ def main(args):
     else:
         print "-- INFO: no version given"
         for k, v in grouped_os_list.iteritems():
-            do_execute = True
             os         = k
             list_nodes = v
-
             if os in versions_names or os == 'unknown':
                 splited_group = split(list_nodes, executions)
                 for sub_list_nodes in splited_group:
@@ -166,71 +160,28 @@ def main(args):
                     real_version = named_version(new_version)
 
                     cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
-
             # IN CASE OF RETURN A unknown OS NAME
             else:
                 for node in list_nodes:
-                    # UPDATE NODES WHERE SOME BUG IS PRESENT
-                    #old_os.update( {node : {'os' : 'not found'}} )
                     bug_node.append(node)
 
-    if do_execute:
-
-        for cmd in cmds:
-
-            result = execute(cmd, key='node')
-            results.update(result)
-
-            if error_presence(result):
-                print "** ERROR: one or more node were not loaded correctly. CMD below:"
-                print cmd
-                print "-----"
-                print result
-                print "-----"
-            else:
-                stdout = remove_special_char(result['node']['stdout'])
-                #==================================================================
-                #searching in the answer of the command for the sentence of success
-                nodes_found = parse_results_from_load(stdout)
-                update_phases_db(nodes_found, 3)
-
-            #-------------------------------------
-            # CONTROL BY THE MONITORING Thread
-
-            # omf_load = Parallel(cmd)
-            # omf_load.start()
-            #
-            # check_number_times = 5   # Let's check n times before kiil the thread (normally using groups of 5 in executions)
-            # delay_before_kill  = 60  # Timeout for each check
-            #
-            # for i in range(check_number_times+1):
-            #     print "-- INFO: monitoring check #{}".format(i)
-            #
-            #     wait_and_update_progress_bar(delay_before_kill)
-            #
-            #     if omf_load.alive():
-            #         if i == check_number_times:
-            #             omf_load.stop()
-            #             print "** ERROR: oops! timeout reached!"
-            #             results = { 'node' : {'exitcode' : '1', 'stdout' : 'error'}}
-            #             break
-            #         else:
-            #             print "-- WARNING: let's wait more ... {}/{}".format(i+1,check_number_times)
-            #     else:
-            #         print "-- INFO: leaving before timeout "
-            #         result = omf_load.output
-            #         stdout = remove_special_char(result['node']['stdout'])
-            #         #==================================================================
-            #         #searching in the answer of the command for the sentence of success
-            #         nodes_found = parse_results_from_load(stdout)
-            #         update_phases_db(nodes_found, 3)
-            #         break
-            #-------------------------------------
-
-            # if error_presence(results):
-            #     print "** ERROR: one or more node were not loaded correctly"
-            # else:
-            #     print "-- INFO: nodes were loaded"
+    for cmd in cmds:
+        result = execute(cmd, key='node')
+        results.update(result)
+        if error_presence(result):
+            print "** ERROR: one or more node were not loaded correctly. CMD and result logs below:"
+            print cmd
+            print "-----"
+            print result
+            print "-----"
+        else:
+            stdout = remove_special_char(result['node']['stdout'])
+            #==================================================================
+            #searching in the answer of the command for the sentence of success
+            #+058s: fit23 Uploading successful
+            #+058s: <node> Uploading successful
+            nodes_found = parse_results_from_load(stdout)
+            update_phases_db(nodes_found, 3)
 
 
     #=========================================
@@ -293,7 +244,6 @@ def main(args):
                 else:
                     isok = 'no'
                     bug_node.append(node)
-
             loaded_nodes.update( { node : {'old_os' : oldos, 'new_os' : newos, 'changed' : isok}} )
 
 
@@ -315,7 +265,7 @@ def main(args):
     #=========================================
     # CHECK ZOMBIE (not turn off) NODES =====================
     print "-- INFO: check for zombie nodes"
-    wait_and_update_progress_bar(60)
+    wait_and_update_progress_bar(40)
     all_nodes   = to_str(nodes)
     zombie_nodes= []
     results     = {}
