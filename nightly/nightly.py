@@ -140,6 +140,7 @@ def main(args):
 
     # in case of have the version specified in the command line - do it for all
     if not None is version:
+        print "-- INFO: version given"
         do_execute = True
 
         splited_group = split(nodes, executions)
@@ -150,6 +151,7 @@ def main(args):
 
             cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
     else:
+        print "-- INFO: no version given"
         for k, v in grouped_os_list.iteritems():
             do_execute = True
             os         = k
@@ -821,11 +823,11 @@ def name_os(os):
     versions_names = VERSIONS_NAMES
     os = os.strip()
     if os == "":
-        os = 'undefined'
+        os = 'unknown'
     # Search in the list the 9th first characters
     all_os_found = filter(lambda x: os[:9] in x, versions_names)
 
-    return all_os_found[0] if all_os_found else 'undefined'
+    return all_os_found[0] if all_os_found else 'unknown'
 
 
 
