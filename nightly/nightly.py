@@ -134,7 +134,7 @@ def main(args):
     versions_names = VERSIONS_NAMES
     grouped_os_list = build_grouped_os_list(old_os)
     cmds= []
-    executions = 1 #(divide from the total nodes - 1 means total_nodes/1)
+    executions = 38 #(divide from the total nodes - 1 means total_nodes/1)
 
     # in case of have the version specified in the command line - do it for all
     if not None is version:
