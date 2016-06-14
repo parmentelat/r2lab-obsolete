@@ -163,7 +163,8 @@ def main(args):
             # IN CASE OF RETURN A unknown OS NAME
             else:
                 for node in list_nodes:
-                    bug_node.append(node)
+                    real_version = named_version('')
+                    cmds.append("rhubarbe-load {} -i {}; ".format(node, real_version))
 
     for cmd in cmds:
         result = execute(cmd, key='node')
