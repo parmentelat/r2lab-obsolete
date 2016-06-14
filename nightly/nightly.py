@@ -175,43 +175,60 @@ def main(args):
     if do_execute:
 
         for cmd in cmds:
+
+            result = execute(cmd, key='node')
+            results.update(result)
+
+            if error_presence(result):
+                print "** ERROR: one or more node were not loaded correctly. CMD below:"
+                print cmd
+                print "-----"
+                print result
+                print "-----"
+            else:
+                stdout = remove_special_char(result['node']['stdout'])
+                #==================================================================
+                #searching in the answer of the command for the sentence of success
+                nodes_found = parse_results_from_load(stdout)
+                update_phases_db(nodes_found, 3)
+
             #-------------------------------------
             # CONTROL BY THE MONITORING Thread
 
-            omf_load = Parallel(cmd)
-            omf_load.start()
-
-            check_number_times = 5   # Let's check n times before kiil the thread (normally using groups of 5 in executions)
-            delay_before_kill  = 60  # Timeout for each check
-
-            for i in range(check_number_times+1):
-                print "-- INFO: monitoring check #{}".format(i)
-
-                wait_and_update_progress_bar(delay_before_kill)
-
-                if omf_load.alive():
-                    if i == check_number_times:
-                        omf_load.stop()
-                        print "** ERROR: oops! timeout reached!"
-                        results = { 'node' : {'exitcode' : '1', 'stdout' : 'error'}}
-                        break
-                    else:
-                        print "-- WARNING: let's wait more ... {}/{}".format(i+1,check_number_times)
-                else:
-                    print "-- INFO: leaving before timeout "
-                    result = omf_load.output
-                    stdout = remove_special_char(result['node']['stdout'])
-                    #==================================================================
-                    #searching in the answer of the command for the sentence of success
-                    nodes_found = parse_results_from_load(stdout)
-                    update_phases_db(nodes_found, 3)
-                    break
+            # omf_load = Parallel(cmd)
+            # omf_load.start()
+            #
+            # check_number_times = 5   # Let's check n times before kiil the thread (normally using groups of 5 in executions)
+            # delay_before_kill  = 60  # Timeout for each check
+            #
+            # for i in range(check_number_times+1):
+            #     print "-- INFO: monitoring check #{}".format(i)
+            #
+            #     wait_and_update_progress_bar(delay_before_kill)
+            #
+            #     if omf_load.alive():
+            #         if i == check_number_times:
+            #             omf_load.stop()
+            #             print "** ERROR: oops! timeout reached!"
+            #             results = { 'node' : {'exitcode' : '1', 'stdout' : 'error'}}
+            #             break
+            #         else:
+            #             print "-- WARNING: let's wait more ... {}/{}".format(i+1,check_number_times)
+            #     else:
+            #         print "-- INFO: leaving before timeout "
+            #         result = omf_load.output
+            #         stdout = remove_special_char(result['node']['stdout'])
+            #         #==================================================================
+            #         #searching in the answer of the command for the sentence of success
+            #         nodes_found = parse_results_from_load(stdout)
+            #         update_phases_db(nodes_found, 3)
+            #         break
             #-------------------------------------
 
-            if error_presence(results):
-                print "** ERROR: one or more node were not loaded correctly"
-            else:
-                print "-- INFO: nodes were loaded"
+            # if error_presence(results):
+            #     print "** ERROR: one or more node were not loaded correctly"
+            # else:
+            #     print "-- INFO: nodes were loaded"
 
 
     #=========================================
