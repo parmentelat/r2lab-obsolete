@@ -3,47 +3,39 @@ $(document).ready(function() {
 
 
 
-  var week_chart = function(json_data) {
+  var week_chart = function(data) {
 
     var weke_rewind = 1;
-    var now = moment();
-    var startDate = moment().subtract(7, 'days');
-    var endDate   = moment().subtract(1, 'days');
+    var now   = moment();
+    var start = moment().subtract(7, 'days');
+    var end   = moment().subtract(1, 'days');
 
-    var requiredData = _.filter(json_data, function(data){
-      data.date = moment(new Date(data.date));
-      return data.date >= startDate && data.date <= endDate;
+    var data  = selectInterval(data, start, end);
+    var xax   = range(1,37);
+    var val   = new Array(37).fill(0); //ignoring 0 position of the array
+    var title = '['+start.date()+'-'+end.date()+'] '+now.format('MMM')+' '+now.year();
+    var color = randomColor();
+
+    $.each(data, function (index, value) {
+      $.each(value['data'], function (i, v) {
+        val[i-1] = val[i-1] + 1;
+      });
     });
 
-    console.log(requiredData);
-
-    var randomScalingFactor = function() {
-        return (Math.random() > 0.5 ? 1.0 : 1.0) * Math.round(Math.random() * 100);
-    };
-    var randomColorFactor = function() {
-        return Math.round(Math.random() * 255);
-    };
-    var randomColor = function() {
-        return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',.7)';
-    };
-
+    var getTitle = function(){
+      return title;
+    }
     var barChartData = {
-        labels: range(1,37),
-        datasets: [{
-            label: '[10-17] Jun 2016',
-            backgroundColor: "rgba(220,220,220,0.5)",
-            data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()]
-        // }, {
-        //     hidden: true,
-        //     label: 'Dataset 2',
-        //     backgroundColor: "rgba(151,187,205,0.5)",
-        //     data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()]
-        // }, {
-        //     label: 'Dataset 3',
-        //     backgroundColor: "rgba(151,187,205,0.5)",
-        //     data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()]
-        // }]
-      }]
+        labels: xax,
+        datasets: [
+                    {
+                      label: getTitle(),
+                      hidden: false,
+                      backgroundColor: color,
+                      borderColor: color,
+                      data: val,
+                    },
+                  ]
     };
 
     window.onload = function() {
@@ -56,8 +48,8 @@ $(document).ready(function() {
                 // In this case, we are setting the border of each bar to be 2px wide and green
                 elements: {
                     rectangle: {
-                        borderWidth: 2,
-                        borderColor: 'rgb(0, 255, 0)',
+                        borderWidth: 0,
+
                         borderSkipped: 'bottom'
                     }
                 },
@@ -78,8 +70,8 @@ $(document).ready(function() {
 
                     ticks: {
                         min: 0,
-                        max: 100,
-                        beginAtZero: true
+                        // max: 100,
+                        // beginAtZero: true
                       }
 
                   }],
@@ -95,14 +87,45 @@ $(document).ready(function() {
     };
   }
 
-  function range(j, k) {
+
+
+  var range = function(j, k) {
     return Array
-        .apply(null, Array((k - j) + 1))
-        .map(function(discard, n){ return n + j; });
+      .apply(null, Array((k - j) + 1))
+      .map(function(discard, n){ return n + j; });
   }
 
 
-  function main(){
+
+  var selectInterval = function(data, start, end) {
+    var requiredData = _.filter(data, function(data){
+      data.date = moment(new Date(data.date));
+      return data.date >= start && data.date <= end;
+    });
+    return requiredData;
+  }
+
+
+
+  var randomColor = function() {
+      return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',.7)';
+  };
+
+
+
+  var randomScalingFactor = function() {
+      return (Math.random() > 0.5 ? 1.0 : 1.0) * Math.round(Math.random() * 100);
+  };
+
+
+
+  var randomColorFactor = function() {
+      return Math.round(Math.random() * 255);
+  };
+
+
+
+  var main = function() {
     console.log("statistics version " + version);
 
     // gets the json file from nigthly routine
