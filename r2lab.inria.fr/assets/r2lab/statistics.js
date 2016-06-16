@@ -3,23 +3,20 @@ $(document).ready(function() {
 
 
 
-  // gets the json file from nigthly routine
-  var get_file = function() {
-    var request = {
-      "file" : 'nigthly'
-    };
-    post_omfrest_request('/files/get', request, function(xhttp) {
-      if (xhttp.readyState == 4 && xhttp.status == 200) {
-        var answer = JSON.parse(xhttp.responseText);
-        $.each(answer, function (index, value) {
-          console.log(value);
-        });
-      }
+  var week_chart = function(json_data) {
+
+    var weke_rewind = 1;
+    var now = moment();
+    var startDate = moment().subtract(7, 'days');
+    var endDate   = moment().subtract(1, 'days');
+
+    var requiredData = _.filter(json_data, function(data){
+      data.date = moment(new Date(data.date));
+      return data.date >= startDate && data.date <= endDate;
     });
-  }
 
+    console.log(requiredData);
 
-  var week_chart = function() {
     var randomScalingFactor = function() {
         return (Math.random() > 0.5 ? 1.0 : 1.0) * Math.round(Math.random() * 100);
     };
@@ -106,10 +103,19 @@ $(document).ready(function() {
 
 
   function main(){
-    console.log("liveslices version " + version);
-    get_file();
+    console.log("statistics version " + version);
 
-    week_chart();
+    // gets the json file from nigthly routine
+    var request = {"file" : 'nigthly'};
+    post_omfrest_request('/files/get', request, function(xhttp) {
+      if (xhttp.readyState == 4 && xhttp.status == 200) {
+        answer = JSON.parse(xhttp.responseText);
+        // $.each(answer, function (index, value) {
+          // console.log(value);
+        // });
+        week_chart(answer);
+      }
+    });
   }
 
 
