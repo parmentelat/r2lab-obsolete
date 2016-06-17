@@ -208,9 +208,8 @@ function init() {
     [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     echo "========== turning off offload negociations on ${oai_ifname}"
     offload-off ${oai_ifname}
-    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
-    #ifconfig ${oai_ifname} mtu 1536
-    ip link set dev ${oai_ifname} mtu 1536
+#    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
+#    ip link set dev ${oai_ifname} mtu 1536
 }
 
 doc-fun start "starts lte-softmodem - run with -d to turn on soft oscilloscope" 

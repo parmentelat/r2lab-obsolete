@@ -181,16 +181,16 @@ function init() {
     offload-off ${oai_ifname}
     echo "========== turning off offload negociations on control"
     offload-off control
-    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
-    #ifconfig ${oai_ifname} mtu 1536
-    ip link set dev ${oai_ifname} mtu 1536
-    echo "========== patching sgw_config.c to set MTU to 1536"
-    pushd /root/openair-cn/SRC/SGW >& /dev/null
-    # do not run gitup on purpose
-    sed --in-place -e 's,modprobe xt_GTPUSP gtpu_enb_port=,modprobe xt_GTPUSP mtu=1536 gtpu_enb_port=,' sgw_config.c
-    sed --in-place -e 's,1463,1428,' pgw_pco.c pgw_config.c
-    echo "--- visual check"
-    git diff | cat
+#    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
+#    ip link set dev ${oai_ifname} mtu 1536
+#    echo "========== patching sgw_config.c to set MTU to 1536"
+#    pushd /root/openair-cn/SRC/SGW >& /dev/null
+#    # do not run gitup on purpose
+#    sed --in-place -e 's,modprobe xt_GTPUSP gtpu_enb_port=,modprobe xt_GTPUSP mtu=1536 gtpu_enb_port=,' sgw_config.c
+#    sed --in-place -e 's,1463,1428,' pgw_pco.c pgw_config.c
+#    echo "--- visual check"
+#    git diff | cat
+#    popd
 }
 
 doc-fun build "build hss and/or epc"
