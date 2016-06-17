@@ -11,7 +11,7 @@ float_menu_template: r2lab/float-menu-tutorials.html
 * [Shell tools](tuto-02-shell-tools.md) available
 
   Discover how to access the nodes and run your first experiments, through a tour on tools available when logged in at the `faraday.inria.fr` gateway from a regular `ssh` session: how to check for nodes status, leases, images, and more.
-  
+
 <br />
 
 ### Examples of experimentations scenarios
@@ -27,3 +27,17 @@ float_menu_template: r2lab/float-menu-tutorials.html
 * [NEPI: load image](tuto-05-Cs.md)
 
   An experiment to load fresh distros to the nodes using [NEPI](tools.md)
+
+<br />
+
+### Video tutorials
+
+  * [End-to-End Experiment](https://youtu.be/vDPLQNsZaVY)
+
+    Running an wireless experiment end-to-end. Check it out, [here](https://youtu.be/vDPLQNsZaVY)
+
+  * [OIA experiment](https://youtu.be/FpZo6uqTosQ)
+
+    Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using skype on a commercial NEXUS phone.
+
+    Check it out, [here](https://youtu.be/FpZo6uqTosQ)

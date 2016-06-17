@@ -4,6 +4,11 @@ tab: news
 
 ### June 6
 
+* New tutorial video! Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using skype on a commercial NEXUS phone.
+* Check it out, [here](https://youtu.be/FpZo6uqTosQ)
+
+### June 6
+
 * Replacement of battery on nodes 7, 14, 18, 29 and 30 to deal with hang issues when restarting.
 
 ### March 17
