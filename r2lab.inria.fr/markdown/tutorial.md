@@ -36,7 +36,7 @@ float_menu_template: r2lab/float-menu-tutorials.html
 
     Running an wireless experiment end-to-end. Check it out, [here](https://youtu.be/vDPLQNsZaVY)
 
-  * [OIA experiment](https://youtu.be/FpZo6uqTosQ)
+  * [OAI 5G experiment](https://youtu.be/FpZo6uqTosQ)
 
     Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using skype on a commercial NEXUS phone.
 

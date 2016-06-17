@@ -4,7 +4,7 @@ tab: news
 
 ### June 17
 
-* New tutorial video! Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using skype on a commercial NEXUS phone.
+* New tutorial video! Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
 * Check it out, [here](https://youtu.be/FpZo6uqTosQ)
 
 ### June 6
