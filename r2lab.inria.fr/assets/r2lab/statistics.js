@@ -1,48 +1,54 @@
 $(document).ready(function() {
   var version = '1.0';
+  var now   = moment();
 
 
 
-  var week_chart = function(data) {
-
-    var weke_rewind = 1;
-    var now   = moment();
+  var build_data_chart = function(data) {
     var start = moment().subtract(7, 'days');
-    var end   = moment().subtract(1, 'days');
-
+    var end   = moment().subtract(0, 'days');
     var data  = selectInterval(data, start, end);
-    var xax   = range(1,37);
-    var val   = new Array(37).fill(0); //ignoring 0 position of the array
     var title = '['+start.date()+'-'+end.date()+'] '+now.format('MMM')+' '+now.year();
     var color = randomColor();
 
+    var xax   = range(1,37);
+    var val   = new Array(37).fill(0); //ignoring 0 position of the array
+
+    var dataset = {
+      label: title,
+      hidden: false,
+      backgroundColor: color,
+      borderColor: color,
+      data: [],
+    }
+
+    // select data and sum the ocurences of issues at each node
     $.each(data, function (index, value) {
       $.each(value['data'], function (i, v) {
         val[i-1] = val[i-1] + 1;
       });
     });
+    dataset.data = val;
 
-    var getTitle = function(){
-      return title;
-    }
-    var barChartData = {
+    var chartData = {
         labels: xax,
-        datasets: [
-                    {
-                      label: getTitle(),
-                      hidden: false,
-                      backgroundColor: color,
-                      borderColor: color,
-                      data: val,
-                    },
-                  ]
+        datasets: []
     };
+    chartData.datasets.push(dataset);
 
+    // window.myBar.update();
+
+    create_chart(chartData);
+  }
+
+
+
+  var create_chart = function(chartData) {
     window.onload = function() {
         var ctx = document.getElementById("canvas").getContext("2d");
         window.myBar = new Chart(ctx, {
             type: 'bar',
-            data: barChartData,
+            data: chartData,
             options: {
                 // Elements options apply to all of the options unless overridden in a dataset
                 // In this case, we are setting the border of each bar to be 2px wide and green
@@ -59,13 +65,13 @@ $(document).ready(function() {
                 },
                 title: {
                     display: true,
-                    text: 'semanal statistics'
+                    // text: 'last week statistics'
                 },
                 scales: {
                   yAxes: [{
                     scaleLabel: {
                       display: true,
-                      labelString: '% of issues detected'
+                      labelString: 'presence of issues detected'
                     },
 
                     ticks: {
@@ -133,10 +139,10 @@ $(document).ready(function() {
     post_omfrest_request('/files/get', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
         answer = JSON.parse(xhttp.responseText);
+        build_data_chart(answer);
         // $.each(answer, function (index, value) {
           // console.log(value);
         // });
-        week_chart(answer);
       }
     });
   }

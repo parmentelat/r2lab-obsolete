@@ -36,6 +36,7 @@ class FilesProxy(OmfRestView):
         directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         prev_dir, dir = os.path.split(directory)
 
+        #/root/r2lab/nightly (real place)
         directory = prev_dir+'/nightly/'
         data      = []
 
