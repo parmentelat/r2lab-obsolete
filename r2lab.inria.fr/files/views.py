@@ -1,5 +1,5 @@
 import json
-import os.path
+import os, os.path
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -33,12 +33,16 @@ class FilesProxy(OmfRestView):
         """
         return nigthly routine file in json format
         """
-        directory = '/Users/nano/Documents/Inria/r2lab/nightly/'
+        directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        prev_dir, dir = os.path.split(directory)
+
+        #/root/r2lab/nightly (real place)
+        directory = prev_dir+'/nightly/'
         data      = []
 
         if record['file'] == 'nigthly':
             the_file  = 'nightly_data.json'
-            
+
         with open(directory + the_file) as f:
             for line in f:
                 print(line)
