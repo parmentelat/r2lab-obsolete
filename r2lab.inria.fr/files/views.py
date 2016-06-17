@@ -43,7 +43,7 @@ class FilesProxy(OmfRestView):
         if record['file'] == 'nigthly':
             the_file  = 'nightly_data.json'
             try:
-                with open(directory + the_file) as f:
+                with open('/root/r2lab/nightly' + the_file) as f:
                     for line in f:
                         data.append(json.loads(line))
                     return self.http_response_from_struct(data)
