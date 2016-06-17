@@ -14,14 +14,22 @@ skip_header: yes
 
 <div class="container">
   <div class="row">
-    <div class="col-lg-8">
+    <div class="col-lg-12">
       <div style="width: 100%">
-        <canvas id="canvas" height="450" width="700"></canvas>
+        <canvas id="line" height="250" width="700"></canvas>
+        </div>
       </div>
     </div>
-    <div class="col-lg-4">
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div style="width: 100%">
+        <canvas id="bar" height="250" width="700"></canvas>
+      </div>
+    </div>
+    <!-- <div class="col-lg-1"> -->
       <!-- <br><br>select a range date<br>
       <input type="text" id="range_calendar" class="form-control"> -->
-    </div>
+    <!-- </div> -->
   </div>
 </div>
