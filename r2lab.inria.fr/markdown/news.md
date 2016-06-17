@@ -2,7 +2,7 @@ title: Latest news, infos and incidents...
 tab: news
 ---
 
-### June 6
+### June 17
 
 * New tutorial video! Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using skype on a commercial NEXUS phone.
 * Check it out, [here](https://youtu.be/FpZo6uqTosQ)
