@@ -23,6 +23,13 @@ skip_header: yes
   </div>
   <div class="row">
     <div class="col-lg-12">
+    <br><br>
+    <p></p>
+    <br><br>
+    </div>
+  </div>  
+  <div class="row">
+    <div class="col-lg-12">
       <div style="width: 100%">
         <canvas id="bar" height="250" width="700"></canvas>
       </div>

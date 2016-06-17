@@ -42,10 +42,15 @@ class FilesProxy(OmfRestView):
 
         if record['file'] == 'nigthly':
             the_file  = 'nightly_data.json'
-
-        with open(directory + the_file) as f:
-            for line in f:
-                print(line)
-                data.append(json.loads(line))
-
-        return self.http_response_from_struct(data)
+            try:
+                with open(directory + the_file) as f:
+                    for line in f:
+                        data.append(json.loads(line))
+                    return self.http_response_from_struct(data)
+            except Exception as e:
+                return self.http_response_from_struct(
+                    { 'error' : "Failure running get file",
+                      'message' : e})
+        else:
+            return self.http_response_from_struct(
+                { 'error' : "File not found or not alowed" })
