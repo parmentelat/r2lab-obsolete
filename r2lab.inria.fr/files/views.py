@@ -1,14 +1,28 @@
 import json
 import os, os.path
-
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
-
-# importing OmfSfaProxy through this module because of the symlink hack
-from r2lab.omfrestview import OmfRestView, OmfSfaProxy
+from django.views.generic import View
+from django.http import HttpResponse
 
 # Create your views here.
-class FilesProxy(OmfRestView):
+class FilesProxy(View):
+
+    def http_response_from_struct(self, answer):
+        return HttpResponse(json.dumps(answer))
+
+    def not_authenticated_error(self, request):
+        """
+        The error to return as-is if user is not authenticated
+        """
+        if 'r2lab_context' not in request.session or \
+          'mfuser' not in request.session['r2lab_context']:
+            return self.http_response_from_struct(
+                {'error' : 'User is not authenticated'})
+
+    def decode_body_as_json(self, request):
+        utf8 = request.body.decode()
+        return json.loads(utf8)
 
     @method_decorator(csrf_protect)
     def post(self, request, verb):
@@ -27,17 +41,12 @@ class FilesProxy(OmfRestView):
                 { 'error' : "Failure when running verb {}".format(verb),
                   'message' : e})
 
-
-
     def get_file(self, record):
         """
         return nigthly routine file in json format
         """
-        directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        prev_dir, dir = os.path.split(directory)
-
-        #/root/r2lab/nightly (real place)
-        directory = prev_dir+'/nightly/'
+        directory = os.path.dirname(os.path.abspath(__file__))
+        directory = directory+'/nightly/'
         data      = []
 
         if record['file'] == 'nigthly':

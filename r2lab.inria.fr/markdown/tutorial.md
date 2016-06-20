@@ -38,6 +38,6 @@ float_menu_template: r2lab/float-menu-tutorials.html
 
   * [OAI 5G experiment](https://youtu.be/FpZo6uqTosQ)
 
-    Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using skype on a commercial NEXUS phone.
+    Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
 
     Check it out, [here](https://youtu.be/FpZo6uqTosQ)

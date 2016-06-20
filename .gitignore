@@ -11,7 +11,6 @@ __pycache__
 *.log
 db.sqlite3
 file.txt
-nightly_zombie.txt
-nightly_data.json
-nightly_data.txt
 root.pem
+nightly.txt
+nightly_data.json

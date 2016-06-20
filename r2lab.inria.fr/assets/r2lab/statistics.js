@@ -277,17 +277,30 @@ $(document).ready(function() {
 
 
 
+  function post_request(urlpath, request, callback) {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", urlpath, true);
+      xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      // this is where we retrieve the CSRF token from the context
+      var csrftoken = getCookie('csrftoken');
+      xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+      xhttp.send(JSON.stringify(request));
+      xhttp.onreadystatechange = function(){callback(xhttp);};
+  }
+
+
+
   var main = function() {
     console.log("statistics version " + version);
 
     // gets the json file from nigthly routine
     var request = {"file" : 'nigthly'};
-    post_omfrest_request('/files/get', request, function(xhttp) {
+    post_request('/files/get', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
         answer = JSON.parse(xhttp.responseText);
         build_data_chart(answer);
         // $.each(answer, function (index, value) {
-          // console.log(value);
+        //   console.log(value);
         // });
       }
     });
