@@ -679,7 +679,7 @@ def named_version(version):
     elif version in versions_names:
         explicit_version = versions[versions_names.index(version)]
     else:
-        explicit_version = versions[0]
+        explicit_version = versions[1]
 
     return explicit_version
 
