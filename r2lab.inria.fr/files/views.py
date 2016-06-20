@@ -47,6 +47,7 @@ class FilesProxy(View):
         """
         directory = os.path.dirname(os.path.abspath(__file__))
         directory = directory+'/nightly/'
+        print(directory)
         data      = []
 
         if record['file'] == 'nigthly':
