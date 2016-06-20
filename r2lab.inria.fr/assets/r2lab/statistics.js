@@ -9,10 +9,10 @@ $(document).ready(function() {
     var end   = moment().subtract(21, 'days');
 
     // ===============================================
-    // Temporary - first week
+    // Temporary - 4 weeks
     var data1  = selectInterval(data, start, end);
     // var title = '' + start.format('DD/MMM/YY') + ' ' + end.format('DD/MMM/YY');
-    var title = '1 week';
+    var title = '4 weeks';
     var color = randomColor();
 
     var xax   = range(1,37);
@@ -37,12 +37,12 @@ $(document).ready(function() {
     dataset1.data = val;
 
     // ===============================================
-    // Temporary - second week
+    // Temporary - 3 weeks
     start = moment().subtract(21, 'days');
     end   = moment().subtract(14, 'days');
     data2  = selectInterval(data, start, end);
     // title = '' + start.format('DD/MMM/YY') + ' ' + end.format('DD/MMM/YY');
-    title = '2 weeks';
+    title = '3 weeks';
     color = randomColor();
 
     xax   = range(1,37);
@@ -67,12 +67,12 @@ $(document).ready(function() {
     dataset2.data = val;
 
     // ===============================================
-    // Temporary - third week
+    // Temporary - 2 weeks
     start = moment().subtract(14, 'days');
     end   = moment().subtract(7, 'days');
     data3  = selectInterval(data, start, end);
     // title = '' + start.format('DD/MMM/YY') + ' ' + end.format('DD/MMM/YY');
-    title = '3 weeks';
+    title = '2 weeks';
     color = randomColor();
 
     xax   = range(1,37);
@@ -97,12 +97,12 @@ $(document).ready(function() {
     dataset3.data = val;
 
     // ===============================================
-    // Temporary - fourth week
+    // Temporary - 1 week
     start = moment().subtract(7, 'days');
     end   = moment().subtract(0, 'days');
     data4  = selectInterval(data, start, end);
     // title = '' + start.format('DD/MMM/YY') + ' ' + end.format('DD/MMM/YY');
-    title = '4 weeks';
+    title = '1 week';
     color = randomColor();
 
     xax   = range(1,37);
@@ -298,7 +298,8 @@ $(document).ready(function() {
     post_request('/files/get', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
         answer = JSON.parse(xhttp.responseText);
-        build_data_chart(answer);
+        if (answer)
+          build_data_chart(answer);
         // $.each(answer, function (index, value) {
         //   console.log(value);
         // });
