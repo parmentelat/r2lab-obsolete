@@ -142,8 +142,6 @@ $(document).ready(function() {
   }
 
   var create_chart = function(chartData) {
-    window.onload = function() {
-
       var ctx = document.getElementById("bar").getContext("2d");
       window.myBar = new Chart(ctx, {
           type: 'bar',
@@ -170,7 +168,7 @@ $(document).ready(function() {
                 yAxes: [{
                   scaleLabel: {
                     display: true,
-                    labelString: 'presence of issues detected'
+                    labelString: 'number of issues detected'
                   },
 
                   ticks: {
@@ -216,7 +214,7 @@ $(document).ready(function() {
                 yAxes: [{
                   scaleLabel: {
                     display: true,
-                    labelString: 'presence of issues detected'
+                    labelString: 'number of issues detected'
                   },
 
                   ticks: {
@@ -235,9 +233,6 @@ $(document).ready(function() {
               }
           }
       });
-
-
-    };
   }
 
 
@@ -281,7 +276,6 @@ $(document).ready(function() {
       var xhttp = new XMLHttpRequest();
       xhttp.open("POST", urlpath, true);
       xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      // this is where we retrieve the CSRF token from the context
       var csrftoken = getCookie('csrftoken');
       xhttp.setRequestHeader("X-CSRFToken", csrftoken);
       xhttp.send(JSON.stringify(request));
