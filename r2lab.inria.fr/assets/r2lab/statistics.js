@@ -4,144 +4,68 @@ $(document).ready(function() {
 
 
 
+  var is_last_week = function(week_ago) {
+    is_last = false;
+    if (week_ago == 1)
+      is_last = true;
+
+    return is_last;
+  }
+
+
+
   var build_data_chart = function(data) {
-    var start = moment().subtract(28, 'days');
-    var end   = moment().subtract(21, 'days');
-
-    // ===============================================
-    // Temporary - 4 weeks
-    var data1  = selectInterval(data, start, end);
-    // var title = '' + start.format('DD/MMM/YY') + ' ' + end.format('DD/MMM/YY');
-    var title = '4 weeks';
-    var color = randomColor();
-
-    var xax   = range(1,37);
-    var val   = new Array(37).fill(0); //ignoring 0 position of the array
-
-    var dataset1 = {
-      fill: true,
-      borderWidth: 1.7,
-      label: title,
-      hidden: false,
-      backgroundColor: color,
-      borderColor: color,
-      data: [],
-    }
-
-    // select data and sum the ocurences of issues at each node
-    $.each(data1, function (index, value) {
-      $.each(value['data'], function (i, v) {
-        val[i-1] = val[i-1] + 1;
-      });
-    });
-    dataset1.data = val;
-
-    // ===============================================
-    // Temporary - 3 weeks
-    start = moment().subtract(21, 'days');
-    end   = moment().subtract(14, 'days');
-    data2  = selectInterval(data, start, end);
-    // title = '' + start.format('DD/MMM/YY') + ' ' + end.format('DD/MMM/YY');
-    title = '3 weeks';
-    color = randomColor();
-
-    xax   = range(1,37);
-    val   = new Array(37).fill(0); //ignoring 0 position of the array
-
-    var dataset2 = {
-      fill: true,
-      borderWidth: 1.7,
-      label: title,
-      hidden: false,
-      backgroundColor: color,
-      borderColor: color,
-      data: [],
-    }
-
-    // select data and sum the ocurences of issues at each node
-    $.each(data2, function (index, value) {
-      $.each(value['data'], function (i, v) {
-        val[i-1] = val[i-1] + 1;
-      });
-    });
-    dataset2.data = val;
-
-    // ===============================================
-    // Temporary - 2 weeks
-    start = moment().subtract(14, 'days');
-    end   = moment().subtract(7, 'days');
-    data3  = selectInterval(data, start, end);
-    // title = '' + start.format('DD/MMM/YY') + ' ' + end.format('DD/MMM/YY');
-    title = '2 weeks';
-    color = randomColor();
-
-    xax   = range(1,37);
-    val   = new Array(37).fill(0); //ignoring 0 position of the array
-
-    var dataset3 = {
-      fill: true,
-      borderWidth: 1.7,
-      label: title,
-      hidden: false,
-      backgroundColor: color,
-      borderColor: color,
-      data: [],
-    }
-
-    // select data and sum the ocurences of issues at each node
-    $.each(data3, function (index, value) {
-      $.each(value['data'], function (i, v) {
-        val[i-1] = val[i-1] + 1;
-      });
-    });
-    dataset3.data = val;
-
-    // ===============================================
-    // Temporary - 1 week
-    start = moment().subtract(7, 'days');
-    end   = moment().subtract(0, 'days');
-    data4  = selectInterval(data, start, end);
-    // title = '' + start.format('DD/MMM/YY') + ' ' + end.format('DD/MMM/YY');
-    title = '1 week';
-    color = randomColor();
-
-    xax   = range(1,37);
-    val   = new Array(37).fill(0); //ignoring 0 position of the array
-
-    var dataset4 = {
-      fill: false,
-      borderWidth: 1.7,
-      label: title,
-      hidden: false,
-      backgroundColor: color,
-      borderColor: color,
-      data: [],
-    }
-
-    // select data and sum the ocurences of issues at each node
-    $.each(data4, function (index, value) {
-      $.each(value['data'], function (i, v) {
-        val[i-1] = val[i-1] + 1;
-      });
-    });
-    dataset4.data = val;
-
-
+    var w_ago  = [1,2,3,4]; //ex.: 3 means four weeks ago
+    var start  = null;
+    var end    = null;
+    var d_range= [];
+    var title  = '';
+    var color  = '';
+    var xax    = range(1,37); //all nodes
+    var val    = null; //ignoring 0 position of the array
+    var dataset= {};
 
     var chartData = {
         labels: xax,
         datasets: []
     };
-    chartData.datasets.push(dataset1);
-    chartData.datasets.push(dataset2);
-    chartData.datasets.push(dataset3);
-    chartData.datasets.push(dataset4);
 
+    $.each(w_ago, function (index, value) {
+      start = moment().subtract( value    * 7, 'days');
+      end   = moment().subtract((value-1) * 7, 'days');
+
+      d_range  = selectInterval(data, start, end);
+      // title = '' + start.format('DD/MMM/YY') + ' ' + end.format('DD/MMM/YY');
+      title = is_last_week(value) ? value + ' week' : value + ' weeks';
+      color = randomColor();
+
+      dataset = {
+        fill: !is_last_week(value),
+        borderWidth: 1.7,
+        label: title,
+        hidden: false,
+        backgroundColor: color,
+        borderColor: color,
+        data: [],
+      }
+
+      // select data and sum the ocurences of issues at each node
+      val = new Array(37).fill(0);
+      $.each(d_range, function (index, value) {
+        $.each(value['data'], function (i, v) {
+          val[i-1] = val[i-1] + 1;
+        });
+      });
+      dataset.data = val;
+      chartData.datasets.push(dataset);
+    })
     create_chart(chartData);
-    create_chart (chartData);
   }
 
+
+
   var create_chart = function(chartData) {
+      //CREATING BAR CHART
       var ctx = document.getElementById("bar").getContext("2d");
       window.myBar = new Chart(ctx, {
           type: 'bar',
@@ -187,7 +111,7 @@ $(document).ready(function() {
               }
           }
       });
-
+      //CREATING LINE CHART
       ctx = document.getElementById("line").getContext("2d");
       window.myLine = new Chart(ctx, {
           type: 'line',
@@ -234,6 +158,7 @@ $(document).ready(function() {
           }
       });
   }
+
 
 
   var range = function(j, k) {
@@ -286,7 +211,6 @@ $(document).ready(function() {
 
   var main = function() {
     console.log("statistics version " + version);
-
     // gets the json file from nigthly routine
     var request = {"file" : 'nigthly'};
     post_request('/files/get', request, function(xhttp) {
@@ -294,9 +218,6 @@ $(document).ready(function() {
         answer = JSON.parse(xhttp.responseText);
         if (answer)
           build_data_chart(answer);
-        // $.each(answer, function (index, value) {
-        //   console.log(value);
-        // });
       }
     });
   }
