@@ -645,7 +645,7 @@ def which_version(version):
         old_version_idx = -1
 
     if old_version_idx >= len(versions_names)-1:
-        new_version_idx = 0
+        new_version_idx = 1 #return to the beggining of the list(ignoring u14)
     else:
         new_version_idx = old_version_idx + 1
 
@@ -679,7 +679,7 @@ def named_version(version):
     elif version in versions_names:
         explicit_version = versions[versions_names.index(version)]
     else:
-        explicit_version = versions[1]
+        explicit_version = versions[0]
 
     return explicit_version
 
