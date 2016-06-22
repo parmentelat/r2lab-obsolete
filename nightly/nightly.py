@@ -65,31 +65,20 @@ def main(args):
     for node in nodes:
         create_phases_db(node)
 
-    # =========================================
-    # RESTARTING  SERVICES (temporary) ========
     print "-- INFO: {}".format(now())
-    # print "-- INFO: Restarting services"
-    # execute(RESTART_ALL)
-
 
     #=========================================
     # TURN ON ALL NODES ======================
     print "-- INFO: turn on nodes"
     all_nodes = name_node(nodes)
-
     cmd = command_in_curl(all_nodes, 'on')
     results = execute(cmd)
-
     if error_presence(results):
         print "** ERROR: turn on not executed"
     else:
         print "-- INFO: nodes turned on"
 
-
-    #==================================================================
-    #searching in the answer of the command for the sentence of success
     for node in nodes:
-        print "-- INFO: search for cmd answer for each node"
         cmd = command_in_curl([name_node(node)])
         result = execute(cmd)
         stdout = remove_special_char(result['node']['stdout']).strip()
@@ -104,8 +93,7 @@ def main(args):
     all_nodes = to_str(nodes)
     old_os    = {}
     results   = {}
-
-
+    
     for node in all_nodes:
         host = name_node(node)
         user = 'root'
@@ -204,8 +192,8 @@ def main(args):
 
 
     #=========================================
-    # TURN OFF ALL NODES ======================
-    print "-- INFO: turn off nodes"
+    # CHECK ZOMBIE (not turn off) NODES ======
+    print "-- INFO: check for zombie nodes"
     all_nodes = name_node(nodes)
     cmd = command_in_curl(all_nodes, 'off')
     results = execute(cmd)
@@ -214,10 +202,6 @@ def main(args):
     else:
         print "-- INFO: nodes turned off"
 
-
-    #=========================================
-    # CHECK ZOMBIE (not turn off) NODES =====================
-    print "-- INFO: check for zombie nodes"
     wait_and_update_progress_bar(30)
     all_nodes   = to_str(nodes)
     results     = {}
@@ -234,6 +218,7 @@ def main(args):
             status = remove_special_char(result[node]['stdout']).strip()
             if status.lower() in ['already off', 'off']:
                 update_phases_db(node, 5)
+
 
     #=========================================
     # RESULTS  ===============================
