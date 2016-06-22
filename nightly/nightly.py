@@ -93,7 +93,7 @@ def main(args):
     all_nodes = to_str(nodes)
     old_os    = {}
     results   = {}
-    
+
     for node in all_nodes:
         host = name_node(node)
         user = 'root'
@@ -225,7 +225,7 @@ def main(args):
     print "-- INFO: summary of reset routine"
     failed_nodes = []
     for key, value in sorted(phases.iteritems()):
-        if value['ph1'] == 'ko' or value['ph2'] == 'ko' or value['ph3'] == 'ko' or value['ph4'] == 'ko' or value['ph5'] == 'ko':
+        if value['ph3'] == 'ko': #advice in email only for load errors
             failed_nodes.append(key)
         failed_nodes = list(set(failed_nodes))
 
