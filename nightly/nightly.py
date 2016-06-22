@@ -34,9 +34,9 @@ parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="s
 
 args = parser.parse_args()
 
-VERSIONS_ALIAS  = ['u-1410',           'u-1504',            'u-1604',           'f-21',          'f-22',           'f-23']
-VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',      'ubuntu 16.04',     'fedora 21',     'fedora 22',      'fedora 23']
-VERSIONS        = ['ubuntu-14.10.ndz', 'ubuntu-15.04.ndz',  'ubuntu-16.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
+VERSIONS_ALIAS  = ['u-1504',            'u-1604',           'f-21',          'f-22',           'f-23']
+VERSIONS_NAMES  = ['ubuntu 15.04',      'ubuntu 16.04',     'fedora 21',     'fedora 22',      'fedora 23']
+VERSIONS        = ['ubuntu-15.04.ndz',  'ubuntu-16.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
 
 # SEND_RESULTS_TO  = ['mario.zancanaro@inria.fr', 'thierry.parmentelat@inria.fr', 'thierry.turletti@inria.fr', 'walid.dabbous@inria.fr', 'mohamed-naoufal.mahfoudi@inria.fr']
 send_to_email   = args.send_to_email
@@ -645,7 +645,7 @@ def which_version(version):
         old_version_idx = -1
 
     if old_version_idx >= len(versions_names)-1:
-        new_version_idx = 1 #return to the beggining of the list(ignoring u14)
+        new_version_idx = 0
     else:
         new_version_idx = old_version_idx + 1
 
