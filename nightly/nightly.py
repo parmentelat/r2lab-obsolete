@@ -34,16 +34,15 @@ parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="s
 
 args = parser.parse_args()
 
-VERSIONS_ALIAS  = ['u-1504',            'u-1604',           'f-21',          'f-22',           'f-23']
-VERSIONS_NAMES  = ['ubuntu 15.04',      'ubuntu 16.04',     'fedora 21',     'fedora 22',      'fedora 23']
-VERSIONS        = ['ubuntu-15.04.ndz',  'ubuntu-16.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
+VERSIONS_ALIAS  = ['u-1410',           'u-1504',            'u-1604',           'f-21',          'f-22',           'f-23']
+VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',      'ubuntu 16.04',     'fedora 21',     'fedora 22',      'fedora 23']
+VERSIONS_TO_LOAD= ['ubuntu-15.04.ndz', 'ubuntu-15.04.ndz',  'ubuntu-16.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
 
 # SEND_RESULTS_TO  = ['mario.zancanaro@inria.fr', 'thierry.parmentelat@inria.fr', 'thierry.turletti@inria.fr', 'walid.dabbous@inria.fr', 'mohamed-naoufal.mahfoudi@inria.fr']
 send_to_email   = args.send_to_email
 SEND_RESULTS_TO = [str(send_to_email)] #default in args send_to_email: fit-r2lab-users@inria.fr
 
 phases          = {}
-loaded_nodes    = {}
 
 
 
@@ -93,8 +92,8 @@ def main(args):
         print "-- INFO: search for cmd answer for each node"
         cmd = command_in_curl([name_node(node)])
         result = execute(cmd)
-        stdout = remove_special_char(result['node']['stdout'])
-        if stdout.strip() == "on":
+        stdout = remove_special_char(result['node']['stdout']).strip()
+        if stdout.lower() in ['already on', 'on']:
             update_phases_db(node, 1)
 
 
@@ -103,14 +102,11 @@ def main(args):
     print "-- INFO: check OS version for each node"
     wait_and_update_progress_bar(20)
     all_nodes = to_str(nodes)
-    bug_node  = []
     old_os    = {}
     results   = {}
 
 
     for node in all_nodes:
-        build_grouped_os_list
-
         host = name_node(node)
         user = 'root'
         cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
@@ -118,8 +114,6 @@ def main(args):
         results.update(result)
 
         if error_presence(result):
-            # UPDATE NODES WHERE SOME BUG IS PRESENT
-            bug_node.append(node)
             old_os.update( {node : {'os' : 'unknown'}} )
         else:
             os = name_os(result[node]['stdout'])
@@ -186,7 +180,7 @@ def main(args):
 
 
     #=========================================
-    # CHECK AGAIN THE OS =====================
+    # VERIFY IF CHANGED THE OS ===============
     print "-- INFO: check OS version for each node"
     wait_and_update_progress_bar(20)
     all_nodes = to_str(nodes)
@@ -201,62 +195,20 @@ def main(args):
         results.update(result)
 
         if error_presence(result):
-            # UPDATE NODES WHERE SOME BUG IS PRESENT
-            # old_os.update( {node : {'os' : 'unknown'}} )
-            bug_node.append(node)
+            pass
         else:
-            os = name_os(result[node]['stdout'])
-            new_os.update( {node : {'os' : os}} )
-
-
-    #=========================================
-    # VERIFY IF CHANGED THE OS ===============
-    for node in old_os:
-        go = True
-
-        try:
-            new_os[node]['os']
-        except:
             oldos = old_os[node]['os']
-
-            loaded_nodes.update( { node : {'old_os' : oldos, 'new_os' : 'not set', 'changed' : 'no'}} )
-            bug_node.append(node)
-            go = False
-
-        if go:
-            oldos = old_os[node]['os']
-            newos = new_os[node]['os']
-
-            if None is version:
-                if oldos != newos:
-                    if node in bug_node: bug_node.remove(node)
-                    isok = 'yes'
-                    update_phases_db(node, 4)
-                    update_phases_db(node, 3) # if changed
-                else:
-                    isok = 'no'
-                    bug_node.append(node)
-            else: # A VERSION WAS GIVEN
-                if named_version(newos) == named_version(version):
-                    if node in bug_node: bug_node.remove(node)
-                    isok = 'yes'
-                    update_phases_db(node, 4)
-                    update_phases_db(node, 3) # if changed
-                else:
-                    isok = 'no'
-                    bug_node.append(node)
-            loaded_nodes.update( { node : {'old_os' : oldos, 'new_os' : newos, 'changed' : isok}} )
+            newos = name_os(result[node]['stdout'])
+            if oldos != newos:
+                update_phases_db(node, 4)
 
 
     #=========================================
     # TURN OFF ALL NODES ======================
     print "-- INFO: turn off nodes"
     all_nodes = name_node(nodes)
-
     cmd = command_in_curl(all_nodes, 'off')
-
     results = execute(cmd)
-
     if error_presence(results):
         print "** ERROR: turn off not executed"
     else:
@@ -266,72 +218,58 @@ def main(args):
     #=========================================
     # CHECK ZOMBIE (not turn off) NODES =====================
     print "-- INFO: check for zombie nodes"
-    wait_and_update_progress_bar(40)
+    wait_and_update_progress_bar(30)
     all_nodes   = to_str(nodes)
-    zombie_nodes= []
     results     = {}
 
     for node in all_nodes:
-        wait_and_update_progress_bar(5)
+        wait_and_update_progress_bar(3)
         cmd = "curl reboot{}/status;".format(node)
         result = execute(cmd, key=node)
         results.update(result)
 
         if error_presence(result):
-            # UPDATE NODES WHERE SOME BUG IS PRESENT
-            bug_node.append(node)
+            pass
         else:
             status = remove_special_char(result[node]['stdout']).strip()
-            if status.lower() not in ['already off', 'off']:
-                zombie_nodes.append(node)
-            else:
+            if status.lower() in ['already off', 'off']:
                 update_phases_db(node, 5)
 
     #=========================================
     # RESULTS  ===============================
-    print "** WARNING: possible zombie nodes"
-    print list(set(zombie_nodes))
-    print " "
-
-    print "** ERROR: possible problem nodes"
-    print list(set(bug_node))
-    print " "
-
     print "-- INFO: summary of reset routine"
-    for key, value in sorted(loaded_nodes.iteritems()):
-        print "node: #{} ".format(key)
-        print "old:   {} ".format(value['old_os'])
-        print "new:   {} ".format(value['new_os'])
-        print "ok?:   {} ".format(value['changed'])
+    failed_nodes = []
+    for key, value in sorted(phases.iteritems()):
+        if value['ph1'] == 'ko' or value['ph2'] == 'ko' value['ph3'] == 'ko' or value['ph4'] == 'ko' or value['ph5'] == 'ko'
+            failed_nodes.append(key)
+        failed_nodes = list(set(failed_nodes))
+
+        print "  node:  #{} ".format(key)
+        print " start:   {} ".format(value['ph1'])
+        print "   ssh:   {} ".format(value['ph2'])
+        print "  load:   {} ".format(value['ph3'])
+        print "change:   {} ".format(value['ph4'])
+        print "zombie:   {} ".format(value['ph5'])
         print "--"
     print " "
 
     print "-- INFO: setting round red bullets for nodes with issues"
     set_node_status(range(1,38), 'ok')
-    set_node_status(zombie_nodes, 'ko')
-    set_node_status(bug_node, 'ko')
+    set_node_status(failed_nodes, 'ko')
 
     print "-- INFO: send email"
-    summary_in_mail(list(set(bug_node + zombie_nodes)))
+    summary_in_mail(failed_nodes)
 
     print "-- INFO: write in file"
     #this is the old file containing all info since we start nightly
-    write_in_file(list(set(bug_node + zombie_nodes)), "nightly.txt")
+    write_in_file(failed_nodes, "nightly.txt")
 
     print "-- INFO: write in file in new format"
     save_data_in_txt (phases, "nightly_data.txt" )
     save_data_in_json(phases, "nightly_data.json")
 
-    print "-- DEBUG: phases"
-    print phases
-
     print "-- INFO: end of main"
-
-    # =========================================
-    # RESTARTING  SERVICES (temporary) ========
-    # print "-- INFO: Restarting services"
     print "-- INFO: {}".format(now())
-    # execute(RESTART_ALL)
 
 
 
@@ -645,7 +583,7 @@ def which_version(version):
         old_version_idx = -1
 
     if old_version_idx >= len(versions_names)-1:
-        new_version_idx = 0
+        new_version_idx = 1 #return to the beggining of the list(ignoring u14)
     else:
         new_version_idx = old_version_idx + 1
 
@@ -672,7 +610,7 @@ def named_version(version):
 
     versions_alias = VERSIONS_ALIAS
     versions_names = VERSIONS_NAMES
-    versions       = VERSIONS
+    versions       = VERSIONS_TO_LOAD
 
     if version in versions_alias:
         explicit_version = versions[versions_alias.index(version)]
