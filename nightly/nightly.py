@@ -240,7 +240,7 @@ def main(args):
     print "-- INFO: summary of reset routine"
     failed_nodes = []
     for key, value in sorted(phases.iteritems()):
-        if value['ph1'] == 'ko' or value['ph2'] == 'ko' or value['ph3'] == 'ko' or value['ph4'] == 'ko' or value['ph5'] == 'ko'
+        if value['ph1'] == 'ko' or value['ph2'] == 'ko' or value['ph3'] == 'ko' or value['ph4'] == 'ko' or value['ph5'] == 'ko':
             failed_nodes.append(key)
         failed_nodes = list(set(failed_nodes))
 
