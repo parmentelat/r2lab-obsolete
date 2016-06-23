@@ -1,6 +1,6 @@
 $(document).ready(function() {
   var version = '1.0';
-  var now   = moment();
+  var now = moment();
 
 
 
@@ -21,7 +21,7 @@ $(document).ready(function() {
     var d_range= [];
     var title  = '';
     var color  = '';
-    var xax    = range(1,37); //all nodes
+    var xax    = range(0,37); //all nodes
     var val    = null; //ignoring 0 position of the array
     var dataset= {};
 
@@ -31,11 +31,10 @@ $(document).ready(function() {
     };
 
     $.each(w_ago, function (index, value) {
-      start = moment().subtract( value    * 7, 'days');
-      end   = moment().subtract((value-1) * 7, 'days');
+      start = moment().subtract((value    * 7)-1, 'days');
+      end   = moment().subtract((value-1) * 7,    'days');
 
       d_range  = selectInterval(data, start, end);
-      // title = '' + start.format('DD/MMM/YY') + ' ' + end.format('DD/MMM/YY');
       title = is_last_week(value) ? value + ' week' : value + ' weeks';
       color = randomColor();
 
@@ -50,17 +49,20 @@ $(document).ready(function() {
       }
 
       // select data and sum the ocurences of issues at each node
-      val = new Array(37).fill(0);
+      val = new Array(38).fill(0);
       $.each(d_range, function (index, value) {
         $.each(value['data'], function (i, v) {
-          val[i-1] = val[i-1] + 1;
+          val[i] = val[i] + 1;
         });
       });
       dataset.data = val;
       chartData.datasets.push(dataset);
     })
-    create_chart(chartData);
+
+
+    create_chart (chartData);
   }
+
 
 
 
@@ -172,7 +174,7 @@ $(document).ready(function() {
   var selectInterval = function(data, start, end) {
     var requiredData = _.filter(data, function(data){
       data.date = moment(new Date(data.date));
-      return data.date >= start.startOf('day') && data.date <= end.endOf('day');
+      return data.date > start.startOf('day') && data.date <= end.endOf('day');
     });
     return requiredData;
   }
