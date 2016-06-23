@@ -59,8 +59,24 @@ $(document).ready(function() {
       chartData.datasets.push(dataset);
     })
 
-
+    in_cumulative(chartData);
+    
     create_chart (chartData);
+  }
+
+
+
+
+  var in_cumulative = function(chartData) {
+    //cumulative values to see difference between weeks
+    $.each(chartData.datasets, function (index, value) {
+      if(index > 0){
+        $.each(chartData.datasets[index].data, function (i, v) {
+          chartData.datasets[index].data[i] = chartData.datasets[index].data[i] + chartData.datasets[index-1].data[i]
+        });
+      }
+    });
+    return chartData;
   }
 
 

@@ -92,7 +92,7 @@ tab: platform
 
 <div class="row">
   <div class="col-md-12">
-    <h3>Issues historic</h3>
+    <h3>Historical of issues</h3>
       Summarized below are the results of our nightly monitoring routine which help us keep r2lab healthy. The graphs brings the number of issues found along the days from Jan/16.
   </div>
 </div>
