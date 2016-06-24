@@ -105,10 +105,10 @@ tab: platform
 <style type="text/css"> @import url("/assets/css/daterangepicker.css"); </style>
 <script src="/assets/js/daterangepicker.js"></script>
 <script type="text/javascript" src="/assets/r2lab/range-calendar.js"></script>
+<script src="/assets/r2lab/statistics-heat.js"></script>
 <script type="text/javascript" src="/assets/r2lab/statistics.js"></script>
 <script src="/assets/js/chartlib/dist/Chart.bundle.js"></script>
 <script src="/assets/js/simpleheat.js"></script>
-<script src="/assets/js/data.js"></script>
 <style type="text/css"> @import url("/assets/r2lab/statistics.css"); </style>
 
 <div class="container">
@@ -137,5 +137,32 @@ tab: platform
       <input type="text" id="range_calendar" class="form-control"> -->
     <!-- </div> -->
   </div>
-
+  <div class="row">
+    <div class="col-lg-12">
+      <br><br>
+      <p></p>
+      <br><br>
+    </div>
+  </div>  
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="heat_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
+        <canvas id="heat" width="775" height="505"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <br><br>
+      <p></p>
+      <br><br>
+    </div>
+  </div>  
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="heat_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
+        <canvas id="heat1" width="775" height="505"></canvas>
+      </div>
+    </div>
+  </div>
 </div>

@@ -8,8 +8,14 @@ $(document).ready(function() {
     is_last = false;
     if (week_ago == 1)
       is_last = true;
-
     return is_last;
+  }
+
+
+
+  var disable_week = function(week_ago) {
+    week_to_disable = [3,4];
+    return $.inArray(week_ago, week_to_disable) > -1 ? true : false;
   }
 
 
@@ -60,7 +66,7 @@ $(document).ready(function() {
     })
 
     in_cumulative(chartData);
-    
+
     create_chart (chartData);
   }
 
@@ -215,14 +221,14 @@ $(document).ready(function() {
 
 
 
-  function post_request(urlpath, request, callback) {
-      var xhttp = new XMLHttpRequest();
-      xhttp.open("POST", urlpath, true);
-      xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      var csrftoken = getCookie('csrftoken');
-      xhttp.setRequestHeader("X-CSRFToken", csrftoken);
-      xhttp.send(JSON.stringify(request));
-      xhttp.onreadystatechange = function(){callback(xhttp);};
+  var post_request = function(urlpath, request, callback) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("POST", urlpath, true);
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    var csrftoken = getCookie('csrftoken');
+    xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+    xhttp.send(JSON.stringify(request));
+    xhttp.onreadystatechange = function(){callback(xhttp);};
   }
 
 
