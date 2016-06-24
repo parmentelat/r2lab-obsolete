@@ -19,10 +19,26 @@ simpleheat.prototype = {
 
     defaultRadius: 25,
 
+    // defaultGradient: {
+    //     0.0: '#FFFFFF',
+    //     0.1: '#FFFFFF',
+    //     0.2: '#dedede',
+    //     0.3: '#cccbcb',
+    //     0.4: '#8dc3fb',
+    //     0.5: '#8de4fb',
+    //     0.6: '#8dfbbf',
+    //     0.7: '#b7fb8d',
+    //     0.8: '#e8fb8d',
+    //     0.9: '#FF9547',
+    //     1.0: '#FF3732'
+    // },
     defaultGradient: {
         0.0: 'white',
-        0.4: 'blue',
-        0.5: 'cyan',
+        0.1: 'white',
+        0.3: 'blue',
+
+
+        0.6: 'cyan',
         0.7: 'lime',
         0.8: 'yellow',
         0.9: 'orange',
