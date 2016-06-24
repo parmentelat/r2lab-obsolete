@@ -151,18 +151,4 @@ tab: platform
       </div>
     </div>
   </div>
-  <div class="row">
-    <div class="col-lg-12">
-      <br><br>
-      <p></p>
-      <br><br>
-    </div>
-  </div>  
-  <div class="row">
-    <div class="col-lg-12">
-      <div class="heat_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
-        <canvas id="heat1" width="775" height="505"></canvas>
-      </div>
-    </div>
-  </div>
 </div>

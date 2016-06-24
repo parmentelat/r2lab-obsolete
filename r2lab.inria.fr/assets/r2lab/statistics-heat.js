@@ -12,14 +12,6 @@ $(document).ready(function() {
       var minOpacity = 0.1;
       heat.draw(minOpacity);
       frame = null;
-
-      var heat1 = simpleheat('heat1').data(data).max(max+.3), frame;
-      heat1.radius(65, 60);
-      // set gradient colors as {0.4: 'blue', 0.65: 'lime', 1: 'red'}
-      // heat.gradient({0.4: 'blue', 0.65: 'lime', 1: 'red'});
-      var minOpacity = 0.1;
-      heat1.draw(minOpacity);
-      frame = null;
   }
 
 
