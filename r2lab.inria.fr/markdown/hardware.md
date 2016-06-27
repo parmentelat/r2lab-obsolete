@@ -146,7 +146,7 @@ tab: platform
   </div>  
   <div class="row">
     <div class="title_heat">
-      cumulative presence of issues from the beginning
+      cumulative presence of issues since the beginning of measurements
     </div>
     <div class="col-lg-11">
       <div class="heat_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
