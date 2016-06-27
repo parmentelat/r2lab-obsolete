@@ -7,3 +7,26 @@
   margin-right: auto;
   text-align: center;
 }
+
+.vertical-text {
+  transform: rotate(90deg);
+  transform-origin: left top 0;
+}
+
+.heat_bar {
+  font-size: 11px;
+}
+
+.title_heat {
+  font-size: 12px;
+  font-weight: bold;
+  font-family: sans-serif;
+  color: #6b6b6b;
+  padding-bottom: 5px;
+  text-align: center;
+}
+
+.heatlevel {
+  height:480px;
+  width:15px;
+}

@@ -145,9 +145,25 @@ tab: platform
     </div>
   </div>  
   <div class="row">
-    <div class="col-lg-12">
+    <div class="title_heat">
+      cumulative presence of issues from the beginning
+    </div>
+    <div class="col-lg-11">
       <div class="heat_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
         <canvas id="heat" width="775" height="505"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-1">
+      <div class="heat_bar">
+        high
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+      </div>
+      <div class="">
+        &nbsp;<img src="/assets/img/heatlevel.png" class="heatlevel">
+      </div>
+      <div class="heat_bar">
+        less
+        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
       </div>
     </div>
   </div>
