@@ -10,7 +10,7 @@ $(document).ready(function() {
       heat.radius(50, 45);
       // set gradient colors as {0.4: 'blue', 0.65: 'lime', 1: 'red'}
       // heat.gradient({0.4: 'blue', 0.65: 'lime', 1: 'red'});
-      var minOpacity = 0.1;
+      var minOpacity = 0.01;
       heat.draw(minOpacity);
       frame = null;
   }
@@ -80,6 +80,7 @@ $(document).ready(function() {
     });
     var max = Math.max.apply(Math, val);
 
+    data = [];
     map = map_node();
     $.each(map, function (i, v) {
       data.push([ v['c'], v['l'], val[v['id']] ]); //[[c[1],l[1], 1], ... or [col pos, lin pos, value]

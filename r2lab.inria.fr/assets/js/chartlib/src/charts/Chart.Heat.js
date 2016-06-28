@@ -92,11 +92,11 @@ simpleheat.prototype = {
 
     gradient: function (grad) {
         // create a 256x1 gradient that we'll use to turn a grayscale heatmap into a colored one
-        var canvas = this._createCanvas(),
-            ctx = canvas.getContext('2d'),
+        var canvas   = this._createCanvas(),
+            ctx      = canvas.getContext('2d'),
             gradient = ctx.createLinearGradient(0, 0, 0, 256);
 
-        canvas.width = 1;
+        canvas.width  = 1;
         canvas.height = 256;
 
         for (var i in grad) {
