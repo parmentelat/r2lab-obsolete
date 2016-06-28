@@ -105,11 +105,10 @@ tab: platform
 <style type="text/css"> @import url("/assets/css/daterangepicker.css"); </style>
 <script src="/assets/js/daterangepicker.js"></script>
 <script type="text/javascript" src="/assets/r2lab/range-calendar.js"></script>
-<script src="/assets/r2lab/statistics-heat.js"></script>
-<script type="text/javascript" src="/assets/r2lab/statistics.js"></script>
-<script src="/assets/js/chartlib/dist/Chart.bundle.js"></script>
-<script src="/assets/js/simpleheat.js"></script>
-<style type="text/css"> @import url("/assets/r2lab/statistics.css"); </style>
+<script src="/assets/js/chartlib/src/charts/Chart.Heat.js"></script>
+<script type="text/javascript" src="/assets/r2lab/charts.js"></script>
+<style type="text/css"> @import url("/assets/r2lab/charts.css"); </style>
+<script src="/assets/js/chartlib/dist/Chart.bundle.min.js"></script>
 
 <div class="container">
   <div class="row">
