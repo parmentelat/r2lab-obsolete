@@ -106,7 +106,6 @@ def main(args):
         else:
             os = name_os(result[node]['stdout'])
             old_os.update( {node : {'os' : os}} )
-            update_phases_db(node, 2)
 
 
     #=========================================
@@ -185,6 +184,7 @@ def main(args):
         if error_presence(result):
             pass
         else:
+            update_phases_db(node, 2)
             oldos = old_os[node]['os']
             newos = name_os(result[node]['stdout'])
             if oldos != newos:
@@ -225,7 +225,7 @@ def main(args):
     print "-- INFO: summary of reset routine"
     failed_nodes = []
     for key, value in sorted(phases.iteritems()):
-        if value['ph3'] == 'ko': #advice in email only for load errors
+        if value['ph2'] == 'ko' or value['ph3'] == 'ko' or value['ph4'] == 'ko': #advice in email only for load errors
             failed_nodes.append(key)
         failed_nodes = list(set(failed_nodes))
 
