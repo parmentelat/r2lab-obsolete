@@ -19,29 +19,29 @@ simpleheat.prototype = {
 
     defaultRadius: 25,
 
-    // defaultGradient: {
-    //     0.0: '#FFFFFF',
-    //     0.1: '#FFFFFF',
-    //     0.2: '#dedede',
-    //     0.3: '#cccbcb',
-    //     0.4: '#8dc3fb',
-    //     0.5: '#8de4fb',
-    //     0.6: '#8dfbbf',
-    //     0.7: '#b7fb8d',
-    //     0.8: '#e8fb8d',
-    //     0.9: '#FF9547',
-    //     1.0: '#FF3732'
-    // },
     defaultGradient: {
-        0.0: 'white',
-        0.1: 'white',
-        0.3: 'blue',
-        0.6: 'cyan',
-        0.7: 'lime',
-        0.8: 'yellow',
-        0.9: 'orange',
-        1.0: 'red'
+        0.0: '#FFFFFF',
+        0.1: 'rgba(92, 163, 214, 0.7)',
+        0.2: 'rgba(92, 163, 214, 0.7)',
+        0.3: 'rgba(92, 214, 192, 0.7)',
+        0.4: 'rgba(92, 214, 156, 0.7)',
+        0.5: 'rgba(142, 214, 92, 0.6)',
+        0.6: 'rgba(197, 214, 92, 0.6)',
+        0.7: 'rgba(214, 173, 92, 0.8)',
+        0.8: 'rgba(214, 132, 92, 0.75)',
+        0.9: 'rgba(214, 96, 92, 0.8)',
+        1.0: 'rgba(243,39,26,0.7)',
     },
+    // defaultGradient: {
+    //     0.0: 'white',
+    //     0.1: 'white',
+    //     0.3: 'blue',
+    //     0.6: 'cyan',
+    //     0.7: 'lime',
+    //     0.8: 'yellow',
+    //     0.9: 'orange',
+    //     1.0: 'red'
+    // },
 
     data: function (data) {
         this._data = data;

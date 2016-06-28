@@ -5,7 +5,8 @@ $(document).ready(function() {
 
 
   var draw = function(data, max) {
-      var heat = simpleheat('heat').data(data).max(max+.3), frame;
+      var heat = simpleheat('heat').data(data).max(max), frame;
+      console.log(max);
       //heat.radius(40, 35);//really round
       heat.radius(50, 45);
       // set gradient colors as {0.4: 'blue', 0.65: 'lime', 1: 'red'}
@@ -133,6 +134,8 @@ $(document).ready(function() {
       chartData.datasets.push(dataset);
     })
 
+    in_cumulative(chartData);
+
     //After all dataseries, insert the complete one
     color   = serie_color();
     dataset = {
@@ -144,7 +147,9 @@ $(document).ready(function() {
       borderColor: color[1],
       data: [],
     }
-
+    start   = now;
+    end     = moment('2016-01-01');
+    d_range = selectInterval(data, start, end);
     val = new Array(38).fill(0);
     $.each(data, function (index, value) {
       $.each(value['data'], function (i, v) {
@@ -155,12 +160,9 @@ $(document).ready(function() {
     chartData.datasets.push(dataset);
     //-----------------------------------------------
 
-    in_cumulative(chartData);
-
     create_line_chart(chartData);
     create_doug_chart(data);
   }
-
 
 
 
@@ -270,7 +272,6 @@ $(document).ready(function() {
         var doughnut = '<div class="n'+node+'"><canvas id="chart-area'+node+'" width="70" height="70"></canvas></div>';
         $("#doughnut_container").append(doughnut);
 
-        console.log(serie_color(0));
         var ctx = document.getElementById("chart-area"+node).getContext("2d");
         window.myDoughnut = new Chart(ctx, {
             type: 'doughnut',
