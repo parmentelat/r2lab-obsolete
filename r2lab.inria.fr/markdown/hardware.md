@@ -134,7 +134,13 @@ tab: platform
     <div class="title_heat">
       presence of issues since the <b>beginning</b> of measurements
     </div>
-    <div class="col-lg-11" style="width: 86.3%">
+    <div class="col-lg-1" style="width: 10px">
+      <div class="">
+        <br><br><br><br><br><br><br><br><br>
+        <img src="/assets/img/mapylegend.png" class="">
+      </div>
+    </div>
+    <div class="col-lg-10" style="width: 83.7%">
       <div class="heat_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
         <canvas id="heat" width="775" height="505"></canvas>
       </div>
@@ -167,7 +173,13 @@ tab: platform
     <div class="title_heat">
       presence of issues since the <b>beginning</b> of measurements by issue type in percent
     </div>
-    <div class="col-lg-11" style="width: 86.3%">
+    <div class="col-lg-1" style="width: 10px">
+      <div class="">
+        <br><br><br><br><br><br><br><br><br>
+        <img src="/assets/img/mapylegend.png" class="">
+      </div>
+    </div>
+    <div class="col-lg-10" style="width: 83.7%">
       <div class="heat_container" id="doughnut_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
       </div>
     </div>
