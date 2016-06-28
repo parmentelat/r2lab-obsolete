@@ -18,8 +18,8 @@
 }
 
 .title_heat {
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: normal;
   font-family: sans-serif;
   color: #6b6b6b;
   padding-bottom: 5px;
@@ -269,21 +269,21 @@
 }
 
 .start {
-  background: #F7464A;
+  background: rgba(243,39,26,.6);
 }
 
 .ssh {
-  background: #6e9e2a;
+  background: rgba(31, 54, 177, 0.6);
 }
 
 .load {
-  background: #09fff0;
+  background: rgba(194,111,225,.6);
 }
 
 .osos {
-  background: #1164ec;
+  background: rgba(13,113,75,.6);
 }
 
 .zombie {
-  background: #ffee12;
+  background: rgba(158,196,16,.6);
 }

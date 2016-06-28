@@ -51,6 +51,26 @@ $(document).ready(function() {
 
 
 
+  var serie_color = function(week) {
+    var l_color = ['rgba(243,39,26,.7)', 'rgba(31, 54, 177, 0.7)', 'rgba(194,111,225,.7)', 'rgba(13,113,75,.7)', 'rgba(158,196,16,.7)']; //zero collor is for complete series
+    var b_color = ['rgba(243,39,26,.6)', 'rgba(31, 54, 177, 0.6)', 'rgba(194,111,225,.6)', 'rgba(13,113,75,.6)', 'rgba(158,196,16,.6)']; //zero collor is for complete series
+
+    if(week){
+      try {
+        return [b_color[week], l_color[week]];
+      } catch (e) {
+        var color = randomColor();
+
+        return [color, color];
+      } finally { }
+    }
+    else{
+      return [b_color[0], l_color[0]];
+    }
+  }
+
+
+
   var build_heat_chart = function(data) {
     val = new Array(38).fill(0);
     $.each(data, function (index, value) {
@@ -86,20 +106,19 @@ $(document).ready(function() {
     };
 
     $.each(w_ago, function (index, value) {
-      start = moment().subtract((value    * 7)-1, 'days');
-      end   = moment().subtract((value-1) * 7,    'days');
-
-      d_range  = selectInterval(data, start, end);
-      title = is_last_week(value) ? value + ' week' : value + ' weeks';
-      color = randomColor();
+      start   = moment().subtract((value    * 7)-1, 'days');
+      end     = moment().subtract((value-1) * 7,    'days');
+      d_range = selectInterval(data, start, end);
+      title   = is_last_week(value) ? value + ' week' : value + ' weeks';
+      color   = serie_color(value);
 
       dataset = {
         fill: true,
         borderWidth: 1.7,
         label: title,
         hidden: false,
-        backgroundColor: color,
-        borderColor: color,
+        backgroundColor: color[0],
+        borderColor: color[1],
         data: [],
       }
 
@@ -113,6 +132,29 @@ $(document).ready(function() {
       dataset.data = val;
       chartData.datasets.push(dataset);
     })
+
+    //After all dataseries, insert the complete one
+    color   = serie_color();
+    dataset = {
+      fill: true,
+      borderWidth: 1.7,
+      label: 'complete serie',
+      hidden: false,
+      backgroundColor: color[0],
+      borderColor: color[1],
+      data: [],
+    }
+
+    val = new Array(38).fill(0);
+    $.each(data, function (index, value) {
+      $.each(value['data'], function (i, v) {
+        val[i] = val[i] + 1;
+      });
+    });
+    dataset.data = val;
+    chartData.datasets.push(dataset);
+    //-----------------------------------------------
+
     in_cumulative(chartData);
 
     create_line_chart(chartData);
@@ -182,7 +224,6 @@ $(document).ready(function() {
               elements: {
                   rectangle: {
                       borderWidth: 0,
-
                       borderSkipped: 'bottom'
                   }
               },
@@ -192,7 +233,9 @@ $(document).ready(function() {
               },
               title: {
                   display: true,
-                  text: 'issues found "n" weeks ago from today'
+                  text: 'issues found "n" weeks ago from today',
+                  fontSize: 16,
+                  fontStyle: 'normal',
               },
               scales: {
                 yAxes: [{
@@ -227,13 +270,14 @@ $(document).ready(function() {
         var doughnut = '<div class="n'+node+'"><canvas id="chart-area'+node+'" width="70" height="70"></canvas></div>';
         $("#doughnut_container").append(doughnut);
 
+        console.log(serie_color(0));
         var ctx = document.getElementById("chart-area"+node).getContext("2d");
         window.myDoughnut = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 datasets: [{
                     data: parse_each_type_issue(data, node),
-                    backgroundColor: ["#F7464A","#6e9e2a","#09fff0","#1164ec","#ffee12",],
+                    backgroundColor: [serie_color(0)[0], serie_color(1)[0], serie_color(2)[0], serie_color(3)[0], serie_color(4)[0]],
                     label: 'dataset 1'
                 }],
                 labels: ["start","ssh","load","o.s.","zombie"]

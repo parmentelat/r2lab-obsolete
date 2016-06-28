@@ -93,7 +93,7 @@ tab: platform
 <div class="row">
   <div class="col-md-12">
     <h3>Historical of issues</h3>
-      Summarized below are the results of our nightly monitoring routine which help us keep r2lab healthy. The graphs brings the number of issues found along the days from Jan/16.
+      Summarized below are the results of our nightly monitoring routine which help us identify issues and keep r2lab healthy. The graphs are independent and bring the information about issues found along the days from Jan/16.
   </div>
 </div>
 
@@ -122,11 +122,11 @@ tab: platform
       <input type="text" id="range_calendar" class="form-control"> -->
     <!-- </div> -->
   </div>
+
   <div class="row">
     <div class="col-lg-12">
       <br><br>
       <p></p>
-      <br><br>
     </div>
   </div>    
 
@@ -158,9 +158,8 @@ tab: platform
     <div class="col-lg-12">
       <br><br>
       <p></p>
-      <br><br>
     </div>
-  </div>  
+  </div>
 
   <div class="row">
     <div class="title_heat">
