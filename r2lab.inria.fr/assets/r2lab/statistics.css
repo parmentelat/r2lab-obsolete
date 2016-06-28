@@ -30,3 +30,260 @@
   height:480px;
   width:15px;
 }
+
+.n1 {
+  position: absolute;
+  padding-left: 10px;
+  padding-top: 10px;
+}
+
+.n2 {
+  position: absolute;
+  padding-left: 10px;
+  padding-top: 115px;
+}
+
+.n3 {
+  position: absolute;
+  padding-left: 10px;
+  padding-top: 220px;
+}
+
+.n4 {
+  position: absolute;
+  padding-left: 10px;
+  padding-top: 325px;
+}
+
+.n5 {
+  position: absolute;
+  padding-left: 10px;
+  padding-top: 427px;
+}
+
+.n6 {
+  position: absolute;
+  padding-left: 98px;
+  padding-top: 10px;
+}
+
+.n7 {
+  position: absolute;
+  padding-left: 98px;
+  padding-top: 115px;
+}
+
+.n8 {
+  position: absolute;
+  padding-left: 98px;
+  padding-top: 220px;
+}
+
+.n9 {
+  position: absolute;
+  padding-left: 98px;
+  padding-top: 325px;
+}
+
+.n10 {
+  position: absolute;
+  padding-left: 98px;
+  padding-top: 427px;
+}
+
+.n11 {
+  position: absolute;
+  padding-left: 183px;
+  padding-top: 10px;
+}
+
+.n12 {
+  position: absolute;
+  padding-left: 183px;
+  padding-top: 115px;
+}
+
+.n13 {
+  position: absolute;
+  padding-left: 183px;
+  padding-top: 220px;
+}
+
+.n14 {
+  position: absolute;
+  padding-left: 183px;
+  padding-top: 325px;
+}
+
+.n15 {
+  position: absolute;
+  padding-left: 183px;
+  padding-top: 427px;
+}
+
+.n16 {
+  position: absolute;
+  padding-left: 270px;
+  padding-top: 10px;
+}
+
+.n17 {
+  position: absolute;
+  padding-left: 270px;
+  padding-top: 220px;
+}
+
+.n18 {
+  position: absolute;
+  padding-left: 270px;
+  padding-top: 325px;
+}
+
+.n19 {
+  position: absolute;
+  padding-left: 356px;
+  padding-top: 10px;
+}
+
+.n20 {
+  position: absolute;
+  padding-left: 356px;
+  padding-top: 115px;
+}
+
+.n21 {
+  position: absolute;
+  padding-left: 356px;
+  padding-top: 220px;
+}
+
+.n22 {
+  position: absolute;
+  padding-left: 356px;
+  padding-top: 325px;
+}
+
+.n23 {
+  position: absolute;
+  padding-left: 442px;
+  padding-top: 10px;
+}
+
+.n24 {
+  position: absolute;
+  padding-left: 442px;
+  padding-top: 220px;
+}
+
+.n25 {
+  position: absolute;
+  padding-left: 442px;
+  padding-top: 325px;
+}
+
+.n26 {
+  position: absolute;
+  padding-left: 529px;
+  padding-top: 10px;
+}
+
+.n27 {
+  position: absolute;
+  padding-left: 529px;
+  padding-top: 115px;
+}
+
+.n28 {
+  position: absolute;
+  padding-left: 529px;
+  padding-top: 220px;
+}
+
+.n29 {
+  position: absolute;
+  padding-left: 529px;
+  padding-top: 325px;
+}
+
+.n30 {
+  position: absolute;
+  padding-left: 529px;
+  padding-top: 427px;
+}
+
+.n31 {
+  position: absolute;
+  padding-left: 615px;
+  padding-top: 10px;
+}
+
+.n32 {
+  position: absolute;
+  padding-left: 615px;
+  padding-top: 115px;
+}
+
+.n33 {
+  position: absolute;
+  padding-left: 615px;
+  padding-top: 220px;
+}
+
+.n34 {
+  position: absolute;
+  padding-left: 615px;
+  padding-top: 325px;
+}
+
+.n35 {
+  position: absolute;
+  padding-left: 615px;
+  padding-top: 427px;
+}
+
+.n36 {
+  position: absolute;
+  padding-left: 703px;
+  padding-top: 325px;
+}
+
+.n37 {
+  position: absolute;
+  padding-left: 703px;
+  padding-top: 427px;
+}
+
+.legend {
+  float: left;
+  width:  44px;
+  height: 14px;
+  margin: 0px;
+  border: 0px solid rgba(0, 0, 0, .2);
+}
+
+.legend2 {
+  padding-top: 0px;
+  padding-left: 47px;
+  font-size: 12px;
+  color: #575555;
+}
+
+.start {
+  background: #F7464A;
+}
+
+.ssh {
+  background: #6e9e2a;
+}
+
+.load {
+  background: #09fff0;
+}
+
+.osos {
+  background: #1164ec;
+}
+
+.zombie {
+  background: #ffee12;
+}

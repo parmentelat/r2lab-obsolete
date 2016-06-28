@@ -137,6 +137,7 @@ tab: platform
       <input type="text" id="range_calendar" class="form-control"> -->
     <!-- </div> -->
   </div>
+
   <div class="row">
     <div class="col-lg-12">
       <br><br>
@@ -144,11 +145,12 @@ tab: platform
       <br><br>
     </div>
   </div>  
+
   <div class="row">
     <div class="title_heat">
-      cumulative presence of issues since the beginning of measurements
+      presence of issues since the beginning of measurements
     </div>
-    <div class="col-lg-11">
+    <div class="col-lg-11" style="width: 88%">
       <div class="heat_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
         <canvas id="heat" width="775" height="505"></canvas>
       </div>
@@ -167,4 +169,30 @@ tab: platform
       </div>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <br><br>
+      <p></p>
+      <br><br>
+    </div>
+  </div>  
+
+  <div class="row">
+    <div class="title_heat">
+      presence of issues since the beginning of measurements by issue type
+    </div>
+    <div class="col-lg-11" style="width: 88%">
+      <div class="heat_container" id="doughnut_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
+      </div>
+    </div>
+    <div class="col-lg-1" style="padding-right: 0px; padding-top: 4px;">
+      <div class="legend start"></div><div class="legend2">start</div>
+      <div class="legend ssh"></div><div class="legend2">ssh</div>
+      <div class="legend load"></div><div class="legend2">load</div>
+      <div class="legend osos"></div><div class="legend2">o.s.</div>
+      <div class="legend zombie"></div><div class="legend2">zombie</div>
+    </div>
+  </div>
+
 </div>

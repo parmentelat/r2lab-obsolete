@@ -64,10 +64,12 @@ $(document).ready(function() {
       dataset.data = val;
       chartData.datasets.push(dataset);
     })
-
     in_cumulative(chartData);
 
-    create_chart (chartData);
+
+    create_bar_chart  (chartData);
+    create_line_chart (chartData);
+    create_doug_chart (data)
   }
 
 
@@ -87,8 +89,51 @@ $(document).ready(function() {
 
 
 
+  var parse_each_type_issue = function(data, node) {
+    var p1=0; var p2=0; var p3=0; var p4=0; var p5=0;
+    $.each(data, function (index, value) {
+      try {
+        if(value['data'][node]['ph1'])
+          p1++;
+      } catch (e) {
+      } finally {}
+      try {
+        if(value['data'][node]['ph2'])
+          p2++;
+      } catch (e) {
+      } finally {}
+      try {
+        if(value['data'][node]['ph3'])
+          p3++;
+      } catch (e) {
+      } finally {}
+      try {
+        if(value['data'][node]['ph4'])
+          p4++;
+      } catch (e) {
+      } finally {}
+      try {
+        if(value['data'][node]['ph5'])
+          p5++;
+      } catch (e) {
+      } finally {}
 
-  var create_chart = function(chartData) {
+        // if(v['ph2'])
+        //   p2++;
+        // if(v['ph3'])
+        //   p3++;
+        // if(v['ph4'])
+        //   p4++;
+        // if(v['ph5'])
+        //   p5++;
+      // });
+    });
+    return [p1,p2,p3,p4,p5];
+  }
+
+
+
+  var create_bar_chart = function(chartData) {
       //CREATING BAR CHART
       var ctx = document.getElementById("bar").getContext("2d");
       window.myBar = new Chart(ctx, {
@@ -135,6 +180,8 @@ $(document).ready(function() {
               }
           }
       });
+    }
+    var create_line_chart = function(chartData) {
       //CREATING LINE CHART
       ctx = document.getElementById("line").getContext("2d");
       window.myLine = new Chart(ctx, {
@@ -181,7 +228,117 @@ $(document).ready(function() {
               }
           }
       });
+    }
+    var create_doug_chart = function(data) {
+      //CREATING DOUGHNUT CHART
+      nodes = new Array(37);
+      $.each(nodes, function (index, value) {
+        node = index + 1;
+
+        var doughnut = '<div class="n'+node+'"><canvas id="chart-area'+node+'" width="70" height="70"></canvas></div>';
+        $("#doughnut_container").append(doughnut);
+
+        var ctx = document.getElementById("chart-area"+node).getContext("2d");
+        window.myDoughnut = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                datasets: [{
+                    data: parse_each_type_issue(data, node),
+                    backgroundColor: ["#F7464A","#6e9e2a","#09fff0","#1164ec","#ffee12",],
+                    label: 'dataset 1'
+                }],
+                labels: ["start","ssh","load","o.s.","zombie"]
+            },
+            options: {
+                responsive: false,
+                legend: {
+                    display: false,
+                    position: 'top',
+                },
+                title: {
+                    display: false,
+                    text: ''
+                },
+                animation: {
+                    animateScale: false,
+                    animateRotate: true
+                },
+                tooltips: {
+            			enabled: false,
+            		},
+                showPercentage: true,
+            }
+        });
+      });
   }
+
+
+  //refactoring to put percents label in doughnuts
+  Chart.pluginService.register({
+  	afterDraw: function (chart, easing) {
+  		if (chart.config.options.showPercentage || chart.config.options.showLabel) {
+  			var self = chart.config;
+  			var ctx = chart.chart.ctx;
+
+  			ctx.font = '10px Arial';
+  			ctx.textAlign = "center";
+  			ctx.fillStyle = "#000";
+
+  			self.data.datasets.forEach(function (dataset, datasetIndex) {
+  				var total = 0, //total values to compute fraction
+  					labelxy = [],
+  					offset = Math.PI / 2, //start sector from top
+  					radius,
+  					centerx,
+  					centery,
+  					lastend = 0; //prev arc's end line: starting with 0
+
+  				for (var val of dataset.data) { total += val; }
+
+  				//TODO needs improvement
+  				var i = 0;
+  				var meta = dataset._meta[i];
+  				while(!meta) {
+  					i++;
+  					meta = dataset._meta[i];
+  				}
+
+  				var element;
+  				for(index = 0; index < meta.data.length; index++) {
+
+  					element = meta.data[index];
+  					radius = 1.23 * element._view.outerRadius - element._view.innerRadius;
+  					centerx = element._model.x;
+  					centery = element._model.y;
+  					var thispart = dataset.data[index],
+  						arcsector = Math.PI * (2 * thispart / total);
+  					if (element.hasValue() && dataset.data[index] > 0) {
+  					  labelxy.push(lastend + arcsector / 2 + Math.PI + offset);
+  					}
+  					else {
+  					  labelxy.push(-1);
+  					}
+  					lastend += arcsector;
+  				}
+
+
+  				var lradius = radius;// * 3 / 4;
+  				for (var idx in labelxy) {
+  					if (labelxy[idx] === -1) continue;
+  					var langle = labelxy[idx],
+  					dx = centerx + lradius * Math.cos(langle),
+  					dy = centery + lradius * Math.sin(langle),
+  					val = Math.round(dataset.data[idx] / total * 100);
+  					if (chart.config.options.showPercentage)
+  						ctx.fillText(''+ val + '', dx, dy);
+  					else
+  						ctx.fillText(chart.config.data.labels[idx], dx, dy);
+  				}
+  				ctx.restore();
+  			});
+  		}
+  	}
+  });
 
 
 
