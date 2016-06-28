@@ -35,8 +35,23 @@ $(document).ready(function() {
 
 
 
-  var build_heat_chart = function(data) {
+  var is_last_week = function(week_ago) {
+    is_last = false;
+    if (week_ago == 1)
+      is_last = true;
+    return is_last;
+  }
 
+
+
+  var disable_week = function(week_ago) {
+    week_to_disable = [3,4];
+    return $.inArray(week_ago, week_to_disable) > -1 ? true : false;
+  }
+
+
+
+  var build_heat_chart = function(data) {
     val = new Array(38).fill(0);
     $.each(data, function (index, value) {
       $.each(value['data'], function (i, v) {
@@ -54,23 +69,7 @@ $(document).ready(function() {
 
 
 
-  var is_last_week = function(week_ago) {
-    is_last = false;
-    if (week_ago == 1)
-      is_last = true;
-    return is_last;
-  }
-
-
-
-  var disable_week = function(week_ago) {
-    week_to_disable = [3,4];
-    return $.inArray(week_ago, week_to_disable) > -1 ? true : false;
-  }
-
-
-
-  var build_data_chart = function(data) {
+  var build_line_and_doug_chart = function(data) {
     var w_ago  = [1,2,3,4]; //ex.: 3 means four weeks ago
     var start  = null;
     var end    = null;
@@ -117,7 +116,6 @@ $(document).ready(function() {
     in_cumulative(chartData);
 
     create_line_chart(chartData);
-    build_heat_chart (data);
     create_doug_chart(data);
   }
 
@@ -389,7 +387,8 @@ $(document).ready(function() {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
         answer = JSON.parse(xhttp.responseText);
         if (answer)
-          build_data_chart(answer);
+          build_line_and_doug_chart(answer);
+          build_heat_chart(answer);
       }
     });
   }
