@@ -45,7 +45,7 @@ $(document).ready(function() {
       color = randomColor();
 
       dataset = {
-        fill: !is_last_week(value),
+        fill: true,
         borderWidth: 1.7,
         label: title,
         hidden: false,
@@ -66,8 +66,6 @@ $(document).ready(function() {
     })
     in_cumulative(chartData);
 
-
-    create_bar_chart  (chartData);
     create_line_chart (chartData);
     create_doug_chart (data)
   }
@@ -117,70 +115,12 @@ $(document).ready(function() {
           p5++;
       } catch (e) {
       } finally {}
-
-        // if(v['ph2'])
-        //   p2++;
-        // if(v['ph3'])
-        //   p3++;
-        // if(v['ph4'])
-        //   p4++;
-        // if(v['ph5'])
-        //   p5++;
-      // });
     });
     return [p1,p2,p3,p4,p5];
   }
 
 
 
-  var create_bar_chart = function(chartData) {
-      //CREATING BAR CHART
-      var ctx = document.getElementById("bar").getContext("2d");
-      window.myBar = new Chart(ctx, {
-          type: 'bar',
-          data: chartData,
-          options: {
-              // Elements options apply to all of the options unless overridden in a dataset
-              // In this case, we are setting the border of each bar to be 2px wide and green
-              elements: {
-                  rectangle: {
-                      borderWidth: 0,
-
-                      borderSkipped: 'bottom'
-                  }
-              },
-              responsive: true,
-              legend: {
-                  position: 'right',
-              },
-              title: {
-                  display: true,
-                  text: 'issues found "n" weeks ago from today'
-              },
-              scales: {
-                yAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: 'number of issues detected'
-                  },
-
-                  ticks: {
-                      min: 0,
-                      // max: 100,
-                      // beginAtZero: true
-                    }
-
-                }],
-                xAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: 'nodes'
-                  }
-                }]
-              }
-          }
-      });
-    }
     var create_line_chart = function(chartData) {
       //CREATING LINE CHART
       ctx = document.getElementById("line").getContext("2d");

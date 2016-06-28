@@ -118,33 +118,18 @@ tab: platform
         <canvas id="line" height="250" width="700"></canvas>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-lg-12">
-      <br><br>
-      <p></p>
-      <br><br>
-    </div>
-  </div>  
-  <div class="row">
-    <div class="col-lg-12">
-      <div style="width: 100%">
-        <canvas id="bar" height="250" width="700"></canvas>
-      </div>
-    </div>
     <!-- <div class="col-lg-1"> -->
       <!-- <br><br>select a range date<br>
       <input type="text" id="range_calendar" class="form-control"> -->
     <!-- </div> -->
   </div>
-
   <div class="row">
     <div class="col-lg-12">
       <br><br>
       <p></p>
       <br><br>
     </div>
-  </div>  
+  </div>    
 
   <div class="row">
     <div class="title_heat">
