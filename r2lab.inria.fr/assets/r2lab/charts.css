@@ -9,8 +9,11 @@
 }
 
 .vertical-text {
-  transform: rotate(90deg);
+  transform: rotate(270deg);
   transform-origin: left top 0;
+  position: absolute;
+  padding-top: 0px;
+  padding-left: -100px;
 }
 
 .heat_bar {
