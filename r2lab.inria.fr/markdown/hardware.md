@@ -132,14 +132,16 @@ tab: platform
 
   <div class="row">
     <div class="title_heat">
-      presence of issues since the beginning of measurements
+      presence of issues since the <b>beginning</b> of measurements
     </div>
-    <div class="col-lg-11" style="width: 88%">
+    <div class="col-lg-11" style="width: 86.3%">
       <div class="heat_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
         <canvas id="heat" width="775" height="505"></canvas>
       </div>
     </div>
-    <div class="col-lg-1">
+    <div class="legend complete_serie"></div><div class="legend2">&nbsp;complete serie</div>
+    <div class="col-lg-1" style="padding-left: 0px;">
+      <br><br><br><br><br><br><br><br><br>
       <div class="heat_bar">
         high
         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -163,13 +165,16 @@ tab: platform
 
   <div class="row">
     <div class="title_heat">
-      presence of issues since the beginning of measurements by issue type
+      presence of issues since the <b>beginning</b> of measurements by issue type in percent
     </div>
-    <div class="col-lg-11" style="width: 88%">
+    <div class="col-lg-11" style="width: 86.3%">
       <div class="heat_container" id="doughnut_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
       </div>
     </div>
-    <div class="col-lg-1" style="padding-right: 0px; padding-top: 4px;">
+    <div class="legend complete_serie"></div><div class="legend2">&nbsp;complete serie</div>
+    <div class="col-lg-1" style="padding-right: 0px; padding-left: 0px; padding-top: 4px;">
+      <br><br><br><br><br><br><br><br><br>
+      <div class="legend_intern">ISSUES MAP</div>
       <div class="legend start"></div><div class="legend2">start</div>
       <div class="legend ssh"></div><div class="legend2">ssh</div>
       <div class="legend load"></div><div class="legend2">load</div>

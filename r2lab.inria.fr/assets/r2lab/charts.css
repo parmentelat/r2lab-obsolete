@@ -3,7 +3,7 @@
   width: 790px;
   height: 520px;
   display: block;
-  margin-left: auto;
+  margin-left: 10px;
   margin-right: auto;
   text-align: center;
 }
@@ -27,7 +27,7 @@
 }
 
 .heatlevel {
-  height:480px;
+  height:80px;
   width:15px;
 }
 
@@ -268,8 +268,20 @@
   color: #575555;
 }
 
-.start {
+.legend_intern {
+  font-size: 12px;
+  color: #575555;
+  letter-spacing: .12em;
+  text-align: center;
+  font-weight: bold;
+}
+
+.complete_serie {
   background: rgba(243,39,26,.6);
+}
+
+.start {
+  background: rgba(28, 255, 0, 0.81);
 }
 
 .ssh {

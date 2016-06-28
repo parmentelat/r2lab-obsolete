@@ -6,7 +6,6 @@ $(document).ready(function() {
 
   var draw = function(data, max) {
       var heat = simpleheat('heat').data(data).max(max), frame;
-      console.log(max);
       //heat.radius(40, 35);//really round
       heat.radius(50, 45);
       // set gradient colors as {0.4: 'blue', 0.65: 'lime', 1: 'red'}
