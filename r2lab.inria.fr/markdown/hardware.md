@@ -114,6 +114,7 @@ tab: platform
   <div class="row">
     <div class="col-lg-12">
       <div style="width: 100%">
+        <div id="line-chart-tooltip"></div>
         <canvas id="line" height="250" width="700"></canvas>
       </div>
     </div>
@@ -135,8 +136,7 @@ tab: platform
       presence of issues since the <b>beginning</b> of measurements
     </div>
     <div class="col-lg-1" style="width: 10px">
-      <div class="">
-        <br><br><br><br><br><br><br><br><br>
+      <div class="side_title">
         <img src="/assets/img/mapylegend.png" class="">
       </div>
     </div>
@@ -174,8 +174,7 @@ tab: platform
       presence of issues since the <b>beginning</b> of measurements by issue type in percent
     </div>
     <div class="col-lg-1" style="width: 10px">
-      <div class="">
-        <br><br><br><br><br><br><br><br><br>
+      <div class="side_title">
         <img src="/assets/img/mapylegend.png" class="">
       </div>
     </div>

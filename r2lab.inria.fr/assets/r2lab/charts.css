@@ -8,6 +8,10 @@
   text-align: center;
 }
 
+.side_title {
+  padding-top: 170px;
+}
+
 .vertical-text {
   transform: rotate(270deg);
   white-space:nowrap;
