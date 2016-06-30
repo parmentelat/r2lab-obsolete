@@ -1,7 +1,7 @@
 $(document).ready(function() {
   var version = '1.0';
   var now = moment();
-
+  var sharedData = null
 
 
   var draw = function(data, max) {
@@ -13,6 +13,18 @@ $(document).ready(function() {
       var minOpacity = 0.01;
       heat.draw(minOpacity);
       frame = null;
+  }
+
+
+
+  var set_data = function(data) {
+    sharedData = data;
+  }
+
+
+
+  var get_data = function() {
+    return sharedData;
   }
 
 
@@ -141,7 +153,7 @@ $(document).ready(function() {
     dataset = {
       fill: true,
       borderWidth: 1.7,
-      label: 'complete serie',
+      label: 'all serie',
       hidden: false,
       backgroundColor: color[0],
       borderColor: color[1],
@@ -159,7 +171,7 @@ $(document).ready(function() {
     dataset.data = val;
     chartData.datasets.push(dataset);
     //-----------------------------------------------
-
+    set_data(chartData);
     create_line_chart(chartData);
     create_doug_chart(data);
   }
@@ -214,97 +226,170 @@ $(document).ready(function() {
 
 
 
-    var create_line_chart = function(chartData) {
-      //CREATING LINE CHART
-      ctx = document.getElementById("line").getContext("2d");
-      window.myLine = new Chart(ctx, {
-          type: 'line',
-          data: chartData,
-          options: {
-              // Elements options apply to all of the options unless overridden in a dataset
-              // In this case, we are setting the border of each bar to be 2px wide and green
-              elements: {
-                  rectangle: {
-                      borderWidth: 0,
-                      borderSkipped: 'bottom'
+  var customTooltips = function(tooltip) {
+    // Tooltip Element
+      var tooltipEl = $('#line-chart-tooltip');
+      // Hide if no tooltip
+      if (!tooltip.opacity) {
+        tooltipEl.css({
+          opacity: 0
+        });
+        return;
+      }
+
+      //building new tootipe infos
+      //============================
+      var data = get_data();
+      var values = [];
+      $.each(data.datasets, function (index, value) {
+        values.push(value['data'][tooltip.title]);
+      });
+      if (tooltip.body) {
+        var innerHtml = ['_____ node '+tooltip.title+' _____<br>'];
+        $.each(values, function (index, value) {
+          var diff = 0;
+          var label = data.datasets[index].label;
+          var bcolor = data.datasets[index].backgroundColor;
+
+          if(index > 0){
+            label = label+'&nbsp;: ';
+            diff = values[index] - values[index-1];
+          } else {
+            label = label+'&nbsp;&nbsp;&nbsp;: ';
+          }
+
+          if(diff > 0)
+            diff = ' (+'+diff+')';
+          else if(diff > 0)
+            diff = ' ('+diff+')';
+          else
+            diff = '';
+
+          // "<div style=\"background-color:red\">asdf</div>"
+          innerHtml.push(label + value + diff +'<br>');
+        });
+
+        tooltipEl.html(innerHtml);
+      }
+      //============================
+
+      var position = $(this._chart.canvas)[0].getBoundingClientRect();
+      var posx = tooltip.x + 50;
+      var posy = tooltip.y - 100;
+      // Display, position, and set styles for font
+      tooltipEl.css({
+        opacity: 1.5,
+        width: tooltip.width ? (tooltip.width + 'px') : 'auto',
+        left: posx + 'px',
+        top:  posy + 'px',
+        fontFamily: tooltip._fontFamily,
+        fontSize: 11,
+        fontStyle: tooltip._fontStyle,
+        padding: tooltip.yPadding + 'px ' + tooltip.xPadding + 'px',
+      });
+
+  }
+
+
+
+  var create_line_chart = function(chartData) {
+    //CREATING LINE CHART
+    lll = chartData
+    ctx = document.getElementById("line").getContext("2d");
+    window.myLine = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            tooltips: {
+              enabled: false,
+              custom: customTooltips
+            },
+            elements: {
+                rectangle: {
+                    borderWidth: 0,
+                    borderSkipped: 'bottom'
+                }
+            },
+            responsive: true,
+            legend: {
+                position: 'right',
+            },
+            title: {
+                display: true,
+                text: 'issues found "n" weeks ago from today',
+                fontSize: 16,
+                fontStyle: 'normal',
+            },
+            scales: {
+              yAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'number of issues detected'
+                },
+
+                ticks: {
+                    min: 0,
+                    // max: 100,
+                    // beginAtZero: true
                   }
-              },
-              responsive: true,
+
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'nodes'
+                }
+              }]
+            }
+        }
+    });
+  }
+
+
+
+  var create_doug_chart = function(data) {
+    //CREATING DOUGHNUT CHART
+    nodes = new Array(37);
+    $.each(nodes, function (index, value) {
+      node = index + 1;
+
+      var doughnut = '<div class="n'+node+'"><canvas id="chart-area'+node+'" width="70" height="70"></canvas></div>';
+      $("#doughnut_container").append(doughnut);
+
+      var ctx = document.getElementById("chart-area"+node).getContext("2d");
+      window.myDoughnut = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+              datasets: [{
+                  data: parse_each_type_issue(data, node),
+                  backgroundColor: [serie_color(0)[0], serie_color(1)[0], serie_color(2)[0], serie_color(3)[0], serie_color(4)[0]],
+                  label: 'dataset 1'
+              }],
+              labels: ["start","ssh","load","o.s.","zombie"]
+          },
+          options: {
+              responsive: false,
               legend: {
-                  position: 'right',
+                  display: false,
+                  position: 'top',
               },
               title: {
-                  display: true,
-                  text: 'issues found "n" weeks ago from today',
-                  fontSize: 16,
-                  fontStyle: 'normal',
+                  display: false,
+                  text: ''
               },
-              scales: {
-                yAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: 'number of issues detected'
-                  },
-
-                  ticks: {
-                      min: 0,
-                      // max: 100,
-                      // beginAtZero: true
-                    }
-
-                }],
-                xAxes: [{
-                  scaleLabel: {
-                    display: true,
-                    labelString: 'nodes'
-                  }
-                }]
-              }
+              animation: {
+                  animateScale: false,
+                  animateRotate: true
+              },
+              tooltips: {
+          			enabled: false,
+          		},
+              showPercentage: true,
           }
       });
-    }
-    var create_doug_chart = function(data) {
-      //CREATING DOUGHNUT CHART
-      nodes = new Array(37);
-      $.each(nodes, function (index, value) {
-        node = index + 1;
-
-        var doughnut = '<div class="n'+node+'"><canvas id="chart-area'+node+'" width="70" height="70"></canvas></div>';
-        $("#doughnut_container").append(doughnut);
-
-        var ctx = document.getElementById("chart-area"+node).getContext("2d");
-        window.myDoughnut = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: parse_each_type_issue(data, node),
-                    backgroundColor: [serie_color(0)[0], serie_color(1)[0], serie_color(2)[0], serie_color(3)[0], serie_color(4)[0]],
-                    label: 'dataset 1'
-                }],
-                labels: ["start","ssh","load","o.s.","zombie"]
-            },
-            options: {
-                responsive: false,
-                legend: {
-                    display: false,
-                    position: 'top',
-                },
-                title: {
-                    display: false,
-                    text: ''
-                },
-                animation: {
-                    animateScale: false,
-                    animateRotate: true
-                },
-                tooltips: {
-            			enabled: false,
-            		},
-                showPercentage: true,
-            }
-        });
-      });
+    });
   }
+
 
 
   //refactoring to put percents label in doughnuts
