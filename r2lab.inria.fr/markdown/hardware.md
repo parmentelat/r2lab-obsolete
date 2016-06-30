@@ -145,9 +145,9 @@ tab: platform
         <canvas id="heat" width="775" height="505"></canvas>
       </div>
     </div>
-    <div class="legend complete_serie"></div><div class="legend2">&nbsp;complete serie</div>
+    <div class="legend complete_serie"></div><div class="legend2">&nbsp;all serie</div>
     <div class="col-lg-1" style="padding-left: 0px;">
-      <br><br><br><br><br><br><br><br><br>
+      <div class="side_title"></div>
       <div class="heat_bar">
         high
         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
@@ -182,7 +182,7 @@ tab: platform
       <div class="heat_container" id="doughnut_container" style="background-image: url(/assets/img/chamber.png); background-repeat: no-repeat;">
       </div>
     </div>
-    <div class="legend complete_serie"></div><div class="legend2">&nbsp;complete serie</div>
+    <div class="legend complete_serie"></div><div class="legend2">&nbsp;all serie</div>
     <div class="col-lg-1" style="padding-right: 0px; padding-left: 0px; padding-top: 4px;">
       <br><br><br><br><br><br><br><br><br>
       <div class="legend_intern">ISSUES MAP</div>
