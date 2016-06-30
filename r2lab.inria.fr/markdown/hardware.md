@@ -184,7 +184,7 @@ tab: platform
     </div>
     <div class="legend complete_serie"></div><div class="legend2">&nbsp;all serie</div>
     <div class="col-lg-1" style="padding-right: 0px; padding-left: 0px; padding-top: 4px;">
-      <br><br><br><br><br><br><br><br><br>
+      <div class="side_title"></div>
       <div class="legend_intern">ISSUES MAP</div>
       <div class="legend start"></div><div class="legend2">start</div>
       <div class="legend ssh"></div><div class="legend2">ssh</div>
