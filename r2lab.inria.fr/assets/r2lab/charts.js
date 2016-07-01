@@ -245,7 +245,8 @@ $(document).ready(function() {
         values.push(value['data'][tooltip.title]);
       });
       if (tooltip.body) {
-        var innerHtml = ['_____ node '+tooltip.title+' _____<br>'];
+        var header = "<div class=\"headerboxtootip\">node "+tooltip.title+"<hr></div>"
+        var innerHtml = [header];
         $.each(values, function (index, value) {
           var diff = 0;
           var label = data.datasets[index].label;
@@ -265,8 +266,8 @@ $(document).ready(function() {
           else
             diff = '';
 
-          // "<div style=\"background-color:red\">asdf</div>"
-          innerHtml.push(label + value + diff +'<br>');
+          var box = "<div class=\"box\" style=\"background-color:"+bcolor+"; display:inline\"></div>&nbsp;"
+          innerHtml.push(box + label + value + diff +'<br>');
         });
 
         tooltipEl.html(innerHtml);

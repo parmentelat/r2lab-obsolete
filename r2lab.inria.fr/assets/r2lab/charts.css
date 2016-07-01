@@ -12,6 +12,25 @@
   transform: translate(-50%, 0);
 }
 
+.headerboxtootip {
+  text-align: center;
+  display:inline;
+  padding: 0px;
+}
+.headerboxtootip hr {
+  padding: 3px;
+  margin: 0px;
+}
+
+.box {
+  padding-right: 5px;
+  padding-top: 12px;
+  float: left;
+  width:  14px;
+  height: 14px;
+  border: 1px solid #fff;
+}
+
 .heat_container {
   width: 790px;
   height: 520px;
