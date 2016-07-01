@@ -41,7 +41,7 @@ tab: platform
 <div class="row">
   <div class="col-md-8">
     <h3>All nodes</h3>
-    All 37 nodes are based on [Nitos X50](http://nitlab.inf.uth.gr/NITlab/) and feature
+    All 37 nodes are based on <a href="http://nitlab.inf.uth.gr/NITlab/" target="_blank">Nitos X50</a> and feature
       <ul>
         <li>State of the art motherboard
           <ul>
@@ -58,8 +58,8 @@ tab: platform
         <li> 3 wired interfaces used for&nbsp;:
           <ul>
             <li>Remote power and reset management</li>
-            <li>Control, used by the testbed management framework for providing access - 192.168.3.<font color="red">**nn**</font>, where <font color="red">**nn**</font> is the node number</li>
-            <li>Data, dedicated to experimentation - 192.168.2.<font color="red">**nn**</font></li>
+            <li>Control, used by the testbed management framework for providing access - 192.168.3.<b><font color="red">nn</font></b>, where <b><font color="red">nn</font></b> is the node number</li>
+            <li>Data, dedicated to experimentation - 192.168.2.<b><font color="red">nn</font></b></li>
           </ul>
         </li>
       </ul>  
@@ -76,10 +76,8 @@ tab: platform
     <h3>USRP nodes</h3>
     Some nodes are equipped with USRP extensions, for SDR-based experiments&nbsp;:
     <ul>
-      <li>Based on [USRP N210](http://www.ettus.com/product/details/UN210-KIT),</li>
-      <li>or on [USRP B210](http://www.ettus.com/product/details/UB210-KIT), featuring USRP2 and USRP1.</li>
-      <li>both models from [ETTUS](http://www.ettus.com)</li>
-      <li>also remote-controllable for reset-like operations</li>
+      <li>Based on  <a href="http://www.ettus.com/product/details/UN210-KIT" target="_blank">USRP N210</a>, or on <a href="http://www.ettus.com/product/details/UB210-KIT" target="_blank">USRP B210</a>, featuring USRP2 and USRP1, both models from <a href="http://www.ettus.com" target="_blank">ETTUS</a></li>
+      <li>Remote-controllable for reset-like operations</li>
       <li>Current deployment: 4 nodes - target: 10 nodes</li>
     </ul>
   </div>
