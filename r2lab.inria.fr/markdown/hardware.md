@@ -91,7 +91,7 @@ tab: platform
 <div class="row">
   <div class="col-md-12">
     <h3>Historical of issues</h3>
-      Summarized below are the results of our nightly monitoring routine which help us identify issues and keep r2lab healthy. The graphs are independent and bring the information about issues found along the days from Jan/16.
+      Summarized below are the results of our nightly monitoring routine which help us identify issues and keep r2lab healthy. The graphs bring the information about issues found along the days from Jan/16.
   </div>
 </div>
 
