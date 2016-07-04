@@ -64,8 +64,8 @@ $(document).ready(function() {
 
 
   var serie_color = function(week) {
-    var l_color = ['rgba(243,39,26,.7)', 'rgba(31, 54, 177, 0.7)', 'rgba(194,111,225,.7)', 'rgba(13,113,75,.7)', 'rgba(158,196,16,.7)']; //zero collor is for complete series
-    var b_color = ['rgba(243,39,26,.6)', 'rgba(31, 54, 177, 0.6)', 'rgba(194,111,225,.6)', 'rgba(13,113,75,.6)', 'rgba(158,196,16,.6)']; //zero collor is for complete series
+    var l_color = ['rgba(243,39,26,.7)', 'rgba(31, 54, 177, 0.7)', 'rgba(194,111,225,.7)', 'rgba(13,113,75,.7)', 'rgba(158,196,16,.7)', 'rgba(28, 255, 0, 0.7)']; //zero collor is for complete series
+    var b_color = ['rgba(243,39,26,.6)', 'rgba(31, 54, 177, 0.6)', 'rgba(194,111,225,.6)', 'rgba(13,113,75,.6)', 'rgba(158,196,16,.6)', 'rgba(28, 255, 0, 0.6)']; //zero collor is for complete series
 
     if(week){
       try {
@@ -363,7 +363,7 @@ $(document).ready(function() {
           data: {
               datasets: [{
                   data: parse_each_type_issue(data, node),
-                  backgroundColor: [serie_color(0)[0], serie_color(1)[0], serie_color(2)[0], serie_color(3)[0], serie_color(4)[0]],
+                  backgroundColor: [serie_color(5)[0], serie_color(1)[0], serie_color(2)[0], serie_color(3)[0], serie_color(4)[0]],
                   label: 'dataset 1'
               }],
               labels: ["start","ssh","load","o.s.","zombie"]
