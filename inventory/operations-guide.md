@@ -42,7 +42,7 @@ $ cd r2lab/inventory
 $ git pull
 $ emacs r2lab.map
 $ make remap
-$ # do not forget to commit the change into the repo, i.e.
+$ # do not forget to commit the change into the repo, e.g.
 $ git add r2lab.map
 $ git commit -m "replaced node such-and-such with such-and-such"
 $ git push
