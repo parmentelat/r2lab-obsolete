@@ -20,13 +20,28 @@ simpleheat.prototype = {
     defaultRadius: 25,
 
     defaultGradient: {
-        0.4: 'blue',
-        0.6: 'cyan',
-        0.7: 'lime',
-        0.8: 'yellow',
-        0.9: 'orange',
-        1.0: 'red'
+        0.0: '#FFFFFF',
+        0.1: 'rgba(92, 163, 214, 0.7)',
+        0.2: 'rgba(92, 163, 214, 0.7)',
+        0.3: 'rgba(92, 214, 192, 0.7)',
+        0.4: 'rgba(92, 214, 156, 0.7)',
+        0.5: 'rgba(142, 214, 92, 0.6)',
+        0.6: 'rgba(197, 214, 92, 0.6)',
+        0.7: 'rgba(214, 173, 92, 0.8)',
+        0.8: 'rgba(214, 132, 92, 0.75)',
+        0.9: 'rgba(214, 96, 92, 0.8)',
+        1.0: 'rgba(243,39,26,0.7)',
     },
+    // defaultGradient: {
+    //     0.0: 'white',
+    //     0.1: 'white',
+    //     0.3: 'blue',
+    //     0.6: 'cyan',
+    //     0.7: 'lime',
+    //     0.8: 'yellow',
+    //     0.9: 'orange',
+    //     1.0: 'red'
+    // },
 
     data: function (data) {
         this._data = data;
@@ -77,11 +92,11 @@ simpleheat.prototype = {
 
     gradient: function (grad) {
         // create a 256x1 gradient that we'll use to turn a grayscale heatmap into a colored one
-        var canvas = this._createCanvas(),
-            ctx = canvas.getContext('2d'),
+        var canvas   = this._createCanvas(),
+            ctx      = canvas.getContext('2d'),
             gradient = ctx.createLinearGradient(0, 0, 0, 256);
 
-        canvas.width = 1;
+        canvas.width  = 1;
         canvas.height = 256;
 
         for (var i in grad) {

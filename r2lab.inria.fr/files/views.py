@@ -24,11 +24,11 @@ class FilesProxy(View):
         utf8 = request.body.decode()
         return json.loads(utf8)
 
-    @method_decorator(csrf_protect)
+    # @method_decorator(csrf_protect)
     def post(self, request, verb):
-        auth_error = self.not_authenticated_error(request)
-        if auth_error:
-            return auth_error
+        # auth_error = self.not_authenticated_error(request)
+        # if auth_error:
+        #     return auth_error
         try:
             record = self.decode_body_as_json(request)
             if verb == 'get':

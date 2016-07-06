@@ -17,7 +17,7 @@ require_login: true
   </div>
   <br />
   <div class="row" id="all">
-    <div class="col-md-2">
+    <div class="col-md-2 no_padding">
       <div id="wrap">
         <div id="manage_slices">
           <button type="button" data-toggle="modal" data-target="#slice_modal" class="fc-button fc-state-default fc-corner-left fc-corner-right sd">manage your slices</button>
