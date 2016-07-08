@@ -75,7 +75,7 @@ Then, we setup both nodes using only:
   - A remote OFF command was sent. (PASS)
 
 #Update in hardware
-Two actions were made concerning the hardware.
+Concerning the hardware, in a solution try, two actions were made:
 - We replaced partially the CMC card.
   CMC card is composed by an Arduino board + another circuit affixed on top. We were not able to replace the second component because we don't have a backup of this card for now.
 - Burned again the firmware
