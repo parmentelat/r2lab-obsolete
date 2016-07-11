@@ -42,10 +42,10 @@ BEMOL-PRODUCTS   = $(call byproducts,$(PREP_OMF_NAME)) r2lab-prep.spare-nodes
 ####################
 configure: $(PRODUCTS)
 $(PRODUCTS) r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg: $(SCRIPT) $(SOURCE)
-	$(SCRIPT) $(SOURCE)
+	python $(SCRIPT) $(SOURCE)
 
 $(BEMOL-PRODUCTS): $(SCRIPT) $(SOURCE)
-	$(SCRIPT) -p $(SOURCE)
+	python $(SCRIPT) -p $(SOURCE)
 bemol-configure: $(BEMOL-PRODUCTS)
 
 .PHONY: configure
