@@ -18,7 +18,7 @@ all: configure
 # xxx todo : edit /etc/rhubarbe/rhubarbe.conf on bemol to reflect the scope of rhubarbe -a
 # xxx todo : tweak faraday.sh so that it gets the default all-nodes from rhubarbe.conf
 # for now I do this manually each time
-remap: publish bemol spare-nodes
+remap: all publish bemol spare-nodes
 
 .PHONY: remap
 
@@ -52,7 +52,7 @@ bemol-configure: $(BEMOL-PRODUCTS)
 
 ####################
 clean:
-	rm -f $(BYPRODUCTS)
+	rm -f $(PRODUCTS) $(BEMOL-PRODUCTS)
 
 .PHONY: clean
 

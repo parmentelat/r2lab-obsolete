@@ -38,14 +38,16 @@ This requires root access on faraday and bemol, and can be achived like this:
 * Then to apply changes, do the following on your laptop (this is where you need to have rights to run `ssh root@faraday` and `ssh root@bemol`)
 
 ```
-$ cd r2lab/inventory
-$ git pull
-$ emacs r2lab.map
-$ make remap
-$ # do not forget to commit the change into the repo, e.g.
-$ git add r2lab.map
-$ git commit -m "replaced node such-and-such with such-and-such"
-$ git push
+cd r2lab/inventory
+git pull
+emacs r2lab.map
+# just for extra safety
+make clean 
+make remap
+# do not forget to commit the change into the repo, e.g.
+git add r2lab.map
+git commit -m "replaced node such-and-such with such-and-such"
+git push
 ```
 
 The syntax in `r2lab.map` should be self-explanatory, but in case it's not:
@@ -54,6 +56,13 @@ The syntax in `r2lab.map` should be self-explanatory, but in case it's not:
  * and that of course you mention one room slot only once
  * the nodes not in the room should be marked as `preplab`
 
+**NOTE**
+
+You can safely ignore messages like
+
+```
+r2lab.map:4 - undeployed physical node 4 - ignored
+```
 ### Example
 
 So for example right now I have this
@@ -86,6 +95,8 @@ On faraday the list of all nodes is **always** `1-37`; this is by design, so tha
 #### Epilogue
 
 So to summarize, after `make remap` everything works fine in the faraday landscape. However for bemol, there is a need to tweak the list of all nodes, so that `rhubarbe -a` does the right thing.
+
+`make remap` does the right thing (i.e. it changes )
 
 For now, this is done on bemol in `/etc/rhubarbe/rhubarbe.conf`; and because the pip-install of rhubarbe is a little basic, it is best to reflect the change right into the `rhubarbe` git repo, so that a subsequent `pip install --upgrade` won't override the change.
 
