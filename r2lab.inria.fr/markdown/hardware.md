@@ -185,9 +185,7 @@ tab: platform
       <div class="side_title"></div>
       <div class="legend_intern">ISSUES MAP</div>
       <div class="legend start"></div><div class="legend2">start</div>
-      <div class="legend ssh"></div><div class="legend2">ssh</div>
       <div class="legend load"></div><div class="legend2">load</div>
-      <div class="legend osos"></div><div class="legend2">o.s.</div>
       <div class="legend zombie"></div><div class="legend2">zombie</div>
     </div>
   </div>

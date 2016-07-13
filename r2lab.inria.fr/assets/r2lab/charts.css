@@ -317,21 +317,13 @@
 }
 
 .start {
-  background: rgba(28, 255, 0, 0.81);
-}
-
-.ssh {
-  background: rgba(31, 54, 177, 0.6);
+  background: rgba(28, 255, 0, 0.7);
 }
 
 .load {
-  background: rgba(194,111,225,.6);
-}
-
-.osos {
-  background: rgba(13,113,75,.6);
+  background: rgba(31, 54, 177, 0.7);
 }
 
 .zombie {
-  background: rgba(158,196,16,.6);
+  background: rgba(194,111,225,.7);
 }
