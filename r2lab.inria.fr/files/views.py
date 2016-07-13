@@ -72,22 +72,20 @@ class FilesProxy(View):
         remove elements after maintenance to send to the page the data after maintenance
         'node' : 'maintenance date'
         """
-        # directory = os.path.dirname(os.path.abspath(__file__))
-        # directory = directory+'/nightly/'
-        # the_file  = 'maintenance_nodes.json'
-        # data      = []
-        #
-        # with open(directory + the_file) as f:
-        #     for linex in f:
-        #         data.append(linex)
+        directory = os.path.dirname(os.path.abspath(__file__))
+        directory = directory+'/nightly/'
+        the_file  = 'maintenance_nodes.json'
+        data      = []
 
-        maintenance_nodes = ['{"18": "2016-07-12"}','{"18": "2016-07-11"}','{"29": "2016-04-06"}']
+        with open(directory + the_file) as fi:
+            for linex in fi:
+                data.append(json.loads(linex))
+        maintenance_nodes = data
         element = json.loads(line)
         for el in maintenance_nodes:
-            els = json.loads(el)
-            for idx in els:
+            for idx in el:
                 try:
-                    avoid_date = datetime.strptime(els[idx], "%Y-%m-%d")
+                    avoid_date = datetime.strptime(el[idx], "%Y-%m-%d")
                     based_date = datetime.strptime(element['date'], "%Y-%m-%d")
                     if(based_date <= avoid_date):
                         element['data'].pop(idx)
