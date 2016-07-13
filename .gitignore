@@ -15,3 +15,4 @@ root.pem
 nightly.txt
 nightly_data.json
 nightly_data.txt
+maintenance_nodes.json

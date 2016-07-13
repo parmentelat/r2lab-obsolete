@@ -55,7 +55,7 @@ class FilesProxy(View):
             try:
                 with open(directory + the_file) as f:
                     for line in f:
-                        temp_line = self.remove_after_maintenance(line)
+                        temp_line = self.remove_issue_after_maintenance(line)
                         data.append(json.loads(temp_line))
                     return self.http_response_from_struct(data)
             except Exception as e:
@@ -67,24 +67,31 @@ class FilesProxy(View):
                 { 'error' : "File not found or not alowed" })
 
 
-    def remove_after_maintenance(self, line):
+    def remove_issue_after_maintenance(self, line):
         """
         remove elements after maintenance to send to the page the data after maintenance
         'node' : 'maintenance date'
-        a same node could have many maintenance date. Just include in the list
-        ex.: maintenance_nodes = {'18' : '2016-07-11', '22' : '2016-03-11', '18' : '2016-08-11'}
         """
+        directory = os.path.dirname(os.path.abspath(__file__))
+        directory = directory+'/nightly/'
+        the_file  = 'maintenance_nodes.json'
 
-        maintenance_nodes = {'18' : '2016-07-12'}
+        data      = []
+        with open(directory + the_file) as f:
+            for linex in f:
+                data.append(linex)
 
+        maintenance_nodes = data
         element = json.loads(line)
-        for idx in maintenance_nodes:
-            try:
-                avoid_date = datetime.strptime(maintenance_nodes[idx], "%Y-%m-%d")
-                based_date = datetime.strptime(element['date'], "%Y-%m-%d")
-                if(based_date <= avoid_date):
-                    element['data'].pop(idx)
-            except Exception as e:
-                pass
+        for el in maintenance_nodes:
+            els = json.loads(el)
+            for idx in els:
+                try:
+                    avoid_date = datetime.strptime(els[idx], "%Y-%m-%d")
+                    based_date = datetime.strptime(element['date'], "%Y-%m-%d")
+                    if(based_date <= avoid_date):
+                        element['data'].pop(idx)
+                except Exception as e:
+                    pass
 
         return json.dumps(element)
