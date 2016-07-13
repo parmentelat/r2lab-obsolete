@@ -57,6 +57,7 @@ class FilesProxy(View):
                     for line in f:
                         temp_line = self.remove_issue_after_maintenance(line)
                         data.append(json.loads(temp_line))
+                    f.close()
                     return self.http_response_from_struct(data)
             except Exception as e:
                 return self.http_response_from_struct(
@@ -77,9 +78,14 @@ class FilesProxy(View):
         the_file  = 'maintenance_nodes.json'
         data      = []
 
-        with open(directory + the_file) as fi:
-            for linex in fi:
-                data.append(json.loads(linex))
+        try:
+            with open(directory + the_file) as fi:
+                for linex in fi:
+                    data.append(json.loads(linex))
+                fi.close()
+        except Exception as e:
+            print("Failure in read maintenance file - {} - {} - {}".format(directory, the_file, e))
+
         maintenance_nodes = data
         element = json.loads(line)
         for el in maintenance_nodes:
