@@ -283,7 +283,7 @@ function setNightlyAndPast(){
   newEvent.title = "nightly routine";
   newEvent.id = "nightly";
   newEvent.start = " T03:00:00Z";
-  newEvent.end   = " T05:00:00Z";
+  newEvent.end   = " T04:00:00Z";
   newEvent.color = "#616161";
   newEvent.overlap = false;
   newEvent.editable = false;
