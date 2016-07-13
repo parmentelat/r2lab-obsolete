@@ -4,6 +4,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import View
 from django.http import HttpResponse
+from datetime import datetime
 
 # Create your views here.
 class FilesProxy(View):
@@ -54,7 +55,8 @@ class FilesProxy(View):
             try:
                 with open(directory + the_file) as f:
                     for line in f:
-                        data.append(json.loads(line))
+                        temp_line = self.remove_after_maintenance(line)
+                        data.append(json.loads(temp_line))
                     return self.http_response_from_struct(data)
             except Exception as e:
                 return self.http_response_from_struct(
@@ -63,3 +65,26 @@ class FilesProxy(View):
         else:
             return self.http_response_from_struct(
                 { 'error' : "File not found or not alowed" })
+
+
+    def remove_after_maintenance(self, line):
+        """
+        remove elements after maintenance to send to the page the data after maintenance
+        'node' : 'maintenance date'
+        a same node could have many maintenance date. Just include in the list
+        ex.: maintenance_nodes = {'18' : '2016-07-11', '22' : '2016-03-11', '18' : '2016-08-11'}
+        """
+
+        maintenance_nodes = {'18' : '2016-07-12'}
+
+        element = json.loads(line)
+        for idx in maintenance_nodes:
+            try:
+                avoid_date = datetime.strptime(maintenance_nodes[idx], "%Y-%m-%d")
+                based_date = datetime.strptime(element['date'], "%Y-%m-%d")
+                if(based_date <= avoid_date):
+                    element['data'].pop(idx)
+            except Exception as e:
+                pass
+
+        return json.dumps(element)
