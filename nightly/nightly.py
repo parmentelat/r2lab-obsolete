@@ -635,10 +635,22 @@ def save_data_in_json(results, the_file):
                 except Exception as e:
                     all_nodes.update( {str(node) : { "ph{}".format(ph+1) : 'ko'}} )
 
+    all_nodes = parse_ph_to_names(all_nodes)
     temp_results = {"date" : str(date()), "data" : all_nodes}
 
     with open(os.path.join(dir, file_name), "a") as js:
         js.write(json.dumps(temp_results)+"\n")
+
+
+
+
+def parse_ph_to_names(dict_json):
+    """ Change the phase names ph1, ph2, ph3, ph4... to names: t, s, l, o, z """
+    temp_json = json.dumps(dict_json)
+    temp_json = temp_json.replace("\"ph1\"", "\"t\"")
+    temp_json = temp_json.replace("\"ph2\"", "\"l\"")
+    temp_json = temp_json.replace("\"ph3\"", "\"z\"")
+    return json.loads(temp_json)
 
 
 
