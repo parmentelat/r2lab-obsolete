@@ -17,6 +17,7 @@ import sys
 import re
 import json
 import copy
+from collections import OrderedDict
 
 parser = ArgumentParser()
 parser.add_argument("-i", "--include", dest="include_node",
@@ -39,13 +40,28 @@ def main(args):
     nodes_i = args.include_node
     nodes_r = args.remove_node
     a_date  = args.a_date
+
     if nodes_i is None and nodes_r is None:
-        print('Error: at least one node should be informed in -i or -r option.')
-        return
+        check_node()
     if nodes_i is not None:
         include_node(format_nodes(nodes_i), date(a_date))
     if nodes_r is not None:
         remove_node(format_nodes(nodes_r), date(a_date))
+
+
+
+
+def check_node():
+    """ include nodes in the list """
+    dir         = args.file_dir
+    file_name   = args.file
+    with open(os.path.join(dir, file_name)) as data_file:
+        try:
+            content = json.load(data_file, object_pairs_hook=OrderedDict)
+        except Exception as e:
+            content = {}
+    ans = json.dumps(content, sort_keys=True, indent=4)
+    print ans
 
 
 
@@ -79,7 +95,7 @@ def remove_node(nodes, date=None):
         try:
             content = json.load(data_file)
         except Exception as e:
-            content = {} 
+            content = {}
     old_content = copy.copy(content)
     for node in nodes:
         try:
