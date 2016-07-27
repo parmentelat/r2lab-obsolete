@@ -164,6 +164,7 @@ function maintenance () {
     python /root/r2lab/nightly/maintenance.py "$@"
     if [ $? -eq 0 ]; then
       /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
+      /root/r2lab/infra/scripts/restart-website.sh
       echo 'send to r2lab...'
     else
       echo 'Ops! Something went wrong in maintenance command.'
