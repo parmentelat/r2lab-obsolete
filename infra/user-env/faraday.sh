@@ -164,7 +164,7 @@ function maintenance () {
     python /root/r2lab/nightly/maintenance.py "$@"
     if [ $? -eq 0 ]; then
       for i in "$@" ; do
-        if [[ $i == "-d" || $i == "-i" ]] ; then
+        if [[ $i == "-i" || $i == "-r" ]] ; then
           /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
           echo 'send to r2lab and updating...'
           ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
