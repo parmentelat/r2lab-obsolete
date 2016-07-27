@@ -61,6 +61,7 @@ def check_node():
         except Exception as e:
             content = {}
     ans = json.dumps(content, sort_keys=True, indent=2)
+    print("INFO: nodes dates of maintenance")
     print ans
 
 
