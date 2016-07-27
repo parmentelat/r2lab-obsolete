@@ -55,7 +55,10 @@ def include_node(nodes, date):
     dir         = args.file_dir
     file_name   = args.file
     with open(os.path.join(dir, file_name)) as data_file:
-        content = json.load(data_file)
+        try:
+            content = json.load(data_file)
+        except Exception as e:
+            content = {}
     for node in nodes:
         try:
             content[node].append(date)
@@ -73,7 +76,10 @@ def remove_node(nodes, date=None):
     dir         = args.file_dir
     file_name   = args.file
     with open(os.path.join(dir, file_name)) as data_file:
-        content = json.load(data_file)
+        try:
+            content = json.load(data_file)
+        except Exception as e:
+            content = {} 
     old_content = copy.copy(content)
     for node in nodes:
         try:

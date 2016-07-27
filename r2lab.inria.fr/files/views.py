@@ -88,6 +88,7 @@ class FilesProxy(View):
             #         data.append(json.loads(linex))
             #     fi.close()
         except Exception as e:
+            maintenance_nodes = {}
             print("Failure in read maintenance file - {} - {} - {}".format(directory, the_file, e))
 
         element = json.loads(line)
