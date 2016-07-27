@@ -163,7 +163,7 @@ function maintenance () {
   # python maintenance.py -r 13                     => remove all maintenance dates for the node 13 (doesn't matter the dates stored)
     python maintenance.py "$@"
     if [ $? -eq 0 ]; then
-      command="/root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh"
+      /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
       echo 'send to r2lab...'
     else
       echo 'Ops! Something went wrong in maintenance command.'
