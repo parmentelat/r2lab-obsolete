@@ -161,7 +161,7 @@ function maintenance () {
   # python maintenance.py -i 5 -d 2016-02-27        => includes for the node 5 a maintenance date in 2016-02-27
   # python maintenance.py -r 1,2,3 -d 2016-02-27    => remove from the nodes 1,2 and 3 a specific (2016-02-27) maintenance date
   # python maintenance.py -r 13                     => remove all maintenance dates for the node 13 (doesn't matter the dates stored)
-    python maintenance.py "$@"
+    python /root/r2lab/nightly/maintenance.py "$@"
     if [ $? -eq 0 ]; then
       /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
       echo 'send to r2lab...'
