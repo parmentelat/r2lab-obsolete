@@ -57,10 +57,10 @@ def check_node():
     file_name   = args.file
     with open(os.path.join(dir, file_name)) as data_file:
         try:
-            content = json.load(data_file, object_pairs_hook=OrderedDict)
+            content = json.load(data_file)
         except Exception as e:
             content = {}
-    ans = json.dumps(content, sort_keys=True, indent=4)
+    ans = json.dumps(content, sort_keys=True, indent=2)
     print ans
 
 
@@ -110,7 +110,7 @@ def remove_node(nodes, date=None):
         except Exception as e:
             print('Warning: node {} not found.').format(node)
     print("---------------------")
-    print("INFO: old data below:\n{}".format(json.dumps(old_content)))
+    print("INFO: in case you need to recover info, below are the date before the this last remove action:\n{}".format(json.dumps(old_content, sort_keys=True, indent=2)))
     print("---------------------")
 
     with open(os.path.join(dir, file_name), "w") as js:
