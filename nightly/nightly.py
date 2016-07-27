@@ -701,7 +701,7 @@ def now():
 
 
 def date(format='%Y-%m-%d'):
-    """ Current date """
+    """ Current date (2016-04-06)"""
     return datetime.now().strftime(format)
 
 

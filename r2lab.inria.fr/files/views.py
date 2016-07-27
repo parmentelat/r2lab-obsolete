@@ -79,22 +79,26 @@ class FilesProxy(View):
         data      = []
 
         try:
-            with open(directory + the_file) as fi:
-                for linex in fi:
-                    data.append(json.loads(linex))
-                fi.close()
+            with open(directory + the_file) as data_file:
+                maintenance_nodes = json.load(data_file)
+            #LOAD JSON WHEN IS EACH LINE A JSON DB
+            # data = []
+            # with open(directory + the_file) as fi:
+            #     for linex in fi:
+            #         data.append(json.loads(linex))
+            #     fi.close()
         except Exception as e:
             print("Failure in read maintenance file - {} - {} - {}".format(directory, the_file, e))
 
-        maintenance_nodes = data
         element = json.loads(line)
         for el in maintenance_nodes:
-            for idx in el:
+            for date in maintenance_nodes[el]:
                 try:
-                    avoid_date = datetime.strptime(el[idx], "%Y-%m-%d")
+                    avoid_date = datetime.strptime(date, "%Y-%m-%d")
                     based_date = datetime.strptime(element['date'], "%Y-%m-%d")
                     if(based_date <= avoid_date):
-                        element['data'].pop(idx)
+                        element['data'].pop(el)
+
                 except Exception as e:
                     pass
 

@@ -43,7 +43,7 @@ doc-admin igmp-watch "tcpdump igmp packets on the $control_dev interface"
 
 ####################
 #### some stuff is just too hard / too awkward in shell...
-# py normalize fit 1 03 fit09 
+# py normalize fit 1 03 fit09
 # py ranges 1-37-2 ~1-20-4
 function py () {
     python3 - "$@" << EOF
@@ -67,7 +67,7 @@ def host_pxe(nodename):
 def pxe_host(pxe):
     import subprocess
     bytes = pxe.split('-')
-    if len(bytes) == 7: 
+    if len(bytes) == 7:
         bytes = bytes[1:]
     mac = ':'.join(bytes)
     try:
@@ -135,7 +135,7 @@ def normalize (*args):
 def comma_normalize (*args):
     return _normalize(',', *args)
 
-# normalize2 fit reboot 1-3 fit04 reboot05 -> 
+# normalize2 fit reboot 1-3 fit04 reboot05 ->
 def normalize2 (*args):
 #    print('normalize', args)
     constant = args[0]
@@ -152,6 +152,22 @@ def main():
 
 main()
 EOF
+}
+
+function maintenance () {
+  # store maintenance nodes and sync with the r2lab site to present in the graphs
+  # ex:
+  # python maintenance.py -i 1,2,3                  => includes for the nodes 1,2 and 3 a maintenance date using current date
+  # python maintenance.py -i 5 -d 2016-02-27        => includes for the node 5 a maintenance date in 2016-02-27
+  # python maintenance.py -r 1,2,3 -d 2016-02-27    => remove from the nodes 1,2 and 3 a specific (2016-02-27) maintenance date
+  # python maintenance.py -r 13                     => remove all maintenance dates for the node 13 (doesn't matter the dates stored)
+    python maintenance.py "$@"
+    if [ $? -eq 0 ]; then
+      command="/root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh"
+      echo 'send to r2lab...'
+    else
+      echo 'Ops! Something went wrong in maintenance command.'
+    fi
 }
 
 # normalization
@@ -178,7 +194,7 @@ doc-nodes nodes "(alias n) show or define currently selected nodes; eg nodes 1-1
 
 
 function nbnodes () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     echo $(for node in $nodes; do echo $node; done | wc -l)
 }
 
@@ -346,7 +362,7 @@ doc-nodes load-gnuradio "... latest recommended gnuradio image"
 # releases 12 14
 # -> show fedora/debian releases for fit12 fit14 - does not change NODES
 function releases () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     for node in $(norm $nodes); do
 	echo ==================== $node
 	ssh root@$node "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release; gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
@@ -363,7 +379,7 @@ function prefix () {
 # utility; run curl
 function -curl () {
     mode="$1"; shift
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     for node in $(normreboot $nodes); do
 	curl --silent http://$node/$mode | prefix "$node:"
     done
@@ -383,7 +399,7 @@ doc-alt cinfo "show node CMC info - using curl"
 
 # function 'wn' is part of the 'miscell' bash component
 function wait () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     for node in $(norm $nodes); do
 	wn $node
     done
@@ -404,7 +420,7 @@ function refresh() {
 doc-alt refresh "install latest version of these utilities"
 
 ####################
-# faraday has p2p1@switches and bemol has eth1 - use control_dev 
+# faraday has p2p1@switches and bemol has eth1 - use control_dev
 # spy on frisbee traffic
 function t7000 () {
     [ -n "$1" ] && options="-c $1"
@@ -474,7 +490,7 @@ doc-admin pxe-config "Displays various files related to using old or new frisbee
 # this script creates a symlink to /tftpboot/pxelinux.cfg/foo
 function -nextboot () {
     command="$1"; shift
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     for node in $(norm $nodes); do
 	pxe=/tftpboot/pxelinux.cfg/"01-"$(py host_pxe $node)
 	echo -n ABOUT $node " "
@@ -530,7 +546,7 @@ function -nextboot-all () {
     for symlink in $(ls /tftpboot/pxelinux.cfg/$pattern 2> /dev/null); do
 	name=$(basename $symlink)
 	hostname=$(py pxe_host $name)
-	echo -n ABOUT $hostname " " 
+	echo -n ABOUT $hostname " "
 	case $command in
 	    list*)
 		[ -h $symlink ] && stat -c '%N' $symlink || ls -l $symlink ;;
@@ -541,9 +557,9 @@ function -nextboot-all () {
 }
 
 function nextboot-listall () { -nextboot-all list; }
-doc-alt nextboot-listall "list all pxelinux symlinks" 
+doc-alt nextboot-listall "list all pxelinux symlinks"
 function nextboot-cleanall () { -nextboot-all clean; }
-doc-alt nextboot-cleanall "remove all pxelinux symlinks" 
+doc-alt nextboot-cleanall "remove all pxelinux symlinks"
 
 ####################
 # for now we use a different port for bemol and faraday
@@ -555,7 +571,7 @@ function omf-leases() { curl -k https://faraday.inria.fr:12346/resources/leases;
 doc-alt omf-leases function
 function omf-accounts() { curl -k https://faraday.inria.fr:12346/resources/accounts; echo; }
 doc-alt omf-accounts function
-    
+
 # XXX todo : a tool for turning on and off debug mode in omf6 commands
 # omf-debug : says what is in action
 # omf-debug on : turn it on
@@ -582,8 +598,8 @@ function -do-first () {
 alias ss="-do-first ssh"
 alias tn="-do-first telnet"
 
-doc-nodes ss "Enter first selected node using ssh\n\t\targ if present is taken as a node, not a command" 
-doc-admin tn "Enter first selected node using telnet - ditto" 
+doc-nodes ss "Enter first selected node using ssh\n\t\targ if present is taken as a node, not a command"
+doc-admin tn "Enter first selected node using telnet - ditto"
 
 #################### manually run a old or new frisbee server
 function serve_ubuntu_old () {
@@ -737,7 +753,7 @@ function un-tgz() {
 	tar -C $b -xzf  $t
     done
 }
-    
+
 ##########
 alias macusb="ssh tester@macusb"
 doc-alt macusb alias
