@@ -83,7 +83,7 @@ def include_node(nodes, date):
             content.update({node : [date]})
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
-    print('node(s) {} included.'.format(", ".join(nodes)))
+    print('INFO: node(s) {} included.'.format(", ".join(nodes)))
 
 
 
@@ -109,14 +109,14 @@ def remove_node(nodes, date=None):
                 if len(content[node]) == 0:
                     content.pop(node)
         except Exception as e:
-            print('Warning: node {} not found.').format(node)
+            print('WARNING: node {} not found.').format(node)
     print("---------------------")
     print("INFO: in case you need to recover info, below are the date before the this last remove action:\n{}".format(json.dumps(old_content, sort_keys=True, indent=2)))
     print("---------------------")
 
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
-    print('node(s) {} removed.'.format(", ".join(nodes)))
+    print('INFO: node(s) {} removed.'.format(", ".join(nodes)))
 
 
 
