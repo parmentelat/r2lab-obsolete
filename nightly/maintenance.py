@@ -20,12 +20,18 @@ import copy
 from collections import OrderedDict
 
 parser = ArgumentParser()
+parser.add_argument("-n", "--nodes", dest="nodes", default="all",
+                    help="Comma separated list of nodes to check at the maintenance list")
 parser.add_argument("-i", "--include", dest="include_node",
                     help="Comma separated list of nodes to include at the maintenance list")
 parser.add_argument("-r", "--remove", dest="remove_node",
                     help="Comma separated list of nodes to remove from the maintenance list")
 parser.add_argument("-d", "--date", dest="a_date",
                     help="include/remove an specific date (format yyyy-mm-dd)")
+parser.add_argument("-m", "--message", dest="message",
+                    help="message for maintenance")
+parser.add_argument("-e", "--reset", dest="reset", choices=['yes','no'],
+                    help="reset statistics flag")
 parser.add_argument("-D", "--file-dir", dest="file_dir", default="/root/r2lab/nightly/",
                     help="Directory to save json file")
 parser.add_argument("-f", "--file", dest="file", default="maintenance_nodes.json",
@@ -35,24 +41,31 @@ args = parser.parse_args()
 
 
 
+
 def main(args):
     """ """
     nodes_i = args.include_node
     nodes_r = args.remove_node
     a_date  = args.a_date
+    message = args.message
+    reset   = args.reset
+    nodes   = args.nodes
 
     if nodes_i is None and nodes_r is None:
-        check_node()
+        if nodes is None:
+            check_node(nodes)
+        else:
+            check_node(nodes)
     if nodes_i is not None:
-        include_node(format_nodes(nodes_i), date(a_date))
+        include_node(nodes_i, a_date, message, reset)
     if nodes_r is not None:
-        remove_node(format_nodes(nodes_r), date(a_date))
+        remove_node(nodes_r, a_date)
 
 
 
 
-def check_node():
-    """ include nodes in the list """
+def check_node(nodes):
+    """ list nodes in the list """
     dir         = args.file_dir
     file_name   = args.file
     with open(os.path.join(dir, file_name)) as data_file:
@@ -60,17 +73,32 @@ def check_node():
             content = json.load(data_file)
         except Exception as e:
             content = {}
-    ans = json.dumps(content, sort_keys=True, indent=2)
     print("INFO: nodes dates of maintenance")
-    print ans
+    for node in format_nodes(nodes):
+        try:
+            ans = json.dumps(content[node], sort_keys=True, indent=2)
+            print('#NODE {}').format(node)
+            print(ans)
+            print('')
+        except Exception as e:
+            if nodes is not 'all':
+                print('#NODE {}').format(node)
+                print('WARNING: node {} not found.').format(node)
+                print('')
 
 
 
 
-def include_node(nodes, date):
+def include_node(nodes, date, message, reset):
     """ include nodes in the list """
-    dir         = args.file_dir
-    file_name   = args.file
+    dir       = args.file_dir
+    file_name = args.file
+    date      = format_date(date)
+    nodes     = format_nodes(nodes)
+    if message is None:
+        message = ""
+    if reset is None:
+        reset = "no"
     with open(os.path.join(dir, file_name)) as data_file:
         try:
             content = json.load(data_file)
@@ -78,9 +106,9 @@ def include_node(nodes, date):
             content = {}
     for node in nodes:
         try:
-            content[node].append(date)
+            content[node].append({"date":date, "message":message, "reset":reset})
         except Exception as e:
-            content.update({node : [date]})
+            content.update({node : [{"date":date, "message":message, "reset":reset}]})
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
     print('INFO: node(s) {} included.'.format(", ".join(nodes)))
@@ -88,10 +116,13 @@ def include_node(nodes, date):
 
 
 
-def remove_node(nodes, date=None):
+def remove_node(nodes, date):
     """ remove nodes in the list """
-    dir         = args.file_dir
-    file_name   = args.file
+    dir       = args.file_dir
+    file_name = args.file
+    givendate = args.a_date
+    date      = format_date(date)
+    nodes     = format_nodes(nodes)
     with open(os.path.join(dir, file_name)) as data_file:
         try:
             content = json.load(data_file)
@@ -100,29 +131,30 @@ def remove_node(nodes, date=None):
     old_content = copy.copy(content)
     for node in nodes:
         try:
-            if args.a_date is None:
+            if givendate is None:
                 content.pop(node)
+                print('#NODE {}').format(node)
+                print(json.dumps(old_content[node], sort_keys=True, indent=2))
+                print('')
+                print("INFO: in case you need to recover info, above are the date before this remove action.")
             else:
-                while date in content[node]:
-                    content[node].remove(date)
-                #remove the node when the date list is empty
+                #search each occourence of the date in the node list
+                content[node] = [x for x in content[node] if x['date'] != date]
+                #remove the node to avoid empty list
                 if len(content[node]) == 0:
                     content.pop(node)
+            print('INFO: node(s) {} removed.'.format(", ".join(nodes)))
         except Exception as e:
             print('WARNING: node {} not found.').format(node)
-    print("---------------------")
-    print("INFO: in case you need to recover info, below are the date before the this last remove action:\n{}".format(json.dumps(old_content, sort_keys=True, indent=2)))
-    print("---------------------")
 
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
-    print('INFO: node(s) {} removed.'.format(", ".join(nodes)))
 
 
 
 
 def all_nodes():
-    """Range of all nodes in faraday """
+    """ range of all nodes """
     nodes = range(1,38)
     nodes = map(str, nodes)
     for k, v in enumerate(nodes):
@@ -135,7 +167,7 @@ def all_nodes():
 
 
 def new_list_nodes(nodes):
-    """Put nodes in string list format with zero left """
+    """ put nodes in string list format with zero left """
     if not type(nodes) is list:
         if ',' in nodes:
             nodes = nodes.split(',')
@@ -156,7 +188,7 @@ def new_list_nodes(nodes):
 
 
 def format_nodes(nodes, avoid=None):
-    """Correct format when inserted 'all' in -i / -r nodes parameter """
+    """ correct format when inserted 'all' in -i / -r nodes parameter """
     to_remove = avoid
 
     if 'all' in nodes:
@@ -174,18 +206,20 @@ def format_nodes(nodes, avoid=None):
 
 
 def now():
-    """ Current datetime """
+    """ current datetime """
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
 
 
-def date(val=None):
-    """ Current date (2016-04-06)"""
+def format_date(val=None):
+    """ current date (2016-04-06)"""
     if val is None:
         return datetime.now().strftime('%Y-%m-%d')
     else:
         return str(datetime.strptime(val, '%Y-%m-%d').date())
+
+
 
 
 if __name__ == "__main__":
