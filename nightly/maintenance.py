@@ -36,8 +36,8 @@ parser.add_argument("-D", "--file-dir", dest="file_dir", default="/root/r2lab/ni
                     help="Directory to save json file")
 parser.add_argument("-f", "--file", dest="file", default="maintenance_nodes.json",
                     help="File name")
-# parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
-#                     help="Drop and initialize the file. All data is erased")
+parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
+                    help="Drop and initialize the file. All data is erased")
 
 args = parser.parse_args()
 
@@ -63,20 +63,20 @@ def main(args):
         include_node(nodes_i, a_date, message, reset)
     if nodes_r is not None:
         remove_node(nodes_r, a_date)
-    # if drop:
-    #     drop_file()
+    if drop:
+        drop_file()
 
 
 
 
-# def drop_file():
-#     """ reset file """
-#     dir         = args.file_dir
-#     file_name   = args.file
-#     content = {}
-#     with open(os.path.join(dir, file_name), "w") as js:
-#         js.write(json.dumps(content)+"\n")
-#     print('INFO: file erased')
+def drop_file():
+    """ reset file """
+    dir         = "/root/r2lab/nightly/"
+    file_name   = "maintenance_nodes.json"
+    content = {}
+    with open(os.path.join(dir, file_name), "w") as js:
+        js.write(json.dumps(content)+"\n")
+    print('INFO: file erased')
 
 
 
