@@ -29,13 +29,15 @@ parser.add_argument("-r", "--remove", dest="remove_node",
 parser.add_argument("-d", "--date", dest="a_date",
                     help="include/remove an specific date (format yyyy-mm-dd)")
 parser.add_argument("-m", "--message", dest="message",
-                    help="message for maintenance")
+                    help="Single message to remember the maintenance action")
 parser.add_argument("-e", "--reset", dest="reset", choices=['yes','no'],
-                    help="reset statistics flag")
+                    help="A flag that indicates if the statistics must be reset")
 parser.add_argument("-D", "--file-dir", dest="file_dir", default="/root/r2lab/nightly/",
                     help="Directory to save json file")
 parser.add_argument("-f", "--file", dest="file", default="maintenance_nodes.json",
                     help="File name")
+# parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
+#                     help="Drop and initialize the file. All data is erased")
 
 args = parser.parse_args()
 
@@ -50,6 +52,7 @@ def main(args):
     message = args.message
     reset   = args.reset
     nodes   = args.nodes
+    drop    = args.drop
 
     if nodes_i is None and nodes_r is None:
         if nodes is None:
@@ -60,6 +63,20 @@ def main(args):
         include_node(nodes_i, a_date, message, reset)
     if nodes_r is not None:
         remove_node(nodes_r, a_date)
+    # if drop:
+    #     drop_file()
+
+
+
+
+# def drop_file():
+#     """ reset file """
+#     dir         = args.file_dir
+#     file_name   = args.file
+#     content = {}
+#     with open(os.path.join(dir, file_name), "w") as js:
+#         js.write(json.dumps(content)+"\n")
+#     print('INFO: file erased')
 
 
 
@@ -74,6 +91,8 @@ def check_node(nodes):
         except Exception as e:
             content = {}
     print("INFO: nodes dates of maintenance")
+    if len(content) == 0:
+        print("INFO: empty file")
     for node in format_nodes(nodes):
         try:
             ans = json.dumps(content[node], sort_keys=True, indent=2)
