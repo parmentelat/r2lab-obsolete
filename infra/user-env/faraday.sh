@@ -157,10 +157,10 @@ EOF
 function maintenance () {
   # store maintenance nodes and sync with the r2lab site to present in the graphs
   # ex:
-  # python maintenance.py -i 1,2,3                  => includes for the nodes 1,2 and 3 a maintenance date using current date
-  # python maintenance.py -i 5 -d 2016-02-27        => includes for the node 5 a maintenance date in 2016-02-27
-  # python maintenance.py -r 1,2,3 -d 2016-02-27    => remove from the nodes 1,2 and 3 a specific (2016-02-27) maintenance date
-  # python maintenance.py -r 13                     => remove all maintenance dates for the node 13 (doesn't matter the dates stored)
+  # python maintenance.py -i 1,2,3 -d 2016-04-06 -m "change bios battery" -e no     => includes for the nodes 1,2 and 3 a maintenance date using current date
+  # python maintenance.py -i 5 -d 2016-02-27                                        => includes for the node 5 a maintenance date in 2016-02-27
+  # python maintenance.py -r 1,2,3 -d 2016-02-27                                    => remove from the nodes 1,2 and 3 a specific (2016-02-27) maintenance date
+  # python maintenance.py -r 13                                                     => remove all maintenance dates for the node 13 (doesn't matter the dates stored)
     python /root/r2lab/nightly/maintenance.py "$@"
     if [ $? -eq 0 ]; then
       for i in "$@" ; do
@@ -173,7 +173,7 @@ function maintenance () {
         fi
       done
     else
-      echo 'Ops! Something went wrong in maintenance command.'
+      echo 'Ops! Something went wrong in maintenance command. Type maintenance -h to see options.'
     fi
 }
 

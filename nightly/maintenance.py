@@ -96,12 +96,12 @@ def check_node(nodes):
     for node in format_nodes(nodes):
         try:
             ans = json.dumps(content[node], sort_keys=True, indent=2)
-            print('#NODE {}').format(node)
-            print(ans)
-            print('')
+            print('---NODE {}').format(node)
+            print(beautify(ans))
+            # print('')
         except Exception as e:
             if nodes is not 'all':
-                print('#NODE {}').format(node)
+                print('---NODE {}').format(node)
                 print('WARNING: node {} not found.').format(node)
                 print('')
 
@@ -152,7 +152,7 @@ def remove_node(nodes, date):
         try:
             if givendate is None:
                 content.pop(node)
-                print('#NODE {}').format(node)
+                print('---NODE {}').format(node)
                 print(json.dumps(old_content[node], sort_keys=True, indent=2))
                 print('')
                 print("INFO: in case you need to recover info, above are the date before this remove action.")
@@ -227,6 +227,19 @@ def format_nodes(nodes, avoid=None):
 def now():
     """ current datetime """
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+
+
+def beautify(text):
+    """ json print more readable """
+    new_text = text.replace('\n', '').replace('\"', '')
+    new_text = new_text.replace('date:', '\r   date:   ')
+    new_text = new_text.replace('message:', '\r   message:')
+    new_text = new_text.replace('reset:', '\r   reset:  ')
+    new_text = new_text.replace("{", '').replace("}", '\n').replace("[", '').replace("]", '').replace(",", '\n')
+    new_text = new_text.replace("]", '\n')
+    return new_text
 
 
 
