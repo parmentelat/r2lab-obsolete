@@ -93,11 +93,11 @@ class FilesProxy(View):
 
         element = json.loads(line)
         for el in maintenance_nodes:
-            for date in maintenance_nodes[el]:
+            for item in maintenance_nodes[el]:
                 try:
-                    avoid_date = datetime.strptime(date, "%Y-%m-%d")
-                    based_date = datetime.strptime(element['date'], "%Y-%m-%d")
-                    if(based_date <= avoid_date):
+                    avoid_date = datetime.strptime(item['date'], "%Y-%m-%d")#maintenance nodes date
+                    based_date = datetime.strptime(element['date'], "%Y-%m-%d")#database
+                    if(based_date <= avoid_date and item['reset'] == 'yes'):
                         element['data'].pop(el)
 
                 except Exception as e:
