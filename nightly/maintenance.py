@@ -32,15 +32,13 @@ parser.add_argument("-m", "--message", dest="message",
                     help="Single message to remember the maintenance action")
 parser.add_argument("-e", "--reset", dest="reset", choices=['yes','no'],
                     help="A flag that indicates if the statistics must be reset")
-parser.add_argument("-D", "--file-dir", dest="file_dir", default="/root/r2lab/nightly/",
-                    help="Directory to save json file")
-parser.add_argument("-f", "--file", dest="file", default="maintenance_nodes.json",
-                    help="File name")
 parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
                     help="Drop and initialize the file. All data is erased")
 
 args = parser.parse_args()
 
+FILEDIR = "/root/r2lab/nightly/"
+FILENAME = "maintenance_nodes.json"
 
 
 
@@ -71,8 +69,8 @@ def main(args):
 
 def drop_file():
     """ reset file """
-    dir         = "/root/r2lab/nightly/"
-    file_name   = "maintenance_nodes.json"
+    dir         = FILEDIR
+    file_name   = FILENAME
     content = {}
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
@@ -83,8 +81,8 @@ def drop_file():
 
 def check_node(nodes):
     """ list nodes in the list """
-    dir         = args.file_dir
-    file_name   = args.file
+    dir         = FILEDIR
+    file_name   = FILENAME
     with open(os.path.join(dir, file_name)) as data_file:
         try:
             content = json.load(data_file)
@@ -110,8 +108,8 @@ def check_node(nodes):
 
 def include_node(nodes, date, message, reset):
     """ include nodes in the list """
-    dir       = args.file_dir
-    file_name = args.file
+    dir       = FILEDIR
+    file_name = FILENAME
     date      = format_date(date)
     nodes     = format_nodes(nodes)
     if message is None:
@@ -137,8 +135,8 @@ def include_node(nodes, date, message, reset):
 
 def remove_node(nodes, date):
     """ remove nodes in the list """
-    dir       = args.file_dir
-    file_name = args.file
+    dir       = FILEDIR
+    file_name = FILENAME
     givendate = args.a_date
     date      = format_date(date)
     nodes     = format_nodes(nodes)
