@@ -287,13 +287,15 @@ def create_session(nodes, user, name, vimage=None, vstatus=None, load=None):
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
     print('')
-    print('INFO: node(s) * {} * updated.'.format(", ".join(nodes)))
-    if load is None:
-        print('INFO: creating * {} * session. This may take a while.'.format(name))
+    print('INFO: session * {} * for {} node(s) was created.'.format(name, len(nodes)))
+    if load is 'yes':
+        print('INFO: loading * {} * session. This may take a while.'.format(name))
         # if load_session(user):
         #     print('INFO: session  * {} *  loaded. Enjoy!'.format(name))
         # else:
         #     print('ERROR: something went wrong in load  * {} * session!'.format(name))
+    else:
+        print('INFO: session * {} * wont be loaded. You can load at any time. Type -h to see how to do it.'.format(name))
     print('')
 
 
@@ -387,15 +389,12 @@ def exit_gracefully():
 
 ########################################
 def main():
-    create_session(NODES, 'nano', 'bla')
-
+    create_session(nodes=NODES, user='nano', name='bla', vimage=None, vstatus=None, load='no')
     #copy_session(old, new)
     #remove_session(session_id)
-    #clear_sessions()
+    #clear_sessions(user_id)
     #view_session(user_id)
     #load_session(session_id)
-    #
-
     return 0
 
 
