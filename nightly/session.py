@@ -15,9 +15,10 @@ from argparse import ArgumentParser
 from datetime import datetime
 from sys import version_info
 
-NODES      = list(range(1,3))
-#FILEDIR   = "/root/r2lab/nightly/"
-FILEDIR    = "/Users/nano/Documents/Inria/r2lab/nightly/"
+NODES      = list(range(1,38))
+IMAGEDIR   = '/var/lib/rhubarbe-images/'
+FILEDIR    = "/root/r2lab/nightly/"
+#FILEDIR    = "/Users/nano/Documents/Inria/r2lab/nightly/"
 FILENAME   = "session_nodes.json"
 PR_LIST    = False
 PREFERABLE = ['fedora-22.ndz', 'fedora-23.ndz', 'ubuntu-15.10.ndz', 'ubuntu-16.04.ndz']
@@ -26,22 +27,27 @@ OSS        = [ "fedora"           , "ubuntu"                                    
 VERSIONS   = [ ["23", "22", "21"] , ["16.04", "15.10", "15.04", "14.10", "14.04", "12.04"] ]
 
 
-def check_user():
+def fetch_user():
     """ asdf
     """
     command = 'whoami'
     ans_cmd = run(command)
-    return ans_cmd
+    if ans_cmd['status']:
+        return ans_cmd['output']
+    else:
+        print('ERROR: user not detected.')
+        exit(1)
 
 
 
-def fech_os():
+def fetch_os():
     """ asdf
     """
-    command = 'ls *.ndz | ls'
+    command = 'ls {}*.ndz || ls'.format(IMAGEDIR)
     ans_cmd = run(command)
     if ans_cmd['status']:
-        return ans_cmd['output'].split('\n')
+        ans = ans_cmd['output'].replace(IMAGEDIR, '')
+        return ans.split('\n')
     else:
         return []
 
@@ -53,7 +59,7 @@ def beautify_list_os(options):
     options_prefer = PREFERABLE
     options_dir    = list(set(options) - set(options_prefer))
     options_all    = options_prefer + options_dir
-    items_per_col  = 7
+    items_per_col  = 30
     left_blank     = 4 #supports until 1000 elements
 
     if len(options_all) > 0:
@@ -126,7 +132,7 @@ def check_os(node):
     """ asdf
     """
     options_prefer    = PREFERABLE
-    options_dir       = list(set(fech_os()) - set(options_prefer))
+    options_dir       = list(set(fetch_os()) - set(options_prefer))
     options_all       = options_prefer + options_dir
     number_of_options = len(options_all)
     command = "ssh -q root@fit{}".format(node) + " cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
@@ -188,7 +194,7 @@ def check_os(node):
 
 
 
-def check_status(node):
+def check_status(node, silent='no'):
     """ asdf
     """
     options = ['on', 'already on', 'off', 'already off']
@@ -196,7 +202,8 @@ def check_status(node):
     ans_cmd = run(command)
 
     if not ans_cmd['status'] or ans_cmd['output'] not in options:
-        print('WARNING: could not detect the status of node #{}. It will be set as "off". See -h option to change it.'.format(node))
+        if silent is 'no':
+            print('WARNING: could not detect the status of node #{}. It will be set as "off". See -h option to change it.'.format(node))
         return "off"
     else:
         return ans_cmd['output']
@@ -271,7 +278,7 @@ def format_date(val=None):
 def valid_image(image):
     """ asdf
     """
-    images = fech_os()
+    images = fetch_os()
     return (image in images)
 
 
@@ -357,8 +364,8 @@ def given_on_off_status(db, user, session):
     """ adsf
     """
     command_in_curl(range(1,38), 'off')
-    print('INFO: set all nodes off')
-    wait_and_update_progress_bar(5)
+    print('INFO: arranging status for nodes... please wait.')
+    time.sleep(10)
     failed = []
     nodes  = []
     command= ""
@@ -367,8 +374,8 @@ def given_on_off_status(db, user, session):
         command = command + "curl reboot{}/{}; ".format(node,status)
         nodes.append(node)
     ans_cmd = run(command)
-    print('INFO: checking status... ')
-    wait_and_update_progress_bar(15)
+    print('INFO: checking status... almost there...')
+    time.sleep(15)
     for node in db[user][session]:
         status = db[user][session][node]['status']
         command = "curl reboot{}/status; ".format(node)
@@ -611,15 +618,28 @@ def beautify(text):
 
 
 
+def identify_on_nodes(nodes):
+    """ asdf
+    """
+    nodes_on = []
+    for node in nodes:
+        if 'on' in check_status(node, 'yes'):
+            nodes_on.append(node)
+    return nodes_on
+
+
+
 ########################################
 def main():
-    create_session(nodes=NODES, user='nano', session='bla', vimage=None, vstatus=None, load='no')
-    # create_session(nodes=[23], user='nano', session='bla', vimage=None, vstatus=None, load='no')
-    # remove_session('nano', 'bla', '2')
-    # remove_session('nano', 'bla')
-    create_session(nodes=[13,14,15,16], user='nano', session='bli', vimage='parallel.pyc', vstatus=None, load='yes')
-    # load_session('nano', 'bli')
-    # view_session('nano')
+    user  = fetch_user()
+    nodes = identify_on_nodes(format_nodes(NODES))
+    create_session(nodes=nodes, user=user, session='bla', vimage=None, vstatus=None , load='no')
+    # create_session(nodes=[23], user=user, session='bla', vimage=None, vstatus=None, load='no')
+    # remove_session(user, 'bla', '2')
+    # remove_session(user, 'bla')
+    # create_session(nodes=[13,14,15,16], user=user, session='bli', vimage='parallel.pyc', vstatus=None, load='yes')
+    # load_session(user, 'bli')
+    view_session(user)
     # view_session('nano', 'bla')
 
     #copy_session(old, new)
