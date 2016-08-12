@@ -217,18 +217,50 @@ def run(command):
 
 
 def drop_file():
-    """ reset file """
+    """ reset file
+    """
     dir         = FILEDIR
     file_name   = FILENAME
     content = {}
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
-    print('INFO: file erased')
+    print('INFO: file erased.')
+
+
+
+def remove_session(user, session=None, node=None):
+    """ clear session for user
+    """
+    dir         = FILEDIR
+    file_name   = FILENAME
+    with open(os.path.join(dir, file_name)) as data_file:
+        try:
+            content = json.load(data_file)
+        except Exception as e:
+            content = {}
+    try:
+        if session is None and node is None:
+            del content[user]
+        else:
+            if node is None:
+                del content[user][session]
+            else:
+                del content[user][session][node]
+        with open(os.path.join(dir, file_name), "w") as js:
+            js.write(json.dumps(content)+"\n")
+    except Exception as e:
+        pass
+
+    if session is None:
+        print('INFO: all sessions were removed.')
+    else:
+        print('INFO: session * {} * was removed.'.format(session))
 
 
 
 def format_date(val=None):
-    """ current date (2016-04-06)"""
+    """ current date (2016-04-06)
+    """
     if val is None:
         return datetime.now().strftime('%Y-%m-%d')
     else:
@@ -244,7 +276,32 @@ def valid_image(image):
 
 
 
-def create_session(nodes, user, name, vimage=None, vstatus=None, load=None):
+def load_session(user, session):
+    """ clear session for user
+    """
+    dir       = FILEDIR
+    file_name = FILENAME
+    with open(os.path.join(dir, file_name)) as data_file:
+        try:
+            content = json.load(data_file)
+        except Exception as e:
+            content = {}
+
+    try:
+        content[user][session]
+    except Exception as e:
+        print('ERROR: session  * {} *  does not exist.'.format(session))
+        exit(1)
+
+    print('INFO: loading * {} * session. This may take a while.'.format(session))
+    the_images, the_nodes = group_nodes_and_images(content, user, session)
+    if run_load(the_images, the_nodes):
+        if given_on_off_status(content, user, session):
+            print('INFO: session  * {} *  loaded. Enjoy!'.format(session))
+
+
+
+def create_session(nodes, user, session, vimage=None, vstatus=None, load=None):
     """ include nodes in the list
     """
     dir       = FILEDIR
@@ -275,33 +332,138 @@ def create_session(nodes, user, name, vimage=None, vstatus=None, load=None):
                 exit(1)
             else:
                 status = vstatus
-
         try:
-            content[user][name].update( {node : {"date":date, "status":status, "os":os_ver}} )
+            content[user][session].update( {node : {"status":status, "os":os_ver}} )
         except Exception as e:
             try:
-                content[user].update( {name: {node : {"date":date, "status":status, "os":os_ver}}} )
+                content[user].update( {session: {node : {"status":status, "os":os_ver}}} )
             except Exception as e:
-                content.update( {user: {name: {node : {"date":date, "status":status, "os":os_ver}}}} )
+                content.update( {user: {session: {node : {"status":status, "os":os_ver}}}} )
 
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
     print('')
-    print('INFO: session * {} * for {} node(s) was created.'.format(name, len(nodes)))
+    print('INFO: session * {} * for {} node(s) was created.'.format(session, len(nodes)))
+
     if load is 'yes':
-        print('INFO: loading * {} * session. This may take a while.'.format(name))
-        # if load_session(user):
-        #     print('INFO: session  * {} *  loaded. Enjoy!'.format(name))
-        # else:
-        #     print('ERROR: something went wrong in load  * {} * session!'.format(name))
+        load_session(user, session)
     else:
-        print('INFO: session * {} * wont be loaded. You can load at any time. Type -h to see how to do it.'.format(name))
+        print('INFO: session * {} * wont be loaded. You can load at any time. Type -h to see how to do it.'.format(session))
     print('')
 
 
 
+def given_on_off_status(db, user, session):
+    """ adsf
+    """
+    command_in_curl(range(1,38), 'off')
+    print('INFO: set all nodes off')
+    wait_and_update_progress_bar(5)
+    failed = []
+    nodes  = []
+    command= ""
+    for node in db[user][session]:
+        status = db[user][session][node]['status']
+        command = command + "curl reboot{}/{}; ".format(node,status)
+        nodes.append(node)
+    ans_cmd = run(command)
+    print('INFO: checking status... ')
+    wait_and_update_progress_bar(15)
+    for node in db[user][session]:
+        status = db[user][session][node]['status']
+        command = "curl reboot{}/status; ".format(node)
+        ans_cmd = run(command)
+        if not ans_cmd['status'] or (status not in ans_cmd['output']):
+            failed.append(node)
+
+    if failed == []:
+        return True
+    else:
+        print('ERROR: something went wrong in define the status for * {} * session. Failed nodes: {}!'.format(session, ", ".join(failed)))
+        return False
+
+
+
+def wait_and_update_progress_bar(wait_for):
+    """ Print the progress bar when waiting for a while
+    """
+    for n in range(wait_for):
+        time.sleep(1)
+        print('.', end=''),
+        sys.stdout.flush()
+    print("")
+
+
+
+def command_in_curl(nodes, action='status'):
+    """ Transform the command to execute in CURL format
+    """
+    in_curl = map(lambda x:'curl reboot'+str('0'+str(x) if x<10 else x)+'/'+action, nodes)
+    in_curl = '; '.join(in_curl)
+    return in_curl
+
+
+
+def run_load(images, nodes):
+    """ adsf
+    """
+    failed = []
+    for i,image in enumerate(images):
+        n = ',fit'.join(nodes[i])
+        n = 'fit'+n
+        command = "rhubarbe-load {} -i {}; ".format(n, image)
+        ans_cmd = run(command)
+        loaded_nodes = parse_results_from_load(ans_cmd['output'])
+        diff = list(set(nodes[i])-set(loaded_nodes))
+        if diff != []:
+            failed = failed + diff
+    if failed == []:
+        print('INFO: images loaded.')
+        return True
+    else:
+        print('ERROR: something went wrong in load. Failed nodes: {}!'.format(", ".join(failed)))
+        return False
+
+
+
+def parse_results_from_load(text):
+    """ return a list of the nodes found in the log/answer from load commmand
+    """
+    text    = text.lower()
+    search  = "uploading successful"
+    idxs    = [n for n in range(len(text)) if text.find(search, n) == n]
+    back_in = 7 #fit02 is 5 + two spaces use it on split
+    split_by= ' '
+    found   = []
+    for idx in idxs:
+        found.append(text[idx-back_in : idx].split(split_by)[1])
+    found = map(lambda each:each.strip("fit"), found)
+    found = list(set(found))
+    return found
+
+
+
+def group_nodes_and_images(db, user, session):
+    """ adsf
+    """
+    grouped_nodes = []
+    related_image = []
+    for node in db[user][session]:
+        image = db[user][session][node]['os']
+        try:
+            pos = related_image.index(image)
+            grouped_nodes[pos].append(node)
+        except Exception as e:
+            related_image.append(image)
+            grouped_nodes.append([node])
+
+    return [related_image, grouped_nodes]
+
+
+
 def all_nodes():
-    """ range of all nodes """
+    """ range of all nodes
+    """
     nodes = range(1,38)
     nodes = list(map(str, nodes))
     for k, v in enumerate(nodes):
@@ -313,7 +475,8 @@ def all_nodes():
 
 
 def new_list_nodes(nodes):
-    """ put nodes in string list format with zero left """
+    """ put nodes in string list format with zero left
+    """
     if not type(nodes) is list:
         if ',' in nodes:
             nodes = nodes.split(',')
@@ -333,7 +496,8 @@ def new_list_nodes(nodes):
 
 
 def format_nodes(nodes, avoid=None):
-    """ correct format when inserted 'all' in -i / -r nodes parameter """
+    """ correct format when inserted 'all' in -i / -r nodes parameter
+    """
     to_remove = avoid
 
     if 'all' in nodes:
@@ -387,14 +551,84 @@ def exit_gracefully():
 
 
 
+def view_session(user, session=None):
+    """ list sessions
+    """
+    dir         = FILEDIR
+    file_name   = FILENAME
+    with open(os.path.join(dir, file_name)) as data_file:
+        try:
+            content = json.load(data_file)
+        except Exception as e:
+            content = {}
+
+    if session is None:
+        try:
+            content[user]
+        except Exception as e:
+            print('ERROR: no sessions found for * {} * .'.format(user))
+            exit(1)
+    else:
+        try:
+            content[user][session]
+        except Exception as e:
+            print('ERROR: session  * {} *  not found.'.format(session))
+            exit(1)
+    if len(content) == 0:
+        print('ERROR: no sessions found for * {} * .'.format(user))
+        exit(1)
+    else:
+        print("INFO: session(s) found for * {} *.".format(user))
+        try:
+            if session is None:
+                for s in content[user]:
+                    print('--- session * {} * ---'.format(s))
+                    for node in content[user][s]:
+                        print('    node: #{}'.format(node))
+                        ans = json.dumps(content[user][s][node], sort_keys=True, indent=3)
+                        print(beautify(ans))
+            else:
+                print('--- session * {} * ---'.format(session))
+                for node in content[user][session]:
+                    print('    node: #{}'.format(node))
+                    ans = json.dumps(content[user][session][node], sort_keys=True, indent=3)
+                    print(beautify(ans))
+        except Exception as e:
+            print('ERROR: something went wrong in view sessions.')
+
+
+
+def beautify(text):
+    """ json print more readable
+    """
+    new_text = text.replace('\n', '').replace('\"', '')
+    new_text = new_text.replace('os:', '\r      os:')
+    new_text = new_text.replace('status:', '\r  status:')
+
+    new_text = new_text.replace("{", '').replace("}", '\n').replace("[", '').replace("]", '').replace(",", '\n')
+    new_text = new_text.replace("]", '\n')
+    return new_text
+
+
+
 ########################################
 def main():
-    create_session(nodes=NODES, user='nano', name='bla', vimage=None, vstatus=None, load='no')
+    create_session(nodes=NODES, user='nano', session='bla', vimage=None, vstatus=None, load='no')
+    # create_session(nodes=[23], user='nano', session='bla', vimage=None, vstatus=None, load='no')
+    # remove_session('nano', 'bla', '2')
+    # remove_session('nano', 'bla')
+    create_session(nodes=[13,14,15,16], user='nano', session='bli', vimage='parallel.pyc', vstatus=None, load='yes')
+    # load_session('nano', 'bli')
+    # view_session('nano')
+    # view_session('nano', 'bla')
+
     #copy_session(old, new)
-    #remove_session(session_id)
-    #clear_sessions(user_id)
-    #view_session(user_id)
-    #load_session(session_id)
+
+
+    #TODO#
+    #Ensure nodes have left 0 because the keys are always 01,02 and not 1,2
+    #Save actual image with an specifi name (user_session_node) and update the file for future load
+    #Change db file name for each user. Try open, otherwise create
     return 0
 
 
