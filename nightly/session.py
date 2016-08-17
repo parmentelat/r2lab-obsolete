@@ -15,7 +15,30 @@ from argparse import ArgumentParser
 from datetime import datetime
 from sys import version_info
 
-NODES      = list(range(1,38))
+parser = ArgumentParser()
+parser.add_argument("-n", "--nodes", dest="nodes", default='all',
+                    help="Comma separated list of nodes")
+parser.add_argument("-off", "--off", dest="add_off", action='store_true',
+                    help="Operates only in turned ON nodes")
+parser.add_argument("-c", "--create", dest="create_session",
+                    help="A given name to create the session")
+parser.add_argument("-i", "--image", dest="image_node",
+                    help="An specific image name for future load")
+parser.add_argument("-s", "--status", dest="status_node", choices=['on','off'],
+                    help="Force the node state")
+parser.add_argument("-r", "--remove", dest="remove_session",
+                    help="The session name to remove")
+parser.add_argument("-l", "--load", dest="load_session",
+                    help="The session name to load")
+parser.add_argument("-v", "--view", dest="view_session",
+                    help="The session name to visualize.")
+parser.add_argument("-cp", "--copy", dest="copy_session",
+                    help="The session name to copy and a name for the new one")
+parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
+                    help="Drop all user session. Reset the sessions information")
+
+args = parser.parse_args()
+
 IMAGEDIR   = '/var/lib/rhubarbe-images/'
 #FILEDIR    = "/root/r2lab/nightly/"
 FILEDIR    = "/Users/nano/Documents/Inria/r2lab/nightly/"
@@ -25,6 +48,12 @@ PREFERABLE = ['fedora-22.ndz', 'fedora-23.ndz', 'ubuntu-15.10.ndz', 'ubuntu-16.0
 
 OSS        = [ "fedora"           , "ubuntu"                                               ]
 VERSIONS   = [ ["23", "22", "21"] , ["16.04", "15.10", "15.04", "14.10", "14.04", "12.04"] ]
+
+
+
+def main(args):
+    """ """
+    
 
 
 def fetch_user():
@@ -261,7 +290,10 @@ def remove_session(user, session=None, node=None):
     if session is None:
         print('INFO: all sessions were removed.')
     else:
-        print('INFO: session * {} * was removed.'.format(session))
+        if node is None:
+            print('INFO: session * {} * was removed.'.format(session))
+        else:
+            print('INFO: node #{} from session * {} * was removed.'.format(node, session))
 
 
 
@@ -625,9 +657,14 @@ def identify_on_nodes(nodes):
     """ asdf
     """
     nodes_on = []
+    print('INFO: searching for turned on nodes.')
     for node in nodes:
         if 'on' in check_status(node, 'yes'):
             nodes_on.append(node)
+    if len(nodes_on) > 0:
+        print('INFO: nodes * {} * found as turned on.'.format(", ".join(nodes_on)))
+    else:
+        print('INFO: no node was found turned on.')
     return nodes_on
 
 
@@ -661,31 +698,8 @@ def copy_session(user, old_session, new_session):
 
 
 
-########################################
-def main():
-    user  = fetch_user()
-    # nodes = identify_on_nodes(format_nodes(NODES))
-    nodes = NODES
-
-    # create_session(nodes=nodes, user=user, session='bla', vimage=None, vstatus=None , load='no')
-    # create_session(nodes=[23], user=user, session='bla', vimage=None, vstatus=None, load='no')
-    # remove_session(user, 'bla', '2')
-    # remove_session(user, 'bla')
-    # create_session(nodes=[13,14,15,16], user=user, session='bli', vimage='parallel.pyc', vstatus=None, load='yes')
-    # load_session(user, 'bli')
-    view_session(user)
-    # view_session('nano', 'bla')
-    # copy_session(user ,'bla', 'abc')
-
-
-    #TODO#
-    #Save actual image with an specific name (user_session_node) and update the file for future load
-    return 0
-
-
-
 if __name__ == '__main__':
     try:
-        exit(main())
+        exit(main(args))
     except KeyboardInterrupt:
         exit_gracefully()
