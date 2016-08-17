@@ -17,8 +17,8 @@ from sys import version_info
 
 NODES      = list(range(1,38))
 IMAGEDIR   = '/var/lib/rhubarbe-images/'
-FILEDIR    = "/root/r2lab/nightly/"
-#FILEDIR    = "/Users/nano/Documents/Inria/r2lab/nightly/"
+#FILEDIR    = "/root/r2lab/nightly/"
+FILEDIR    = "/Users/nano/Documents/Inria/r2lab/nightly/"
 FILENAME   = "session_nodes.json"
 PR_LIST    = False
 PREFERABLE = ['fedora-22.ndz', 'fedora-23.ndz', 'ubuntu-15.10.ndz', 'ubuntu-16.04.ndz']
@@ -315,6 +315,9 @@ def create_session(nodes, user, session, vimage=None, vstatus=None, load=None):
     file_name = FILENAME
     date      = format_date()
     nodes     = format_nodes(nodes)
+    if nodes == []:
+        print('ERROR: no nodes given.')
+        exit(1)
     with open(os.path.join(dir, file_name)) as data_file:
         try:
             content = json.load(data_file)
@@ -629,11 +632,42 @@ def identify_on_nodes(nodes):
 
 
 
+def copy_session(user, old_session, new_session):
+    """ asdf
+    """
+    dir         = FILEDIR
+    file_name   = FILENAME
+    with open(os.path.join(dir, file_name)) as data_file:
+        try:
+            content = json.load(data_file)
+        except Exception as e:
+            content = {}
+    try:
+        the_old_one = content[user][old_session]
+    except Exception as e:
+        print('ERROR: session  * {} *  not found.'.format(old_session))
+        exit(1)
+
+    if new_session is None or new_session == '':
+        print('ERROR: session name is not valid.')
+        exit(1)
+
+    content[user].update( {new_session : the_old_one} )
+
+    with open(os.path.join(dir, file_name), "w") as js:
+        js.write(json.dumps(content)+"\n")
+    print('')
+    print('INFO: session * {} * was created.'.format(new_session))
+
+
+
 ########################################
 def main():
     user  = fetch_user()
-    nodes = identify_on_nodes(format_nodes(NODES))
-    create_session(nodes=nodes, user=user, session='bla', vimage=None, vstatus=None , load='no')
+    # nodes = identify_on_nodes(format_nodes(NODES))
+    nodes = NODES
+
+    # create_session(nodes=nodes, user=user, session='bla', vimage=None, vstatus=None , load='no')
     # create_session(nodes=[23], user=user, session='bla', vimage=None, vstatus=None, load='no')
     # remove_session(user, 'bla', '2')
     # remove_session(user, 'bla')
@@ -641,14 +675,11 @@ def main():
     # load_session(user, 'bli')
     view_session(user)
     # view_session('nano', 'bla')
-
-    #copy_session(old, new)
+    # copy_session(user ,'bla', 'abc')
 
 
     #TODO#
-    #Ensure nodes have left 0 because the keys are always 01,02 and not 1,2
-    #Save actual image with an specifi name (user_session_node) and update the file for future load
-    #Change db file name for each user. Try open, otherwise create
+    #Save actual image with an specific name (user_session_node) and update the file for future load
     return 0
 
 
