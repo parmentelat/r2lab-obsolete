@@ -66,7 +66,6 @@ def main(args):
 
 
 
-
 def drop_file():
     """ reset file
     """
@@ -76,7 +75,6 @@ def drop_file():
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
     print('INFO: the file was erased')
-
 
 
 
@@ -106,7 +104,6 @@ def check_node(nodes):
 
 
 
-
 def include_node(nodes, date, message, reset):
     """ include nodes in the list
     """
@@ -131,7 +128,6 @@ def include_node(nodes, date, message, reset):
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
     print('INFO: node(s) * {} * included.'.format(", ".join(nodes)))
-
 
 
 
@@ -166,10 +162,8 @@ def remove_node(nodes, date):
             print('')
         except Exception as e:
             print('WARNING: node #{} not found.'.format(node))
-
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
-
 
 
 
@@ -181,9 +175,7 @@ def all_nodes():
     for k, v in enumerate(nodes):
         if int(v) < 10:
             nodes[k] = v.rjust(2, '0')
-
     return nodes
-
 
 
 
@@ -203,9 +195,7 @@ def new_list_nodes(nodes):
     for k, v in enumerate(new_list_nodes):
         if int(v) < 10:
             new_list_nodes[k] = v.rjust(2, '0')
-
     return new_list_nodes
-
 
 
 
@@ -213,7 +203,6 @@ def format_nodes(nodes, avoid=None):
     """ correct format when inserted 'all' in -i / -r nodes parameter
     """
     to_remove = avoid
-
     if 'all' in nodes:
         nodes = all_nodes()
     else:
@@ -222,9 +211,7 @@ def format_nodes(nodes, avoid=None):
     if to_remove:
         to_remove = new_list_nodes(to_remove)
         nodes = [item for item in nodes if item not in to_remove]
-
     return nodes
-
 
 
 
@@ -232,7 +219,6 @@ def now():
     """ current datetime
     """
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
 
 
 
@@ -249,7 +235,6 @@ def beautify(text):
 
 
 
-
 def format_date(val=None):
     """ current date (2016-04-06)
     """
@@ -257,7 +242,6 @@ def format_date(val=None):
         return datetime.now().strftime('%Y-%m-%d')
     else:
         return str(datetime.strptime(val, '%Y-%m-%d').date())
-
 
 
 
