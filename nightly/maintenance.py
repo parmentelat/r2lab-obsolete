@@ -38,6 +38,10 @@ parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
 args = parser.parse_args()
 
 FILEDIR = "/root/r2lab/nightly/"
+try:
+    os.listdir(FILEDIR)
+except Exception as e:
+    FILEDIR = "/Users/nano/Documents/Inria/r2lab/nightly/"
 FILENAME = "maintenance_nodes.json"
 
 
@@ -53,10 +57,7 @@ def main(args):
     drop    = args.drop
 
     if nodes_i is None and nodes_r is None:
-        if nodes is None:
-            check_node(nodes)
-        else:
-            check_node(nodes)
+        check_node(nodes)
     if nodes_i is not None:
         include_node(nodes_i, a_date, message, reset)
     if nodes_r is not None:
@@ -83,6 +84,7 @@ def check_node(nodes):
     """
     dir         = FILEDIR
     file_name   = FILENAME
+    param       = nodes
     nodes       = format_nodes(nodes)
     with open(os.path.join(dir, file_name)) as data_file:
         try:
@@ -98,9 +100,10 @@ def check_node(nodes):
             print('---NODE {}'.format(node))
             print(beautify(ans))
         except Exception as e:
-            print('---NODE {}'.format(node))
-            print('WARNING: node #{} not found.'.format(node))
-            print('')
+            if param is not 'all':
+                print('---NODE {}'.format(node))
+                print('WARNING: node #{} not found.'.format(node))
+                print('')
 
 
 
