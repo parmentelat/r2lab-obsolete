@@ -86,7 +86,7 @@ def main(args):
         if add_off or nodes is not 'all':
             nodes = format_nodes(nodes)
         else:
-            nodes = ["01","02"]#identify_on_nodes(format_nodes(nodes))
+            nodes = identify_on_nodes(format_nodes(nodes))
         create_session(nodes=nodes, user=user, session=create_session_ar, vimage=image_node, vstatus=status_node)
     #remove
     elif remove_session_ar is not None:
