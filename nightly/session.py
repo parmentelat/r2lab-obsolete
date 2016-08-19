@@ -32,17 +32,24 @@ parser.add_argument("-l", "--load", dest="load_session",
                     help="The session name to load")
 parser.add_argument("-v", "--view", dest="view_session",
                     help="The session name to visualize.")
-parser.add_argument("-cp", "--copy", dest="copy_session",
+parser.add_argument("-cp", "--copy", dest="copy_session", nargs=2, type=str,
                     help="The session name to copy and a name for the new one")
 parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
                     help="Drop all user session. Reset the sessions information")
+parser.add_argument("-ex", "--example", dest='example', action="store_true",
+                    help="Show some command examples")
 
 args = parser.parse_args()
 
-IMAGEDIR   = '/var/lib/rhubarbe-images/'
-#FILEDIR    = "/root/r2lab/nightly/"
-FILEDIR    = "/Users/nano/Documents/Inria/r2lab/nightly/"
+FILEDIR = "/root/r2lab/nightly/"
+try:
+    os.listdir(FILEDIR)
+except Exception as e:
+    FILEDIR = "/Users/nano/Documents/Inria/r2lab/nightly/"
 FILENAME   = "session_nodes.json"
+
+IMAGEDIR   = '/var/lib/rhubarbe-images/'
+
 PR_LIST    = False
 PREFERABLE = ['fedora-22.ndz', 'fedora-23.ndz', 'ubuntu-15.10.ndz', 'ubuntu-16.04.ndz']
 
@@ -52,8 +59,57 @@ VERSIONS   = [ ["23", "22", "21"] , ["16.04", "15.10", "15.04", "14.10", "14.04"
 
 
 def main(args):
-    """ """
-    
+    """
+    """
+    create_session_ar = args.create_session
+    remove_session_ar = args.remove_session
+    load_session_ar   = args.load_session
+    view_session_ar   = args.view_session
+    copy_session_ar   = args.copy_session
+    nodes             = args.nodes
+    add_off           = args.add_off
+    image_node        = args.image_node
+    examples          = args.example
+    status_node       = args.status_node
+    drop              = args.drop
+    user              = fetch_user()
+    params            = [create_session_ar, remove_session_ar, load_session_ar, view_session_ar, copy_session_ar]
+
+    #default view
+    if params.count(None) == len(params) and not add_off and not drop and not examples:
+        view_session(user)
+    #view
+    elif view_session_ar is not None:
+        view_session(user, view_session_ar)
+    #create
+    elif create_session_ar is not None:
+        if add_off or nodes is not 'all':
+            nodes = format_nodes(nodes)
+        else:
+            nodes = ["01","02"]#identify_on_nodes(format_nodes(nodes))
+        create_session(nodes=nodes, user=user, session=create_session_ar, vimage=image_node, vstatus=status_node)
+    #remove
+    elif remove_session_ar is not None:
+        if nodes is 'all':
+            remove_session(user=user, session=remove_session_ar)
+        else:
+            nodes = format_nodes(nodes)
+            remove_session(user=user, session=remove_session_ar, nodes=nodes)
+    elif drop:
+        remove_session(user=user)
+    #load
+    elif load_session_ar is not None:
+        load_session(user, load_session_ar)
+    #copy
+    elif copy_session_ar is not None:
+        copy_session(user ,old_session=copy_session_ar[0], new_session=copy_session_ar[1])
+
+    #examples
+    elif examples:
+        show_examples()
+
+    return 0
+
 
 
 def fetch_user():
@@ -264,7 +320,7 @@ def drop_file():
 
 
 
-def remove_session(user, session=None, node=None):
+def remove_session(user, session=None, nodes=None):
     """ clear session for user
     """
     dir         = FILEDIR
@@ -274,26 +330,43 @@ def remove_session(user, session=None, node=None):
             content = json.load(data_file)
         except Exception as e:
             content = {}
-    try:
-        if session is None and node is None:
+    if session is None and nodes is None:
+        try:
             del content[user]
-        else:
-            if node is None:
+        except Exception as e:
+            print('ERROR: something went wrong in remove action!')
+            exit(1)
+    else:
+        if nodes is None:
+            try:
                 del content[user][session]
-            else:
-                del content[user][session][node]
-        with open(os.path.join(dir, file_name), "w") as js:
-            js.write(json.dumps(content)+"\n")
-    except Exception as e:
-        pass
+                if len(content[user]) == 0:
+                    del content[user]
+            except Exception as e:
+                print('ERROR: session * {} * does not exist!'.format(session))
+                exit(1)
+        else:
+            for node in nodes:
+                try:
+                    del content[user][session][node]
+                    if len(content[user][session]) == 0:
+                        del content[user][session]
+                except Exception as e:
+                    print('WARNING: something went wrong in remove. Failed node: #{}!'.format(node))
+
+    with open(os.path.join(dir, file_name), "w") as js:
+        js.write(json.dumps(content)+"\n")
 
     if session is None:
         print('INFO: all sessions were removed.')
     else:
-        if node is None:
+        if nodes is None:
             print('INFO: session * {} * was removed.'.format(session))
         else:
-            print('INFO: node #{} from session * {} * was removed.'.format(node, session))
+            if len(nodes) > 1:
+                print('INFO: nodes * {} * from session * {} * were removed.'.format(', '.join(nodes), session))
+            else:
+                print('INFO: node #{} from session * {} * was removed.'.format(''.join(nodes), session))
 
 
 
@@ -340,7 +413,7 @@ def load_session(user, session):
 
 
 
-def create_session(nodes, user, session, vimage=None, vstatus=None, load=None):
+def create_session(nodes, user, session, vimage=None, vstatus=None):
     """ include nodes in the list
     """
     dir       = FILEDIR
@@ -384,14 +457,7 @@ def create_session(nodes, user, session, vimage=None, vstatus=None, load=None):
 
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
-    print('')
     print('INFO: session * {} * for {} node(s) was created.'.format(session, len(nodes)))
-
-    if load is 'yes':
-        load_session(user, session)
-    else:
-        print('INFO: session * {} * wont be loaded. You can load at any time. Type -h to see how to do it.'.format(session))
-    print('')
 
 
 
@@ -693,8 +759,47 @@ def copy_session(user, old_session, new_session):
 
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
-    print('')
     print('INFO: session * {} * was created.'.format(new_session))
+
+
+
+def show_examples():
+    text = '\n \
+    VIEW ========================================\n \
+    session                                         => Show all session and its details\n \
+                                                       from the user (default command).\n \
+                                                       \n \
+    session -v "session name" -n 1,2, ...           => Show all about an specifi session name.\n \
+    \n \
+    CREATE ======================================\n \
+    session -c "my session"                         => Create a session named "my session" considering\n \
+                                                       ONLY turned ON nodes between all 37 nodes.\n \
+                                                       If no nodes be turned ON, no session will be created.\n \
+                                                       \n \
+    session -c "my session" --off                   => The same as before but now ignore search for turned ON nodes.\n \
+                                                       All nodes states (on/off) are considered here.\n \
+                                                       \n \
+    session -c "my session" -n 1,2,5                => Create a session named "my session" for 1,2 and 5 nodes.\n \
+                                                       Using -n option, the --off is alwayes enabled.\n \
+                                                       \n \
+    session -c "name" -n 1,3 -i "image.ndz" -s on   => Create a session "name" storing for each node the state "ON"\n \
+                                                       and the image "image.ndz".\n \
+    \n \
+    REMOVE ======================================\n \
+    session -r "session name"                       => Removes the session called "session name".\n \
+    session -r "session name" -n 1,2                => Removes nodes 1 and 2 and its details from\n \
+                                                       the session called "session name".\n \
+                                                       \n \
+    session -dr                                     => Drop/Remove all user sessions. Reset all content.\n \
+    \n \
+    LOAD ========================================\n \
+    session -l "session name"                       => Load an specific previously saved session.\n \
+    \n \
+    COPY ========================================\n \
+    session -cp "session saved" "new session name"  => Duplicate session "session saved" and paste with\n \
+                                                       a new name "new session name".\n \
+    '
+    print(text)
 
 
 

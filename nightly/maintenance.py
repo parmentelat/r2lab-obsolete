@@ -47,7 +47,8 @@ FILENAME = "maintenance_nodes.json"
 
 
 def main(args):
-    """ """
+    """
+    """
     nodes_i = args.include_node
     nodes_r = args.remove_node
     a_date  = args.a_date
