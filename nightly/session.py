@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-
+#
+# Author file: Mario Zancanaro <mario.zancanaro@inria.fr>
+#
 """
+As convenience tool the session script is a couple of commands that allow store the R2lab nodes status to provide
+recover an specific session of use
 """
 
 import re
@@ -113,7 +117,7 @@ def main(args):
 
 
 def fetch_user():
-    """ asdf
+    """ identify the logged user
     """
     command = 'whoami'
     ans_cmd = run(command)
@@ -126,7 +130,7 @@ def fetch_user():
 
 
 def fetch_os():
-    """ asdf
+    """ list the images dir in last modified file order
     """
     command = 'ls -t {}*.ndz || ls'.format(IMAGEDIR)
     ans_cmd = run(command)
@@ -139,7 +143,7 @@ def fetch_os():
 
 
 def beautify_list_os(options):
-    """ asdf
+    """ sorts the list directory images for easy reading
     """
     options_prefer = PREFERABLE
     options_dir    = list(set(options) - set(options_prefer))
@@ -165,21 +169,21 @@ def beautify_list_os(options):
 
 
 def chunkify(lst,n):
-    """ asdf
+    """ return a grouped list of nodes according to the image to load
     """
     return [ lst[i::n] for i in range(n if n < len(lst) else len(lst)) ]
 
 
 
 def get_printed_list():
-    """ asdf
+    """ get the value from printed list global variable
     """
     return PR_LIST
 
 
 
 def set_printed_list(v):
-    """ asdf
+    """ set a value for printed list global variable
     """
     global PR_LIST
     PR_LIST = v
@@ -187,7 +191,7 @@ def set_printed_list(v):
 
 
 def which_version(version):
-    """ Try to identify the version in the machine and return the version to install
+    """ try to identify the version in the machine and return the version to install
     """
     oss         = OSS
     versions    = VERSIONS
@@ -214,7 +218,7 @@ def which_version(version):
 
 
 def check_os(node):
-    """ asdf
+    """ try to indentify the OS installed in each node
     """
     options_prefer    = PREFERABLE
     options_dir       = list(set(fetch_os()) - set(options_prefer))
@@ -280,7 +284,7 @@ def check_os(node):
 
 
 def check_status(node, silent='no'):
-    """ asdf
+    """ return the state of each node. On and Off are searched.
     """
     options = ['on', 'already on', 'off', 'already off']
     command = 'curl -s reboot{}/status;'.format(node)
@@ -296,7 +300,7 @@ def check_status(node, silent='no'):
 
 
 def run(command):
-    """ asdf
+    """ run the commands
     """
     p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     (out, err) = p.communicate()
@@ -309,7 +313,7 @@ def run(command):
 
 
 def drop_file():
-    """ reset file
+    """ reset file that stores the information
     """
     dir         = FILEDIR
     file_name   = FILENAME
@@ -381,7 +385,7 @@ def format_date(val=None):
 
 
 def valid_image(image):
-    """ asdf
+    """ detect invalid images. An invalid image is a file that is not found in the images dir
     """
     images = fetch_os()
     return (image in images)
@@ -389,7 +393,7 @@ def valid_image(image):
 
 
 def load_session(user, session):
-    """ clear session for user
+    """ load an already saved session for the user
     """
     dir       = FILEDIR
     file_name = FILENAME
@@ -414,7 +418,7 @@ def load_session(user, session):
 
 
 def create_session(nodes, user, session, vimage=None, vstatus=None):
-    """ include nodes in the list
+    """ create the session for the user according nodes and status of them
     """
     dir       = FILEDIR
     file_name = FILENAME
@@ -462,7 +466,7 @@ def create_session(nodes, user, session, vimage=None, vstatus=None):
 
 
 def given_on_off_status(db, user, session):
-    """ adsf
+    """ set on or off in the nodes after load the session in function the data stored in the session
     """
     command_in_curl(range(1,38), 'off')
     print('INFO: arranging status for nodes... please wait.')
@@ -493,7 +497,7 @@ def given_on_off_status(db, user, session):
 
 
 def wait_and_update_progress_bar(wait_for):
-    """ Print the progress bar when waiting for a while
+    """ print the progress bar when waiting for a while
     """
     for n in range(wait_for):
         time.sleep(1)
@@ -504,7 +508,7 @@ def wait_and_update_progress_bar(wait_for):
 
 
 def command_in_curl(nodes, action='status'):
-    """ Transform the command to execute in CURL format
+    """ transform the command to execute in CURL format
     """
     in_curl = map(lambda x:'curl reboot'+str('0'+str(x) if x<10 else x)+'/'+action, nodes)
     in_curl = '; '.join(in_curl)
@@ -513,7 +517,7 @@ def command_in_curl(nodes, action='status'):
 
 
 def run_load(images, nodes):
-    """ adsf
+    """ run the load command grouped by images and nodes
     """
     failed = []
     for i,image in enumerate(images):
@@ -537,7 +541,7 @@ def run_load(images, nodes):
 
 
 def parse_results_from_load(text):
-    """ return a list of the nodes found in the log/answer from load commmand
+    """ return a list of successfully load nodes found in the log/answer
     """
     text    = text.lower()
     search  = "uploading successful"
@@ -554,7 +558,7 @@ def parse_results_from_load(text):
 
 
 def group_nodes_and_images(db, user, session):
-    """ adsf
+    """ return the nodes that have the same image to load
     """
     grouped_nodes = []
     related_image = []
@@ -572,7 +576,7 @@ def group_nodes_and_images(db, user, session):
 
 
 def all_nodes():
-    """ range of all nodes
+    """ return the list of all nodes
     """
     nodes = range(1,38)
     nodes = list(map(str, nodes))
@@ -624,14 +628,14 @@ def format_nodes(nodes, avoid=None):
 
 
 def eq(output, str):
-    """ asdf
+    """ compares the output with a determinated string
     """
     return output.strip().decode('ascii') == str
 
 
 
 def ask(message):
-    """ asdf
+    """ interruption for an user input
     """
     py3 = version_info[0] > 2
     if py3:
@@ -643,7 +647,7 @@ def ask(message):
 
 
 def ask_for_os(nodes):
-    """ asdf
+    """ ask for the user to input the image
     """
     opt = []
     for node in nodes:
@@ -653,7 +657,7 @@ def ask_for_os(nodes):
 
 
 def exit_gracefully():
-    """ asdf
+    """ when ctrl + c is pressed, a warning message is given
     """
     print("\n\nINFO: you aborted the operation or something went wrong. Consider check your session database. Type -h to see the options.")
     print('')
@@ -662,7 +666,7 @@ def exit_gracefully():
 
 
 def view_session(user, session=None):
-    """ list sessions
+    """ list the stored sessions
     """
     dir         = FILEDIR
     file_name   = FILENAME
@@ -722,7 +726,7 @@ def beautify(text):
 
 
 def identify_on_nodes(nodes):
-    """ asdf
+    """ return a list of all detected turned ON nodes from the given list
     """
     nodes_on = []
     print('INFO: searching for turned on nodes.')
@@ -738,7 +742,7 @@ def identify_on_nodes(nodes):
 
 
 def copy_session(user, old_session, new_session):
-    """ asdf
+    """ create a new session from the old one with a new name.
     """
     dir         = FILEDIR
     file_name   = FILENAME
@@ -766,6 +770,8 @@ def copy_session(user, old_session, new_session):
 
 
 def show_examples():
+    """ print some common commands to help users
+    """
     text = '\n \
     VIEW ========================================\n \
     session                                         => Show all session and its details\n \
