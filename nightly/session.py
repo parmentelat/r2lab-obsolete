@@ -312,7 +312,7 @@ def run(command):
 
 
 
-def drop_file():
+def reset_file():
     """ reset file that stores the information
     """
     dir         = FILEDIR

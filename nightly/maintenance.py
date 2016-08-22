@@ -64,11 +64,11 @@ def main(args):
     if nodes_r is not None:
         remove_node(nodes_r, a_date)
     if drop:
-        drop_file()
+        reset_file()
 
 
 
-def drop_file():
+def reset_file():
     """ reset file
     """
     dir         = FILEDIR
