@@ -128,7 +128,7 @@ def fetch_user():
 def fetch_os():
     """ asdf
     """
-    command = 'ls {}*.ndz || ls'.format(IMAGEDIR)
+    command = 'ls -t {}*.ndz || ls'.format(IMAGEDIR)
     ans_cmd = run(command)
     if ans_cmd['status']:
         ans = ans_cmd['output'].replace(IMAGEDIR, '')
