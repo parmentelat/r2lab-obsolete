@@ -405,7 +405,7 @@ def load_session(user, session):
         print('ERROR: session  * {} *  does not exist.'.format(session))
         exit(1)
 
-    print('INFO: loading * {} * session. This may take a while.'.format(session))
+    print('INFO: loading * {} * session. This may take a little while.'.format(session))
     the_images, the_nodes = group_nodes_and_images(content, user, session)
     if run_load(the_images, the_nodes):
         if given_on_off_status(content, user, session):
