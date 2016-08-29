@@ -230,9 +230,9 @@ def beautify(text):
     """ json print more readable
     """
     new_text = text.replace('\n', '').replace('\"', '')
-    new_text = new_text.replace('date:', '\r   date:   ')
-    new_text = new_text.replace('message:', '\r   message:')
-    new_text = new_text.replace('reset:', '\r   reset:  ')
+    new_text = new_text.replace('date:', '\r   date:')
+    new_text = new_text.replace('message:', '\r reason:')
+    new_text = new_text.replace('reset:', '\r  reset:')
     new_text = new_text.replace("{", '').replace("}", '\n').replace("[", '').replace("]", '').replace(",", '\n')
     new_text = new_text.replace("]", '')
     return new_text
