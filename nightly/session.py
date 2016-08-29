@@ -676,7 +676,6 @@ def view_session(user, session=None):
             content = json.load(data_file, object_pairs_hook=OrderedDict)
         except Exception as e:
             content = {}
-
     if session is None:
         try:
             content[user]
@@ -698,13 +697,13 @@ def view_session(user, session=None):
             if session is None:
                 for s in content[user]:
                     print('--- session * {} * ---'.format(s))
-                    for node in content[user][s]:
+                    for node in sorted(content[user][s]):
                         print('    node: #{}'.format(node))
                         ans = json.dumps(content[user][s][node], sort_keys=True, indent=3)
                         print(beautify(ans))
             else:
                 print('--- session * {} * ---'.format(session))
-                for node in content[user][session]:
+                for node in sorted(content[user][session]):
                     print('    node: #{}'.format(node))
                     ans = json.dumps(content[user][session][node], sort_keys=True, indent=3)
                     print(beautify(ans))
