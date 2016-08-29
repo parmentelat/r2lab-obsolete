@@ -18,6 +18,7 @@ from collections import OrderedDict
 from argparse import ArgumentParser
 from datetime import datetime
 from sys import version_info
+from collections import OrderedDict
 
 parser = ArgumentParser()
 parser.add_argument("-n", "--nodes", dest="nodes", default='all',
@@ -672,7 +673,7 @@ def view_session(user, session=None):
     file_name   = FILENAME
     with open(os.path.join(dir, file_name)) as data_file:
         try:
-            content = json.load(data_file)
+            content = json.load(data_file, object_pairs_hook=OrderedDict)
         except Exception as e:
             content = {}
 
