@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  var version = '1.0';
+  var version = '2.0';
   var now = moment();
   var sharedData = null
 
@@ -193,35 +193,25 @@ $(document).ready(function() {
 
 
   var parse_each_type_issue = function(data, node) {
-    var p1=0; var p2=0; var p3=0; var p4=0; var p5=0;
+    var t=0; var l=0; var z=0;
     $.each(data, function (index, value) {
       try {
-        if(value['data'][node]['ph1'])
-          p1++;
+        if(value['data'][node]['t'])//t = start
+          t++;
       } catch (e) {
       } finally {}
       try {
-        if(value['data'][node]['ph2'])
-          p2++;
+        if(value['data'][node]['l'])//l = load
+          l++;
       } catch (e) {
       } finally {}
       try {
-        if(value['data'][node]['ph3'])
-          p3++;
-      } catch (e) {
-      } finally {}
-      try {
-        if(value['data'][node]['ph4'])
-          p4++;
-      } catch (e) {
-      } finally {}
-      try {
-        if(value['data'][node]['ph5'])
-          p5++;
+        if(value['data'][node]['z'])//z = zombie
+          z++;
       } catch (e) {
       } finally {}
     });
-    return [p1,p2,p3,p4,p5];
+    return [t,l,z];
   }
 
 
@@ -363,10 +353,10 @@ $(document).ready(function() {
           data: {
               datasets: [{
                   data: parse_each_type_issue(data, node),
-                  backgroundColor: [serie_color(5)[0], serie_color(1)[0], serie_color(2)[0], serie_color(3)[0], serie_color(4)[0]],
+                  backgroundColor: ['rgba(28, 255, 0, 0.7)', 'rgba(31, 54, 177, 0.7)', 'rgba(194,111,225,.7)'],
                   label: 'dataset 1'
               }],
-              labels: ["start","ssh","load","o.s.","zombie"]
+              labels: ["start","load","zombie"]
           },
           options: {
               responsive: false,

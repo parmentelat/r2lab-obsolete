@@ -2,6 +2,11 @@ title: Latest news, infos and incidents...
 tab: news
 ---
 
+### July 13
+
+* After a while node 18 is back working.
+* Nightly routine now is from 3a.m. until 4a.m.
+
 ### June 17
 
 * New tutorial video! Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.

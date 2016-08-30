@@ -4,6 +4,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import View
 from django.http import HttpResponse
+from datetime import datetime
 
 # Create your views here.
 class FilesProxy(View):
@@ -54,7 +55,9 @@ class FilesProxy(View):
             try:
                 with open(directory + the_file) as f:
                     for line in f:
-                        data.append(json.loads(line))
+                        temp_line = self.remove_issue_after_maintenance(line)
+                        data.append(json.loads(temp_line))
+                    f.close()
                     return self.http_response_from_struct(data)
             except Exception as e:
                 return self.http_response_from_struct(
@@ -63,3 +66,41 @@ class FilesProxy(View):
         else:
             return self.http_response_from_struct(
                 { 'error' : "File not found or not alowed" })
+
+
+    def remove_issue_after_maintenance(self, line):
+        """
+        remove elements after maintenance to send to the page the data after maintenance
+        'node' : 'maintenance date'
+        """
+        directory = os.path.dirname(os.path.abspath(__file__))
+        directory = directory+'/nightly/'
+        the_file  = 'maintenance_nodes.json'
+        data      = []
+
+        try:
+            with open(directory + the_file) as data_file:
+                maintenance_nodes = json.load(data_file)
+            #LOAD JSON WHEN IS EACH LINE A JSON DB
+            # data = []
+            # with open(directory + the_file) as fi:
+            #     for linex in fi:
+            #         data.append(json.loads(linex))
+            #     fi.close()
+        except Exception as e:
+            maintenance_nodes = {}
+            print("Failure in read maintenance file - {} - {} - {}".format(directory, the_file, e))
+
+        element = json.loads(line)
+        for el in maintenance_nodes:
+            for item in maintenance_nodes[el]:
+                try:
+                    avoid_date = datetime.strptime(item['date'], "%Y-%m-%d")#maintenance nodes date
+                    based_date = datetime.strptime(element['date'], "%Y-%m-%d")#database
+                    if(based_date <= avoid_date and item['reset'] == 'yes'):
+                        element['data'].pop(el)
+
+                except Exception as e:
+                    pass
+
+        return json.dumps(element)

@@ -71,7 +71,7 @@ require_login: true
 <strong>Important note!</strong>
 <br/>
 R2lab platform is reset every night. A time slot from <strong>3 a.m.</strong> until
-<strong>5 a.m.</strong> is reserved to execute this job.
+<strong>4 a.m.</strong> is reserved to execute this job.
 
 <br/>
 In any case, please make sure to save your experiments once you are done, as the next user will probably reload an image on your nodes.

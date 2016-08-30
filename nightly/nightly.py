@@ -25,7 +25,7 @@ parser.add_argument("-N", "--nodes", dest="nodes",
                     help="Comma separated list of nodes")
 parser.add_argument("-a", "--avoid", dest="avoid_nodes",
                     help="Comma separated list of nodes to avoid")
-parser.add_argument("-V", "--version", default=None, dest="version",
+parser.add_argument("-V", "--version", default="fedora-23.ndz", dest="version",
                     help="O.S version to load")
 parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
                     help="Directory to save text file")
@@ -34,11 +34,7 @@ parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="s
 
 args = parser.parse_args()
 
-VERSIONS_ALIAS  = ['u-1410',           'u-1504',            'u-1604',           'f-21',          'f-22',           'f-23']
-VERSIONS_NAMES  = ['ubuntu 14.10',     'ubuntu 15.04',      'ubuntu 16.04',     'fedora 21',     'fedora 22',      'fedora 23']
-VERSIONS_TO_LOAD= ['ubuntu-15.04.ndz', 'ubuntu-15.04.ndz',  'ubuntu-16.04.ndz', 'fedora-21.ndz', 'fedora-22.ndz',  'fedora-23.ndz']
 
-# SEND_RESULTS_TO  = ['mario.zancanaro@inria.fr', 'thierry.parmentelat@inria.fr', 'thierry.turletti@inria.fr', 'walid.dabbous@inria.fr', 'mohamed-naoufal.mahfoudi@inria.fr']
 send_to_email   = args.send_to_email
 SEND_RESULTS_TO = [str(send_to_email)] #default in args send_to_email: fit-r2lab-users@inria.fr
 
@@ -50,18 +46,12 @@ phases          = {}
 def main(args):
     """ Execute the load for all nodes in Faraday. """
 
-    nodes    = args.nodes
-    version  = args.version
+    nodes       = args.nodes
+    version     = args.version
     avoid_nodes = args.avoid_nodes
+    nodes       = format_nodes(nodes, avoid_nodes)
+    all_nodes   = name_node(nodes)
 
-    if version is not None:
-        valid_version(version)
-
-    nodes     = format_nodes(nodes, avoid_nodes)
-    all_nodes = name_node(nodes)
-
-    #===========================
-    #creating db for phases test
     for node in nodes:
         create_phases_db(node)
 
@@ -87,108 +77,26 @@ def main(args):
 
 
     #=========================================
-    # CHECK THE CURRENT OS ===================
-    print "-- INFO: check OS version for each node"
-    wait_and_update_progress_bar(20)
-    all_nodes = to_str(nodes)
-    old_os    = {}
-    results   = {}
-
-    for node in all_nodes:
-        host = name_node(node)
-        user = 'root'
-        cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
-        result = execute(cmd, host_name=host, key=node)
-        results.update(result)
-
-        if error_presence(result):
-            old_os.update( {node : {'os' : 'unknown'}} )
-        else:
-            os = name_os(result[node]['stdout'])
-            old_os.update( {node : {'os' : os}} )
-
-
-    #=========================================
     # LOAD THE NEW OS ON NODES ===============
     print "-- INFO: execute load on nodes"
     results    = {}
-    versions_names = VERSIONS_NAMES
-    grouped_os_list = build_grouped_os_list(old_os)
-    cmds= []
-    executions = 38 #(divide from the total nodes - 1 means total_nodes/1)
-
-    # in case of have the version specified in the command line - do it for all
-    if not None is version:
-        print "-- INFO: version given"
-        splited_group = split(nodes, executions)
-        for sub_list_nodes in splited_group:
-            all_nodes = name_node(sub_list_nodes)
-            all_nodes = stringfy_list(all_nodes)
-            real_version = named_version(version)
-
-            cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
+    all_nodes = stringfy_list(all_nodes)
+    cmd = "rhubarbe-load {} -i {}; ".format(all_nodes, version)
+    result = execute(cmd, key='node')
+    if error_presence(result):
+        print "** ERROR: one or more node were not loaded correctly. CMD and result logs below:"
+        print cmd
+        print "-----"
+        print result
+        print "-----"
     else:
-        print "-- INFO: no version given"
-        for k, v in grouped_os_list.iteritems():
-            os         = k
-            list_nodes = v
-            if os in versions_names or os == 'unknown':
-                splited_group = split(list_nodes, executions)
-                for sub_list_nodes in splited_group:
-                    all_nodes = name_node(sub_list_nodes)
-                    all_nodes = stringfy_list(all_nodes)
-                    new_version = which_version(os)
-                    real_version = named_version(new_version)
-
-                    cmds.append("rhubarbe-load {} -i {}; ".format(all_nodes, real_version))
-            # IN CASE OF RETURN A unknown OS NAME
-            else:
-                for node in list_nodes:
-                    real_version = named_version('')
-                    cmds.append("rhubarbe-load {} -i {}; ".format(node, real_version))
-
-    for cmd in cmds:
-        result = execute(cmd, key='node')
-        results.update(result)
-        if error_presence(result):
-            print "** ERROR: one or more node were not loaded correctly. CMD and result logs below:"
-            print cmd
-            print "-----"
-            print result
-            print "-----"
-        else:
-            stdout = remove_special_char(result['node']['stdout'])
-            #==================================================================
-            #searching in the answer of the command for the sentence of success
-            #+058s: fit23 Uploading successful
-            #+058s: <node> Uploading successful
-            nodes_found = parse_results_from_load(stdout)
-            update_phases_db(nodes_found, 3)
-
-
-    #=========================================
-    # VERIFY IF CHANGED THE OS ===============
-    print "-- INFO: check OS version for each node"
-    wait_and_update_progress_bar(20)
-    all_nodes = to_str(nodes)
-    new_os     = {}
-    results    = {}
-
-    for node in all_nodes:
-        host = name_node(node)
-        user = 'root'
-        cmd = "cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
-        result = execute(cmd, host_name=host, key=node)
-        results.update(result)
-
-        if error_presence(result):
-            pass
-        else:
-            update_phases_db(node, 2)
-            oldos = old_os[node]['os']
-            newos = name_os(result[node]['stdout'])
-            if oldos != newos:
-                update_phases_db(node, 4)
+        stdout = remove_special_char(result['node']['stdout'])
+        #==================================================================
+        #searching in the answer of the command for the sentence of success
+        #+058s: fit23 Uploading successful
+        #+058s: <node> Uploading successful
+        nodes_found = parse_results_from_load(stdout)
+        update_phases_db(nodes_found, 2)
 
 
     #=========================================
@@ -207,7 +115,6 @@ def main(args):
     results     = {}
 
     for node in all_nodes:
-        wait_and_update_progress_bar(3)
         cmd = "curl reboot{}/status;".format(node)
         result = execute(cmd, key=node)
         results.update(result)
@@ -217,7 +124,7 @@ def main(args):
         else:
             status = remove_special_char(result[node]['stdout']).strip()
             if status.lower() in ['already off', 'off']:
-                update_phases_db(node, 5)
+                update_phases_db(node, 3)
 
 
     #=========================================
@@ -225,21 +132,19 @@ def main(args):
     print "-- INFO: summary of reset routine"
     failed_nodes = []
     for key, value in sorted(phases.iteritems()):
-        if value['ph2'] == 'ko' or value['ph3'] == 'ko' or value['ph4'] == 'ko': #advice in email only for load errors
+        if value['ph1'] == 'ko' or value['ph2'] == 'ko' or value['ph3'] == 'ko':
             failed_nodes.append(key)
         failed_nodes = list(set(failed_nodes))
 
         print "  node:  #{} ".format(key)
         print " start:   {} ".format(value['ph1'])
-        print "   ssh:   {} ".format(value['ph2'])
-        print "  load:   {} ".format(value['ph3'])
-        print "change:   {} ".format(value['ph4'])
-        print "zombie:   {} ".format(value['ph5'])
+        print "  load:   {} ".format(value['ph2'])
+        print "zombie:   {} ".format(value['ph3'])
         print "--"
     print " "
 
     print "-- INFO: setting round red bullets for nodes with issues"
-    set_node_status(range(1,38), 'ok')
+    set_node_status(range(1,38),  'ok')
     set_node_status(failed_nodes, 'ko')
 
     print "-- INFO: send email"
@@ -298,7 +203,7 @@ def update_phases_db(node, the_phase):
 
 def create_phases_db(node):
     """ create the phases to register each step of nightly routine """
-    number_of_phases = 5
+    number_of_phases = 3
     all_phases = {}
     for n in range(number_of_phases):
         all_phases["ph{}".format(n+1)] = 'ko'
@@ -341,7 +246,7 @@ def save_data_in_txt(results, the_file, answer='short'):
     """save the results in a file for posterior use of it """
     dir_name  = args.text_dir
     file_name = the_file
-    number_of_phases = 5
+    number_of_phases = 3
     all_nodes = ''
     for node in results:
         fail   = False
@@ -378,9 +283,7 @@ def summary_in_mail(nodes):
             <tr>\n \
             <td style="width: 40px; text-align: center;"></td>\n \
             <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/power.png" style="width:25px;height:25px;">&nbsp;start&nbsp;</td>\n \
-            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/term.png" style="width:25px;height:25px;">ssh</td>\n \
             <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/share.png" style="width:25px;height:25px;">load</td>\n \
-            <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/shuffle.png" style="width:25px;height:25px;">o.s.</td>\n \
             <td style="font:11px Arial, Tahoma, Sans-serif; width: 40px; text-align: center;"><img src="http://r2lab.inria.fr/assets/img/zombie.png" style="width:25px;height:25px;">zombie</td>\n \
             <td>&nbsp;&nbsp;</td>\n \
             </tr>'
@@ -392,11 +295,9 @@ def summary_in_mail(nodes):
                         <td style="text-align: center; font:{}</td>\n \
                         <td style="text-align: center; font:{}</td>\n \
                         <td style="text-align: center; font:{}</td>\n \
-                        <td style="text-align: center; font:{}</td>\n \
-                        <td style="text-align: center; font:{}</td>\n \
                         <td></td>\n \
                     </tr>\
-                    '.format(node, parse_phases_db_in_style(phases[int(node)]['ph1']), parse_phases_db_in_style(phases[int(node)]['ph2']), parse_phases_db_in_style(phases[int(node)]['ph3']), parse_phases_db_in_style(phases[int(node)]['ph4']), parse_phases_db_in_style(phases[int(node)]['ph5']) )
+                    '.format(node, parse_phases_db_in_style(phases[int(node)]['ph1']), parse_phases_db_in_style(phases[int(node)]['ph2']), parse_phases_db_in_style(phases[int(node)]['ph3']))
         lines_fail += line_fail
 
     legend = '\
@@ -407,18 +308,14 @@ def summary_in_mail(nodes):
             <td style="font:9px helveticaneue, Arial, Tahoma, Sans-serif;">\n \
                 <span style="color: #525252;">\n \
                 &nbsp;<b>start:</b> <br>\n \
-                &nbsp;<b>ssh:</b>   <br>\n \
                 &nbsp;<b>load:</b>  <br>\n \
-                &nbsp;<b>o.s.:</b>  <br>\n \
                 &nbsp;<b>zombie:</b><br>\n \
             </span>\n \
             </td>\n \
             <td colspan="6" style="font:9px helveticaneue, Arial, Tahoma, Sans-serif;">\n \
                 <span style="color: #525252;">\n \
                 &nbsp; node successfully started at the beginning of the routine check.<br>\n \
-                &nbsp; node was reachable through ssh.<br>\n \
                 &nbsp; the load command successfully completed.<br>\n \
-                &nbsp; node o.s. successfully changed and operational.<br>\n \
                 &nbsp; node cannot be switched off at the end of the test.<br>\n \
                 </span>\n \
             </td>\n \
@@ -429,7 +326,7 @@ def summary_in_mail(nodes):
     line_ok = '\
             <tr>\n \
                 <td style="font:11px Arial, Tahoma, Sans-serif; width: 10px; text-align: left;"><img src="http://r2lab.inria.fr/assets/img/people.png" style="width:35px;height:35px;"></td>\n \
-                <td colspan="9" style="font:14px Arial, Tahoma, Sans-serif; vertical-align: middle; text-align: left;"><b>Yeah!</b><span style="font:12px Arial"> All nodes are working fine!</span></td>\n \
+                <td colspan="9" style="font:14px Arial, Tahoma, Sans-serif; vertical-align: middle; text-align: left;"><b>Great!</b><span style="font:12px Arial"> All nodes are working fine!</span></td>\n \
             </tr>\n \
             '
 
@@ -541,74 +438,6 @@ def command_in_curl(nodes, action='status'):
 
 
 
-def build_grouped_os_list(list):
-    """ Process the old_os dict and returns the O.S. gruped by node """
-    """ INPUT  -> {'12': {'os': 'fedora 21'}, '11': {'os': 'fedora 21'}, '10': {'os': 'ubuntu 14.04'}} """
-    """ OUTPUT -> {'ubuntu 14.04': ['10'], 'fedora 21': ['11', '12']} """
-    grouped_os_list = {}
-
-    for k, v in list.iteritems():
-        grouped_os_list.setdefault(v['os'], []).append(k)
-
-    return grouped_os_list
-
-
-
-
-def which_version(version):
-    """ Return the version to install """
-    versions_alias = VERSIONS_ALIAS
-    versions_names = VERSIONS_NAMES
-
-    new_version_idx = 0
-
-    if version in versions_names:
-        old_version_idx = versions_names.index(version)
-    else:
-        old_version_idx = -1
-
-    if old_version_idx >= len(versions_names)-1:
-        new_version_idx = 1 #return to the beggining of the list(ignoring u14)
-    else:
-        new_version_idx = old_version_idx + 1
-
-    return versions_names[new_version_idx]
-
-
-
-
-def valid_version(version):
-    """ Check if the version to load """
-    versions_alias = VERSIONS_ALIAS
-    if version not in versions_alias:
-        raise Exception("invalid version, must be {}".format(versions_alias))
-        return False
-    else:
-        return version
-
-
-
-
-def named_version(version):
-    """ Return a explicit name version """
-    version = version.lower()
-
-    versions_alias = VERSIONS_ALIAS
-    versions_names = VERSIONS_NAMES
-    versions       = VERSIONS_TO_LOAD
-
-    if version in versions_alias:
-        explicit_version = versions[versions_alias.index(version)]
-    elif version in versions_names:
-        explicit_version = versions[versions_names.index(version)]
-    else:
-        explicit_version = versions[0]
-
-    return explicit_version
-
-
-
-
 def to_str(list_items):
     """ Change the integer array to string array """
     if not type(list_items) is list:
@@ -688,20 +517,6 @@ def stringfy_list(list):
     stringfy_list = ','.join(list)
 
     return stringfy_list
-
-
-
-
-def name_os(os):
-    """ Format the O.S. names """
-    versions_names = VERSIONS_NAMES
-    os = os.strip()
-    if os == "":
-        os = 'unknown'
-    # Search in the list the 9th first characters
-    all_os_found = filter(lambda x: os[:9] in x, versions_names)
-
-    return all_os_found[0] if all_os_found else 'unknown'
 
 
 
@@ -810,7 +625,7 @@ def save_data_in_json(results, the_file):
     """ Save the result in a json file """
     dir = args.text_dir
     file_name = the_file
-    number_of_phases = 5
+    number_of_phases = 3
     all_nodes = {}
     for node in results:
         for ph in range(number_of_phases):
@@ -820,6 +635,7 @@ def save_data_in_json(results, the_file):
                 except Exception as e:
                     all_nodes.update( {str(node) : { "ph{}".format(ph+1) : 'ko'}} )
 
+    all_nodes = parse_ph_to_names(all_nodes)
     temp_results = {"date" : str(date()), "data" : all_nodes}
 
     with open(os.path.join(dir, file_name), "a") as js:
@@ -828,18 +644,29 @@ def save_data_in_json(results, the_file):
 
 
 
+def parse_ph_to_names(dict_json):
+    """ Change the phase names ph1, ph2, ph3, ph4... to names: t, s, l, o, z """
+    temp_json = json.dumps(dict_json)
+    temp_json = temp_json.replace("\"ph1\"", "\"t\"")
+    temp_json = temp_json.replace("\"ph2\"", "\"l\"")
+    temp_json = temp_json.replace("\"ph3\"", "\"z\"")
+    return json.loads(temp_json)
+
+
+
+
 def map_phases(phase, answer='short'):
-    """ gives a human name for each phase instead of ph1, ph2, ... """
-    normal_human_name = ['', 'start', 'ssh', 'load', 'o.s.', 'zombie']
-    short_human_name  = ['', 't',     's',    'l',   'o',    'z'     ]
-    number_human_name = ['', '1',     '2',    '3',   '4',    '5'     ]
+    """ gives a human name for each phase instead of ph1, ph2, ...
+        BE CAREFUL(`s` and `o` are not here but they are in DB because it was used)
+        t=start s=ssh l=load o=o.s.changed z=zombie
+    """
+    normal_human_name = ['', 'start', 'load', 'zombie']
+    short_human_name  = ['', 't',     'l',    'z'     ]
     # just in case of giveen 'ph1' as phase
     if type(phase) is str:
         phase = phase.replace('ph', '')
     if   answer is 'short':
         new_name = short_human_name[int(phase)]
-    elif answer is 'number':
-        new_name = number_human_name[int(phase)]
     elif answer is 'normal':
         new_name = normal_human_name[int(phase)]
     else:
@@ -874,7 +701,7 @@ def now():
 
 
 def date(format='%Y-%m-%d'):
-    """ Current date """
+    """ Current date (2016-04-06)"""
     return datetime.now().strftime(format)
 
 

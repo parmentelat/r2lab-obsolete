@@ -43,7 +43,7 @@ doc-admin igmp-watch "tcpdump igmp packets on the $control_dev interface"
 
 ####################
 #### some stuff is just too hard / too awkward in shell...
-# py normalize fit 1 03 fit09 
+# py normalize fit 1 03 fit09
 # py ranges 1-37-2 ~1-20-4
 function py () {
     python3 - "$@" << EOF
@@ -67,7 +67,7 @@ def host_pxe(nodename):
 def pxe_host(pxe):
     import subprocess
     bytes = pxe.split('-')
-    if len(bytes) == 7: 
+    if len(bytes) == 7:
         bytes = bytes[1:]
     mac = ':'.join(bytes)
     try:
@@ -135,7 +135,7 @@ def normalize (*args):
 def comma_normalize (*args):
     return _normalize(',', *args)
 
-# normalize2 fit reboot 1-3 fit04 reboot05 -> 
+# normalize2 fit reboot 1-3 fit04 reboot05 ->
 def normalize2 (*args):
 #    print('normalize', args)
     constant = args[0]
@@ -152,6 +152,67 @@ def main():
 
 main()
 EOF
+}
+
+function session () {
+  # stores the r2lab nodes state to recover/load in one command in future
+  # examples:
+
+  # VIEW ========================================
+  # session                                         => show all session and its details from the user (default command).
+  # session -v "session name" -n 1,2, ...           => show all about an specifi session name.
+
+  # CREATE ======================================
+  # session -c "my session"                         => create a session named "my session" considering ONLY turned ON nodes between all 37 nodes. If no nodes be turned ON, no session will be created.
+  # session -c "my session" --off                   => the same as before but now ignore search for turned ON nodes. All nodes states (on/off) are considered here.
+  # session -c "my session" -n 1,2,5                => create a session named "my session" for 1,2 and 5 nodes (using -n option, the --off is alwayes enabled).
+  # session -c "name" -n 1,3 -i "image.ndz" -s on   => create a session "name" storing for each node the state "ON" and the image "image.ndz".
+
+  # REMOVE ======================================
+  # session -r "session name"                       => removes the session called "session name".
+  # session -r "session name" -n 1,2                => removes nodes 1 and 2 and its details from the session called "session name".
+  # session -dr                                     => drop/remove all user sessions. Reset all content.
+
+  # LOAD ========================================
+  # session -l "session name"                       => load an specific previously saved session.
+
+  # COPY ========================================
+  # session -cp "session saved" "new session name"  => duplicate session "session saved" and paste with a new name "new session name".
+
+  python3 /root/r2lab/nightly/session.py "$@"
+}
+alias snapshot=session
+alias snap=session
+
+function maintenance () {
+  # stores maintenance nodes and sync with the r2lab site to present in the graphs
+  # examples:
+  # VIEW ========================================
+  # maintenance                                                           => show all nodes with maintenance records.
+  # maintenance -n 3,4,5, ...                                             => show for each node of the list of nodes the maintenance info.
+
+  # CREATE ======================================
+  # maintenance -i 1,2,3 -d 2016-04-06 -m "change bios battery" -e no     => includes for the nodes 1,2 and 3 a maintenance date using current date.
+  # maintenance -i 5 -d 2016-02-27                                        => includes for the node 5 a maintenance date in 2016-02-27.
+
+  # REMOVE ======================================
+  # maintenance -r 1,2,3 -d 2016-02-27                                    => remove from the nodes 1,2 and 3 a specific (2016-02-27) maintenance date.
+  # maintenance -r 13                                                     => remove all maintenance dates for the node 13 (doesn't matter the dates stored).
+
+  python3 /root/r2lab/nightly/maintenance.py "$@"
+  if [ $? -eq 0 ]; then
+    for i in "$@" ; do
+      if [[ $i == "-i" || $i == "-r" ]] ; then
+        /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
+        echo 'INFO: send info to r2lab website and updating...'
+        ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
+        echo 'INFO: updated in r2lab!'
+        break
+      fi
+    done
+  else
+    echo 'ERROR: something went wrong in maintenance command. Type maintenance -h to see options.'
+  fi
 }
 
 # normalization
@@ -178,7 +239,7 @@ doc-nodes nodes "(alias n) show or define currently selected nodes; eg nodes 1-1
 
 
 function nbnodes () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     echo $(for node in $nodes; do echo $node; done | wc -l)
 }
 
@@ -346,7 +407,7 @@ doc-nodes load-gnuradio "... latest recommended gnuradio image"
 # releases 12 14
 # -> show fedora/debian releases for fit12 fit14 - does not change NODES
 function releases () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     for node in $(norm $nodes); do
 	echo ==================== $node
 	ssh root@$node "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release; gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
@@ -363,7 +424,7 @@ function prefix () {
 # utility; run curl
 function -curl () {
     mode="$1"; shift
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     for node in $(normreboot $nodes); do
 	curl --silent http://$node/$mode | prefix "$node:"
     done
@@ -383,7 +444,7 @@ doc-alt cinfo "show node CMC info - using curl"
 
 # function 'wn' is part of the 'miscell' bash component
 function wait () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     for node in $(norm $nodes); do
 	wn $node
     done
@@ -404,7 +465,7 @@ function refresh() {
 doc-alt refresh "install latest version of these utilities"
 
 ####################
-# faraday has p2p1@switches and bemol has eth1 - use control_dev 
+# faraday has p2p1@switches and bemol has eth1 - use control_dev
 # spy on frisbee traffic
 function t7000 () {
     [ -n "$1" ] && options="-c $1"
@@ -474,7 +535,7 @@ doc-admin pxe-config "Displays various files related to using old or new frisbee
 # this script creates a symlink to /tftpboot/pxelinux.cfg/foo
 function -nextboot () {
     command="$1"; shift
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES" 
+    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     for node in $(norm $nodes); do
 	pxe=/tftpboot/pxelinux.cfg/"01-"$(py host_pxe $node)
 	echo -n ABOUT $node " "
@@ -530,7 +591,7 @@ function -nextboot-all () {
     for symlink in $(ls /tftpboot/pxelinux.cfg/$pattern 2> /dev/null); do
 	name=$(basename $symlink)
 	hostname=$(py pxe_host $name)
-	echo -n ABOUT $hostname " " 
+	echo -n ABOUT $hostname " "
 	case $command in
 	    list*)
 		[ -h $symlink ] && stat -c '%N' $symlink || ls -l $symlink ;;
@@ -541,9 +602,9 @@ function -nextboot-all () {
 }
 
 function nextboot-listall () { -nextboot-all list; }
-doc-alt nextboot-listall "list all pxelinux symlinks" 
+doc-alt nextboot-listall "list all pxelinux symlinks"
 function nextboot-cleanall () { -nextboot-all clean; }
-doc-alt nextboot-cleanall "remove all pxelinux symlinks" 
+doc-alt nextboot-cleanall "remove all pxelinux symlinks"
 
 ####################
 # for now we use a different port for bemol and faraday
@@ -555,7 +616,7 @@ function omf-leases() { curl -k https://faraday.inria.fr:12346/resources/leases;
 doc-alt omf-leases function
 function omf-accounts() { curl -k https://faraday.inria.fr:12346/resources/accounts; echo; }
 doc-alt omf-accounts function
-    
+
 # XXX todo : a tool for turning on and off debug mode in omf6 commands
 # omf-debug : says what is in action
 # omf-debug on : turn it on
@@ -582,8 +643,8 @@ function -do-first () {
 alias ss="-do-first ssh"
 alias tn="-do-first telnet"
 
-doc-nodes ss "Enter first selected node using ssh\n\t\targ if present is taken as a node, not a command" 
-doc-admin tn "Enter first selected node using telnet - ditto" 
+doc-nodes ss "Enter first selected node using ssh\n\t\targ if present is taken as a node, not a command"
+doc-admin tn "Enter first selected node using telnet - ditto"
 
 #################### manually run a old or new frisbee server
 function serve_ubuntu_old () {
@@ -737,7 +798,7 @@ function un-tgz() {
 	tar -C $b -xzf  $t
     done
 }
-    
+
 ##########
 alias macusb="ssh tester@macusb"
 doc-alt macusb alias
