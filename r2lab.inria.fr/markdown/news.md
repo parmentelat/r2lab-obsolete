@@ -34,6 +34,7 @@ tab: news
 * Reception of USRP-oriented extensions of the CMC cards
 * Related firmware version is 3.2.
 * Deployed on only a couple nodes for now
+
 ---
 ---
 
