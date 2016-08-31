@@ -32,12 +32,12 @@ float_menu_template: r2lab/float-menu-tutorials.html
 
 ### Video tutorials
 
-  * [End-to-End Experiment](https://youtu.be/vDPLQNsZaVY)
+  * [End-to-End Experiment](tuto-06-youtube.md)
 
-    Running an wireless experiment end-to-end. Check it out, [here](https://youtu.be/vDPLQNsZaVY)
+    Running an wireless experiment end-to-end. Check it out, [here](tuto-06-youtube.md)
 
-  * [OAI 5G experiment](https://youtu.be/FpZo6uqTosQ)
+  * [OAI 5G experiment](tuto-06-youtube.md)
 
     Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
 
-    Check it out, [here](https://youtu.be/FpZo6uqTosQ)
+    Check it out, [here](tuto-06-youtube.md)
