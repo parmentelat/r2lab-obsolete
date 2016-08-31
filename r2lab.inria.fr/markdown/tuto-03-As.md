@@ -11,7 +11,7 @@ Below are a couple of experiments to get started with the
 [NEPI](http://nepi.inria.fr/Install/WebHome) experiment orchestration
 tool, and with the R2lab experimental testbed.
 
-This suite of experiments, labelled **A1** to **A4**, are designed as
+This suite of experiments, labelled **A1** to **A5**, are designed as
 a series of small incremental changes, so we can illustrate various
 concepts one at a time.
 
