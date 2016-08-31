@@ -1,5 +1,6 @@
 title: Latest news, infos and incidents...
 tab: news
+skip_news: yes
 ---
 
 ### November 9

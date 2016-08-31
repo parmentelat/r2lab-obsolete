@@ -2,6 +2,7 @@ title: The R2lab Tutorials
 subtitle: Take a tour with the R2lab tutorials to help your experiments to be run.
 tab: tutorial
 float_menu_template: r2lab/float-menu-tutorials.html
+skip_news: yes
 ---
 
 ### Infrastructure

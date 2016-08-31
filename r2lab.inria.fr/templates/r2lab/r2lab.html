@@ -104,6 +104,7 @@
   <div class="container-fluid personal" id="background">
    {% if not r2lab_context and widget_login_template %}{% include widget_login_template %}{% endif %}
   </div>
+  {% if not skip_news %}
   <br>
   <br>
   <div class="container">
@@ -111,6 +112,7 @@
     stay tuned about the last news, infos and incidents about R2lab, check out our <a href="news.md">news feed</a>
    </div>
   </div>
+  {% endif %}
 {% endif %}
 
   <div class="container">
