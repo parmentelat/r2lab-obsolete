@@ -304,7 +304,7 @@ class Nodes(OrderedDict):
                     continue
                 # get logical number
                 spare = False
-                if tokens[2].startswith('prep'):
+                if tokens[2] in ('preplab', 'greece'):
                     log_num = 0
                     spare = True
                 else:
