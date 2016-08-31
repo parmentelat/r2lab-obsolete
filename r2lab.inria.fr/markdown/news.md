@@ -2,21 +2,22 @@ title: Latest news, infos and incidents...
 tab: news
 ---
 
-### November 9th
+### November 9
 
 * Inauguration ceremony. Program to be announced shortly.
 
-### August 30th
+### August 30
 
 * The R2lab team pays a visit to [our colleagues of FIT/CorteXlab at INSA Lyon](http://www.cortexlab.fr/)
 
-### July 25th
+### July 25
 
 * Both faulty nodes 4 and 18 are shipped back to Greece for troubleshooting by the manufacturer
 
 ### July 13
 
-* After a while node 18 is back working.
+* Node 18 is set aside and replaced with a spare node (no impact for users)
+* All nodes deemed sustainably operational
 * Nightly routine now is from 3a.m. until 4a.m.
 
 ### June 17
