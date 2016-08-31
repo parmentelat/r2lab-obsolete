@@ -2,6 +2,18 @@ title: Latest news, infos and incidents...
 tab: news
 ---
 
+### November 9th
+
+* Inauguration ceremony. Program to be announced shortly.
+
+### August 30th
+
+* The R2lab team pays a visit to [our colleagues of FIT/CorteXlab at INSA Lyon](http://www.cortexlab.fr/)
+
+### July 25th
+
+* Both faulty nodes 4 and 18 are shipped back to Greece for troubleshooting by the manufacturer
+
 ### July 13
 
 * After a while node 18 is back working.
@@ -9,7 +21,7 @@ tab: news
 
 ### June 17
 
-* New tutorial video! Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
+* New tutorial video! Setting up an OpenAirInterface-based 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
 * Check it out, [here](https://youtu.be/FpZo6uqTosQ)
 
 ### June 6
