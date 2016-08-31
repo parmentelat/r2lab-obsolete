@@ -1,4 +1,4 @@
-title: Video Tutorials
+title: Video Tutorials on YouTube
 tab: tutorial
 float_menu_template: r2lab/float-menu-tutorials.html
 ---
