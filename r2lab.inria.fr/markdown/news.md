@@ -7,6 +7,11 @@ skip_news: yes
 
 * Inauguration ceremony. Program to be announced shortly.
 
+### September 2
+
+* upgrade of the physical server `faraday.inria.fr` to ubuntu-16.04-LTS
+* upgrade of its web companion VM `r2lab.inria.fr` to fedora-24
+
 ### August 30
 
 * The R2lab team pays a visit to [our colleagues of FIT/CorteXlab at INSA Lyon](http://www.cortexlab.fr/)
