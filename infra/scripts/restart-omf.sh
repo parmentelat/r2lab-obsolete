@@ -8,7 +8,7 @@ function restart-omf () {
     echo "==================== Entering $COMMAND on" $(date)
     ### stop
     echo Stopping omf-sfa
-    service omf-sfa stop
+    systemctl stop omf-sfa
     echo Stopping ntrc
     stop ntrc
     echo Stopping openfire
@@ -23,7 +23,7 @@ function restart-omf () {
     echo Starting ntrc
     start ntrc
     echo Starting omf-sfa
-    service omf-sfa start
+    systemctl start omf-sfa
     echo "Exiting $COMMAND on" $(date)
 }
 

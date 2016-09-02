@@ -3,7 +3,9 @@ tab: news
 skip_news: yes
 ---
 
-### November 9
+Most recent first&nbsp;:
+
+### November 9 2016
 
 * Inauguration ceremony. Program to be announced shortly.
 
@@ -53,7 +55,7 @@ skip_news: yes
 ### Feb 20
 * Ordered 3d-printed boxes to contain cards as they cannot be seated inside the box
 
-### Feb 2
+### Feb 2 2016
 
 * Reception of USRP-oriented extensions of the CMC cards
 * Related firmware version is 3.2.
