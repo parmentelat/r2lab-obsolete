@@ -1,3 +1,6 @@
+# These helpers target the MAC that is sitting in the R2lab chamber
+# and has a USB connection to a commercial phone (nexus 6 as of now)
+
 function phone-on() {
     echo "Turning ON phone - i.e. turning off airplane mode"
     adb shell "settings put global airplane_mode_on 0; am broadcast -a android.intent.action.AIRPLANE_MODE --ez state false"
