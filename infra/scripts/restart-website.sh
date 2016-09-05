@@ -4,7 +4,7 @@
 #
 
 GIT_REPO=/root/r2lab
-LOG=/var/log/$command.log
+LOG=/var/log/restart-website.log
 
 #### updates the contents of /root/r2lab on both boxes
 cd $GIT_REPO
