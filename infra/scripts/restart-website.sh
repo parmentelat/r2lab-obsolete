@@ -4,34 +4,23 @@
 #
 
 GIT_REPO=/root/r2lab
+LOG=/var/log/$command.log
 
+#### updates the contents of /root/r2lab on both boxes
+cd $GIT_REPO
+git reset --hard HEAD >> $LOG 2>&1
+./auto-update.sh
+
+#### depending on which host:
 case $(hostname) in
     faraday*)
-	command=monitor
-	run_publish=""
+	systemctl restart monitor
 	;;
     r2lab*)
-	command=sidecar
-	run_publish=true
+	systemctl restart sidecar
+	make -C $GIT_REPO/r2lab.inria.fr install >> $LOG 2>&1
 	;;
     *)
 	echo Unknown host $(hostname); exit 1;;
 esac
 
-LOG=/var/log/$command.log
-
-cd $GIT_REPO
-git reset --hard HEAD >> $LOG 2>&1
-./auto-update.sh
-
-# invoking monitor.sh or sidecar.sh accordingly
-# note that monitor.sh comes with rhubarbe
-# and sidecar.sh is a symlink manually created in /usr/bin
-$command.sh stop >> $LOG 2>&1 
-sleep 1
-$command.sh start >> $LOG 2>&1
-
-# publish website contents
-if [ -n "$run_publish" ]; then
-    make -C $GIT_REPO/r2lab.inria.fr install >> $LOG 2>&1
-fi

@@ -12,14 +12,14 @@ function restart-omf () {
     echo Stopping ntrc
     stop ntrc
     echo Stopping openfire
-    service openfire stop
+    systemctl stop openfire
     echo Stopping dnsmasq
-    service dnsmasq stop
+    systemctl stop dnsmasq
     ### start
     echo Starting dnsmasq
-    service dnsmasq start
+    systemctl start dnsmasq
     echo Starting openfire
-    service openfire start
+    systemctl start openfire
     echo Starting ntrc
     start ntrc
     echo Starting omf-sfa

@@ -14,6 +14,9 @@ Most recent first&nbsp;:
 * upgrade of the physical server `faraday.inria.fr` to ubuntu-16.04-LTS
 * upgrade of its web companion VM `r2lab.inria.fr` to fedora-24
 
+* this means both hosts can take `systemd` and `python3.5` for granted
+* in the mix, `omf_sfa` on `faraday` now runs on top of `ruby 2.3.1p112`
+
 ### August 30
 
 * The R2lab team pays a visit to [our colleagues of FIT/CorteXlab at INSA Lyon](http://www.cortexlab.fr/)
