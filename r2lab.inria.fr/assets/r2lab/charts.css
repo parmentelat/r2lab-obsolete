@@ -316,7 +316,7 @@
   background: rgba(243,39,26,.6);
 }
 
-.start {
+.noissue {
   background: rgba(28, 255, 0, 0.7);
 }
 
@@ -326,4 +326,8 @@
 
 .zombie {
   background: rgba(194,111,225,.7);
+}
+
+.start {
+  background: rgba(255, 161, 0, 0.7);
 }

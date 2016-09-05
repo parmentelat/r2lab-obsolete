@@ -211,7 +211,11 @@ $(document).ready(function() {
       } catch (e) {
       } finally {}
     });
-    return [t,l,z];
+    if (t+l+z == 0) {
+      return [t,l,z,100];
+    } else {
+      return [t,l,z,0];
+    }
   }
 
 
@@ -353,10 +357,10 @@ $(document).ready(function() {
           data: {
               datasets: [{
                   data: parse_each_type_issue(data, node),
-                  backgroundColor: ['rgba(28, 255, 0, 0.7)', 'rgba(31, 54, 177, 0.7)', 'rgba(194,111,225,.7)'],
+                  backgroundColor: ['rgba(255, 161, 0, 0.7)', 'rgba(31, 54, 177, 0.7)', 'rgba(194,111,225,.7)', 'rgba(28, 255, 0, 0.7)'],
                   label: 'dataset 1'
               }],
-              labels: ["start","load","zombie"]
+              labels: ["start","load","zombie","no issues"]
           },
           options: {
               responsive: false,
