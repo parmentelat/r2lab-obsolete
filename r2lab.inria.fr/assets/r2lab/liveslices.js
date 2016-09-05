@@ -100,23 +100,24 @@ Click here to renew it!</a>';
               $('a').tooltip();
             }
           }
-          else {
-            sendMessage(slice_manage_invitation, 'attention');
-
-            s_message = "slice not available or does not exist";
-            s_class   = 'in_red';
-            s_icon = "<a href='#' rel='popover' title='"+s_message+"'>\
-                       <span class='glyphicon glyphicon-exclamation-sign "+s_class+"'></span>\
-                     </a>";
-            $(body).append("<div class='row'>\
-                              <div class='col-md-6 "+s_class+"'>"+value+"</div>\
-                              <div class='col-md-4' id='datetime_expiration_v"+index+"'>\
-                                <span class="+s_class+"><span>\
-                              </div>\
-                              <div class='col-md-2' id='icon_v_"+index+"'>"+s_icon+"</div>\
-                            </div>");
-              $('a').tooltip();
-          }
+          // This else will send messages when the slice is not attached in portal.onelab.eu or something went wrong (disable for now)
+          // else {
+          //   sendMessage(slice_manage_invitation, 'attention');
+          //
+          //   s_message = "slice not available or does not exist";
+          //   s_class   = 'in_red';
+          //   s_icon = "<a href='#' rel='popover' title='"+s_message+"'>\
+          //              <span class='glyphicon glyphicon-exclamation-sign "+s_class+"'></span>\
+          //            </a>";
+          //   $(body).append("<div class='row'>\
+          //                     <div class='col-md-6 "+s_class+"'>"+value+"</div>\
+          //                     <div class='col-md-4' id='datetime_expiration_v"+index+"'>\
+          //                       <span class="+s_class+"><span>\
+          //                     </div>\
+          //                     <div class='col-md-2' id='icon_v_"+index+"'>"+s_icon+"</div>\
+          //                   </div>");
+          //     $('a').tooltip();
+          // }
         }
 
       });
