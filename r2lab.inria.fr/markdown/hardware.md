@@ -187,7 +187,7 @@ tab: platform
       <div class="legend start"></div><div class="legend2">issue in start</div>
       <div class="legend load"></div><div class="legend2">issue in load</div>
       <div class="legend zombie"></div><div class="legend2">issue in shut off</div>
-      <div class="legend noissue"></div><div class="legend2">no issue</div>
+      <div class="legend noissue"></div><div class="legend2">no issues</div>
     </div>
   </div>
 
