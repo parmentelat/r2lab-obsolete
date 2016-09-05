@@ -21,14 +21,14 @@ def locate_credentials():
 def co_add_lease(slicename, valid_from, valid_until):
     credentials = locate_credentials()
     if not credentials:
-        print("cannot find credentials")
+        print("ERROR: cannot find credentials")
         exit(1)
     # the omf-sfa API
     omf_sfa_proxy = OmfSfaProxy("faraday.inria.fr", 12346,
                                 # the root certificate has the private key embedded
                                 credentials, None,
                                 "37nodes")
-    
+
     node_uuid = yield from omf_sfa_proxy.fetch_node_uuid()
     lease_request = {
         'name' : str(uuid.uuid1()),
@@ -37,17 +37,16 @@ def co_add_lease(slicename, valid_from, valid_until):
         'account_attributes' : { 'name' : slicename },
         'components' : [ {'uuid' : node_uuid } ],
     }
-        
-    print("-> omf_sfa POST request {}".format(lease_request))
+
+    print("INFO: omf_sfa POST request {}".format(lease_request))
     result = yield from omf_sfa_proxy.REST_as_json("leases", "POST", lease_request)
-    print("omf_sfa POST -> {}".format(result))
+    print("INFO: omf_sfa POST -> {}".format(result))
     return result
 
 
 beg, end = "2016-03-05T10:00:00Z", "2016-03-05T10:10:00Z"
-slice = "onelab.inria.r2lab.admin"
+slice = "onelab.inria.r2lab.nightly_routine"
 
 loop = asyncio.get_event_loop()
 js = loop.run_until_complete(co_add_lease(slice, beg, end))
-
 print(js)
