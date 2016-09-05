@@ -44,8 +44,8 @@ def co_add_lease(slicename, valid_from, valid_until):
     return result
 
 
-beg, end = "2016-03-05T10:00:00Z", "2016-03-05T10:10:00Z"
-slice = "onelab.inria.r2lab.nightly_routine"
+beg, end = "2016-08-08T10:00:00Z", "2016-08-08T11:00:00Z"
+slice = "onelab.inria.r2lab.nightly"
 
 loop = asyncio.get_event_loop()
 js = loop.run_until_complete(co_add_lease(slice, beg, end))
