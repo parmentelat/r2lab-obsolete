@@ -38,9 +38,6 @@ tutorial.
   <li role="presentation" class="">
     <a href="#A5" role="tab" id="A5-tab" data-toggle="tab" aria-controls="A5" aria-expanded="false">A5</a>
   </li>
-  <li role="presentation" class="">
-    <a href="#A6" role="tab" id="A6-tab" data-toggle="tab" aria-controls="A6" aria-expanded="false">A6 OAI</a>
-  </li>
 </ul>
 
 <div id="contents" class="tab-content">
@@ -148,26 +145,6 @@ tutorial.
     Download the <a href="/code/A5-ping.py" download target="_blank">A5 experiment</a> code
   </center>
 << codediff a5 A4-ping.py A5-ping.py >>
-</div>
-
-<!------------ A6 ------------>
-<div role="tabpanel" class="tab-pane fade" id="A6" aria-labelledby="profile-tab">
-  <br/>
-  In this experiment we repeat the A4 scenario, a simple wireless ping between 2 nodes, however, here the
-  wireless interface used <b>Open Air Interface</b> OAI.
-  <br/><br/>
-  The openair5GLAB@EURECOM provides truly open-source solutions for prototyping 5th Generation Mobile Networks
-  and devices.
-  You can check more details about <a href="http://openairinterface.eurecom.fr/openairinterface-software" target="_blank">OIA</a>.
-  <br/><br/>
-  For now, the nodes equipped with OAI interfaces are <code>11</code> and <code>23</code>. Then, in the code
-  you will find the nodes already setup.
-
-  <center>
-    <img src="/assets/img/A6.png" alt="a6"><br/>
-    Download the <a href="/code/A6-ping-OAI.py" download target="_blank">A6 experiment</a> code
-  </center>
-<< codediff a6 A6-ping-OAI.py >>
 </div>
 
 </div> <!-- end div contents -->
