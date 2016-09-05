@@ -364,7 +364,12 @@ function map () {
 	ssh root@$node "$@"
     done
 }
-doc-nodes map "run an ssh command on all selected nodes"
+
+function rmap () {
+    [ -z "$1" ] && { echo "usage: rmap command - runs command on $NODES with apssh"; return; }
+    apssh -t "$NODES" "$@"
+}
+doc-nodes rmap "run an ssh command on all selected nodes"
 
 alias rimages="rhubarbe images"
 doc-nodes rimages "display available images (rhubarbe images)"
@@ -441,16 +446,6 @@ alias cstatus="-curl status "$@" ; "
 doc-alt cstatus "show node CMC status - using curl"
 alias cinfo="-curl info "$@" ; "
 doc-alt cinfo "show node CMC info - using curl"
-
-# function 'wn' is part of the 'miscell' bash component
-function wait () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
-    for node in $(norm $nodes); do
-	wn $node
-    done
-}
-# don't document as it's probably not avail. to users - see rwait
-#doc-nodes wait "wait for all nodes to respond to ping on their control interface"
 
 ####################
 # reload these tools
