@@ -5,8 +5,20 @@
 import os.path
 import uuid
 import asyncio
-
+from argparse import ArgumentParser
 from rhubarbe.omfsfaproxy import OmfSfaProxy
+
+
+parser = ArgumentParser()
+parser.add_argument("-b", "--begin", dest="begin",
+                    help="Initial slice date time (Ex. 2016-10-10T10:00:00Z)")
+parser.add_argument("-e", "--end", dest="end",
+                    help="Final slice date time (Ex. 2016-10-10T10:00:00Z)")
+parser.add_argument("-s", "--slice", dest="slice", default="onelab.inria.r2lab.nightly",
+                    help="Slice name")
+args = parser.parse_args()
+
+
 
 def locate_credentials():
     locations = [
@@ -16,6 +28,8 @@ def locate_credentials():
     for location in locations:
         if os.path.exists(location):
             return location
+
+
 
 @asyncio.coroutine
 def co_add_lease(slicename, valid_from, valid_until):
@@ -44,9 +58,24 @@ def co_add_lease(slicename, valid_from, valid_until):
     return result
 
 
-beg, end = "2016-08-08T10:00:00Z", "2016-08-08T11:00:00Z"
-slice = "onelab.inria.r2lab.nightly"
 
-loop = asyncio.get_event_loop()
-js = loop.run_until_complete(co_add_lease(slice, beg, end))
-print(js)
+def main(args):
+    """
+    """
+    begin = args.begin
+    end   = args.end
+    slice = args.slice
+
+    if (begin is None or end is None or slice is None):
+        print("ERROR: slice name, begin and final date must be present.")
+        exit()
+    else:
+        print("INFO: slice {} starting at: {}, and finishing at: {}.".format(slice, begin,end))
+        loop = asyncio.get_event_loop()
+        js = loop.run_until_complete(co_add_lease(slice, begin, end))
+        # print(js)
+
+
+
+if __name__ == '__main__':
+    exit(main(args))
