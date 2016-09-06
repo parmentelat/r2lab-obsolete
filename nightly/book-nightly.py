@@ -78,8 +78,6 @@ def main(args):
     end   = args.end
     slice = args.slice
 
-    print(format_date(begin))
-
     if (begin is None or end is None or slice is None):
         print("ERROR: slice name, begin and final date must be present.")
         exit()
