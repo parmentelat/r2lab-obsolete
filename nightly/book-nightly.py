@@ -7,6 +7,8 @@ import uuid
 import asyncio
 from argparse import ArgumentParser
 from rhubarbe.omfsfaproxy import OmfSfaProxy
+from datetime import datetime
+import time
 
 
 parser = ArgumentParser()
@@ -59,12 +61,24 @@ def co_add_lease(slicename, valid_from, valid_until):
 
 
 
+def format_date(val=None):
+    """ current date (2016-09-05T15:29:18Z)
+    """
+    if val is None:
+        return datetime.now().strftime("%Y-%m-%d %H:%M")
+    else:
+        return str(datetime.strptime(val, "%Y-%m-%d %H:%M").date())
+
+
+
 def main(args):
     """
     """
     begin = args.begin
     end   = args.end
     slice = args.slice
+
+    print(format_date(begin))
 
     if (begin is None or end is None or slice is None):
         print("ERROR: slice name, begin and final date must be present.")
