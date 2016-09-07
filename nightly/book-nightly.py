@@ -102,22 +102,21 @@ def intersections(weekday, start_date=None, end_date=None):
 def main(args):
     """
     """
-    paris = timezone('Europe/Paris')
     period_begin = args.period[0]
     period_end   = args.period[1]
     slice        = args.slice
 
     if period_begin is None:
-        period_begin = datetime(datetime.today().year,  1, 1, tzinfo=paris)
+        period_begin = datetime(datetime.today().year,  1, 1, tzinfo=gmt1)
     else:
         yyyy, mm, dd = period_begin.split('-')
-        period_begin = datetime(int(yyyy), int(mm), int(dd), tzinfo=paris)
+        period_begin = datetime(int(yyyy), int(mm), int(dd))
 
     if period_end is None:
-        period_end   = datetime(datetime.today().year, 12, 31, tzinfo=paris)
+        period_end   = datetime(datetime.today().year, 12, 31)
     else:
         yyyy, mm, dd = period_end.split('-')
-        period_end   = datetime(int(yyyy), int(mm), int(dd), tzinfo=paris)
+        period_end   = datetime(int(yyyy), int(mm), int(dd))
 
     WEDNESDAY = 3
     SUNDAY    = 7
@@ -133,7 +132,7 @@ def main(args):
             slice_end = slice_beg  + timedelta(hours=1)
             #the book happens here
             loop = asyncio.get_event_loop()
-            js = loop.run_until_complete(co_add_lease(slice, str(slice_beg), str(slice_end)))
+            js = loop.run_until_complete(co_add_lease(slice, str(slice_beg.isoformat()), str(slice_end.isoformat())))
 
         print("INFO: {} slices {} between {} and {} were added.".format(len(wed_occurrences+sun_occurrences),slice, format_date(period_begin), format_date(period_end)))
 
