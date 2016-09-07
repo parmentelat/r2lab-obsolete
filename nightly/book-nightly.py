@@ -128,8 +128,8 @@ def main(args):
         wed_occurrences = intersections(WEDNESDAY, period_begin, period_end)
         sun_occurrences = intersections(SUNDAY   , period_begin, period_end)
         for occurrence in wed_occurrences + sun_occurrences:
-            slice_beg = occurrence + timedelta(hours=2)
-            slice_end = slice_beg  + timedelta(hours=1)
+            slice_beg = occurrence.replace(hour=3, minute=00)
+            slice_end = occurrence.replace(hour=4, minute=00)
             #the book happens here
             loop = asyncio.get_event_loop()
             js = loop.run_until_complete(co_add_lease(slice, str(slice_beg.isoformat()), str(slice_end.isoformat())))
