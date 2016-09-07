@@ -27,6 +27,8 @@ parser.add_argument("-p", "--period", dest="period", nargs=2, type=str, default=
                     help="Each WED and SUN between a given period")
 parser.add_argument("-s", "--slice", dest="slice", default="onelab.inria.r2lab.nightly",
                     help="Slice name")
+parser.add_argument("--DEBUG", dest="debug", action='store_true',
+                    help="Slice name")
 
 args = parser.parse_args()
 
@@ -64,9 +66,11 @@ def co_add_lease(slicename, valid_from, valid_until):
         'components' : [ {'uuid' : node_uuid } ],
     }
 
-    print("INFO: omf_sfa POST request {}".format(lease_request))
+    if(args.debug):
+        print("INFO: omf_sfa POST request {}".format(lease_request))
     result = yield from omf_sfa_proxy.REST_as_json("leases", "POST", lease_request)
-    print("INFO: omf_sfa POST -> {}".format(result))
+    if(args.debug):
+        print("INFO: omf_sfa POST -> {}".format(result))
     return result
 
 
@@ -105,6 +109,7 @@ def main(args):
     period_begin = args.period[0]
     period_end   = args.period[1]
     slice        = args.slice
+    debug        = args.debug
 
     if period_begin is None:
         period_begin = datetime(datetime.today().year,  1, 1, tzinfo=pytz.timezone('utc'))
@@ -130,12 +135,11 @@ def main(args):
         for occurrence in wed_occurrences + sun_occurrences:
             slice_beg = occurrence.replace(hour=1, minute=00)
             slice_end = occurrence.replace(hour=1, minute=00)
-            slice_beg = slice_beg.astimezone()
-            print(slice_beg)
-            # print(slice_beg.isoformat())
             #the book happens here
             loop = asyncio.get_event_loop()
             js = loop.run_until_complete(co_add_lease(slice, str(slice_beg.isoformat()), str(slice_end.isoformat())))
+            if(args.debug):
+                print(js)
 
         print("INFO: {} slices {} between {} and {} were added.".format(len(wed_occurrences+sun_occurrences),slice, format_date(period_begin), format_date(period_end)))
 
