@@ -64,9 +64,9 @@ def co_add_lease(slicename, valid_from, valid_until):
         'components' : [ {'uuid' : node_uuid } ],
     }
 
-    # print("INFO: omf_sfa POST request {}".format(lease_request))
+    print("INFO: omf_sfa POST request {}".format(lease_request))
     result = yield from omf_sfa_proxy.REST_as_json("leases", "POST", lease_request)
-    # print("INFO: omf_sfa POST -> {}".format(result))
+    print("INFO: omf_sfa POST -> {}".format(result))
     return result
 
 
