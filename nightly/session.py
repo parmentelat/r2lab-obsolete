@@ -118,7 +118,8 @@ def main(args):
 
 
 def fetch_user():
-    """ identify the logged user
+    """
+    identify the logged user
     """
     command = 'whoami'
     ans_cmd = run(command)
@@ -156,12 +157,20 @@ def beautify_list_os(options):
         data = chunkify(options_dir,items_per_col)
         col_width = max(len(word)+left_blank for row in data for word in row) + 3
         print('')
-        for row in chunkify(options_prefer,4):
-            print("".join("{}: ".format( str(options_prefer.index(word)+1).rjust(left_blank, ' ') if (options_prefer.index(word) < 1000)  else options_prefer.index(word)+1 ) + word.ljust(col_width) for word in row))
+        # always insert a space after a comma in a function call
+        for row in chunkify(options_prefer, 4):
+            # keep the line length rasonable
+            print("".join("{}: ".format(str(options_prefer.index(word)+1).rjust(left_blank, ' ')
+                                        if (options_prefer.index(word) < 1000)
+                                        else options_prefer.index(word)+1 ) + word.ljust(col_width)
+                          for word in row))
 
         print('')
         for row in data:
-            print("".join("{}: ".format( str(options_all.index(word)+1).rjust(left_blank, ' ') if (options_all.index(word) < 1000)  else options_all.index(word)+1 ) + word.ljust(col_width) for word in row))
+            print("".join("{}: ".format(str(options_all.index(word)+1).rjust(left_blank, ' ')
+                                        if (options_all.index(word) < 1000)
+                                        else options_all.index(word)+1 ) + word.ljust(col_width)
+                          for word in row))
         print('')
     else:
         print('')
@@ -235,7 +244,9 @@ def check_os(node):
 
         choice = True
         while(choice):
-            print('WARNING: could not detect automatically the image for node #{}. Please, input the corresponding number for it based on the list above.'.format(node))
+            # you can have several contiguous strings in the source code, they get collapsed into a single one
+            print('WARNING: could not detect automatically the image for node #{}. '
+                  'Please, input the corresponding number for it based on the list above.'.format(node))
             opt = ask_for_os([node])
             try:
                 choice = False
