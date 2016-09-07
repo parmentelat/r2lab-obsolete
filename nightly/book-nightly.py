@@ -132,7 +132,7 @@ def main(args):
             slice_end = slice_beg  + timedelta(hours=1)
             #the book happens here
             loop = asyncio.get_event_loop()
-            js = loop.run_until_complete(co_add_lease(slice, slice_beg, slice_end))
+            js = loop.run_until_complete(co_add_lease(slice, str(slice_beg), str(slice_end)))
 
         print("INFO: {} slices {} between {} and {} were added.".format(len(wed_occurrences+sun_occurrences),slice, format_date(period_begin), format_date(period_end)))
 
