@@ -28,7 +28,7 @@ parser.add_argument("-p", "--period", dest="period", nargs=2, type=str, default=
 parser.add_argument("-s", "--slice", dest="slice", default="onelab.inria.r2lab.nightly",
                     help="Slice name")
 parser.add_argument("--DEBUG", dest="debug", action='store_true',
-                    help="Slice name")
+                    help="Enable debug messages")
 
 args = parser.parse_args()
 

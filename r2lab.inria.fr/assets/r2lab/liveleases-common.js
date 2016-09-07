@@ -279,16 +279,16 @@ function getCurrentLeases(){
 function setNightlyAndPast(){
   var notAllowedEvents = []
   //Nightly routine fixed in each nigth from 3AM to 5PM
-  newEvent = new Object();
-  newEvent.title = "nightly routine";
-  newEvent.id = "nightly";
-  newEvent.start = " T03:00:00Z";
-  newEvent.end   = " T04:00:00Z";
-  newEvent.color = "#616161";
-  newEvent.overlap = false;
-  newEvent.editable = false;
-  newEvent.dow = [0,1,2,3,4,5,6,7,8];
-  notAllowedEvents.push(newEvent);
+  // newEvent = new Object();
+  // newEvent.title = "nightly routine";
+  // newEvent.id = "nightly";
+  // newEvent.start = " T03:00:00Z";
+  // newEvent.end   = " T04:00:00Z";
+  // newEvent.color = "#616161";
+  // newEvent.overlap = false;
+  // newEvent.editable = false;
+  // newEvent.dow = [0,1,2,3,4,5,6,7,8];
+  // notAllowedEvents.push(newEvent);
 
   //Past dates
   newEvent = new Object();
@@ -641,7 +641,7 @@ function buildInitialSlicesBox(leases){
   $.each(leases, function(key,val){
     val = shortName(val);
     var color = getColorLease(val);
-    if ($.inArray(val, knew_slices) === -1) { //already present?
+    if ($.inArray(val, knew_slices) === -1 && val != 'inria.r2lab.nightly' ) { //removgin nightly routine and slices already present?
       if (isMySlice(val)) {
         if(val === getCurrentSliceName()){
           setCurrentSliceColor(color);
@@ -722,6 +722,14 @@ function parseLeases(data){
       newLease.color = getColorLease(newLease.title);
       newLease.editable = isMySlice(newLease.title);
       newLease.overlap = false;
+
+      //HARD CODE TO SET SPECIAL ATTR to nightly routine
+      if(newLease.title == 'inria.r2lab.nightly')
+        newLease.title = "nightly routine";
+        newLease.color = "#616161";
+        newLease.uuid = '';
+        newLease.overlap = false;
+        newLease.editable = false;
 
       if(isZombie(v)){
         theZombieLeases.push(newLease);
