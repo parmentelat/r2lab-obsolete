@@ -109,11 +109,14 @@ def main(args):
     if period_begin is None:
         period_begin = datetime(datetime.today().year,  1, 1 )
     else:
-        period_begin = datetime.strptime(period_begin, '%Y-%m-%d')
+        yyyy, mm, dd = period_end.split('-')
+        period_begin = datetime(int(yyyy), int(mm), int(dd))
+
     if period_end is None:
         period_end   = datetime(datetime.today().year, 12, 31)
     else:
-        period_end   = datetime.strptime(period_end, '%Y-%m-%d')
+        yyyy, mm, dd = period_end.split('-')
+        period_end   = datetime(int(yyyy), int(mm), int(dd))
 
     WEDNESDAY = 3
     SUNDAY    = 7
