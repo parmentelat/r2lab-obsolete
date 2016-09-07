@@ -20,7 +20,7 @@ from rhubarbe.omfsfaproxy import OmfSfaProxy
 from datetime import datetime, timedelta
 import time
 from itertools import islice
-from pytz import timezone
+import pytz
 
 parser = ArgumentParser()
 parser.add_argument("-p", "--period", dest="period", nargs=2, type=str, default=[None,None],
@@ -107,16 +107,16 @@ def main(args):
     slice        = args.slice
 
     if period_begin is None:
-        period_begin = datetime(datetime.today().year,  1, 1)
+        period_begin = datetime(datetime.today().year,  1, 1, tzinfo=pytz.timezone('utc'))
     else:
         yyyy, mm, dd = period_begin.split('-')
-        period_begin = datetime(int(yyyy), int(mm), int(dd))
+        period_begin = datetime(int(yyyy), int(mm), int(dd), tzinfo=pytz.timezone('utc'))
 
     if period_end is None:
-        period_end   = datetime(datetime.today().year, 12, 31)
+        period_end   = datetime(datetime.today().year, 12, 31, tzinfo=pytz.timezone('utc'))
     else:
         yyyy, mm, dd = period_end.split('-')
-        period_end   = datetime(int(yyyy), int(mm), int(dd))
+        period_end   = datetime(int(yyyy), int(mm), int(dd), tzinfo=pytz.timezone('utc'))
 
     WEDNESDAY = 3
     SUNDAY    = 7
@@ -128,8 +128,11 @@ def main(args):
         wed_occurrences = intersections(WEDNESDAY, period_begin, period_end)
         sun_occurrences = intersections(SUNDAY   , period_begin, period_end)
         for occurrence in wed_occurrences + sun_occurrences:
-            slice_beg = occurrence.replace(hour=3, minute=00)
-            slice_end = occurrence.replace(hour=4, minute=00)
+            slice_beg = occurrence.replace(hour=1, minute=00)
+            slice_end = occurrence.replace(hour=1, minute=00)
+            slice_beg = slice_beg.astimezone()
+            print(slice_beg)
+            # print(slice_beg.isoformat())
             #the book happens here
             loop = asyncio.get_event_loop()
             js = loop.run_until_complete(co_add_lease(slice, str(slice_beg.isoformat()), str(slice_end.isoformat())))
