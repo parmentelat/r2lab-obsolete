@@ -109,7 +109,7 @@ def main(args):
     if period_begin is None:
         period_begin = datetime(datetime.today().year,  1, 1 )
     else:
-        yyyy, mm, dd = period_end.split('-')
+        yyyy, mm, dd = period_begin.split('-')
         period_begin = datetime(int(yyyy), int(mm), int(dd))
 
     if period_end is None:
@@ -134,7 +134,7 @@ def main(args):
             loop = asyncio.get_event_loop()
             js = loop.run_until_complete(co_add_lease(slice, slice_beg, slice_end))
 
-        print("INFO: slices {} between {}, and {} were added.".format(slice, format_date(period_begin), format_date(period_end)))
+        print("INFO: {} slices {} between {} and {} were added.".format(len(wed_occurrences+sun_occurrences),slice, format_date(period_begin), format_date(period_end)))
 
 
 
