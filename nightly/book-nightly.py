@@ -107,7 +107,7 @@ def main(args):
     slice        = args.slice
 
     if period_begin is None:
-        period_begin = datetime(datetime.today().year,  1, 1, tzinfo=gmt1)
+        period_begin = datetime(datetime.today().year,  1, 1)
     else:
         yyyy, mm, dd = period_begin.split('-')
         period_begin = datetime(int(yyyy), int(mm), int(dd))
@@ -128,7 +128,7 @@ def main(args):
         wed_occurrences = intersections(WEDNESDAY, period_begin, period_end)
         sun_occurrences = intersections(SUNDAY   , period_begin, period_end)
         for occurrence in wed_occurrences + sun_occurrences:
-            slice_beg = occurrence + timedelta(hours=3)
+            slice_beg = occurrence + timedelta(hours=2)
             slice_end = slice_beg  + timedelta(hours=1)
             #the book happens here
             loop = asyncio.get_event_loop()
