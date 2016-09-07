@@ -77,8 +77,7 @@ def format_date(val=None):
     if val is None:
         return str(datetime.now().strftime("%Y-%m-%d"))
     else:
-        print('ta')
-        return str(datetime.strptime(val, "%Y-%m-%d").date())
+        return str(datetime.strftime(val, "%Y-%m-%d"))
 
 
 
@@ -109,8 +108,12 @@ def main(args):
 
     if period_begin is None:
         period_begin = datetime(datetime.today().year,  1, 1 )
+    else:
+        period_begin = datetime.strptime(period_begin, '%Y-%m-%d')
     if period_end is None:
         period_end   = datetime(datetime.today().year, 12, 31)
+    else:
+        period_end   = datetime.strptime(period_end, '%Y-%m-%d')
 
     WEDNESDAY = 3
     SUNDAY    = 7
@@ -124,9 +127,9 @@ def main(args):
         for occurrence in wed_occurrences + sun_occurrences:
             slice_beg = occurrence + timedelta(hours=3)
             slice_end = slice_beg  + timedelta(hours=1)
-
-            # loop = asyncio.get_event_loop()
-            # js = loop.run_until_complete(co_add_lease(slice, slice_beg, slice_end))
+            #the book happens here
+            loop = asyncio.get_event_loop()
+            js = loop.run_until_complete(co_add_lease(slice, slice_beg, slice_end))
 
         print("INFO: slices {} between {}, and {} were added.".format(slice, format_date(period_begin), format_date(period_end)))
 
