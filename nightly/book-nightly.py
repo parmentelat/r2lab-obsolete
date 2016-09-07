@@ -20,7 +20,7 @@ from rhubarbe.omfsfaproxy import OmfSfaProxy
 from datetime import datetime, timedelta
 import time
 from itertools import islice
-
+from pytz import timezone
 
 parser = ArgumentParser()
 parser.add_argument("-p", "--period", dest="period", nargs=2, type=str, default=[None,None],
@@ -102,21 +102,22 @@ def intersections(weekday, start_date=None, end_date=None):
 def main(args):
     """
     """
+    paris = timezone('Europe/Paris')
     period_begin = args.period[0]
     period_end   = args.period[1]
     slice        = args.slice
 
     if period_begin is None:
-        period_begin = datetime(datetime.today().year,  1, 1 )
+        period_begin = datetime(datetime.today().year,  1, 1, tzinfo=paris)
     else:
         yyyy, mm, dd = period_begin.split('-')
-        period_begin = datetime(int(yyyy), int(mm), int(dd))
+        period_begin = datetime(int(yyyy), int(mm), int(dd), tzinfo=paris)
 
     if period_end is None:
-        period_end   = datetime(datetime.today().year, 12, 31)
+        period_end   = datetime(datetime.today().year, 12, 31, tzinfo=paris)
     else:
         yyyy, mm, dd = period_end.split('-')
-        period_end   = datetime(int(yyyy), int(mm), int(dd))
+        period_end   = datetime(int(yyyy), int(mm), int(dd), tzinfo=paris)
 
     WEDNESDAY = 3
     SUNDAY    = 7
