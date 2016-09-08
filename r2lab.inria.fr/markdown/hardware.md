@@ -89,12 +89,30 @@ tab: platform
 </div>
 
 <div class="row">
-  <div class="col-md-12">
-    <h3>Historical of issues</h3>
-      Summarized below are the results of our nightly monitoring routine which help us identify issues and keep r2lab healthy. The graphs bring the information about issues found along the days from Jan/16.
+  <div class="col-md-8">
+    <h3>Nexus Phone</h3>
+    A nexus phone is available right inside the chamber. 
+    <ul>
+      <li> It is reachable through a Mac (that also sits in the room) that has its wireless card physically disabled, and that has a USB cable to the phone</li>
+      <li> The Mac can be reached from the gateway as `ssh tester@macusb`
+      <li> Once logged in the Mac you can use convenience helpers to manage the phone (type `help` for details), or use `adb` manually.
+      <li> The mac can also be managed using apple screen sharing tools (VNC-compliant).
+    </ul>
+  </div>
+  <div class="col-md-4">
+    <br><br>
+    <img src="/assets/img/macusb.png" width="300px">
+    <center>Fig. 3 - Commercial phone</center>
   </div>
 </div>
 
+****
+****
+
+### Statistics on nodes health</h3>
+
+The testbed routinely runs a thorough raincheck procedure.
+      Historically, this was performed every night during the early stages; maturity is now such that we feel comfortable to run it only twice a week ([see the booking page for details](/book.md)). In any case,   Summarized below are the results of our nightly monitoring routine which help us identify issues and keep r2lab healthy. The graphs bring the information about issues found along the days from Jan/16.
 
 <script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
