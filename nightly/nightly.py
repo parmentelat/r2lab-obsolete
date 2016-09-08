@@ -15,13 +15,12 @@ import time
 import sys
 import re
 import json
-
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
 
 parser = ArgumentParser()
-parser.add_argument("-N", "--nodes", dest="nodes",
+parser.add_argument("-N", "--nodes", dest="nodes", default="all",
                     help="Comma separated list of nodes")
 parser.add_argument("-a", "--avoid", dest="avoid_nodes",
                     help="Comma separated list of nodes to avoid")
@@ -31,13 +30,14 @@ parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
                     help="Directory to save text file")
 parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="send_to_email",
                     help="Email to receive the execution results")
-
+parser.add_argument("-d", "--days", dest="days", default=['wed','sun'],
+                    help="Comma separated list of weekday to run")
 args = parser.parse_args()
 
 
 send_to_email   = args.send_to_email
 SEND_RESULTS_TO = [str(send_to_email)] #default in args send_to_email: fit-r2lab-users@inria.fr
-
+weekday_stat    = "sunday"
 phases          = {}
 
 
@@ -46,11 +46,20 @@ phases          = {}
 def main(args):
     """ Execute the load for all nodes in Faraday. """
 
+    # in function of the given days it will or not skip run
+    # and empty list will run always
+    days        = args.days if type(args.days) is list else args.days.split(',')
+    days        = list(map(lambda x: x.lower(), days))
+
     nodes       = args.nodes
     version     = args.version
     avoid_nodes = args.avoid_nodes
     nodes       = format_nodes(nodes, avoid_nodes)
     all_nodes   = name_node(nodes)
+
+    if not should_i_run(days):
+        print "-- INFO: none of the informed days match with the current. Let's skip and exit..."
+        exit(0)
 
     for node in nodes:
         create_phases_db(node)
@@ -162,6 +171,22 @@ def main(args):
 
     print "-- INFO: end of main"
     print "-- INFO: {}".format(now())
+
+
+
+
+def should_i_run(days):
+    """ check if the current day matches the list of days to decide or not run """
+    from datetime import date
+    import calendar
+    today = date.today()
+    # will run by default
+    if days is None or not days:
+        return True
+    #once a weekday is given, lets check is is the current one
+    else:
+        week_day = calendar.day_abbr[today.weekday()]
+        return week_day.lower() in days
 
 
 
@@ -377,7 +402,7 @@ def email_body():
     		</table>\n \
             {}\n \
       </body>\n \
-    </html>'.format(get_statistic())
+    </html>'.format(get_statistic(weekday_stat))
     return body
 
 
@@ -710,7 +735,7 @@ def date(format='%Y-%m-%d'):
 
 
 def historic_file_in_array():
-    """read db file from nigthly and put in array format. Returns ['2016-01-22: 27, 09, 29', '2016-01-23: 27',...] """
+    """read db file from nightly and put in array format. Returns ['2016-01-22: 27, 09, 29', '2016-01-23: 27',...] """
     dir_name  = "/root/r2lab/nightly/"
     file_name = "nightly.txt"
     with open(dir_name+file_name) as f:
@@ -721,7 +746,7 @@ def historic_file_in_array():
 
 
 def treat_historic_file(data):
-    """split in single array the dates and nodes from the nigthly file. Data must be ['2016-01-22: 27, 09, 29', '2016-01-23: 27',...] """
+    """split in single array the dates and nodes from the nightly file. Data must be ['2016-01-22: 27, 09, 29', '2016-01-23: 27',...] """
     chars_to_remove = [':', ',']
     #all dates summarized iin one array
     date = []
@@ -798,15 +823,15 @@ def generate_graph(data_nodes, nodes=None):
 
 
 
-def get_statistic():
-    """ get the graph each monday  """
+def get_statistic(the_day="monday"):
+    """ get the graph each given weekday  """
     from datetime import date
     import calendar
     graph = ''
 
     today = date.today()
     week_day = calendar.day_name[today.weekday()]
-    if week_day.lower() == 'monday':
+    if week_day.lower() == the_day.lower():
         h = historic_file_in_array()
         d = treat_historic_file(h)
         graph = generate_graph(d)
