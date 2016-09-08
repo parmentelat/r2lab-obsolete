@@ -126,16 +126,16 @@ def main():
     days         = args.days if type(args.days) is list else args.days.split(',')
 
     if period_begin is None:
-        period_begin = datetime(datetime.today().year,  1, 1, tzinfo=pytz.timezone('utc'))
+        period_begin = datetime(datetime.today().year,  1, 1)
     else:
         yyyy, mm, dd = period_begin.split('-')
-        period_begin = datetime(int(yyyy), int(mm), int(dd), tzinfo=pytz.timezone('utc'))
+        period_begin = datetime(int(yyyy), int(mm), int(dd))
 
     if period_end is None:
-        period_end   = datetime(datetime.today().year, 12, 31, tzinfo=pytz.timezone('utc'))
+        period_end   = datetime(datetime.today().year, 12, 31)
     else:
         yyyy, mm, dd = period_end.split('-')
-        period_end   = datetime(int(yyyy), int(mm), int(dd), tzinfo=pytz.timezone('utc'))
+        period_end   = datetime(int(yyyy), int(mm), int(dd))
 
     if (period_begin is None or period_end is None or slice is None):
         print("ERROR: slice name, begin and final date must be present.")
@@ -149,8 +149,8 @@ def main():
             day_occurrences.append(intersections(map_day(day.lower()), period_begin, period_end))
         all_occurrences = sum(day_occurrences, [])
         for occurrence in all_occurrences:
-            slice_beg = occurrence.replace(hour=1, minute=00) # will be schedule at 3AM
-            slice_end = occurrence.replace(hour=2, minute=00) # one hour more from 3AM to reach 4AM
+            slice_beg = occurrence.replace(hour=3, minute=00) # will be schedule at 3AM
+            slice_end = occurrence.replace(hour=4, minute=00) # will be schedule at 4AM
             #the book happens from here
             loop = asyncio.get_event_loop()
             js = loop.run_until_complete(co_add_lease(slice, str(slice_beg.isoformat()), str(slice_end.isoformat()), debug))
