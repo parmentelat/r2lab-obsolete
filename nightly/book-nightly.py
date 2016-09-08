@@ -82,7 +82,7 @@ def map_day(day):
     except Exception as e:
         print("ERROR: day not found. Exiting.")
         exit()
-    return idx + 1
+    return idx
 
 
 
@@ -96,7 +96,7 @@ def intersections(weekday, start_date=None, end_date=None):
     else:
         date = start_date
     while date.strftime('%F%H%M%S') <= end_date.strftime('%F%H%M%S'):
-        if date.isoweekday() == weekday:
+        if date.weekday() == weekday:
             dates.append(date)
         date += timedelta(days=1)
 
