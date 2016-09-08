@@ -150,7 +150,7 @@ def main():
         all_occurrences = sum(day_occurrences, [])
         for occurrence in all_occurrences:
             slice_beg = occurrence.replace(hour=1, minute=00) # will be schedule at 3AM
-            slice_end = occurrence.replace(hour=1, minute=00) # one hour more from 3AM to reach 4AM
+            slice_end = occurrence.replace(hour=2, minute=00) # one hour more from 3AM to reach 4AM
             #the book happens from here
             loop = asyncio.get_event_loop()
             js = loop.run_until_complete(co_add_lease(slice, str(slice_beg.isoformat()), str(slice_end.isoformat()), debug))
