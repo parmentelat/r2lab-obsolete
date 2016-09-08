@@ -110,7 +110,7 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("-p", "--period", dest="period", nargs=2, type=str, default=[None,None],
                         help="Each WED and SUN between a given period")
-    parser.add_argument("-d", "--days", dest="days", default=['wed','sun'],
+    parser.add_argument("-d", "--days", dest="days", default=["mon","tue","wed","thu","fri","sat","sun"],
                         help="Comma separated list of week days to match between the given period")
     parser.add_argument("-s", "--slice", dest="slice", default="onelab.inria.r2lab.nightly",
                         help="Slice name")
