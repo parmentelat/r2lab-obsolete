@@ -30,8 +30,8 @@ parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
                     help="Directory to save text file")
 parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="send_to_email",
                     help="Email to receive the execution results")
-parser.add_argument("-d", "--days", dest="days", default=['wed','sun'],
-                    help="Comma separated list of weekday to run")
+#parser.add_argument("-d", "--days", dest="days", default=['wed','sun'],
+#                    help="Comma separated list of weekday to run")
 args = parser.parse_args()
 
 
@@ -46,10 +46,10 @@ phases          = {}
 def main(args):
     """ Execute the load for all nodes in Faraday. """
 
-    # in function of the given days it will or not skip run
-    # and empty list will run always
-    days        = args.days if type(args.days) is list else args.days.split(',')
-    days        = list(map(lambda x: x.lower(), days))
+    # # in function of the given days it will or not skip run
+    # # and empty list will run always
+    # days        = args.days if type(args.days) is list else args.days.split(',')
+    # days        = list(map(lambda x: x.lower(), days))
 
     nodes       = args.nodes
     version     = args.version
@@ -57,9 +57,9 @@ def main(args):
     nodes       = format_nodes(nodes, avoid_nodes)
     all_nodes   = name_node(nodes)
 
-    if not should_i_run(days):
-        print "-- INFO: none of the informed days match with the current. Let's skip and exit..."
-        exit(0)
+    # if not should_i_run(days):
+    #     print "-- INFO: none of the informed days match with the current. Let's skip and exit..."
+    #     exit(0)
 
     for node in nodes:
         create_phases_db(node)
