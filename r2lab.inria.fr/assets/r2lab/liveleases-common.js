@@ -12,9 +12,10 @@ var color_removing      = '#000000';
 var keepOldEvent        = null;
 var theZombieLeases     = [];
 var socket              = io.connect("http://r2lab.inria.fr:443");
-var version             = '1.34';
+var version             = '1.35';
 var refresh             = true;
 var currentTimezone     = 'local';
+var nigthly_slice_name  = 'inria.r2lab.nightly'
 
 var liveleases_debug = true;
 
@@ -723,13 +724,14 @@ function parseLeases(data){
       newLease.editable = isMySlice(newLease.title);
       newLease.overlap = false;
 
-      //HARD CODE TO SET SPECIAL ATTR to nightly routine
-      if(newLease.title == 'inria.r2lab.nightly')
+      // //HARD CODE TO SET SPECIAL ATTR to nightly routine
+      if(newLease.title == nigthly_slice_name){
         newLease.title = "nightly routine";
         newLease.color = "#616161";
         newLease.uuid = '';
         newLease.overlap = false;
         newLease.editable = false;
+      }
 
       if(isZombie(v)){
         theZombieLeases.push(newLease);
