@@ -2,7 +2,8 @@ title: Hardware
 tab: platform
 ---
 
-**Thirty-seven** nodes are available in R2lab to provide a modern testbed infra structure. The nodes are distributed in a grid layout and are customizable, allowing great variety of experimentation scenarios.
+**Thirty-seven** nodes are available in R2lab to provide a modern testbed infra structure.
+The nodes are distributed in a grid layout and are customizable, allowing great variety of experimentation scenarios.
 
 <h2 class="text-center" style="color:green;" >
   Full control and access to bare metal
@@ -13,32 +14,37 @@ tab: platform
   <br>
 </h2>
 
-<hr class="featurette-divider">
+*****
 
 <div class="row">
   <div class="col-md-4">
-  	<span>
-  		<h3>The node is yours</h3>
-  	</span>
-		This implies that you can run, reboot, load, and reload disparate operating system in each node. A full access to the node is handled by a remote access and a root user is available during your experimentation.
+    <span>
+      <h3>The node is yours</h3>
+    </span>
+    This implies that you can run, reboot, load, and reload disparate
+    operating system in each node. A full access to the node is handled by
+    a remote access and a root user is available during your
+    experimentation.
   </div>
   <div class="col-md-4">
     <span>
       <h3>Node details</h3>
     </span>
-    Our anechoic chamber is equipped with powerful nodes that can run high-level OS Linux. They can run many applications and advanced experimentations.
+    Our anechoic chamber is equipped with powerful nodes that can run high-level OS Linux.
+    They can run many applications and advanced experimentations.
   </div>
   <div class="col-md-4">
-  	<span>
-  		<h3>Gateway connection</h3>
-  	</span>
-		R2lab offers a connection to the testbed infrastructure through a gateway access which allows the researchers to control each reserved node.
+    <span>
+      <h3>Gateway connection</h3>
+    </span>
+    R2lab offers a connection to the testbed infrastructure through a gateway access
+    which allows the researchers to control each reserved node.
   </div>
 </div>
 
-<hr>
+*****
 
-<div class="row">
+<div class="row" markdown="1">
   <div class="col-md-8">
     <h3>All nodes</h3>
     All 37 nodes are based on <a href="http://nitlab.inf.uth.gr/NITlab/" target="_blank">Nitos X50</a> and feature
@@ -67,52 +73,60 @@ tab: platform
   <div class="col-md-4">
     <br>
     <img src="/assets/img/node_interface_3.png" width="300px">
-    <center>Fig. 1 - Resource/Node Icarus</center>
+    <center>Fig. 1 - Icarus Nodes in the testbed</center>
   </div>
 </div>
 
-<div class="row">
+<div class="row" markdown="1">
   <div class="col-md-8">
-    <h3>USRP nodes</h3>
-    Some nodes are equipped with USRP extensions, for SDR-based experiments&nbsp;:
-    <ul>
-      <li>Based on  <a href="http://www.ettus.com/product/details/UN210-KIT" target="_blank">USRP N210</a>, or on <a href="http://www.ettus.com/product/details/UB210-KIT" target="_blank">USRP B210</a>, featuring USRP2 and USRP1, both models from <a href="http://www.ettus.com" target="_blank">ETTUS</a></li>
-      <li>Remote-controllable for reset-like operations</li>
-      <li>Current deployment: 4 nodes - target: 10 nodes</li>
-    </ul>
+### USRP nodes
+
+Some nodes are equipped with USRP extensions, for SDR-based experiments&nbsp;:
+
+* Based on  [USRP N210](http://www.ettus.com/product/details/UN210-KIT),
+  or on [USRP B210](http://www.ettus.com/product/details/UB210-KIT),
+  as well as some older USRP2 and USRP1, all models from [ETTUS](http://www.ettus.com)
+* Remote-controllable for reset-like operations
+* Current deployment: 4 nodes - target: 10 nodes
   </div>
   <div class="col-md-4">
     <br><br>
     <img src="/assets/img/icarus6i.png" width="300px">
-    <center>Fig. 2 - Resource/Node Icarus</center>
+    <center>Fig. 2 - Icarus node standalone</center>
   </div>
 </div>
 
-<div class="row">
+<div class="row" markdown="1">
   <div class="col-md-8">
-    <h3>Nexus Phone</h3>
-    A nexus phone is available right inside the chamber. 
-    <ul>
-      <li> It is reachable through a Mac (that also sits in the room) that has its wireless card physically disabled, and that has a USB cable to the phone</li>
-      <li> The Mac can be reached from the gateway as `ssh tester@macusb`
-      <li> Once logged in the Mac you can use convenience helpers to manage the phone (type `help` for details), or use `adb` manually.
-      <li> The mac can also be managed using apple screen sharing tools (VNC-compliant).
-    </ul>
+
+### Nexus Phone
+
+A nexus phone is available right inside the chamber.
+
+* It is reachable through a Mac (that also sits in the room)
+  that has its wireless card physically disabled, and that has a USB cable to the phone
+* The Mac can be reached from the gateway as `ssh tester@macphone` (or the `macphone` convenience shell shortcut)
+* Once logged in the Mac you can use convenience helpers to manage the phone (type `help` for details), or use `adb` manually.
+* The mac can also be managed using apple screen sharing tools (VNC-compliant), pointing directly at `faraday.inria.fr`
   </div>
   <div class="col-md-4">
     <br><br>
-    <img src="/assets/img/macusb.png" width="300px">
+    <img src="/assets/img/macphone.png" width="300px">
     <center>Fig. 3 - Commercial phone</center>
   </div>
 </div>
 
 ****
-****
 
 ### Statistics on nodes health</h3>
 
-The testbed routinely runs a thorough raincheck procedure.
-      Historically, this was performed every night during the early stages; maturity is now such that we feel comfortable to run it only twice a week ([see the booking page for details](/book.md)). In any case,   Summarized below are the results of our nightly monitoring routine which help us identify issues and keep r2lab healthy. The graphs bring the information about issues found along the days from Jan/16.
+The testbed routinely runs a thorough raincheck procedure, to make
+sure that all is in order.  Historically, this was performed every
+night during the early stages; maturity is now such that we feel
+comfortable with running it only twice a week ([see the booking page
+for details](/book.md)).
+
+In any case, below is a summary of the issues found since Jan. 2016.
 
 <script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
