@@ -101,6 +101,8 @@ def main(args):
 
     #=========================================
     # CHECK ZOMBIE (not turn off) NODES ======
+    print "-- INFO: given some time to recover OS info from loaded nodes"
+    wait_and_update_progress_bar(45)
     print "-- INFO: check for zombie nodes"
     all_nodes = name_node(nodes)
     cmd = command_in_curl(all_nodes, 'off')
