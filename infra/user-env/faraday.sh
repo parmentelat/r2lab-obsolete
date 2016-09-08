@@ -794,6 +794,9 @@ function un-tgz() {
     done
 }
 
-##########
-alias macusb="ssh tester@macusb"
-doc-alt macusb alias
+########## connect to the phone gateway
+# the private key for macphone is in inventory/macphone
+doc-alt macphone "Enter the (Mac) phone gateway as user 'tester'"
+function macphone() {
+    ssh -i /home/faraday/r2lab/inventory/macphone tester@macphone
+}
