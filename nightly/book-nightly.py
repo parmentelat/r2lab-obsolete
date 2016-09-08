@@ -157,7 +157,7 @@ def main():
             if(debug):
                 print(js)
 
-        print("INFO: {} slices {} between {} and {} were added.".format(len(all_occurrences),slice, format_date(period_begin), format_date(period_end)))
+        print("INFO: {} lease(s) {} between {} and {} were added.".format(len(all_occurrences),slice, format_date(period_begin), format_date(period_end)))
 
 
 
