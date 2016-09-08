@@ -22,16 +22,6 @@ import time
 from itertools import islice
 import pytz
 
-parser = ArgumentParser()
-parser.add_argument("-p", "--period", dest="period", nargs=2, type=str, default=[None,None],
-                    help="Each WED and SUN between a given period")
-parser.add_argument("-s", "--slice", dest="slice", default="onelab.inria.r2lab.nightly",
-                    help="Slice name")
-parser.add_argument("--DEBUG", dest="debug", action='store_true',
-                    help="Enable debug messages")
-
-args = parser.parse_args()
-
 
 
 def locate_credentials():
@@ -46,7 +36,7 @@ def locate_credentials():
 
 
 @asyncio.coroutine
-def co_add_lease(slicename, valid_from, valid_until):
+def co_add_lease(slicename, valid_from, valid_until, debug):
     credentials = locate_credentials()
     if not credentials:
         print("ERROR: cannot find credentials")
@@ -66,10 +56,10 @@ def co_add_lease(slicename, valid_from, valid_until):
         'components' : [ {'uuid' : node_uuid } ],
     }
 
-    if(args.debug):
+    if(debug):
         print("INFO: omf_sfa POST request {}".format(lease_request))
     result = yield from omf_sfa_proxy.REST_as_json("leases", "POST", lease_request)
-    if(args.debug):
+    if(debug):
         print("INFO: omf_sfa POST -> {}".format(result))
     return result
 
@@ -82,6 +72,17 @@ def format_date(val=None):
         return str(datetime.now().strftime("%Y-%m-%d"))
     else:
         return str(datetime.strftime(val, "%Y-%m-%d"))
+
+
+
+def map_day(day):
+    days = ["mon","tue","wed","thu","fri","sat","sun"]
+    try:
+        idx  = days.index(day)
+    except Exception as e:
+        print("ERROR: day not found. Exiting.")
+        exit()
+    return idx + 1
 
 
 
@@ -103,13 +104,26 @@ def intersections(weekday, start_date=None, end_date=None):
 
 
 
-def main(args):
+def main():
     """
     """
+    parser = ArgumentParser()
+    parser.add_argument("-p", "--period", dest="period", nargs=2, type=str, default=[None,None],
+                        help="Each WED and SUN between a given period")
+    parser.add_argument("-d", "--days", dest="days", default=['wed','sun'],
+                        help="Each WED and SUN between a given period")
+    parser.add_argument("-s", "--slice", dest="slice", default="onelab.inria.r2lab.nightly",
+                        help="Slice name")
+    parser.add_argument("--DEBUG", dest="debug", action='store_true',
+                        help="Enable debug messages")
+
+    args = parser.parse_args()
+
     period_begin = args.period[0]
     period_end   = args.period[1]
     slice        = args.slice
     debug        = args.debug
+    days         = args.days if type(args.days) is list else args.days.split(',')
 
     if period_begin is None:
         period_begin = datetime(datetime.today().year,  1, 1, tzinfo=pytz.timezone('utc'))
@@ -123,27 +137,29 @@ def main(args):
         yyyy, mm, dd = period_end.split('-')
         period_end   = datetime(int(yyyy), int(mm), int(dd), tzinfo=pytz.timezone('utc'))
 
-    WEDNESDAY = 3
-    SUNDAY    = 7
-
     if (period_begin is None or period_end is None or slice is None):
         print("ERROR: slice name, begin and final date must be present.")
         exit()
     else:
-        wed_occurrences = intersections(WEDNESDAY, period_begin, period_end)
-        sun_occurrences = intersections(SUNDAY   , period_begin, period_end)
-        for occurrence in wed_occurrences + sun_occurrences:
-            slice_beg = occurrence.replace(hour=1, minute=00)
-            slice_end = occurrence.replace(hour=1, minute=00)
-            #the book happens here
+        # A list of week days is given ['sun', 'mon', ...].  For each calendar day between the given period
+        # we try to match if is one of these given week days. The date returns in a list if match
+        # these days are in utc datetime
+        day_occurrences = []
+        for day in days:
+            day_occurrences.append(intersections(map_day(day.lower()), period_begin, period_end))
+        all_occurrences = sum(day_occurrences, [])
+        for occurrence in all_occurrences:
+            slice_beg = occurrence.replace(hour=1, minute=00) # will be schedule at 3AM
+            slice_end = occurrence.replace(hour=1, minute=00) # one hour more from 3AM to reach 4AM
+            #the book happens from here
             loop = asyncio.get_event_loop()
-            js = loop.run_until_complete(co_add_lease(slice, str(slice_beg.isoformat()), str(slice_end.isoformat())))
-            if(args.debug):
+            js = loop.run_until_complete(co_add_lease(slice, str(slice_beg.isoformat()), str(slice_end.isoformat()), debug))
+            if(debug):
                 print(js)
 
-        print("INFO: {} slices {} between {} and {} were added.".format(len(wed_occurrences+sun_occurrences),slice, format_date(period_begin), format_date(period_end)))
+        print("INFO: {} slices {} between {} and {} were added.".format(len(all_occurrences),slice, format_date(period_begin), format_date(period_end)))
 
 
 
 if __name__ == '__main__':
-    exit(main(args))
+    exit(main())
