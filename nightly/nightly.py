@@ -58,24 +58,24 @@ def main(args):
     all_nodes   = name_node(nodes)
 
     # if not should_i_run(days):
-    #     print "-- INFO: none of the informed days match with the current. Let's skip and exit..."
+    #     print "INFO: none of the informed days match with the current. Let's skip and exit..."
     #     exit(0)
 
     for node in nodes:
         create_phases_db(node)
 
-    print "-- INFO: {}".format(now())
+    print "INFO: {}".format(now())
 
     #=========================================
     # TURN ON ALL NODES ======================
-    print "-- INFO: turn on nodes"
+    print "INFO: turn on nodes"
     all_nodes = name_node(nodes)
     cmd = command_in_curl(all_nodes, 'on')
     results = execute(cmd)
     if error_presence(results):
-        print "** ERROR: turn on not executed"
+        print "ERROR: turn on not executed"
     else:
-        print "-- INFO: nodes turned on"
+        print "INFO: nodes turned on"
 
     for node in nodes:
         cmd = command_in_curl([name_node(node)])
@@ -87,13 +87,13 @@ def main(args):
 
     #=========================================
     # LOAD THE NEW OS ON NODES ===============
-    print "-- INFO: execute load on nodes"
+    print "INFO: execute load on nodes"
     results    = {}
     all_nodes = stringfy_list(all_nodes)
     cmd = "rhubarbe-load {} -i {}; ".format(all_nodes, version)
     result = execute(cmd, key='node')
     if error_presence(result):
-        print "** ERROR: one or more node were not loaded correctly. CMD and result logs below:"
+        print "ERROR: one or more node were not loaded correctly. CMD and result logs below:"
         print cmd
         print "-----"
         print result
@@ -110,16 +110,16 @@ def main(args):
 
     #=========================================
     # CHECK ZOMBIE (not turn off) NODES ======
-    print "-- INFO: given some time to recover OS info from loaded nodes"
+    print "INFO: given some time to recover OS info from loaded nodes"
     wait_and_update_progress_bar(45)
-    print "-- INFO: check for zombie nodes"
+    print "INFO: check for zombie nodes"
     all_nodes = name_node(nodes)
     cmd = command_in_curl(all_nodes, 'off')
     results = execute(cmd)
     if error_presence(results):
-        print "** ERROR: turn off not executed"
+        print "ERROR: turn off not executed"
     else:
-        print "-- INFO: nodes turned off"
+        print "INFO: nodes turned off"
 
     wait_and_update_progress_bar(30)
     all_nodes   = to_str(nodes)
@@ -140,7 +140,7 @@ def main(args):
 
     #=========================================
     # RESULTS  ===============================
-    print "-- INFO: summary of reset routine"
+    print "INFO: summary of reset routine"
     failed_nodes = []
     for key, value in sorted(phases.iteritems()):
         if value['ph1'] == 'ko' or value['ph2'] == 'ko' or value['ph3'] == 'ko':
@@ -154,23 +154,23 @@ def main(args):
         print "--"
     print " "
 
-    print "-- INFO: setting round red bullets for nodes with issues"
+    print "INFO: setting round red bullets for nodes with issues"
     set_node_status(range(1,38),  'ok')
     set_node_status(failed_nodes, 'ko')
 
-    print "-- INFO: send email"
+    print "INFO: send email"
     summary_in_mail(failed_nodes)
 
-    print "-- INFO: write in file"
+    print "INFO: write in file"
     #this is the old file containing all info since we start nightly
     write_in_file(failed_nodes, "nightly.txt")
 
-    print "-- INFO: write in file in new format"
+    print "INFO: write in file in new format"
     save_data_in_txt (phases, "nightly_data.txt" )
     save_data_in_json(phases, "nightly_data.json")
 
-    print "-- INFO: end of main"
-    print "-- INFO: {}".format(now())
+    print "INFO: end of main"
+    print "INFO: {}".format(now())
 
 
 
