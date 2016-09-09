@@ -20,12 +20,12 @@ from rhubarbe.omfsfaproxy import OmfSfaProxy
 from datetime import datetime, timedelta
 import time
 from itertools import islice
-import pytz
-
+import pytz.reference
 
 
 def locate_credentials():
     locations = [
+        '/Users/nano/Documents/Inria/r2lab/r2lab.inria.fr/r2lab/root.pem',
         '/etc/rhubarbe/root.pem',
         '/root/.omf/user_cert.pem',
     ]
@@ -103,6 +103,14 @@ def intersections(weekday, start_date=None, end_date=None):
     return dates
 
 
+def date2iso(thedate):
+    strdate = thedate.strftime("%Y-%m-%dT%H:%M:%S")
+    minute = (time.localtime().tm_gmtoff / 60) % 60
+    hour = ((time.localtime().tm_gmtoff / 60) - minute) / 60
+    utcoffset = "%.2d%.2d" %(hour, minute)
+    if utcoffset[0] != '-':
+     utcoffset = '+' + utcoffset
+    return strdate + utcoffset
 
 def main():
     """
@@ -114,6 +122,8 @@ def main():
                         help="Comma separated list of week days to match between the given period")
     parser.add_argument("-s", "--slice", dest="slice", default="onelab.inria.r2lab.nightly",
                         help="Slice name")
+    parser.add_argument("-t", "--time", dest="time", nargs=2, type=int, default=[3,4],
+                        help="Hour to start and hour to finish")
     parser.add_argument("--DEBUG", dest="debug", action='store_true',
                         help="Enable debug messages")
 
@@ -124,18 +134,22 @@ def main():
     slice        = args.slice
     debug        = args.debug
     days         = args.days if type(args.days) is list else args.days.split(',')
+    start_time   = args.time[0]
+    final_time   = args.time[1]
+
+    local_tnz = pytz.reference.LocalTimezone()
 
     if period_begin is None:
-        period_begin = datetime(datetime.today().year,  1, 1, tzinfo=pytz.timezone('utc'))
+        period_begin = datetime(datetime.today().year,  1, 1)
     else:
         yyyy, mm, dd = period_begin.split('-')
-        period_begin = datetime(int(yyyy), int(mm), int(dd), tzinfo=pytz.timezone('utc'))
+        period_begin = datetime(int(yyyy), int(mm), int(dd))
 
     if period_end is None:
-        period_end   = datetime(datetime.today().year, 12, 31, tzinfo=pytz.timezone('utc'))
+        period_end   = datetime(datetime.today().year, 12, 31)
     else:
         yyyy, mm, dd = period_end.split('-')
-        period_end   = datetime(int(yyyy), int(mm), int(dd), tzinfo=pytz.timezone('utc'))
+        period_end   = datetime(int(yyyy), int(mm), int(dd))
 
     if (period_begin is None or period_end is None or slice is None):
         print("ERROR: slice name, begin and final date must be present.")
@@ -149,11 +163,11 @@ def main():
             day_occurrences.append(intersections(map_day(day.lower()), period_begin, period_end))
         all_occurrences = sum(day_occurrences, [])
         for occurrence in all_occurrences:
-            slice_beg = occurrence.replace(hour=1, minute=00) # will be schedule at 3AM
-            slice_end = occurrence.replace(hour=2, minute=00) # one hour more from 3AM to reach 4AM
+            slice_beg = occurrence.replace(hour=start_time) - local_tnz.utcoffset(occurrence.replace(hour=3))
+            slice_end = occurrence.replace(hour=final_time) - local_tnz.utcoffset(occurrence.replace(hour=4))
             #the book happens from here
-            loop = asyncio.get_event_loop()
-            js = loop.run_until_complete(co_add_lease(slice, str(slice_beg.isoformat()), str(slice_end.isoformat()), debug))
+            loop = asyncio.get_event_loop()                  #'2016-09-11T01:00:00Z'  '2016-09-11T02:00:00Z'
+            js = loop.run_until_complete(co_add_lease(slice, slice_beg.isoformat(), slice_end.isoformat(), debug))
             if(debug):
                 print(js)
 
