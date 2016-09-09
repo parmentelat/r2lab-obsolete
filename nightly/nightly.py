@@ -19,43 +19,45 @@ from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
 
-parser = ArgumentParser()
-parser.add_argument("-N", "--nodes", dest="nodes", default="all",
-                    help="Comma separated list of nodes")
-parser.add_argument("-a", "--avoid", dest="avoid_nodes",
-                    help="Comma separated list of nodes to avoid")
-parser.add_argument("-V", "--version", default="fedora-23.ndz", dest="version",
-                    help="O.S version to load")
-parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
-                    help="Directory to save text file")
-parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="send_to_email",
-                    help="Email to receive the execution results")
-#parser.add_argument("-d", "--days", dest="days", default=['wed','sun'],
-#                    help="Comma separated list of weekday to run")
-args = parser.parse_args()
 
 
-send_to_email   = args.send_to_email
-SEND_RESULTS_TO = [str(send_to_email)] #default in args send_to_email: fit-r2lab-users@inria.fr
-weekday_stat    = "sunday"
-phases          = {}
+
+WEEKDAY_STAT = "sunday"
+phases       = {}
 
 
 
 
-def main(args):
+def main():
     """ Execute the load for all nodes in Faraday. """
+
+    parser = ArgumentParser()
+    parser.add_argument("-N", "--nodes", dest="nodes", default="all",
+                        help="Comma separated list of nodes")
+    parser.add_argument("-a", "--avoid", dest="avoid_nodes",
+                        help="Comma separated list of nodes to avoid")
+    parser.add_argument("-V", "--version", default="fedora-23.ndz", dest="version",
+                        help="O.S version to load")
+    parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly/", dest="text_dir",
+                        help="Directory to save text file")
+    parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="send_to_email",
+                        help="Email to receive the execution results")
+    #parser.add_argument("-d", "--days", dest="days", default=['wed','sun'],
+    #                    help="Comma separated list of weekday to run")
+    args = parser.parse_args()
 
     # # in function of the given days it will or not skip run
     # # and empty list will run always
-    # days        = args.days if type(args.days) is list else args.days.split(',')
-    # days        = list(map(lambda x: x.lower(), days))
-
-    nodes       = args.nodes
-    version     = args.version
-    avoid_nodes = args.avoid_nodes
-    nodes       = format_nodes(nodes, avoid_nodes)
-    all_nodes   = name_node(nodes)
+    # days         = args.days if type(args.days) is list else args.days.split(',')
+    # days         = list(map(lambda x: x.lower(), days))
+    send_to_email  = args.send_to_email
+    nodes          = args.nodes
+    version        = args.version
+    avoid_nodes    = args.avoid_nodes
+    dir_name       = args.text_dir
+    nodes          = format_nodes(nodes, avoid_nodes)
+    all_nodes      = name_node(nodes)
+    send_results_to= [str(send_to_email)] #default in args send_to_email: fit-r2lab-users@inria.fr
 
     # if not should_i_run(days):
     #     print "INFO: none of the informed days match with the current. Let's skip and exit..."
@@ -159,15 +161,15 @@ def main(args):
     set_node_status(failed_nodes, 'ko')
 
     print "INFO: send email"
-    summary_in_mail(failed_nodes)
+    summary_in_mail(failed_nodes, send_results_to)
 
     print "INFO: write in file"
     #this is the old file containing all info since we start nightly
-    write_in_file(failed_nodes, "nightly.txt")
+    write_in_file(failed_nodes, "nightly.txt", dir_name)
 
     print "INFO: write in file in new format"
-    save_data_in_txt (phases, "nightly_data.txt" )
-    save_data_in_json(phases, "nightly_data.json")
+    save_data_in_txt (phases, "nightly_data.txt",  dir_name)
+    save_data_in_json(phases, "nightly_data.json", dir_name)
 
     print "INFO: end of main"
     print "INFO: {}".format(now())
@@ -256,9 +258,9 @@ def parse_phases_db_in_style(phase_result):
 
 
 
-def write_in_file(text, the_file):
+def write_in_file(text, the_file, dir_name):
     """save the results in a file for posterior use of it """
-    dir_name  = args.text_dir
+    dir_name  = dir_name
     file_name = the_file
 
     text = ', '.join(str(x) for x in text)
@@ -269,9 +271,9 @@ def write_in_file(text, the_file):
 
 
 
-def save_data_in_txt(results, the_file, answer='short'):
+def save_data_in_txt(results, the_file, dir_name, answer='short'):
     """save the results in a file for posterior use of it """
-    dir_name  = args.text_dir
+    dir_name  = dir_name
     file_name = the_file
     number_of_phases = 3
     all_nodes = ''
@@ -295,12 +297,12 @@ def save_data_in_txt(results, the_file, answer='short'):
 
 
 
-def summary_in_mail(nodes):
+def summary_in_mail(nodes, send_results_to):
     """send a summary output of the routine"""
     list_of_bug_nodes = nodes
     title = ''
     body  = ''
-    to    = SEND_RESULTS_TO
+    to    = send_results_to
 
     line_ok = ''
     line_fail = ''
@@ -402,7 +404,7 @@ def email_body():
     		</table>\n \
             {}\n \
       </body>\n \
-    </html>'.format(get_statistic(weekday_stat))
+    </html>'.format(get_statistic(WEEKDAY_STAT))
     return body
 
 
@@ -648,9 +650,9 @@ def format_nodes(nodes, avoid=None):
 
 
 
-def save_data_in_json(results, the_file):
+def save_data_in_json(results, the_file, dir_name):
     """ Save the result in a json file """
-    dir = args.text_dir
+    dir = dir_name
     file_name = the_file
     number_of_phases = 3
     all_nodes = {}
@@ -842,4 +844,4 @@ def get_statistic(the_day="monday"):
 
 
 if __name__ == "__main__":
-    main(args)
+    main()
