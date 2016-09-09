@@ -70,14 +70,12 @@ require_login: true
 <div class="alert alert-danger" role="alert" markdown="1">
 <strong>Important note!</strong>
 <br/>
-R2lab platform is reset every night. A time slot from <strong>3 a.m.</strong> until
+R2lab platform is reset every <strong>Wednesday</strong> and every <strong>Sunday</strong> night. A time slot from <strong>3 a.m.</strong> until
 <strong>4 a.m.</strong> is reserved to execute this job.
-
-<br/>
-In any case, please make sure to save your experiments once you are done, as the next user will probably reload an image on your nodes.
-
 <br/>
 All times on this website are expressed wrt the <strong>CET timezone</strong>, which is UTC+1 in winter, and UTC+2 in summer.
+<br/>
+In any case, please make sure to save your experiments once you are done, as the next user will probably reload an image on your nodes.
 </div>
 
 </div>
