@@ -67,7 +67,7 @@ It's my feeling that both options B.1 and B.2 make the whole business uselessly 
 
 * At first sight I would think that this feature is totally oblivious to notions like 'preferred' images, and that it does not need to use any list of VERSIONS at all. I'm not even sure it needs to know about the location for the images repository.
 
-* On a more detailed level, the creation of `parser` and `args` and similar should be done **inside the `main` function** and not at the module toplevel. This way testers can be connected to `__main__` when integrated in `rhubarbe`. This applies to coding in python in general, and ~~so BTW it's the same for `book-nightly.py`~~.
+* ~~On a more detailed level, the creation of `parser` and `args` and similar should be done **inside the `main` function** and not at the module toplevel. This way testers can be connected to `__main__` when integrated in `rhubarbe`. This applies to coding in python in general, and so BTW it's the same for `book-nightly.py`~~.
 
 * ~~in `check_status`, the incoming `silent` variable should be a `bool`, not a string, as far as possible~~
 
@@ -80,6 +80,6 @@ It's my feeling that both options B.1 and B.2 make the whole business uselessly 
 
 Feel free to modify the text directly since git will let us follow easily, or to just add your comments in the bulletted list below, just please use a similar format
 
-* ***From Thierry P. - 7 Sept.*** : a dummy formatted comment
-* ***From Mario Z. - 8 Sept.*** : check_status, show_examples and book-nightly suffered the minor changes. The adopted name is now *snapshot* with future `snap` and `rsnap` as alias.
 * ***From Mario Z. - 9 Sept.*** : refactoring code for parser args and the suggested minor changes.
+* ***From Mario Z. - 8 Sept.*** : check_status, show_examples and book-nightly suffered the minor changes. The adopted name is now **snapshot** with future `snap` and `rsnap` as alias.
+* ***From Thierry P. - 7 Sept.*** : a dummy formatted comment
