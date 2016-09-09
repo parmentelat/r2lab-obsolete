@@ -154,51 +154,13 @@ main()
 EOF
 }
 
-function session () {
-  # stores the r2lab nodes state to recover/load in one command in future
-  # examples:
-
-  # VIEW ========================================
-  # session                                         => show all session and its details from the user (default command).
-  # session -v "session name" -n 1,2, ...           => show all about an specifi session name.
-
-  # CREATE ======================================
-  # session -c "my session"                         => create a session named "my session" considering ONLY turned ON nodes between all 37 nodes. If no nodes be turned ON, no session will be created.
-  # session -c "my session" --off                   => the same as before but now ignore search for turned ON nodes. All nodes states (on/off) are considered here.
-  # session -c "my session" -n 1,2,5                => create a session named "my session" for 1,2 and 5 nodes (using -n option, the --off is alwayes enabled).
-  # session -c "name" -n 1,3 -i "image.ndz" -s on   => create a session "name" storing for each node the state "ON" and the image "image.ndz".
-
-  # REMOVE ======================================
-  # session -r "session name"                       => removes the session called "session name".
-  # session -r "session name" -n 1,2                => removes nodes 1 and 2 and its details from the session called "session name".
-  # session -dr                                     => drop/remove all user sessions. Reset all content.
-
-  # LOAD ========================================
-  # session -l "session name"                       => load an specific previously saved session.
-
-  # COPY ========================================
-  # session -cp "session saved" "new session name"  => duplicate session "session saved" and paste with a new name "new session name".
-
-  python3 /root/r2lab/nightly/session.py "$@"
+function snapshot () {
+  python3 /root/r2lab/nightly/snapshot.py "$@"
 }
-alias snapshot=session
-alias snap=session
+alias snap=snapshot
+alias rsnap="rhubarbe snapshot"
 
 function maintenance () {
-  # stores maintenance nodes and sync with the r2lab site to present in the graphs
-  # examples:
-  # VIEW ========================================
-  # maintenance                                                           => show all nodes with maintenance records.
-  # maintenance -n 3,4,5, ...                                             => show for each node of the list of nodes the maintenance info.
-
-  # CREATE ======================================
-  # maintenance -i 1,2,3 -d 2016-04-06 -m "change bios battery" -e no     => includes for the nodes 1,2 and 3 a maintenance date using current date.
-  # maintenance -i 5 -d 2016-02-27                                        => includes for the node 5 a maintenance date in 2016-02-27.
-
-  # REMOVE ======================================
-  # maintenance -r 1,2,3 -d 2016-02-27                                    => remove from the nodes 1,2 and 3 a specific (2016-02-27) maintenance date.
-  # maintenance -r 13                                                     => remove all maintenance dates for the node 13 (doesn't matter the dates stored).
-
   python3 /root/r2lab/nightly/maintenance.py "$@"
   if [ $? -eq 0 ]; then
     for i in "$@" ; do
