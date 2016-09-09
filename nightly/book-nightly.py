@@ -103,14 +103,6 @@ def intersections(weekday, start_date=None, end_date=None):
     return dates
 
 
-def date2iso(thedate):
-    strdate = thedate.strftime("%Y-%m-%dT%H:%M:%S")
-    minute = (time.localtime().tm_gmtoff / 60) % 60
-    hour = ((time.localtime().tm_gmtoff / 60) - minute) / 60
-    utcoffset = "%.2d%.2d" %(hour, minute)
-    if utcoffset[0] != '-':
-     utcoffset = '+' + utcoffset
-    return strdate + utcoffset
 
 def main():
     """
