@@ -78,31 +78,39 @@ def save(nodes, snapshot):
     file    = snapshot+'.snap'
     folder  = user
     path    = dir+'/'+folder+'/'+file
+    add_in_name = '_snap_'
     db      = {}
 
     print('INFO: creating snapshot. This may take a while.')
+
     for node in nodes:
-        temp_file_name = '_snap_'
-        print('INFO: saving fit{}.'.format(node))
-        ans_cmd = run("rsave {} -o {}".format(node, user+temp_file_name))
-        if not ans_cmd['status']:
-            print('ERROR: fail in saving node fit{}.'.format(node))
-        # else:
-
-        #searching for saved file give by rsave
-        saved_file = fetch_file(node)
-        path_file, name_file = os.path.split(str(saved_file))
-
         #searching for node state
-        node_status = check_status(node)
-
-        db.update( {str(node) : { "state" : node_status, "imagename" : name_file } } )
-        if saved_file:
-            user_folder = my_user_folder()
-            os.rename(saved_file, user_folder+name_file)
+        node_status = check_status(node, 1)
+        if node == '01':
+            node_status = 'on'
+        if 'on' in node_status:
+            #======== the node is ON, then let's save the current image
+            print('INFO: saving fit{}.'.format(node))
+            ans_cmd = run("rsave {} -o {}".format(node, user+add_in_name))
+            if not ans_cmd['status']:
+                print('ERROR: fail in saving node fit{}.'.format(node))
+            else:
+                #searching for saved file give by rsave
+                saved_file = fetch_file(node)
+                file_path, file_name = os.path.split(str(saved_file))
+                db.update( {str(node) : { "state" : node_status, "imagename" : file_name } } )
+                if saved_file:
+                    user_folder = my_user_folder()
+                    os.rename(saved_file, user_folder+name_file)
+                else:
+                    print('ERROR: could not find file name for node fit{}.'.format(node))
         else:
-            print('ERROR: could not find file name for node fit{}.'.format(node))
+            #========the node is OFF, then let's save recover the last image saved
+            #searching for the last saved image
+            last_image = fetch_last_image(node)
+            db.update( {str(node) : { "state" : node_status, "imagename" : last_image } } )
 
+    #saving the file db
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
     except Exception as e:
@@ -178,6 +186,15 @@ def my_user_folder():
     else:
         print('ERROR: something went wrong in read user directory in images folder.')
         exit(1)
+
+
+
+def fetch_last_image(node):
+    """ recover the last image save in the node
+    """
+    image_name = 'fedora-23.ndz'
+
+    return image_name
 
 
 
