@@ -40,7 +40,7 @@ def main():
                         help="Save the snapshot")
     parser.add_argument("-l", "--load", dest="load_snapshot",
                         help="Load a given snapshot")
-    parser.add_argument("-v", "--view", dest="view_snapshot",
+    parser.add_argument("-v", "--view", dest="view_snapshot", default=None,
                         help="View a given snapshot")
     args = parser.parse_args()
 
@@ -49,23 +49,67 @@ def main():
     view_snapshot = args.view_snapshot
     nodes         = args.nodes
 
-    #view
-    if view_snapshot is not None:
-        view_snapshot(user, view_snapshot_ar)
     #save
-    elif save_snapshot is not None:
-        create_snapshot(nodes=format_nodes(nodes), user=user, snapshot=create_snapshot_ar, vimage=image_node, vstatus=status_node)
+    if save_snapshot is not None:
+        save(format_nodes(nodes), save_snapshot)
     #load
     elif load_snapshot is not None:
-        load_snapshot(user, load_snapshot_ar)
+        load(load_snapshot)
+    #view
+    elif view_snapshot is not None:
+        view(view_snapshot)
+    else:
+        view(view_snapshot)
 
     return 0
 
 
 
-def save(nodes, user, snapshot, vimage=None, vstatus=None):
+def save(nodes, snapshot):
     """ save a snapshot for the user according nodes state
     """
+    create_user_folder()
+
+    user = fetch_user()
+    if os.path.exists('/Users'):
+        dir = '/Users'
+    else:
+        dir = '/home'
+    file    = snapshot+'.snap'
+    folder  = user
+    path    = dir+'/'+folder+'/'+file
+    db      = {}
+
+    print('INFO: creating snapshot. This may take a while.')
+    for node in nodes:
+        temp_file_name = '_snap_'
+        print('INFO: saving fit{}.'.format(node))
+        ans_cmd = run("rsave {} -o {}".format(node, user+temp_file_name))
+        if not ans_cmd['status']:
+            print('ERROR: fail in saving node fit{}.'.format(node))
+        # else:
+
+        #searching for saved file give by rsave
+        saved_file = fetch_file(node)
+        path_file, name_file = os.path.split(str(saved_file))
+
+        #searching for node state
+        node_status = check_status(node)
+
+        db.update( {str(node) : { "state" : node_status, "imagename" : name_file } } )
+        if saved_file:
+            user_folder = my_user_folder()
+            os.rename(saved_file, user_folder+name_file)
+        else:
+            print('ERROR: could not find file name for node fit{}.'.format(node))
+
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+    except Exception as e:
+        print('ERROR: something went wrong in create directory in home.')
+        exit(1)
+    with open(path, "w+") as f:
+        f.write(json.dumps(db)+"\n")
 
 
 
@@ -75,9 +119,87 @@ def load(user, snapshot):
 
 
 
-def view(nodes):
+def view(snapshot):
     """ run the load command grouped by images and nodes
     """
+    if snapshot is None:
+        print("ERROR: snapshot name was not informed.")
+        exit(1)
+
+
+
+def check_status(node, silent=0):
+    """ return the state of each node. On and Off are searched.
+    """
+    options = ['on', 'already on', 'off', 'already off']
+    command = 'curl -s reboot{}/status;'.format(node)
+    ans_cmd = run(command)
+
+    if not ans_cmd['status'] or ans_cmd['output'] not in options:
+        if silent is 0:
+            print('WARNING: could not detect the status of node #{}. It will be set as "off".'.format(node))
+        return "off"
+    else:
+        return ans_cmd['output']
+
+
+
+def create_user_folder():
+    """ create a user folder in images folder
+    """
+    user = fetch_user()
+    if os.path.exists(IMAGEDIR):
+        base_dir = IMAGEDIR
+    else:
+        base_dir = '/Users/'+user+'/'
+    dir  = user+'_snapshots'
+    path = base_dir + dir + '/'
+
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+    except Exception as e:
+        print('ERROR: something went wrong in create directory in images folder.')
+        exit(1)
+
+
+
+def my_user_folder():
+    """ create a user folder in images folder
+    """
+    user = fetch_user()
+    if os.path.exists(IMAGEDIR):
+        base_dir = IMAGEDIR
+    else:
+        base_dir = '/Users/'+user+'/'
+    dir  = user + '_snapshots'
+    path = base_dir + dir +'/'
+    if os.path.exists(path):
+        return path
+    else:
+        print('ERROR: something went wrong in read user directory in images folder.')
+        exit(1)
+
+
+
+def fetch_file(node):
+    """ list the images dir in last modified file order
+    """
+    user = fetch_user()
+    if os.path.exists(IMAGEDIR):
+        base_dir = IMAGEDIR
+    else:
+        base_dir = '/Users/'+user+'/'
+    key = '_snap_'
+    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(base_dir, node, user+key)
+    ans_cmd = run(command)
+    if ans_cmd['status']:
+        ans = ans_cmd['output']
+        if 'No such file or directory' in ans:
+            return False
+        else:
+            return ans
+    else:
+        return False
 
 
 

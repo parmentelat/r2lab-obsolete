@@ -158,7 +158,7 @@ function snapshot () {
   python3 /root/r2lab/nightly/snapshot.py "$@"
 }
 alias snap=snapshot
-alias rsnap="rhubarbe snapshot"
+alias rsnap="rhubarbe snap"
 
 function maintenance () {
   python3 /root/r2lab/nightly/maintenance.py "$@"
