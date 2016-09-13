@@ -89,7 +89,7 @@ def save(nodes, snapshot):
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     for node in nodes:
         i = i + 1
-        time.sleep(0.01)
+        time.sleep(0.5)
         bar.update(i)
         #searching for node state
         # print('INFO: saving fit{}.'.format(node))
