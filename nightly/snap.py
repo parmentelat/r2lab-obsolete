@@ -89,8 +89,6 @@ def save(nodes, snapshot):
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     for node in nodes:
         i = i + 1
-        time.sleep(0.5)
-        bar.update(i)
         #searching for node state
         # print('INFO: saving fit{}.'.format(node))
         node_status = check_status(node, 1)
@@ -114,6 +112,8 @@ def save(nodes, snapshot):
             #searching for the last saved image
             last_image = fetch_last_image(node)
             db.update( {str(node) : { "state" : node_status, "imagename" : last_image } } )
+        time.sleep(0.5)
+        bar.update(i)
     print('\r')
     #saving the file db
     try:
