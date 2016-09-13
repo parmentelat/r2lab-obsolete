@@ -92,7 +92,8 @@ def save(nodes, snapshot):
             #======== the node is ON, then let's save the current image
             print('INFO: saving fit{}.'.format(node))
             ans_cmd = run("rsave {} -o {}".format(node, user+add_in_name))
-            if not ans_cmd['status']:
+            print(ans_cmd)
+            if not ans_cmd['status'] or ans_cmd['output'] == "":
                 print('ERROR: fail in saving node fit{}.'.format(node))
             else:
                 #searching for saved file give by rsave
