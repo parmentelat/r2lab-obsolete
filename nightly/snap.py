@@ -81,13 +81,11 @@ def save(nodes, snapshot):
     add_in_name = '_snap_'
     db      = {}
 
-    print('INFO: creating snapshot. This may take a while.')
+    print('INFO: creating snapshot. This may take a little while.')
 
     for node in nodes:
         #searching for node state
         node_status = check_status(node, 1)
-        if node == '01':
-            node_status = 'on'
         if 'on' in node_status:
             #======== the node is ON, then let's save the current image
             print('INFO: saving fit{}.'.format(node))
@@ -101,10 +99,7 @@ def save(nodes, snapshot):
                 db.update( {str(node) : { "state" : node_status, "imagename" : file_name } } )
                 if saved_file:
                     user_folder = my_user_folder()
-                    print('INFO: moving...')
-                    print(saved_file)
-                    print(user_folder+file_name)
-                    #os.rename(saved_file, user_folder+file_name)
+                    os.rename(saved_file, user_folder+file_name)
                 else:
                     print('ERROR: could not find file name for node fit{}.'.format(node))
         else:
@@ -120,6 +115,7 @@ def save(nodes, snapshot):
         exit(1)
     with open(path, "w+") as f:
         f.write(json.dumps(db)+"\n")
+    print('INFO: snapshot created.')
 
 
 
