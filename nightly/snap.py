@@ -101,7 +101,10 @@ def save(nodes, snapshot):
                 db.update( {str(node) : { "state" : node_status, "imagename" : file_name } } )
                 if saved_file:
                     user_folder = my_user_folder()
-                    os.rename(saved_file, user_folder+name_file)
+                    print('INFO: moving...')
+                    print(saved_file)
+                    print(user_folder+name_file)
+                    #os.rename(saved_file, user_folder+name_file)
                 else:
                     print('ERROR: could not find file name for node fit{}.'.format(node))
         else:
@@ -109,7 +112,6 @@ def save(nodes, snapshot):
             #searching for the last saved image
             last_image = fetch_last_image(node)
             db.update( {str(node) : { "state" : node_status, "imagename" : last_image } } )
-
     #saving the file db
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
