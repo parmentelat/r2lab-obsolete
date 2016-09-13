@@ -21,7 +21,7 @@ from collections import OrderedDict
 import progressbar
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     FileTransferSpeed, FormatLabel, Percentage, \
-    ProgressBar, ReverseBar, RotatingMarker
+    ProgressBar, ReverseBar, RotatingMarker, Timer, AdaptiveETA
 
 FILEDIR = "/root/r2lab/nightly/"
 try:
@@ -85,11 +85,11 @@ def save(nodes, snapshot):
 
     print('INFO: saving snapshot. This may take a little while.')
     i   = 0
-    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', ETA()]
+    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     for node in nodes:
         i = i + 1
-        time.sleep(0.1)
+        time.sleep(0.01)
         bar.update(i)
         #searching for node state
         # print('INFO: saving fit{}.'.format(node))
