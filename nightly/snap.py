@@ -85,10 +85,10 @@ def save(nodes, snapshot):
 
     for node in nodes:
         #searching for node state
+        print('INFO: saving fit{}.'.format(node))
         node_status = check_status(node, 1)
         if 'on' in node_status:
             #======== the node is ON, then let's save the current image
-            print('INFO: saving fit{}.'.format(node))
             ans_cmd = run("rhubarbe save {} -o {}".format(node, user+add_in_name))
             if not ans_cmd['status'] or ans_cmd['output'] == "":
                 print('ERROR: fail in saving node fit{}.'.format(node))
