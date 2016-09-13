@@ -18,8 +18,10 @@ from argparse import ArgumentParser
 from datetime import datetime
 from sys import version_info
 from collections import OrderedDict
-
-
+import progressbar
+from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
+    FileTransferSpeed, FormatLabel, Percentage, \
+    ProgressBar, ReverseBar, RotatingMarker
 
 FILEDIR = "/root/r2lab/nightly/"
 try:
@@ -81,11 +83,16 @@ def save(nodes, snapshot):
     add_in_name = '_snap_'
     db      = {}
 
-    print('INFO: creating snapshot. This may take a little while.')
+    print('INFO: saving snapshot. This may take a little while.')
 
+
+    i   = 0
+    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', ETA()]
+    bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     for node in nodes:
+        i = i + 1
         #searching for node state
-        print('INFO: saving fit{}.'.format(node))
+        # print('INFO: saving fit{}.'.format(node))
         node_status = check_status(node, 1)
         if 'on' in node_status:
             #======== the node is ON, then let's save the current image
@@ -107,6 +114,9 @@ def save(nodes, snapshot):
             #searching for the last saved image
             last_image = fetch_last_image(node)
             db.update( {str(node) : { "state" : node_status, "imagename" : last_image } } )
+        time.sleep(0.1)
+        bar.update(i)
+    print('\r')
     #saving the file db
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -115,7 +125,7 @@ def save(nodes, snapshot):
         exit(1)
     with open(path, "w+") as f:
         f.write(json.dumps(db)+"\n")
-    print('INFO: snapshot created.')
+    print('INFO: snapshot saved.')
 
 
 
