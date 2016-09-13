@@ -92,7 +92,6 @@ def save(nodes, snapshot):
             #======== the node is ON, then let's save the current image
             print('INFO: saving fit{}.'.format(node))
             ans_cmd = run("rhubarbe save {} -o {}".format(node, user+add_in_name))
-            print(ans_cmd)
             if not ans_cmd['status'] or ans_cmd['output'] == "":
                 print('ERROR: fail in saving node fit{}.'.format(node))
             else:
@@ -104,8 +103,8 @@ def save(nodes, snapshot):
                     user_folder = my_user_folder()
                     print('INFO: moving...')
                     print(saved_file)
-                    print(user_folder+name_file)
-                    #os.rename(saved_file, user_folder+name_file)
+                    print(user_folder+file_name)
+                    #os.rename(saved_file, user_folder+file_name)
                 else:
                     print('ERROR: could not find file name for node fit{}.'.format(node))
         else:
