@@ -98,7 +98,7 @@ def save(nodes, snapshot):
     for node in nodes:
         bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
 
-        node_status = 'on'#check_status(node, 1)
+        node_status = check_status(node, 1)
         if 'on' in node_status:
             on_nodes.append(node)
         else:
