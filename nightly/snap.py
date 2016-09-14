@@ -98,7 +98,7 @@ def save(nodes, snapshot):
     for node in nodes:
         bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
 
-        node_status = check_status(node, 1)
+        node_status = 'on'#check_status(node, 1)
         if 'on' in node_status:
             on_nodes.append(node)
         else:
@@ -240,12 +240,18 @@ def fork_save(nodes, snapshot):
     print('INFO: saving snapshots. This may take a little while.')
     widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
-    for node in nodes:
-        time.sleep(0.1)
-        job = Process( target=run2, args=("rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
-        jobs.append(job)
-        job.start()
-        jobs_ans.append(ans_q.get())
+    # for node in nodes:
+        # time.sleep(0.1)
+    job = Process( target=run2, args=("rhubarbe save {} -o {}".format('01', user+add_in_name), ans_q ) )
+    jobs.append(job)
+    job.start()
+    jobs_ans.append(ans_q.get())
+
+    job1 = Process( target=run2, args=("rhubarbe save {} -o {}".format('02', user+add_in_name), ans_q ) )
+    jobs.append(job1)
+    job1.start()
+    jobs_ans.append(ans_q.get())
+
     #wait for all jobs finish
     while jobs:
         for job in jobs[:]:
