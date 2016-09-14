@@ -106,7 +106,7 @@ def save(nodes, snapshot):
             #========the node is OFF, then let's save recover the last image saved
             #searching for the last saved image
             last_image = fetch_last_image(node)
-            db.update( {str(node) : { "state" : node_status, "imagename" : last_image } } )
+            db.update( {str(node) : { "state" : 'off', "imagename" : last_image } } )
         i = i + 1
         time.sleep(0.1)
         bar.update(i)
@@ -126,12 +126,12 @@ def save(nodes, snapshot):
                 #searching for saved file give by rsave
                 saved_file = fetch_file(on_nodes[index])
                 file_path, file_name = os.path.split(str(saved_file))
-                db.update( {str(on_nodes[index]) : { "state" : node_status, "imagename" : file_name } } )
+                db.update( {str(on_nodes[index]) : { "state" : 'on', "imagename" : file_name } } )
                 if saved_file:
                     user_folder = my_user_folder()
                     os.rename(saved_file, user_folder+file_name)
                 else:
-                    errors.append('ERROR: could not find file name for node fit{}.'.format(on_nodes[index]))
+                    errors.append('ERROR: could not find file for node fit{}.'.format(on_nodes[index]))
             i = i + 1
             time.sleep(0.1)
             bar.update(i)
@@ -242,7 +242,7 @@ def fork_save(nodes, snapshot):
     widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     for node in nodes:
-        job = Thread( target=run2, args=("echo rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
+        job = Thread( target=run2, args=("rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
         jobs.append(job)
         job.start()
         jobs_ans.append(ans_q.get())
