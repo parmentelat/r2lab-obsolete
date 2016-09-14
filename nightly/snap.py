@@ -22,13 +22,18 @@ import progressbar
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, Timer, AdaptiveETA
+from multiprocessing import Queue
+from threading import Thread
+import threading
 
 FILEDIR = "/root/r2lab/nightly/"
 try:
     os.listdir(FILEDIR)
 except Exception as e:
     FILEDIR = "/Users/nano/Documents/Inria/r2lab/nightly/"
-IMAGEDIR   = '/var/lib/rhubarbe-images/'
+IMAGEDIR = '/var/lib/rhubarbe-images/'
+
+ADD_IN_NAME = '_snap_'
 
 
 
@@ -40,20 +45,25 @@ def main():
                         help="Comma separated list of nodes")
     parser.add_argument("-s", "--save", dest="save_snapshot",
                         help="Save the snapshot")
+    parser.add_argument("-ss", "--ssave", dest="ssave_snapshot",
+                        help="Save the snapshot")
     parser.add_argument("-l", "--load", dest="load_snapshot",
                         help="Load a given snapshot")
     parser.add_argument("-v", "--view", dest="view_snapshot", default=None,
                         help="View a given snapshot")
     args = parser.parse_args()
 
-    save_snapshot = args.save_snapshot
-    load_snapshot = args.load_snapshot
-    view_snapshot = args.view_snapshot
-    nodes         = args.nodes
+    save_snapshot  = args.save_snapshot
+    ssave_snapshot = args.ssave_snapshot
+    load_snapshot  = args.load_snapshot
+    view_snapshot  = args.view_snapshot
+    nodes          = args.nodes
 
     #save
     if save_snapshot is not None:
         save(format_nodes(nodes), save_snapshot)
+    elif ssave_snapshot is not None:
+        save2(format_nodes(nodes), ssave_snapshot)
     #load
     elif load_snapshot is not None:
         load(load_snapshot)
@@ -62,12 +72,89 @@ def main():
         view(view_snapshot)
     else:
         view(view_snapshot)
-
     return 0
 
 
 
 def save(nodes, snapshot):
+    """ save a snapshot for the user according nodes state using threading
+    """
+    create_user_folder()
+
+    user = fetch_user()
+    if os.path.exists('/Users'):
+        dir = '/Users'
+    else:
+        dir = '/home'
+    file    = snapshot+'.snap'
+    folder  = user
+    path    = dir+'/'+folder+'/'+file
+    db      = {}
+    errors  = []
+    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
+    on_nodes = []
+
+    print('INFO: colecting nodes...')
+    i = 0
+    for node in nodes:
+        bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
+
+        node_status = check_status(node, 1)
+        if 'on' in node_status:
+            on_nodes.append(node)
+        else:
+            #========the node is OFF, then let's save recover the last image saved
+            #searching for the last saved image
+            last_image = fetch_last_image(node)
+            db.update( {str(node) : { "state" : node_status, "imagename" : last_image } } )
+        i = i + 1
+        time.sleep(0.1)
+        bar.update(i)
+    print('\r')
+
+    if on_nodes:
+        answers = fork_save(on_nodes, snapshot)
+        print('INFO: arranging files...')
+        i = 0
+        bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
+
+        #for each answer given by the save command in save_fork we move the file to the user snapshots folder
+        for index, item in enumerate(answers):
+            if not item['status']:
+                passerrors.append('ERROR: fail in saving node fit{}.'.format( on_nodes[index] ))
+            else:
+                #searching for saved file give by rsave
+                saved_file = fetch_file(on_nodes[index])
+                file_path, file_name = os.path.split(str(saved_file))
+                db.update( {str(on_nodes[index]) : { "state" : node_status, "imagename" : file_name } } )
+                if saved_file:
+                    user_folder = my_user_folder()
+                    os.rename(saved_file, user_folder+file_name)
+                else:
+                    errors.append('ERROR: could not find file name for node fit{}.'.format(on_nodes[index]))
+            i = i + 1
+            time.sleep(0.1)
+            bar.update(i)
+        print('\r')
+
+    #saving the file db
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+    except Exception as e:
+        print('ERROR: something went wrong in create directory in home.')
+        exit(1)
+    with open(path, "w+") as f:
+        f.write(json.dumps(db)+"\n")
+    if errors:
+        print('INFO: something went wrong in the process of save your snapshot. Check it out:')
+        for error in errors:
+            print(error)
+    else:
+        print('INFO: snapshot saved.')
+
+
+
+def save2(nodes, snapshot):
     """ save a snapshot for the user according nodes state
     """
     create_user_folder()
@@ -80,7 +167,7 @@ def save(nodes, snapshot):
     file    = snapshot+'.snap'
     folder  = user
     path    = dir+'/'+folder+'/'+file
-    add_in_name = '_snap_'
+    add_in_name = ADD_IN_NAME
     db      = {}
 
     print('INFO: saving snapshot. This may take a little while.')
@@ -112,7 +199,7 @@ def save(nodes, snapshot):
             #searching for the last saved image
             last_image = fetch_last_image(node)
             db.update( {str(node) : { "state" : node_status, "imagename" : last_image } } )
-        time.sleep(0.5)
+        time.sleep(0.1)
         bar.update(i)
     print('\r')
     #saving the file db
@@ -139,6 +226,37 @@ def view(snapshot):
     if snapshot is None:
         print("ERROR: snapshot name was not informed.")
         exit(1)
+
+
+
+def fork_save(nodes, snapshot):
+    """ forks the rhubarbe save command with threads
+    """
+    user        = fetch_user()
+    add_in_name = ADD_IN_NAME
+    ans_q       = Queue()
+    jobs        = []
+    jobs_ans    = []
+    i           = 0
+    print('INFO: saving snapshots...')
+    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
+    bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
+    for node in nodes:
+        job = Thread( target=run2, args=("echo rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
+        jobs.append(job)
+        job.start()
+        jobs_ans.append(ans_q.get())
+    #wait for all jobs finish
+    while jobs:
+        for job in jobs[:]:
+            if not job.isAlive():
+                i = i + 1
+                time.sleep(0.1)
+                bar.update(i)
+                jobs.remove(job)
+            job.join() #not obligatory when the while is present
+    print('\r')
+    return jobs_ans
 
 
 
@@ -212,7 +330,7 @@ def fetch_file(node):
         base_dir = IMAGEDIR
     else:
         base_dir = '/Users/'+user+'/'
-    key = '_snap_'
+    key = ADD_IN_NAME
     command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(base_dir, node, user+key)
     ans_cmd = run(command)
     if ans_cmd['status']:
@@ -269,6 +387,20 @@ def run(command):
     err        = err
     ret        = True if ret == 0 else False
     return dict({'output': out, 'error': err, 'status': ret})
+
+
+
+def run2(command, q):
+    """ run the commands and put the results in a queue - used with Thread
+    """
+    p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    (out, err) = p.communicate()
+    ret        = p.wait()
+    out        = out.strip().decode('ascii')
+    err        = err
+    ret        = True if ret == 0 else False
+    q.put(dict({'output': out, 'error': err, 'status': ret}))
+    return
 
 
 
