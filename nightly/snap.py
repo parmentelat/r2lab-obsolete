@@ -23,8 +23,7 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, Timer, AdaptiveETA
 from multiprocessing import Queue
-from threading import Thread
-import threading
+from multiprocessing import Process
 
 FILEDIR = "/root/r2lab/nightly/"
 try:
@@ -99,7 +98,7 @@ def save(nodes, snapshot):
     for node in nodes:
         bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
 
-        node_status = check_status(node, 1)
+        node_status = 'on'#check_status(node, 1)
         if 'on' in node_status:
             on_nodes.append(node)
         else:
@@ -121,7 +120,7 @@ def save(nodes, snapshot):
         #for each answer given by the save command in save_fork we move the file to the user snapshots folder
         for index, item in enumerate(answers):
             if not item['status']:
-                passerrors.append('ERROR: fail in saving node fit{}.'.format( on_nodes[index] ))
+                errors.append('ERROR: fail in saving node fit{}.'.format( on_nodes[index] ))
             else:
                 #searching for saved file give by rsave
                 saved_file = fetch_file(on_nodes[index])
@@ -243,19 +242,19 @@ def fork_save(nodes, snapshot):
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     for node in nodes:
         time.sleep(0.1)
-        job = Thread( target=run2, args=("rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
+        job = Process( target=run2, args=("rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
         jobs.append(job)
         job.start()
         jobs_ans.append(ans_q.get())
     #wait for all jobs finish
     while jobs:
         for job in jobs[:]:
-            if not job.isAlive():
+            if not job.is_alive():
                 i = i + 1
                 time.sleep(0.1)
                 bar.update(i)
                 jobs.remove(job)
-            #job.join() #not obligatory when the while is present
+            job.join() #not obligatory when the while is present
     print('\r')
     return jobs_ans
 
