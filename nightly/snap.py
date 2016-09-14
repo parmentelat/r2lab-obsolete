@@ -116,7 +116,7 @@ def save(nodes, snapshot):
         answers = fork_save(on_nodes, snapshot)
         print('INFO: arranging files...')
         i = 0
-        bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
+        bar = progressbar.ProgressBar(widgets=widgets,maxval=len(on_nodes)).start()
 
         #for each answer given by the save command in save_fork we move the file to the user snapshots folder
         for index, item in enumerate(answers):
@@ -242,6 +242,7 @@ def fork_save(nodes, snapshot):
     widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     for node in nodes:
+        time.sleep(0.1)
         job = Thread( target=run2, args=("rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
         jobs.append(job)
         job.start()
