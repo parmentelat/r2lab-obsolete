@@ -238,7 +238,7 @@ def fork_save(nodes, snapshot):
     jobs        = []
     jobs_ans    = []
     i           = 0
-    print('INFO: saving snapshots...')
+    print('INFO: saving snapshots. This may take a little while.')
     widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     for node in nodes:
@@ -255,7 +255,7 @@ def fork_save(nodes, snapshot):
                 time.sleep(0.1)
                 bar.update(i)
                 jobs.remove(job)
-            job.join() #not obligatory when the while is present
+            #job.join() #not obligatory when the while is present
     print('\r')
     return jobs_ans
 
