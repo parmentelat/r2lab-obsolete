@@ -101,7 +101,7 @@ def save(nodes, snapshot):
     for node in nodes:
         bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
 
-        node_status = check_status(node, 1)
+        node_status = 'on'#check_status(node, 1)
         if 'on' in node_status:
             on_nodes.append(node)
         else:
@@ -396,13 +396,15 @@ def run(command):
 def run2(command, q):
     """ run the commands and put the results in a queue - used with Thread
     """
-    p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    (out, err) = p.communicate()
-    #ret        = p.wait()
-    out        = out.strip().decode('ascii')
-    err        = err
+    os.system(command)
+    #
+    # p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    # (out, err) = p.communicate()
+    # ret        = p.wait()
+    # out        = out.strip().decode('ascii')
+    # err        = err
     # ret        = True if ret == 0 else False
-    q.put(dict({'output': out, 'error': err, 'status': True}))
+    q.put(dict({'output': 0, 'error': 0, 'status': True}))
     return
 
 
