@@ -23,7 +23,10 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, Timer, AdaptiveETA
 from multiprocessing import Queue
-from multiprocessing import Process
+from threading import Thread
+import threading
+
+
 
 FILEDIR = "/root/r2lab/nightly/"
 try:
@@ -98,7 +101,7 @@ def save(nodes, snapshot):
     for node in nodes:
         bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
 
-        node_status = 'on'#check_status(node, 1)
+        node_status = check_status(node, 1)
         if 'on' in node_status:
             on_nodes.append(node)
         else:
@@ -240,22 +243,16 @@ def fork_save(nodes, snapshot):
     print('INFO: saving snapshots. This may take a little while.')
     widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
-    # for node in nodes:
-        # time.sleep(0.1)
-    job = Process( target=run2, args=("rhubarbe save {} -o {}".format('01', user+add_in_name), ans_q ) )
-    jobs.append(job)
-    job.start()
-    jobs_ans.append(ans_q.get())
-
-    job1 = Process( target=run2, args=("rhubarbe save {} -o {}".format('02', user+add_in_name), ans_q ) )
-    jobs.append(job1)
-    job1.start()
-    jobs_ans.append(ans_q.get())
-
+    for node in nodes:
+        time.sleep(0.1)
+        job = Thread( target=run2, args=("rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
+        jobs.append(job)
+        job.start()
+        jobs_ans.append(ans_q.get())
     #wait for all jobs finish
     while jobs:
         for job in jobs[:]:
-            if not job.is_alive():
+            if not job.isAlive():
                 i = i + 1
                 time.sleep(0.1)
                 bar.update(i)
@@ -401,11 +398,11 @@ def run2(command, q):
     """
     p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     (out, err) = p.communicate()
-    ret        = p.wait()
+    #ret        = p.wait()
     out        = out.strip().decode('ascii')
     err        = err
-    ret        = True if ret == 0 else False
-    q.put(dict({'output': out, 'error': err, 'status': ret}))
+    # ret        = True if ret == 0 else False
+    q.put(dict({'output': out, 'error': err, 'status': True}))
     return
 
 
