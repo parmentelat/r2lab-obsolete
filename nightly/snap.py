@@ -10,6 +10,7 @@ import re
 import os, os.path
 import json
 import subprocess
+from subprocess import Popen
 import time
 import sys
 import copy
@@ -22,9 +23,6 @@ import progressbar
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, Timer, AdaptiveETA
-from multiprocessing import Queue
-from threading import Thread
-import threading
 
 
 
@@ -63,10 +61,9 @@ def main():
 
     #save
     if save_snapshot is not None:
-        lala()
-        # save(format_nodes(nodes), save_snapshot)
+        save(format_nodes(nodes), save_snapshot)
     elif ssave_snapshot is not None:
-        save2(format_nodes(nodes), ssave_snapshot)
+        save_sequentially(format_nodes(nodes), ssave_snapshot)
     #load
     elif load_snapshot is not None:
         load(load_snapshot)
@@ -102,7 +99,7 @@ def save(nodes, snapshot):
     for node in nodes:
         bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
 
-        node_status = 'on'#check_status(node, 1)
+        node_status = check_status(node, 1)
         if 'on' in node_status:
             on_nodes.append(node)
         else:
@@ -117,6 +114,8 @@ def save(nodes, snapshot):
 
     if on_nodes:
         answers = fork_save(on_nodes, snapshot)
+        if False in answers:
+            errors.append('ERROR: one or more node could not be saved.')
         print('INFO: arranging files...')
         i = 0
         bar = progressbar.ProgressBar(widgets=widgets,maxval=len(on_nodes)).start()
@@ -157,7 +156,7 @@ def save(nodes, snapshot):
 
 
 
-def save2(nodes, snapshot):
+def save_sequentially(nodes, snapshot):
     """ save a snapshot for the user according nodes state
     """
     create_user_folder()
@@ -237,43 +236,22 @@ def fork_save(nodes, snapshot):
     """
     user        = fetch_user()
     add_in_name = ADD_IN_NAME
-    ans_q       = Queue()
-    jobs        = []
     jobs_ans    = []
     i           = 0
-    print('INFO: saving snapshots. This may take a little while.')
-    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
-    bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
-    for node in nodes:
+    widgets     = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
+    bar         = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
+    jobs        = [Popen("rhubarbe save {} -o {}".format(node, user+add_in_name),
+                        shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                        for node in nodes]
+    # collect statuses
+    for job in jobs:
+        i = i + 1
         time.sleep(0.1)
-
-        job = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        # job = Thread( target=run2, args=("rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
-        jobs.append(job)
-        # job.start()
-        # jobs_ans.append(ans_q.get())
-    #wait for all jobs finish
-    while jobs:
-        for job in jobs[:]:
-            if not job.isAlive():
-                i = i + 1
-                time.sleep(0.1)
-                bar.update(i)
-                jobs.remove(job)
-            job.join() #not obligatory when the while is present
+        bar.update(i)
+        jobs_ans.append(job.wait())
     print('\r')
     return jobs_ans
 
-
-def lala():
-    #!/usr/bin/env python
-    from subprocess import Popen
-
-    # run commands in parallel
-    processes = [Popen("rhubarbe save 0{i:d} -o root_snap_".format(i=i), shell=True)
-                 for i in range(1,3)]
-    # collect statuses
-    exitcodes = [p.wait() for p in processes]
 
 
 def check_status(node, silent=0):
@@ -403,20 +381,6 @@ def run(command):
     err        = err
     ret        = True if ret == 0 else False
     return dict({'output': out, 'error': err, 'status': ret})
-
-
-
-def run2(command, q):
-    """ run the commands and put the results in a queue - used with Thread
-    """
-    p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    (out, err) = p.communicate()
-    ret        = p.wait()
-    out        = out.strip().decode('ascii')
-    err        = err
-    ret        = True if ret == 0 else False
-    q.put(dict({'output': out, 'error': err, 'status': ret}))
-    return
 
 
 
