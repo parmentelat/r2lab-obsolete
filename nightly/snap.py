@@ -114,7 +114,7 @@ def save(nodes, snapshot):
 
     if on_nodes:
         answers = fork_save(on_nodes, snapshot)
-        if False in answers:
+        if True in answers:
             errors.append('ERROR: one or more node could not be saved.')
         print('INFO: arranging files...')
         i = 0
@@ -239,7 +239,7 @@ def fork_save(nodes, snapshot):
     widgets     = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     bar         = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     jobs        = [Popen("rhubarbe save {} -o {}".format(node, user+add_in_name),
-                        shell=True)
+                        shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                         for node in nodes]
     # collect statuses
     for job in jobs:
