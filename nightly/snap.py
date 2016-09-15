@@ -113,6 +113,7 @@ def save(nodes, snapshot):
     print('\r')
 
     if on_nodes:
+        clean_old_files()
         answers = fork_save(on_nodes, snapshot)
         if True in answers:
             errors.append('ERROR: one or more node could not be saved.')
@@ -169,7 +170,7 @@ def save_sequentially(nodes, snapshot):
     add_in_name = ADD_IN_NAME
     db      = {}
 
-    print('INFO: saving snapshot. This may take a little while.')
+    print('INFO: saving snapshots... This may take a little while.')
     i   = 0
     widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
@@ -236,18 +237,18 @@ def fork_save(nodes, snapshot):
     add_in_name = ADD_IN_NAME
     jobs_ans    = []
     i           = 0
-    widgets     = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
-    bar         = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
+    # widgets     = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
+    # bar         = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     jobs        = [Popen("rhubarbe save {} -o {}".format(node, user+add_in_name),
                         shell=True, stdout=subprocess.PIPE)
                         for node in nodes]
     # collect statuses
     for job in jobs:
-        i = i + 1
-        time.sleep(0.1)
-        bar.update(i)
+        # i = i + 1
+        # time.sleep(0.1)
+        # bar.update(i)
         jobs_ans.append(job.wait())
-    print('\r')
+    # print('\r')
     return jobs_ans
 
 
@@ -311,6 +312,21 @@ def fetch_last_image(node):
     image_name = 'fedora-23.ndz'
 
     return image_name
+
+
+
+def clean_old_files():
+    """ move the old files with signature of user + _snap_ to its folder
+    """
+    user = fetch_user()
+    if os.path.exists(IMAGEDIR):
+        base_dir = IMAGEDIR
+    else:
+        base_dir = '/Users/'+user+'/'
+    key = ADD_IN_NAME
+    user_folder = my_user_folder()
+    command = "mv {}*saving__*{}.ndz {}".format(base_dir, user+key, user_folder)
+    ans_cmd = run(command)
 
 
 
