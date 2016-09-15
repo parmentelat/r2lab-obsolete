@@ -158,17 +158,15 @@ def save_sequentially(nodes, snapshot):
     """ save a snapshot for the user according nodes state
     """
     create_user_folder()
-
     user = fetch_user()
     if os.path.exists('/Users'):
         dir = '/Users'
     else:
         dir = '/home'
-    file    = snapshot+'.snap'
-    folder  = user
-    path    = dir+'/'+folder+'/'+file
-    add_in_name = ADD_IN_NAME
-    db      = {}
+    file = snapshot+'.snap'
+    path = dir+'/'+user+'/'+file
+    file_part = code()+ADD_IN_NAME
+    db = {}
 
     print('INFO: saving snapshots... This may take a little while.')
     i   = 0
@@ -181,7 +179,7 @@ def save_sequentially(nodes, snapshot):
         node_status = check_status(node, 1)
         if 'on' in node_status:
             #======== the node is ON, then let's save the current image
-            ans_cmd = run("rhubarbe save {} -o {}".format(node, user+add_in_name))
+            ans_cmd = run("rhubarbe save {} -o {}".format(node, file_part))
             if not ans_cmd['status'] or ans_cmd['output'] == "":
                 print('ERROR: fail in saving node fit{}.'.format(node))
             else:
@@ -233,22 +231,14 @@ def fork_save(nodes, snapshot):
     """ forks the rhubarbe save command with threads
     """
     print('INFO: saving images. This may take a little while.')
-    user        = fetch_user()
-    add_in_name = ADD_IN_NAME
+    file_part   = code()+ADD_IN_NAME
     jobs_ans    = []
     i           = 0
-    # widgets     = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
-    # bar         = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
-    jobs        = [Popen("rhubarbe save {} -o {}".format(node, user+add_in_name),
+    jobs        = [Popen("rhubarbe save {} -o {}".format(node, file_part),
                         shell=True, stdout=subprocess.PIPE)
                         for node in nodes]
-    # collect statuses
     for job in jobs:
-        # i = i + 1
-        # time.sleep(0.1)
-        # bar.update(i)
         jobs_ans.append(job.wait())
-    # print('\r')
     return jobs_ans
 
 
@@ -315,17 +305,25 @@ def fetch_last_image(node):
 
 
 
+def code():
+    """ give me a small hash code from user name
+    """
+    user = fetch_user()
+    return str(abs(hash(user)) % (10 ** 8))
+
+
+
 def clean_old_files():
-    """ move the old files with signature of user + _snap_ to its folder
+    """ move the old files with signature of user code + _snap_ to its folder
     """
     user = fetch_user()
     if os.path.exists(IMAGEDIR):
         base_dir = IMAGEDIR
     else:
         base_dir = '/Users/'+user+'/'
-    key = ADD_IN_NAME
     user_folder = my_user_folder()
-    command = "mv {}*saving__*{}.ndz {}".format(base_dir, user+key, user_folder)
+    file_part = code()+ADD_IN_NAME
+    command = "mv {}*saving__*{}.ndz {}".format(base_dir, file_part, user_folder)
     ans_cmd = run(command)
 
 
@@ -338,8 +336,8 @@ def fetch_file(node):
         base_dir = IMAGEDIR
     else:
         base_dir = '/Users/'+user+'/'
-    key = ADD_IN_NAME
-    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(base_dir, node, user+key)
+    file_part = code()+ADD_IN_NAME
+    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(base_dir, node, file_part)
     ans_cmd = run(command)
     if ans_cmd['status']:
         ans = ans_cmd['output']
