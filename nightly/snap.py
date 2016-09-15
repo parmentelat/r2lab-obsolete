@@ -234,6 +234,7 @@ def view(snapshot):
 def fork_save(nodes, snapshot):
     """ forks the rhubarbe save command with threads
     """
+    print('INFO: saving images. This may take a little while.')
     user        = fetch_user()
     add_in_name = ADD_IN_NAME
     jobs_ans    = []
@@ -241,7 +242,7 @@ def fork_save(nodes, snapshot):
     widgets     = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     bar         = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     jobs        = [Popen("rhubarbe save {} -o {}".format(node, user+add_in_name),
-                        shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                        shell=True)
                         for node in nodes]
     # collect statuses
     for job in jobs:
