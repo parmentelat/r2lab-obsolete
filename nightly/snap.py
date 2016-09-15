@@ -94,7 +94,7 @@ def save(nodes, snapshot):
     widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     on_nodes = []
 
-    print('INFO: colecting nodes...')
+    print('INFO: saving snapshot...')
     i = 0
     for node in nodes:
         bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
@@ -150,7 +150,7 @@ def save(nodes, snapshot):
         for error in errors:
             print(error)
     else:
-        print('INFO: snapshot saved.')
+        print('INFO: snapshot saved. Enjoy!')
 
 
 
