@@ -239,7 +239,7 @@ def fork_save(nodes, snapshot):
     widgets     = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     bar         = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     jobs        = [Popen("rhubarbe save {} -o {}".format(node, user+add_in_name),
-                        shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                        shell=True, stdout=subprocess.PIPE)
                         for node in nodes]
     # collect statuses
     for job in jobs:
