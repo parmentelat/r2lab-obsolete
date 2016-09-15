@@ -63,7 +63,8 @@ def main():
 
     #save
     if save_snapshot is not None:
-        save(format_nodes(nodes), save_snapshot)
+        lala()
+        # save(format_nodes(nodes), save_snapshot)
     elif ssave_snapshot is not None:
         save2(format_nodes(nodes), ssave_snapshot)
     #load
@@ -245,10 +246,12 @@ def fork_save(nodes, snapshot):
     bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
     for node in nodes:
         time.sleep(0.1)
-        job = Thread( target=run2, args=("rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
+
+        job = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        # job = Thread( target=run2, args=("rhubarbe save {} -o {}".format(node, user+add_in_name), ans_q ) )
         jobs.append(job)
-        job.start()
-        jobs_ans.append(ans_q.get())
+        # job.start()
+        # jobs_ans.append(ans_q.get())
     #wait for all jobs finish
     while jobs:
         for job in jobs[:]:
@@ -261,6 +264,16 @@ def fork_save(nodes, snapshot):
     print('\r')
     return jobs_ans
 
+
+def lala():
+    #!/usr/bin/env python
+    from subprocess import Popen
+
+    # run commands in parallel
+    processes = [Popen("rhubarbe save 0{i:d} -o root_snap_".format(i=i), shell=True)
+                 for i in range(1,3)]
+    # collect statuses
+    exitcodes = [p.wait() for p in processes]
 
 
 def check_status(node, silent=0):
@@ -396,15 +409,13 @@ def run(command):
 def run2(command, q):
     """ run the commands and put the results in a queue - used with Thread
     """
-    os.system(command)
-    #
-    # p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    # (out, err) = p.communicate()
-    # ret        = p.wait()
-    # out        = out.strip().decode('ascii')
-    # err        = err
-    # ret        = True if ret == 0 else False
-    q.put(dict({'output': 0, 'error': 0, 'status': True}))
+    p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    (out, err) = p.communicate()
+    ret        = p.wait()
+    out        = out.strip().decode('ascii')
+    err        = err
+    ret        = True if ret == 0 else False
+    q.put(dict({'output': out, 'error': err, 'status': ret}))
     return
 
 
