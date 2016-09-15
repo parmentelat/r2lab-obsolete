@@ -120,20 +120,17 @@ def save(nodes, snapshot):
         i = 0
         bar = progressbar.ProgressBar(widgets=widgets,maxval=len(on_nodes)).start()
 
-        #for each answer given by the save command in save_fork we move the file to the user snapshots folder
-        for index, item in enumerate(answers):
-            if not item['status']:
-                errors.append('ERROR: fail in saving node fit{}.'.format( on_nodes[index] ))
+        #move each saved file to the user snapshots folder
+        for node in on_nodes:
+            #searching for saved file give by rsave
+            saved_file = fetch_file(node)
+            file_path, file_name = os.path.split(str(saved_file))
+            db.update( {str(node) : { "state" : 'on', "imagename" : file_name } } )
+            if saved_file:
+                user_folder = my_user_folder()
+                os.rename(saved_file, user_folder+file_name)
             else:
-                #searching for saved file give by rsave
-                saved_file = fetch_file(on_nodes[index])
-                file_path, file_name = os.path.split(str(saved_file))
-                db.update( {str(on_nodes[index]) : { "state" : 'on', "imagename" : file_name } } )
-                if saved_file:
-                    user_folder = my_user_folder()
-                    os.rename(saved_file, user_folder+file_name)
-                else:
-                    errors.append('ERROR: could not find file for node fit{}.'.format(on_nodes[index]))
+                errors.append('ERROR: could not find file for node fit{}.'.format(node))
             i = i + 1
             time.sleep(0.1)
             bar.update(i)
