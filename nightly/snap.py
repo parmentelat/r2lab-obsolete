@@ -103,7 +103,7 @@ def save(nodes, snapshot, persist=False):
     i = 0
     for node in on_nodes:
         if i == 0: bar = progressbar.ProgressBar(widgets=widgets,maxval=len(on_nodes)).start()
-        saved_file = fetch_last_image(node)
+        saved_file = fetch_last_image(node, errors)
         image_path, image_name = os.path.split(str(saved_file))
         db.update( {str(node) : {"state":'on' , "imagepath":image_path+'/', "imagename":image_name }})
         i = i + 1
@@ -278,10 +278,11 @@ def my_user_folder():
 
 
 
-def fetch_last_image(node):
+def fetch_last_image(node, errors):
     """ recover the last image save in the node
     """
     image_name = DEFAULT_IMAGE
+
     try:
         command = "ssh root@fit{} cat {} | tail -n1 | awk '{{print $7}}'".format(node, NODE_TAG_IMAGE)
         ans_cmd = run(command)
@@ -289,6 +290,9 @@ def fetch_last_image(node):
             ans = ans_cmd['output'].lower()
             if not 'no such file' in ans and not 'could not resolve' in ans:
                 image_name = ans
+            else:
+                image_name = try_guess_the_image(node)
+                errors.append('WARNING: image name of node {} was not found. A default {} is used.'.format(node, image_name))
     except Exception as e:
         pass
 
@@ -312,6 +316,51 @@ def fetch_last_image(node):
         image_name = IMAGEDIR+image_name
 
     return image_name
+
+
+
+def try_guess_the_image(node):
+    """ try to guess the image instlled in the node
+    """
+    image_name = DEFAULT_IMAGE
+
+    command = "ssh -q root@fit{}".format(node) + " cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
+    ans_cmd = run(command)
+    if not ans_cmd['status'] or ans_cmd['output'] == "":
+        pass
+    else:
+        image_name = ans_cmd['output']
+        image_name = which_version(image_name)
+    return image_name
+
+
+
+def which_version(version):
+    """ try to identify the version in the machine and return the version to install
+    """
+    OSS        = [ "fedora"           , "ubuntu"                                               ]
+    VERSIONS   = [ ["23", "22", "21"] , ["16.04", "15.10", "15.04", "14.10", "14.04", "12.04"] ]
+    oss         = OSS
+    versions    = VERSIONS
+    try_version = ''
+    found_at    = -1
+    version = version.lower()
+    for i,v in enumerate(oss):
+        if v in version:
+            found_at    = i
+            try_version = v + '-'
+    if found_at == -1:
+        try_version = oss[0] + '-' + version[0][0]
+    else:
+        found_at = -1
+        for i,v in enumerate(versions[found_at]):
+            if v in version:
+                found_at    = i
+                try_version = try_version + v + ".ndz"
+        if found_at == -1:
+            try_version = try_version + versions[0][0] + ".ndz"
+
+    return try_version
 
 
 
