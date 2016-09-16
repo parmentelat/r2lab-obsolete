@@ -97,13 +97,15 @@ def save(nodes, snapshot, persist=False):
     on_nodes, off_nodes = split_nodes_by_status(nodes)
     print('INFO: checking node images...')
     for node in off_nodes:
-        db.update( {str(node) : {"state":'off', "imagename":DEFAULT_IMAGE}})
+        db.update( {str(node) : {"state":'off', "imagepath":IMAGEDIR, "imagename": DEFAULT_IMAGE}})
 
     widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     i = 0
     for node in on_nodes:
         if i == 0: bar = progressbar.ProgressBar(widgets=widgets,maxval=len(on_nodes)).start()
-        db.update( {str(node) : {"state":'on' , "imagename":fetch_last_image(node)}})
+        saved_file = fetch_last_image(node)
+        image_path, image_name = os.path.split(str(saved_file))
+        db.update( {str(node) : {"state":'on' , "imagepath":image_path+'/', "imagename":image_name }})
         i = i + 1
         time.sleep(0.1)
         bar.update(i)
@@ -129,6 +131,25 @@ def save(nodes, snapshot, persist=False):
 def load(user, snapshot):
     """ load an already saved snapshot for the user
     """
+    # dir       = FILEDIR
+    # file_name = FILENAME
+    # with open(os.path.join(dir, file_name)) as data_file:
+    #     try:
+    #         content = json.load(data_file)
+    #     except Exception as e:
+    #         content = {}
+    #
+    # try:
+    #     content[user][session]
+    # except Exception as e:
+    #     print('ERROR: session  * {} *  does not exist.'.format(session))
+    #     exit(1)
+    #
+    # print('INFO: loading * {} * session. This may take a little while.'.format(session))
+    # the_images, the_nodes = group_nodes_and_images(content, user, session)
+    # if run_load(the_images, the_nodes):
+    #     if given_on_off_status(content, user, session):
+    #         print('INFO: session  * {} *  loaded. Enjoy!'.format(session))
 
 
 
@@ -182,11 +203,11 @@ def persist_image(on_nodes, snapshot, db, errors):
     for node in on_nodes:
         #searching for saved file give by rsave
         saved_file = fetch_saved_file_by_rhubarbe(node)
-        file_path, file_name = os.path.split(str(saved_file))
-        db.update( {str(node) : { "state" : 'on', "imagename" : file_name } } )
+        image_path, image_name = os.path.split(str(saved_file))
+        db.update( {str(node) : {"state":'on' , "imagepath":image_path+'/', "imagename":image_name }})
         if saved_file:
             user_folder = my_user_folder()
-            os.rename(saved_file, user_folder+file_name)
+            os.rename(saved_file, user_folder+image_name)
         else:
             errors.append('ERROR: could not find file for node fit{}.'.format(node))
         i = i + 1
@@ -270,7 +291,26 @@ def fetch_last_image(node):
                 image_name = ans
     except Exception as e:
         pass
-        # print('WARNING: image was not found. The default {} will be set.'.format(image_name))
+
+    user = fetch_user()
+    folder = user + ADD_IN_FOLDER
+    path = USER_IMAGEDIR + folder +'/'
+
+    #try first in user images folder, if not try the common image repository
+    if os.path.exists(path):
+        command = "ls {}*saving__fit{}__*{}*.ndz".format(path, node, image_name)
+        ans_cmd = run(command)
+        if ans_cmd['status']:
+            ans = ans_cmd['output'].lower()
+            if not 'no such file' in ans:
+                image_name = ans
+            else:
+                image_name = IMAGEDIR+image_name
+        else:
+            image_name = IMAGEDIR+image_name
+    else:
+        image_name = IMAGEDIR+image_name
+
     return image_name
 
 

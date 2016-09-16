@@ -154,10 +154,10 @@ main()
 EOF
 }
 
-function snapshot () {
-  python3 /root/r2lab/nightly/snapshot.py "$@"
+function snap () {
+  python3 /root/r2lab/nightly/snap.py "$@"
 }
-alias snap=snapshot
+alias snapshot=snap
 alias rsnap="rhubarbe snap"
 
 function maintenance () {
