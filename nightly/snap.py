@@ -54,16 +54,12 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("-n", "--nodes", dest="nodes", default='all',
                         help="Comma separated list of nodes")
-
     parser.add_argument("-s", "--save", dest="save_snapshot",
                         help="Save r2lab snapshot based in the current image name")
-
     parser.add_argument("-p", dest="persist", action='store_true',
                         help="Persist the current image as a new one")
-
     parser.add_argument("-l", "--load", dest="load_snapshot",
                         help="Load a given snapshot")
-
     parser.add_argument("-v", "--view", dest="view_snapshot", default=None,
                         help="View a given snapshot")
     args = parser.parse_args()
@@ -99,11 +95,19 @@ def save(nodes, snapshot, persist=False):
 
     print('INFO: saving snapshot...')
     on_nodes, off_nodes = split_nodes_by_status(nodes)
+    print('INFO: checking node images...')
     for node in off_nodes:
         db.update( {str(node) : {"state":'off', "imagename":DEFAULT_IMAGE}})
-    for node in on_nodes:
-        db.update( {str(node) : {"state":'on' , "imagename":fetch_last_image(node)}})
 
+    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
+    i = 0
+    for node in on_nodes:
+        if i == 0: bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
+        db.update( {str(node) : {"state":'on' , "imagename":fetch_last_image(node)}})
+        i = i + 1
+        time.sleep(0.1)
+        bar.update(i)
+    if i > 0: print('\r')
     if persist and on_nodes: persist_image(on_nodes, snapshot, db, errors)
 
     try:
@@ -147,7 +151,7 @@ def split_nodes_by_status(nodes):
     off_nodes = []
     i = 0
     for node in nodes:
-        node_status = 'on'#check_status(node, 1)
+        node_status = check_status(node, 1)
         if 'on' in node_status:
             on_nodes.append(node)
         else:
@@ -257,17 +261,17 @@ def fetch_last_image(node):
     """ recover the last image save in the node
     """
     image_name = DEFAULT_IMAGE
-
     if os.path.exists(NODE_TAG_IMAGE):
         try:
-            command = "cat {} | tail -n1 | awk '{{print $7}}'".format(NODE_TAG_IMAGE)
+            command = "ssh root@fit{} cat {} | tail -n1 | awk '{{print $7}}'".format(node, NODE_TAG_IMAGE)
             ans_cmd = run(command)
             if ans_cmd['status']:
-                ans = ans_cmd['output']
-                if not 'No such file' in ans:
+                ans = ans_cmd['output'].lower()
+                if not 'no such file' or not 'could not resolve' in ans:
                     image_name = ans
         except Exception as e:
-            print('WARNING: image was not found. The default {} will be set.'.format(image_name))
+            pass
+            # print('WARNING: image was not found. The default {} will be set.'.format(image_name))
     return image_name
 
 
