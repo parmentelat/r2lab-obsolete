@@ -26,14 +26,25 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
 
 
 
+IMAGEDIR        = '/var/lib/rhubarbe-images/'
+NODE_TAG_IMAGE  = '/etc/rhubarbe-image' #this is a TAG, not a folder
+ADD_IN_NAME     = '_snap_'
+ADD_IN_FOLDER   = '_snapshots'
+DEFAULT_IMAGE   = 'fedora-23.ndz'
+
 FILEDIR = "/root/r2lab/nightly/"
 try:
     os.listdir(FILEDIR)
 except Exception as e:
+    #for my local dir
     FILEDIR = "/Users/nano/Documents/Inria/r2lab/nightly/"
-IMAGEDIR = '/var/lib/rhubarbe-images/'
 
-ADD_IN_NAME = '_snap_'
+USER_IMAGEDIR = '/var/lib/rhubarbe-images/'
+try:
+    os.listdir(USER_IMAGEDIR)
+except Exception as e:
+    #for my local dir
+    USER_IMAGEDIR = '/Users/nano/'
 
 
 
@@ -43,27 +54,29 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("-n", "--nodes", dest="nodes", default='all',
                         help="Comma separated list of nodes")
+
     parser.add_argument("-s", "--save", dest="save_snapshot",
-                        help="Save the snapshot")
-    parser.add_argument("-ss", "--ssave", dest="ssave_snapshot",
-                        help="Save the snapshot")
+                        help="Save r2lab snapshot based in the current image name")
+
+    parser.add_argument("-p", dest="persist", action='store_true',
+                        help="Persist the current image as a new one")
+
     parser.add_argument("-l", "--load", dest="load_snapshot",
                         help="Load a given snapshot")
+
     parser.add_argument("-v", "--view", dest="view_snapshot", default=None,
                         help="View a given snapshot")
     args = parser.parse_args()
 
     save_snapshot  = args.save_snapshot
-    ssave_snapshot = args.ssave_snapshot
+    persist        = args.persist
     load_snapshot  = args.load_snapshot
     view_snapshot  = args.view_snapshot
     nodes          = args.nodes
 
     #save
     if save_snapshot is not None:
-        save(format_nodes(nodes), save_snapshot)
-    elif ssave_snapshot is not None:
-        save_sequentially(format_nodes(nodes), ssave_snapshot)
+        save(format_nodes(nodes), save_snapshot, persist)
     #load
     elif load_snapshot is not None:
         load(load_snapshot)
@@ -76,68 +89,23 @@ def main():
 
 
 
-def save(nodes, snapshot):
+def save(nodes, snapshot, persist=False):
     """ save a snapshot for the user according nodes state using threading
     """
-    create_user_folder()
-
-    user = fetch_user()
-    if os.path.exists('/Users'):
-        dir = '/Users'
-    else:
-        dir = '/home'
     file    = snapshot+'.snap'
-    folder  = user
-    path    = dir+'/'+folder+'/'+file
+    path    = os.getcwd()+'/'+file
     db      = {}
     errors  = []
-    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
-    on_nodes = []
 
     print('INFO: saving snapshot...')
-    i = 0
-    for node in nodes:
-        bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
+    on_nodes, off_nodes = split_nodes_by_status(nodes)
+    for node in off_nodes:
+        db.update( {str(node) : {"state":'off', "imagename":DEFAULT_IMAGE}})
+    for node in on_nodes:
+        db.update( {str(node) : {"state":'on' , "imagename":fetch_last_image(node)}})
 
-        node_status = check_status(node, 1)
-        if 'on' in node_status:
-            on_nodes.append(node)
-        else:
-            #========the node is OFF, then let's save recover the last image saved
-            #searching for the last saved image
-            last_image = fetch_last_image(node)
-            db.update( {str(node) : { "state" : 'off', "imagename" : last_image } } )
-        i = i + 1
-        time.sleep(0.1)
-        bar.update(i)
-    print('\r')
+    if persist and on_nodes: persist_image(on_nodes, snapshot, db, errors)
 
-    if on_nodes:
-        clean_old_files()
-        answers = fork_save(on_nodes, snapshot)
-        if True in answers:
-            errors.append('ERROR: one or more node could not be saved.')
-        print('INFO: arranging files...')
-        i = 0
-        bar = progressbar.ProgressBar(widgets=widgets,maxval=len(on_nodes)).start()
-
-        #move each saved file to the user snapshots folder
-        for node in on_nodes:
-            #searching for saved file give by rsave
-            saved_file = fetch_file(node)
-            file_path, file_name = os.path.split(str(saved_file))
-            db.update( {str(node) : { "state" : 'on', "imagename" : file_name } } )
-            if saved_file:
-                user_folder = my_user_folder()
-                os.rename(saved_file, user_folder+file_name)
-            else:
-                errors.append('ERROR: could not find file for node fit{}.'.format(node))
-            i = i + 1
-            time.sleep(0.1)
-            bar.update(i)
-        print('\r')
-
-    #saving the file db
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
     except Exception as e:
@@ -151,64 +119,6 @@ def save(nodes, snapshot):
             print(error)
     else:
         print('INFO: snapshot saved. Enjoy!')
-
-
-
-def save_sequentially(nodes, snapshot):
-    """ save a snapshot for the user according nodes state
-    """
-    create_user_folder()
-    user = fetch_user()
-    if os.path.exists('/Users'):
-        dir = '/Users'
-    else:
-        dir = '/home'
-    file = snapshot+'.snap'
-    path = dir+'/'+user+'/'+file
-    file_part = code()+ADD_IN_NAME
-    db = {}
-
-    print('INFO: saving snapshots... This may take a little while.')
-    i   = 0
-    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
-    bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
-    for node in nodes:
-        i = i + 1
-        #searching for node state
-        # print('INFO: saving fit{}.'.format(node))
-        node_status = check_status(node, 1)
-        if 'on' in node_status:
-            #======== the node is ON, then let's save the current image
-            ans_cmd = run("rhubarbe save {} -o {}".format(node, file_part))
-            if not ans_cmd['status'] or ans_cmd['output'] == "":
-                print('ERROR: fail in saving node fit{}.'.format(node))
-            else:
-                #searching for saved file give by rsave
-                saved_file = fetch_file(node)
-                file_path, file_name = os.path.split(str(saved_file))
-                db.update( {str(node) : { "state" : node_status, "imagename" : file_name } } )
-                if saved_file:
-                    user_folder = my_user_folder()
-                    os.rename(saved_file, user_folder+file_name)
-                else:
-                    print('ERROR: could not find file name for node fit{}.'.format(node))
-        else:
-            #========the node is OFF, then let's save recover the last image saved
-            #searching for the last saved image
-            last_image = fetch_last_image(node)
-            db.update( {str(node) : { "state" : node_status, "imagename" : last_image } } )
-        time.sleep(0.1)
-        bar.update(i)
-    print('\r')
-    #saving the file db
-    try:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-    except Exception as e:
-        print('ERROR: something went wrong in create directory in home.')
-        exit(1)
-    with open(path, "w+") as f:
-        f.write(json.dumps(db)+"\n")
-    print('INFO: snapshot saved.')
 
 
 
@@ -227,8 +137,63 @@ def view(snapshot):
 
 
 
-def fork_save(nodes, snapshot):
-    """ forks the rhubarbe save command with threads
+def split_nodes_by_status(nodes):
+    """ split nodes in a list of on/off state nodes
+    """
+    print('INFO: checking node status...')
+    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
+    bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
+    on_nodes  = []
+    off_nodes = []
+    i = 0
+    for node in nodes:
+        node_status = 'on'#check_status(node, 1)
+        if 'on' in node_status:
+            on_nodes.append(node)
+        else:
+            off_nodes.append(node)
+        i = i + 1
+        time.sleep(0.1)
+        bar.update(i)
+    print('\r')
+    return (on_nodes, off_nodes)
+
+
+
+def persist_image(on_nodes, snapshot, db, errors):
+    """ save the images using rhubarbe
+    """
+    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
+    create_user_folder()
+    clean_old_files()
+
+    answers = persist_image_with_rhubarbe(on_nodes, snapshot)
+    if True in answers:
+        errors.append('ERROR: one or more image node could not be saved.')
+    print('INFO: arranging files...')
+    i = 0
+    bar = progressbar.ProgressBar(widgets=widgets,maxval=len(on_nodes)).start()
+
+    #move each saved file to the user snapshots folder
+    for node in on_nodes:
+        #searching for saved file give by rsave
+        saved_file = fetch_saved_file_by_rhubarbe(node)
+        file_path, file_name = os.path.split(str(saved_file))
+        db.update( {str(node) : { "state" : 'on', "imagename" : file_name } } )
+        if saved_file:
+            user_folder = my_user_folder()
+            os.rename(saved_file, user_folder+file_name)
+        else:
+            errors.append('ERROR: could not find file for node fit{}.'.format(node))
+        i = i + 1
+        time.sleep(0.1)
+        bar.update(i)
+    print('\r')
+
+
+
+def persist_image_with_rhubarbe(nodes, snapshot):
+    """ forks the rhubarbe save command
     """
     print('INFO: saving images. This may take a little while.')
     file_part   = code()+ADD_IN_NAME
@@ -263,12 +228,8 @@ def create_user_folder():
     """ create a user folder in images folder
     """
     user = fetch_user()
-    if os.path.exists(IMAGEDIR):
-        base_dir = IMAGEDIR
-    else:
-        base_dir = '/Users/'+user+'/'
-    dir  = user+'_snapshots'
-    path = base_dir + dir + '/'
+    folder = user + ADD_IN_FOLDER
+    path = USER_IMAGEDIR + folder + '/'
 
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -282,16 +243,12 @@ def my_user_folder():
     """ create a user folder in images folder
     """
     user = fetch_user()
-    if os.path.exists(IMAGEDIR):
-        base_dir = IMAGEDIR
-    else:
-        base_dir = '/Users/'+user+'/'
-    dir  = user + '_snapshots'
-    path = base_dir + dir +'/'
+    folder = user + ADD_IN_FOLDER
+    path = USER_IMAGEDIR + folder +'/'
     if os.path.exists(path):
         return path
     else:
-        print('ERROR: something went wrong in read user directory in images folder.')
+        print('ERROR: something went wrong in read user directory images folder.')
         exit(1)
 
 
@@ -299,8 +256,18 @@ def my_user_folder():
 def fetch_last_image(node):
     """ recover the last image save in the node
     """
-    image_name = 'fedora-23.ndz'
+    image_name = DEFAULT_IMAGE
 
+    if os.path.exists(NODE_TAG_IMAGE):
+        try:
+            command = "cat {} | tail -n1 | awk '{{print $7}}'".format(NODE_TAG_IMAGE)
+            ans_cmd = run(command)
+            if ans_cmd['status']:
+                ans = ans_cmd['output']
+                if not 'No such file' in ans:
+                    image_name = ans
+        except Exception as e:
+            print('WARNING: image was not found. The default {} will be set.'.format(image_name))
     return image_name
 
 
@@ -316,28 +283,18 @@ def code():
 def clean_old_files():
     """ move the old files with signature of user code + _snap_ to its folder
     """
-    user = fetch_user()
-    if os.path.exists(IMAGEDIR):
-        base_dir = IMAGEDIR
-    else:
-        base_dir = '/Users/'+user+'/'
     user_folder = my_user_folder()
-    file_part = code()+ADD_IN_NAME
-    command = "mv {}*saving__*{}.ndz {}".format(base_dir, file_part, user_folder)
+    file_part_name = code()+ADD_IN_NAME
+    command = "mv {}*saving__*{}.ndz {}".format(USER_IMAGEDIR, file_part_name, user_folder)
     ans_cmd = run(command)
 
 
 
-def fetch_file(node):
+def fetch_saved_file_by_rhubarbe(node):
     """ list the images dir in last modified file order
     """
-    user = fetch_user()
-    if os.path.exists(IMAGEDIR):
-        base_dir = IMAGEDIR
-    else:
-        base_dir = '/Users/'+user+'/'
-    file_part = code()+ADD_IN_NAME
-    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(base_dir, node, file_part)
+    file_part_name = code()+ADD_IN_NAME
+    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(USER_IMAGEDIR, node, file_part_name)
     ans_cmd = run(command)
     if ans_cmd['status']:
         ans = ans_cmd['output']

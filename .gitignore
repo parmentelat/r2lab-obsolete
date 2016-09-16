@@ -17,3 +17,4 @@ nightly_data.json
 nightly_data.txt
 maintenance_nodes.json
 session_nodes.json
+*.snap
