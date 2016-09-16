@@ -102,7 +102,7 @@ def save(nodes, snapshot, persist=False):
     widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
     i = 0
     for node in on_nodes:
-        if i == 0: bar = progressbar.ProgressBar(widgets=widgets,maxval=len(nodes)).start()
+        if i == 0: bar = progressbar.ProgressBar(widgets=widgets,maxval=len(on_nodes)).start()
         db.update( {str(node) : {"state":'on' , "imagename":fetch_last_image(node)}})
         i = i + 1
         time.sleep(0.1)
@@ -264,7 +264,9 @@ def fetch_last_image(node):
     if os.path.exists(NODE_TAG_IMAGE):
         try:
             command = "ssh root@fit{} cat {} | tail -n1 | awk '{{print $7}}'".format(node, NODE_TAG_IMAGE)
+            print(command)
             ans_cmd = run(command)
+            print(ans_cmd)
             if ans_cmd['status']:
                 ans = ans_cmd['output'].lower()
                 if not 'no such file' or not 'could not resolve' in ans:
