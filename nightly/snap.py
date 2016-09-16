@@ -287,7 +287,7 @@ def fetch_last_image(node):
         ans_cmd = run(command)
         if ans_cmd['status']:
             ans = ans_cmd['output'].lower()
-            if not 'no such file' and not 'could not resolve' in ans:
+            if not 'no such file' in ans and not 'could not resolve' in ans:
                 image_name = ans
     except Exception as e:
         pass
