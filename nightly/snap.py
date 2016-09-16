@@ -261,19 +261,18 @@ def fetch_last_image(node):
     """ recover the last image save in the node
     """
     image_name = DEFAULT_IMAGE
-    if os.path.exists(NODE_TAG_IMAGE):
-        try:
-            command = "ssh root@fit{} cat {} | tail -n1 | awk '{{print $7}}'".format(node, NODE_TAG_IMAGE)
-            print(command)
-            ans_cmd = run(command)
-            print(ans_cmd)
-            if ans_cmd['status']:
-                ans = ans_cmd['output'].lower()
-                if not 'no such file' or not 'could not resolve' in ans:
-                    image_name = ans
-        except Exception as e:
-            pass
-            # print('WARNING: image was not found. The default {} will be set.'.format(image_name))
+    try:
+        command = "ssh root@fit{} cat {} | tail -n1 | awk '{{print $7}}'".format(node, NODE_TAG_IMAGE)
+        print(command)
+        ans_cmd = run(command)
+        print(ans_cmd)
+        if ans_cmd['status']:
+            ans = ans_cmd['output'].lower()
+            if not 'no such file' or not 'could not resolve' in ans:
+                image_name = ans
+    except Exception as e:
+        pass
+        # print('WARNING: image was not found. The default {} will be set.'.format(image_name))
     return image_name
 
 
