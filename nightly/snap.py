@@ -263,9 +263,7 @@ def fetch_last_image(node):
     image_name = DEFAULT_IMAGE
     try:
         command = "ssh root@fit{} cat {} | tail -n1 | awk '{{print $7}}'".format(node, NODE_TAG_IMAGE)
-        print(command)
         ans_cmd = run(command)
-        print(ans_cmd)
         if ans_cmd['status']:
             ans = ans_cmd['output'].lower()
             if not 'no such file' or not 'could not resolve' in ans:
