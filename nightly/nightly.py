@@ -82,8 +82,10 @@ def main():
     for node in nodes:
         cmd = command_in_curl([name_node(node)])
         result = execute(cmd)
+        print result
         stdout = remove_special_char(result['node']['stdout']).strip()
         if stdout.lower() in ['already on', 'on']:
+            print('-- up')
             update_phases_db(node, 1)
 
 
