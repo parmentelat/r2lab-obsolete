@@ -84,6 +84,8 @@ def main():
         result = execute(cmd)
         print result
         stdout = remove_special_char(result['node']['stdout']).strip()
+        print stdout
+        print cmd
         if stdout.lower() in ['already on', 'on']:
             print('-- up')
             update_phases_db(node, 1)
