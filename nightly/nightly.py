@@ -15,58 +15,69 @@ import time
 import sys
 import re
 import json
-
 from nepi.execution.ec import ExperimentController
 from nepi.execution.resource import ResourceAction, ResourceState
 from nepi.util.sshfuncs import logger
 
-parser = ArgumentParser()
-parser.add_argument("-N", "--nodes", dest="nodes",
-                    help="Comma separated list of nodes")
-parser.add_argument("-a", "--avoid", dest="avoid_nodes",
-                    help="Comma separated list of nodes to avoid")
-parser.add_argument("-V", "--version", default="fedora-23.ndz", dest="version",
-                    help="O.S version to load")
-parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly",
-                    help="Directory to save text file")
-parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="send_to_email",
-                    help="Email to receive the execution results")
-
-args = parser.parse_args()
 
 
-send_to_email   = args.send_to_email
-SEND_RESULTS_TO = [str(send_to_email)] #default in args send_to_email: fit-r2lab-users@inria.fr
 
-phases          = {}
+WEEKDAY_STAT = "sunday"
+phases       = {}
 
 
 
 
-def main(args):
+def main():
     """ Execute the load for all nodes in Faraday. """
 
-    nodes       = args.nodes
-    version     = args.version
-    avoid_nodes = args.avoid_nodes
-    nodes       = format_nodes(nodes, avoid_nodes)
-    all_nodes   = name_node(nodes)
+    parser = ArgumentParser()
+    parser.add_argument("-N", "--nodes", dest="nodes", default="all",
+                        help="Comma separated list of nodes")
+    parser.add_argument("-a", "--avoid", dest="avoid_nodes",
+                        help="Comma separated list of nodes to avoid")
+    parser.add_argument("-V", "--version", default="fedora-23.ndz", dest="version",
+                        help="O.S version to load")
+    parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly/", dest="text_dir",
+                        help="Directory to save text file")
+    parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="send_to_email",
+                        help="Email to receive the execution results")
+    #parser.add_argument("-d", "--days", dest="days", default=['wed','sun'],
+    #                    help="Comma separated list of weekday to run")
+    args = parser.parse_args()
+
+    # # in function of the given days it will or not skip run
+    # # and empty list will run always
+    # days         = args.days if type(args.days) is list else args.days.split(',')
+    # days         = list(map(lambda x: x.lower(), days))
+    send_to_email  = args.send_to_email
+    nodes          = args.nodes
+    version        = args.version
+    avoid_nodes    = args.avoid_nodes
+    dir_name       = args.text_dir
+    nodes          = format_nodes(nodes, avoid_nodes)
+    all_nodes      = name_node(nodes)
+    send_results_to= [str(send_to_email)] #default in args send_to_email: fit-r2lab-users@inria.fr
+
+    # if not should_i_run(days):
+    #     print "INFO: none of the informed days match with the current. Let's skip and exit..."
+    #     exit(0)
 
     for node in nodes:
         create_phases_db(node)
 
-    print "-- INFO: {}".format(now())
+    print "INFO: {}".format(now())
 
     #=========================================
     # TURN ON ALL NODES ======================
-    print "-- INFO: turn on nodes"
+    print "INFO: turn on nodes"
     all_nodes = name_node(nodes)
     cmd = command_in_curl(all_nodes, 'on')
     results = execute(cmd)
     if error_presence(results):
-        print "** ERROR: turn on not executed"
+        print "ERROR: turn on not executed"
     else:
-        print "-- INFO: nodes turned on"
+        print "INFO: nodes turned on"
 
     for node in nodes:
         cmd = command_in_curl([name_node(node)])
@@ -78,13 +89,13 @@ def main(args):
 
     #=========================================
     # LOAD THE NEW OS ON NODES ===============
-    print "-- INFO: execute load on nodes"
+    print "INFO: execute load on nodes"
     results    = {}
     all_nodes = stringfy_list(all_nodes)
     cmd = "rhubarbe-load {} -i {}; ".format(all_nodes, version)
     result = execute(cmd, key='node')
     if error_presence(result):
-        print "** ERROR: one or more node were not loaded correctly. CMD and result logs below:"
+        print "ERROR: one or more node were not loaded correctly. CMD and result logs below:"
         print cmd
         print "-----"
         print result
@@ -101,16 +112,16 @@ def main(args):
 
     #=========================================
     # CHECK ZOMBIE (not turn off) NODES ======
-    print "-- INFO: given some time to recover OS info from loaded nodes"
+    print "INFO: given some time to recover OS info from loaded nodes"
     wait_and_update_progress_bar(45)
-    print "-- INFO: check for zombie nodes"
+    print "INFO: check for zombie nodes"
     all_nodes = name_node(nodes)
     cmd = command_in_curl(all_nodes, 'off')
     results = execute(cmd)
     if error_presence(results):
-        print "** ERROR: turn off not executed"
+        print "ERROR: turn off not executed"
     else:
-        print "-- INFO: nodes turned off"
+        print "INFO: nodes turned off"
 
     wait_and_update_progress_bar(30)
     all_nodes   = to_str(nodes)
@@ -131,7 +142,7 @@ def main(args):
 
     #=========================================
     # RESULTS  ===============================
-    print "-- INFO: summary of reset routine"
+    print "INFO: summary of reset routine"
     failed_nodes = []
     for key, value in sorted(phases.iteritems()):
         if value['ph1'] == 'ko' or value['ph2'] == 'ko' or value['ph3'] == 'ko':
@@ -145,23 +156,39 @@ def main(args):
         print "--"
     print " "
 
-    print "-- INFO: setting round red bullets for nodes with issues"
+    print "INFO: setting round red bullets for nodes with issues"
     set_node_status(range(1,38),  'ok')
     set_node_status(failed_nodes, 'ko')
 
-    print "-- INFO: send email"
-    summary_in_mail(failed_nodes)
+    print "INFO: send email"
+    summary_in_mail(failed_nodes, send_results_to)
 
-    print "-- INFO: write in file"
+    print "INFO: write in file"
     #this is the old file containing all info since we start nightly
-    write_in_file(failed_nodes, "nightly.txt")
+    write_in_file(failed_nodes, "nightly.txt", dir_name)
 
-    print "-- INFO: write in file in new format"
-    save_data_in_txt (phases, "nightly_data.txt" )
-    save_data_in_json(phases, "nightly_data.json")
+    print "INFO: write in file in new format"
+    save_data_in_txt (phases, "nightly_data.txt",  dir_name)
+    save_data_in_json(phases, "nightly_data.json", dir_name)
 
-    print "-- INFO: end of main"
-    print "-- INFO: {}".format(now())
+    print "INFO: end of main"
+    print "INFO: {}".format(now())
+
+
+
+
+def should_i_run(days):
+    """ check if the current day matches the list of days to decide or not run """
+    from datetime import date
+    import calendar
+    today = date.today()
+    # will run by default
+    if days is None or not days:
+        return True
+    #once a weekday is given, lets check is is the current one
+    else:
+        week_day = calendar.day_abbr[today.weekday()]
+        return week_day.lower() in days
 
 
 
@@ -231,9 +258,9 @@ def parse_phases_db_in_style(phase_result):
 
 
 
-def write_in_file(text, the_file):
+def write_in_file(text, the_file, dir_name):
     """save the results in a file for posterior use of it """
-    dir_name  = args.text_dir
+    dir_name  = dir_name
     file_name = the_file
 
     text = ', '.join(str(x) for x in text)
@@ -244,9 +271,9 @@ def write_in_file(text, the_file):
 
 
 
-def save_data_in_txt(results, the_file, answer='short'):
+def save_data_in_txt(results, the_file, dir_name, answer='short'):
     """save the results in a file for posterior use of it """
-    dir_name  = args.text_dir
+    dir_name  = dir_name
     file_name = the_file
     number_of_phases = 3
     all_nodes = ''
@@ -270,12 +297,12 @@ def save_data_in_txt(results, the_file, answer='short'):
 
 
 
-def summary_in_mail(nodes):
+def summary_in_mail(nodes, send_results_to):
     """send a summary output of the routine"""
     list_of_bug_nodes = nodes
     title = ''
     body  = ''
-    to    = SEND_RESULTS_TO
+    to    = send_results_to
 
     line_ok = ''
     line_fail = ''
@@ -377,7 +404,7 @@ def email_body():
     		</table>\n \
             {}\n \
       </body>\n \
-    </html>'.format(get_statistic())
+    </html>'.format(get_statistic(WEEKDAY_STAT))
     return body
 
 
@@ -623,9 +650,9 @@ def format_nodes(nodes, avoid=None):
 
 
 
-def save_data_in_json(results, the_file):
+def save_data_in_json(results, the_file, dir_name):
     """ Save the result in a json file """
-    dir = args.text_dir
+    dir = dir_name
     file_name = the_file
     number_of_phases = 3
     all_nodes = {}
@@ -710,7 +737,7 @@ def date(format='%Y-%m-%d'):
 
 
 def historic_file_in_array():
-    """read db file from nigthly and put in array format. Returns ['2016-01-22: 27, 09, 29', '2016-01-23: 27',...] """
+    """read db file from nightly and put in array format. Returns ['2016-01-22: 27, 09, 29', '2016-01-23: 27',...] """
     dir_name  = "/root/r2lab/nightly/"
     file_name = "nightly.txt"
     with open(dir_name+file_name) as f:
@@ -721,7 +748,7 @@ def historic_file_in_array():
 
 
 def treat_historic_file(data):
-    """split in single array the dates and nodes from the nigthly file. Data must be ['2016-01-22: 27, 09, 29', '2016-01-23: 27',...] """
+    """split in single array the dates and nodes from the nightly file. Data must be ['2016-01-22: 27, 09, 29', '2016-01-23: 27',...] """
     chars_to_remove = [':', ',']
     #all dates summarized iin one array
     date = []
@@ -798,15 +825,15 @@ def generate_graph(data_nodes, nodes=None):
 
 
 
-def get_statistic():
-    """ get the graph each monday  """
+def get_statistic(the_day="monday"):
+    """ get the graph each given weekday  """
     from datetime import date
     import calendar
     graph = ''
 
     today = date.today()
     week_day = calendar.day_name[today.weekday()]
-    if week_day.lower() == 'monday':
+    if week_day.lower() == the_day.lower():
         h = historic_file_in_array()
         d = treat_historic_file(h)
         graph = generate_graph(d)
@@ -817,4 +844,4 @@ def get_statistic():
 
 
 if __name__ == "__main__":
-    main(args)
+    main()
