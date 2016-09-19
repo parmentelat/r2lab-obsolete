@@ -261,7 +261,7 @@ def split_nodes_by_status(nodes):
     off_nodes = []
     i = 0
     for node in nodes:
-        node_status = 'on'#check_status(node, 1)
+        node_status = check_status(node, 1)
         if 'on' in node_status:
             on_nodes.append(node)
         else:
@@ -381,7 +381,7 @@ def fetch_last_image(node, errors):
             if not 'no such file' in ans and not 'could not resolve' in ans and not 'no route to host' in ans:
                 image_name = ans
             else:
-                image_name = IMAGEDIR+try_guess_the_image(node)
+                image_name = try_guess_the_image(node)
                 errors.append('WARNING: image name of node {} was not found. A default {} is used.'.format(node, image_name))
     except Exception as e:
         pass
