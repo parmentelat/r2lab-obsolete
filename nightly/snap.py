@@ -196,7 +196,7 @@ def run_load(images, nodes):
         else:
             image_path, image_name = os.path.split(image)
             print('ERROR: image for node {} not found.'.format(image_name))
-            
+
     if failed == []:
         print('INFO: images loaded.')
         print('INFO: wait some seconds for images boot...')
@@ -378,7 +378,12 @@ def fetch_last_image(node, errors):
         if ans_cmd['status']:
             ans = ans_cmd['output'].lower()
             if not 'no such file' in ans and not 'could not resolve' in ans and not 'no route to host' in ans:
-                image_name = ans
+                file_part = code()+ADD_IN_NAME
+                if file_part in ans:
+                    image_path, image_name = os.path.split(fetch_saved_file_by_rhubarbe(node))
+                    image_name = image_name
+                else:
+                    image_name = ans
             else:
                 image_name = try_guess_the_image(node)
                 errors.append('WARNING: image name of node {} was not found. A default {} is used.'.format(node, image_name))
@@ -462,11 +467,13 @@ def fetch_saved_file_by_rhubarbe(node):
     if ans_cmd['status']:
         ans = ans_cmd['output']
         if 'No such file or directory' in ans:
-            return False
+            print('WARNING: could not detect the snap image. A default {} was set.'.format(DEFAULT_IMAGE))
+            return IMAGEDIR+DEFAULT_IMAGE
         else:
             return ans
     else:
-        return False
+        print('WARNING: could not detect the snap image. A default {} was set.'.format(DEFAULT_IMAGE))
+        return IMAGEDIR+DEFAULT_IMAGE
 
 
 
