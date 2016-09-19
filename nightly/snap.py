@@ -52,6 +52,7 @@ def main():
     """
     """
     parser = ArgumentParser()
+    parser.add_argument("view_default", nargs='?')
     parser.add_argument("-n", "--nodes", dest="nodes", default='all',
                         help="Comma separated list of nodes")
     parser.add_argument("-s", "--save", dest="save_snapshot",
@@ -60,13 +61,14 @@ def main():
                         help="Persist the current image as a new one")
     parser.add_argument("-l", "--load", dest="load_snapshot",
                         help="Load a given snapshot")
-    parser.add_argument("-v", "--view", dest="view_snapshot", default=None,
+    parser.add_argument("-v", "--view", dest="view_snapshot",
                         help="View a given snapshot")
     args = parser.parse_args()
 
     save_snapshot  = args.save_snapshot
     persist        = args.persist
     load_snapshot  = args.load_snapshot
+    view_default   = args.view_default
     view_snapshot  = args.view_snapshot
     nodes          = args.nodes
 
@@ -77,8 +79,8 @@ def main():
     elif load_snapshot is not None:
         load(load_snapshot)
     #view
-    elif view_snapshot is not None:
-        view(view_snapshot)
+    elif view_default:
+        view(view_default)
     else:
         view(view_snapshot)
     return 0
