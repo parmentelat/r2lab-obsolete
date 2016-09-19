@@ -378,7 +378,7 @@ def fetch_last_image(node, errors):
         if ans_cmd['status']:
             ans = ans_cmd['output'].lower()
             if not 'no such file' in ans and not 'could not resolve' in ans and not 'no route to host' in ans:
-                file_part = code()+ADD_IN_NAME
+                file_part = ADD_IN_NAME
                 if file_part in ans:
                     image_path, image_name = os.path.split(fetch_saved_file_by_rhubarbe(node))
                     image_name = image_name
@@ -462,11 +462,11 @@ def fetch_saved_file_by_rhubarbe(node):
     """ list the images dir in last modified file order
     """
     file_part_name = code()+ADD_IN_NAME
-    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(IMAGEDIR, node, file_part_name)
+    command = "ls -ltr {}*saving__fit{}_*{}.ndz | tail -n1 | awk '{{print $9}}'".format(IMAGEDIR, node, file_part_name)
     ans_cmd = run(command)
     if ans_cmd['status']:
         ans = ans_cmd['output']
-        if 'No such file or directory' in ans:
+        if 'No such file or directory' in ans or ans == "":
             print('WARNING: could not detect the snap image. A default {} was set.'.format(DEFAULT_IMAGE))
             return IMAGEDIR+DEFAULT_IMAGE
         else:
