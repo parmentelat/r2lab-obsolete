@@ -178,6 +178,8 @@ def view(snapshot):
             print("{} is {}  | {}".format(node, state, image))
     print("___________________________________")
 
+
+
 def run_load(images, nodes):
     """ run the load command grouped by images and nodes
     """
@@ -453,7 +455,7 @@ def fetch_saved_file_by_rhubarbe(node):
     """ list the images dir in last modified file order
     """
     file_part_name = code()+ADD_IN_NAME
-    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(USER_IMAGEDIR, node, file_part_name)
+    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(my_user_folder(), node, file_part_name)
     ans_cmd = run(command)
     if ans_cmd['status']:
         ans = ans_cmd['output']
