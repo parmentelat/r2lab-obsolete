@@ -19,7 +19,10 @@
 ## `imaging-utils.sh`
 
 `rhubarbe-images/imaging-utils.sh` is a script designed to **help** automate the various stages. 
-**IMPORTANT** this script only is a help - make sure to read it before running it
+
+**IMPORTANT NOTES**
+* this script **only is a help** - make sure to read it before running it
+* also bear in mind it will likely be subject to changes and evolutions
 
 ```
 curl -O https://raw.githubusercontent.com/parmentelat/r2lab/master/rhubarbe-images/imaging-utils.sh
