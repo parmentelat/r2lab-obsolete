@@ -164,7 +164,7 @@ def run_load(images, nodes):
         n = ',fit'.join(nodes[i])
         n = 'fit'+n
         command = "rhubarbe-load {} -i {}; ".format(n, image)
-        ans_cmd = run(command)
+        ans_cmd = run(command, 0)
         loaded_nodes = parse_results_from_load(ans_cmd['output'])
         if len(loaded_nodes) > 0:
             print('INFO: working in nodes {}. Please, wait...'.format(",".join(sorted(loaded_nodes))))
@@ -173,6 +173,13 @@ def run_load(images, nodes):
             failed = failed + diff
     if failed == []:
         print('INFO: images loaded.')
+        print('INFO: wait some seconds for images start...')
+        widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
+        bar = progressbar.ProgressBar(widgets=widgets,maxval=10).start()
+        for i in range(1,11):
+            time.sleep(1)
+            bar.update(i)
+        print('\r')
         return True
     else:
         print('ERROR: something went wrong in load. Failed nodes: {}!'.format(",".join(sorted(failed))))
@@ -470,10 +477,13 @@ def fetch_user():
 
 
 
-def run(command):
+def run(command, stderr=1):
     """ run the commands
     """
-    p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    if stderr in 1:
+        p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    else:
+        p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     (out, err) = p.communicate()
     ret        = p.wait()
     out        = out.strip().decode('ascii')
