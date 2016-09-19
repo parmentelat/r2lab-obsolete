@@ -80,7 +80,7 @@ def main():
         load(load_snapshot)
     #view
     elif view_default:
-        view(view_default)
+        view(view_default, False)
     else:
         view(view_snapshot)
     return 0
@@ -149,7 +149,7 @@ def load(snapshot):
 
 
 
-def view(snapshot):
+def view(snapshot, all_state=True):
     """ run the load command grouped by images and nodes
     """
     if snapshot is None:
@@ -164,18 +164,20 @@ def view(snapshot):
             content = json.load(data_file)
         except Exception as e:
             content = {}
-
     print("___________________________________".format(snapshot))
     print('')
     for node in sorted(content):
         state = content[node]['state']
         image = content[node]['imagename']
         node  = 'fit{}'.format(node)
-
-        if(state in 'off'):
-            print("{} is {} | {}".format( node, state, image))
+        if all_state:
+            if(state in 'off'):
+                print("{} is {} | {}".format( node, state, image))
+            else:
+                print("{} is {}  | {}".format(node, state, image))
         else:
-            print("{} is {}  | {}".format(node, state, image))
+            if(state not in 'off'):
+                print("{} is {} | {}".format(node, state, image))
     print("___________________________________")
 
 
@@ -189,7 +191,7 @@ def run_load(images, nodes):
         n = 'fit'+n
         print('INFO: fetch node(s): {}'.format(",".join(sorted(nodes[i]))))
         command = "rhubarbe-load {} -i {}; ".format(n, image)
-        ans_cmd = run(command, 0)
+        ans_cmd = run(command, False)
         loaded_nodes = parse_results_from_load(ans_cmd['output'])
         diff = list(set(nodes[i])-set(loaded_nodes))
         if diff != []:
@@ -501,10 +503,10 @@ def fetch_user():
 
 
 
-def run(command, stderr=1):
+def run(command, stderr=True):
     """ run the commands
     """
-    if stderr == 1:
+    if stderr:
         p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     else:
         p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
