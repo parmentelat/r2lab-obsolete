@@ -476,6 +476,7 @@ def fetch_saved_file_by_rhubarbe(node):
     """
     file_part_name = code()+ADD_IN_NAME
     command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(my_user_folder(), node, file_part_name)
+    print(command)
     ans_cmd = run(command)
     if ans_cmd['status']:
         ans = ans_cmd['output']
