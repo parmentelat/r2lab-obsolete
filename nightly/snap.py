@@ -380,7 +380,7 @@ def fetch_last_image(node, errors):
             if not 'no such file' in ans and not 'could not resolve' in ans and not 'no route to host' in ans:
                 image_name = ans
             else:
-                image_name = try_guess_the_image(node)
+                image_name = IMAGEDIR+try_guess_the_image(node)
                 errors.append('WARNING: image name of node {} was not found. A default {} is used.'.format(node, image_name))
     except Exception as e:
         pass
@@ -477,7 +477,7 @@ def fetch_saved_file_by_rhubarbe(node):
     """ list the images dir in last modified file order
     """
     file_part_name = code()+ADD_IN_NAME
-    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(my_user_folder(), node, file_part_name)
+    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(USER_IMAGEDIR, node, file_part_name)
     ans_cmd = run(command)
     if ans_cmd['status']:
         ans = ans_cmd['output']
