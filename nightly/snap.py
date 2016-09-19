@@ -39,13 +39,6 @@ except Exception as e:
     #for my local dir
     FILEDIR = "/Users/nano/Documents/Inria/r2lab/nightly/"
 
-USER_IMAGEDIR = '/var/lib/rhubarbe-images/'
-try:
-    os.listdir(USER_IMAGEDIR)
-except Exception as e:
-    #for my local dir
-    USER_IMAGEDIR = '/Users/nano/'
-
 
 
 def main():
@@ -107,11 +100,12 @@ def save(nodes, snapshot, persist=False):
         if i == 0: bar = progressbar.ProgressBar(widgets=widgets,maxval=len(on_nodes)).start()
         saved_file = fetch_last_image(node, errors)
         image_path, image_name = os.path.split(str(saved_file))
-        db.update( {str(node) : {"state":'on' , "imagepath":image_path+'/', "imagename":image_name }})
+        db.update( {str(node) : {"state":'on' , "imagepath":IMAGEDIR, "imagename":image_name }})
         i = i + 1
         time.sleep(0.1)
         bar.update(i)
     if i > 0: print('\r')
+
     if persist and on_nodes: persist_image(on_nodes, snapshot, db, errors)
 
     try:
@@ -189,15 +183,20 @@ def run_load(images, nodes):
     """
     failed = []
     for i,image in enumerate(images):
-        n = ',fit'.join(nodes[i])
-        n = 'fit'+n
-        print('INFO: fetch node(s): {}'.format(",".join(sorted(nodes[i]))))
-        command = "rhubarbe-load {} -i {}; ".format(n, image)
-        ans_cmd = run(command, False)
-        loaded_nodes = parse_results_from_load(ans_cmd['output'])
-        diff = list(set(nodes[i])-set(loaded_nodes))
-        if diff != []:
-            failed = failed + diff
+        if os.path.exists(image):
+            n = ',fit'.join(nodes[i])
+            n = 'fit'+n
+            print('INFO: fetch node(s): {}'.format(",".join(sorted(nodes[i]))))
+            command = "rhubarbe-load {} -i {}; ".format(n, image)
+            ans_cmd = run(command, False)
+            loaded_nodes = parse_results_from_load(ans_cmd['output'])
+            diff = list(set(nodes[i])-set(loaded_nodes))
+            if diff != []:
+                failed = failed + diff
+        else:
+            image_path, image_name = os.path.split(image)
+            print('ERROR: image for node {} not found.'.format(image_name))
+            
     if failed == []:
         print('INFO: images loaded.')
         print('INFO: wait some seconds for images boot...')
@@ -344,7 +343,7 @@ def create_user_folder():
     """
     user = fetch_user()
     folder = user + ADD_IN_FOLDER
-    path = USER_IMAGEDIR + folder + '/'
+    path = IMAGEDIR + folder + '/'
 
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -359,7 +358,7 @@ def my_user_folder():
     """
     user = fetch_user()
     folder = user + ADD_IN_FOLDER
-    path = USER_IMAGEDIR + folder +'/'
+    path = IMAGEDIR + folder +'/'
     if os.path.exists(path):
         return path
     else:
@@ -385,26 +384,6 @@ def fetch_last_image(node, errors):
                 errors.append('WARNING: image name of node {} was not found. A default {} is used.'.format(node, image_name))
     except Exception as e:
         pass
-
-    user = fetch_user()
-    folder = user + ADD_IN_FOLDER
-    path = USER_IMAGEDIR + folder +'/'
-
-    #try first in user images folder, if not try the common image repository
-    if os.path.exists(path):
-        command = "ls {}*saving__fit{}__*{}*.ndz".format(path, node, image_name)
-        ans_cmd = run(command)
-        if ans_cmd['status']:
-            ans = ans_cmd['output'].lower()
-            if not 'no such file' in ans:
-                image_name = ans
-            else:
-                image_name = IMAGEDIR+image_name
-        else:
-            image_name = IMAGEDIR+image_name
-    else:
-        image_name = IMAGEDIR+image_name
-
     return image_name
 
 
@@ -469,7 +448,7 @@ def clean_old_files():
     """
     user_folder = my_user_folder()
     file_part_name = code()+ADD_IN_NAME
-    command = "mv {}*saving__*{}.ndz {}".format(USER_IMAGEDIR, file_part_name, user_folder)
+    command = "mv {}*saving__*{}.ndz {}".format(IMAGEDIR, file_part_name, user_folder)
     ans_cmd = run(command)
 
 
@@ -478,7 +457,7 @@ def fetch_saved_file_by_rhubarbe(node):
     """ list the images dir in last modified file order
     """
     file_part_name = code()+ADD_IN_NAME
-    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(USER_IMAGEDIR, node, file_part_name)
+    command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(IMAGEDIR, node, file_part_name)
     ans_cmd = run(command)
     if ans_cmd['status']:
         ans = ans_cmd['output']
