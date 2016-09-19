@@ -187,7 +187,7 @@ def group_nodes_and_images(db):
     related_image = []
     for node in db:
         state = db[node]['state']
-        if state is "on":
+        if state in "on":
             image = db[node]['imagepath']+db[node]['imagename']
 
             try:
