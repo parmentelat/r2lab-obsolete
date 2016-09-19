@@ -275,33 +275,16 @@ def split_nodes_by_status(nodes):
 def persist_image(on_nodes, snapshot, db, errors):
     """ save the images using rhubarbe
     """
-    widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
-    create_user_folder()
-    clean_old_files()
-
     answers = persist_image_with_rhubarbe(on_nodes, snapshot)
     if True in answers:
         errors.append('ERROR: one or more image node could not be saved.')
-    print('INFO: arranging files...')
-    i = 0
-    bar = progressbar.ProgressBar(widgets=widgets,maxval=len(on_nodes)).start()
 
     #move each saved file to the user snapshots folder
     for node in on_nodes:
         #searching for saved file give by rsave
-        saved_file = fetch_saved_file_by_rhubarbe(node)
+        saved_file = fetch_saved_file_by_rhubarbe(node, errors)
         image_path, image_name = os.path.split(str(saved_file))
-        db.update( {str(node) : {"state":'on' , "imagepath":image_path+'/', "imagename":image_name }})
-        if saved_file:
-            user_folder = my_user_folder()
-            os.rename(saved_file, user_folder+image_name)
-            db.update( {str(node) : {"state":'on' , "imagepath":user_folder, "imagename":image_name }})
-        else:
-            errors.append('ERROR: could not find file for node fit{}.'.format(node))
-        i = i + 1
-        time.sleep(0.1)
-        bar.update(i)
-    print('\r')
+        db.update( {str(node) : {"state":'on' , "imagepath":IMAGEDIR, "imagename":image_name }})
 
 
 
@@ -382,7 +365,7 @@ def fetch_last_image(node, errors):
                     image_path, image_name = os.path.split(fetch_saved_file_by_rhubarbe(node, errors))
                     image_name = image_name
                 else:
-                    image_name = ans
+                    image_name = ans+'.ndz'
             else:
                 image_name = try_guess_the_image(node)
                 errors.append('WARNING: could not detect the image for node {}. A default {} was set.'.format(node, image_name))
