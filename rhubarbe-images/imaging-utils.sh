@@ -1,7 +1,7 @@
 #!/bin/bash
 
 help_message=""
-function record_help () {
+function record-help () {
     for line in "$@"; do
 	help_message="${help_message}${line}\n"
     done
@@ -11,12 +11,19 @@ function help () {
     echo $help_message
 }
 
+#################### README
+# here's a list of additional stuff that we need to integrate in
+# the standard image-building process
+# * initialize r2lab/ and trigger infra/user-env/nodes.sh - together with a command to update from git
+# * all images should have a common ssh key so that users don't need to mess with their known_hosts
+
+
 ########################################
 # UBUNTU
 ########################################
 
-record_help "ubuntu_ssh: tweaks sshd_config, remove dummy r2lab user, remove root password, restart ssh"
-function ubuntu_ssh () {
+record-help "ubuntu-ssh: tweaks sshd_config, remove dummy r2lab user, remove root password, restart ssh"
+function ubuntu-ssh () {
 
 ####################
 # expected result is this
@@ -52,8 +59,8 @@ EOF
 }
 
 
-record_help "ubuntu_base: remove /etc/hostname, install base packages"
-function ubuntu_base () {
+record-help "ubuntu-base: remove /etc/hostname, install base packages"
+function ubuntu-base () {
     ###
     rm /etc/hostname
 
@@ -67,8 +74,8 @@ iw ethtool tcpdump wireshark bridge-utils
 }
 
 
-record_help "ubuntu_interfaces: overwrite /etc/network/interfaces"
-function ubuntu_interfaces () {
+record-help "ubuntu-interfaces: overwrite /etc/network/interfaces"
+function ubuntu-interfaces () {
     cat > /etc/network/interfaces <<EOF
 source /etc/network/interfaces.d/*
 
@@ -88,8 +95,8 @@ EOF
 }
 
 
-record_help "ubuntu_dev: add udev rules for canonical interface names"
-function ubuntu_udev () {
+record-help "ubuntu-dev: add udev rules for canonical interface names"
+function ubuntu-udev () {
 ####################
 # udev
 #
@@ -125,6 +132,32 @@ KERNELS=="0000:00:01.0", ACTION=="add", NAME="wlan0"
 KERNELS=="0000:04:00.0", ACTION=="add", NAME="wlan1"
 EOF
 
+}
+
+record-help "init-infra-nodes: set up /root/r2lab and add infra/user-env/nodes.sh to /etc/profile.d"
+function init-infra-nodes () {
+    type -p git 2> /dev/null || { echo "git not installed - cannot proceed"; return; }
+    cd /root
+    [ -d r2lab ] || git clone https://github.com/parmentelat/r2lab.git
+    cd /root/r2lab
+    git pull
+    cd /etc/profile.d
+    ln -sf /root/r2lab/infra/user-env/nodes.sh .
+}
+
+
+record-help "init-node-ssh-key: install standard R2lab key as the ssh node's key"
+function init-node-ssh-key () {
+    [ -f /root/r2lab/rhubarbe-images/r2lab-nodes-key -a \
+	 -f /root/r2lab/rhubarbe-images/r2lab-nodes-key.pub ] || {
+	echo "Cannot find standard R2lab node key - cannot proceed"; return;
+    }
+    for ext in "" ".pub"; do
+	cp /root/r2lab/rhubarbe-images/r2lab-nodes-key${ext} /etc/ssh/ssh_host_rsa_key${ext}
+	chown root:root /etc/ssh/ssh_host_rsa_key${ext}
+    done
+    chmod 600 /etc/ssh/ssh_host_rsa_key
+    chmod 444 /etc/ssh/ssh_host_rsa_key.pub
 }
 
 ########################################
