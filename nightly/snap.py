@@ -297,6 +297,7 @@ def persist_image(on_nodes, snapshot, db, errors):
         if saved_file:
             user_folder = my_user_folder()
             os.rename(saved_file, user_folder+image_name)
+            db.update( {str(node) : {"state":'on' , "imagepath":user_folder, "imagename":image_name }})
         else:
             errors.append('ERROR: could not find file for node fit{}.'.format(node))
         i = i + 1
