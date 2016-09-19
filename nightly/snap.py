@@ -480,7 +480,7 @@ def fetch_user():
 def run(command, stderr=1):
     """ run the commands
     """
-    if stderr in 1:
+    if stderr == 1:
         p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     else:
         p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
