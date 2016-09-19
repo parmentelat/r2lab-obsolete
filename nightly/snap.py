@@ -75,7 +75,7 @@ def main():
         save(format_nodes(nodes), save_snapshot, persist)
     #load
     elif load_snapshot is not None:
-        load(format_nodes(nodes), load_snapshot)
+        load(load_snapshot)
     #view
     elif view_snapshot is not None:
         view(view_snapshot)
@@ -128,7 +128,7 @@ def save(nodes, snapshot, persist=False):
 
 
 
-def load(nodes, snapshot):
+def load(snapshot):
     """ load an already saved snapshot
     """
     file_name, file_extension = os.path.splitext(snapshot)
