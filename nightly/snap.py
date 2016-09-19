@@ -261,7 +261,7 @@ def split_nodes_by_status(nodes):
     off_nodes = []
     i = 0
     for node in nodes:
-        node_status = check_status(node, 1)
+        node_status = 'on'#check_status(node, 1)
         if 'on' in node_status:
             on_nodes.append(node)
         else:
@@ -458,9 +458,10 @@ def which_version(version):
 def code():
     """ give me a small hash code from user name
     """
+    import hashlib
     user = fetch_user()
-    print(user)
-    return str(abs(hash(user)) % (10 ** 8))
+    c = hashlib.md5(user.encode('utf-8')).hexdigest()[:6]
+    return c
 
 
 
@@ -470,7 +471,6 @@ def clean_old_files():
     user_folder = my_user_folder()
     file_part_name = code()+ADD_IN_NAME
     command = "mv {}*saving__*{}.ndz {}".format(USER_IMAGEDIR, file_part_name, user_folder)
-    print(command)
     ans_cmd = run(command)
 
 
@@ -480,7 +480,6 @@ def fetch_saved_file_by_rhubarbe(node):
     """
     file_part_name = code()+ADD_IN_NAME
     command = "ls -la {}*saving__fit{}_*{}.ndz | awk '{{print $9}}'".format(my_user_folder(), node, file_part_name)
-    print(command)
     ans_cmd = run(command)
     if ans_cmd['status']:
         ans = ans_cmd['output']
@@ -526,10 +525,10 @@ def fetch_user():
 
 
 
-def run(command, stderr=True):
+def run(command, std=True):
     """ run the commands
     """
-    if stderr:
+    if std:
         p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     else:
         p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
