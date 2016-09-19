@@ -75,7 +75,7 @@ def main():
         save(format_nodes(nodes), save_snapshot, persist)
     #load
     elif load_snapshot is not None:
-        load(load_snapshot)
+        load(format_nodes(nodes), load_snapshot)
     #view
     elif view_snapshot is not None:
         view(view_snapshot)
@@ -128,28 +128,23 @@ def save(nodes, snapshot, persist=False):
 
 
 
-def load(user, snapshot):
-    """ load an already saved snapshot for the user
+def load(nodes, snapshot):
+    """ load an already saved snapshot
     """
-    # dir       = FILEDIR
-    # file_name = FILENAME
-    # with open(os.path.join(dir, file_name)) as data_file:
-    #     try:
-    #         content = json.load(data_file)
-    #     except Exception as e:
-    #         content = {}
-    #
-    # try:
-    #     content[user][session]
-    # except Exception as e:
-    #     print('ERROR: session  * {} *  does not exist.'.format(session))
-    #     exit(1)
-    #
-    # print('INFO: loading * {} * session. This may take a little while.'.format(session))
-    # the_images, the_nodes = group_nodes_and_images(content, user, session)
-    # if run_load(the_images, the_nodes):
-    #     if given_on_off_status(content, user, session):
-    #         print('INFO: session  * {} *  loaded. Enjoy!'.format(session))
+    file_name, file_extension = os.path.splitext(snapshot)
+    if not file_extension:
+        file_extension = '.snap'
+    with open(os.path.join(file_name + file_extension )) as data_file:
+        try:
+            content = json.load(data_file)
+        except Exception as e:
+            content = {}
+    print('INFO: loading {} snapshot. This may take a little while.'.format(snapshot))
+    the_images, the_nodes = group_nodes_and_images(content)
+
+    if run_load(the_images, the_nodes):
+        if given_on_off_status(content, user, session):
+            print('INFO: snapshot {} loaded. Enjoy!'.format(session))
 
 
 
@@ -159,6 +154,47 @@ def view(snapshot):
     if snapshot is None:
         print("ERROR: snapshot name was not informed.")
         exit(1)
+
+
+
+def run_load(images, nodes):
+    """ run the load command grouped by images and nodes
+    """
+    failed = []
+    for i,image in enumerate(images):
+        n = ',fit'.join(nodes[i])
+        n = 'fit'+n
+        command = "rhubarbe-load {} -i {}; ".format(n, image)
+        ans_cmd = run(command)
+        loaded_nodes = parse_results_from_load(ans_cmd['output'])
+        if len(loaded_nodes) > 0:
+            print('INFO: working in nodes {}. Please, wait...'.format(",".join(sorted(loaded_nodes))))
+        diff = list(set(nodes[i])-set(loaded_nodes))
+        if diff != []:
+            failed = failed + diff
+    if failed == []:
+        print('INFO: images loaded.')
+        return True
+    else:
+        print('ERROR: something went wrong in load. Failed nodes: {}!'.format(",".join(sorted(failed))))
+        return False
+
+
+
+def group_nodes_and_images(db):
+    """ return the nodes that have the same image to load
+    """
+    grouped_nodes = []
+    related_image = []
+    for node in db:
+        image = db[node]['imagepath']+db[node]['imagename']
+        try:
+            pos = related_image.index(image)
+            grouped_nodes[pos].append(node)
+        except Exception as e:
+            related_image.append(image)
+            grouped_nodes.append([node])
+    return [related_image, grouped_nodes]
 
 
 
@@ -288,7 +324,7 @@ def fetch_last_image(node, errors):
         ans_cmd = run(command)
         if ans_cmd['status']:
             ans = ans_cmd['output'].lower()
-            if not 'no such file' in ans and not 'could not resolve' in ans:
+            if not 'no such file' in ans and not 'could not resolve' in ans and not 'no route to host' in ans:
                 image_name = ans
             else:
                 image_name = try_guess_the_image(node)
