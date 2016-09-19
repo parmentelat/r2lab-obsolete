@@ -185,16 +185,16 @@ def run_load(images, nodes):
     for i,image in enumerate(images):
         n = ',fit'.join(nodes[i])
         n = 'fit'+n
+        print('INFO: working on nodes: '.format(nodes[i]))
         command = "rhubarbe-load {} -i {}; ".format(n, image)
         ans_cmd = run(command, 0)
-
         loaded_nodes = parse_results_from_load(ans_cmd['output'])
         diff = list(set(nodes[i])-set(loaded_nodes))
         if diff != []:
             failed = failed + diff
     if failed == []:
         print('INFO: images loaded.')
-        print('INFO: wait some seconds for images start...')
+        print('INFO: wait some seconds for images boot...')
         wait_for_sec = 30
         widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
         bar = progressbar.ProgressBar(widgets=widgets,maxval=wait_for_sec).start()
