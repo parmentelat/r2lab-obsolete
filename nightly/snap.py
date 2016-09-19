@@ -116,7 +116,6 @@ def save(nodes, snapshot, persist=False):
     with open(path, "w+") as f:
         f.write(json.dumps(db)+"\n")
     if errors:
-        print('INFO: something went wrong in the process of save your snapshot. Check it out:')
         for error in errors:
             print(error)
     else:
@@ -380,13 +379,13 @@ def fetch_last_image(node, errors):
             if not 'no such file' in ans and not 'could not resolve' in ans and not 'no route to host' in ans:
                 file_part = ADD_IN_NAME
                 if file_part in ans:
-                    image_path, image_name = os.path.split(fetch_saved_file_by_rhubarbe(node))
+                    image_path, image_name = os.path.split(fetch_saved_file_by_rhubarbe(node, errors))
                     image_name = image_name
                 else:
                     image_name = ans
             else:
                 image_name = try_guess_the_image(node)
-                errors.append('WARNING: image name of node {} was not found. A default {} is used.'.format(node, image_name))
+                errors.append('WARNING: could not detect the image for node {}. A default {} was set.'.format(node, image_name))
     except Exception as e:
         pass
     return image_name
@@ -458,7 +457,7 @@ def clean_old_files():
 
 
 
-def fetch_saved_file_by_rhubarbe(node):
+def fetch_saved_file_by_rhubarbe(node, errors):
     """ list the images dir in last modified file order
     """
     file_part_name = code()+ADD_IN_NAME
@@ -467,12 +466,12 @@ def fetch_saved_file_by_rhubarbe(node):
     if ans_cmd['status']:
         ans = ans_cmd['output']
         if 'No such file or directory' in ans or ans == "":
-            print('WARNING: could not detect the snap image. A default {} was set.'.format(DEFAULT_IMAGE))
+            errors.append('WARNING: could not detect the snap image for node {}. A default {} was set.'.format(node, DEFAULT_IMAGE))
             return IMAGEDIR+DEFAULT_IMAGE
         else:
             return ans
     else:
-        print('WARNING: could not detect the snap image. A default {} was set.'.format(DEFAULT_IMAGE))
+        errors.append('WARNING: could not detect the snap image for node {}. A default {} was set.'.format(node, DEFAULT_IMAGE))
         return IMAGEDIR+DEFAULT_IMAGE
 
 
