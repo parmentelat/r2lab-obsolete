@@ -154,7 +154,27 @@ def view(snapshot):
         print("ERROR: snapshot name was not informed.")
         exit(1)
 
+    file_name, file_extension = os.path.splitext(snapshot)
+    if not file_extension:
+        file_extension = '.snap'
+    with open(os.path.join(file_name + file_extension )) as data_file:
+        try:
+            content = json.load(data_file)
+        except Exception as e:
+            content = {}
 
+    print("___________________________________".format(snapshot))
+    print('')
+    for node in sorted(content):
+        state = content[node]['state']
+        image = content[node]['imagename']
+        node  = 'fit{}'.format(node)
+
+        if(state in 'off'):
+            print("{} is {} | {}".format( node, state, image))
+        else:
+            print("{} is {}  | {}".format(node, state, image))
+    print("___________________________________")
 
 def run_load(images, nodes):
     """ run the load command grouped by images and nodes
@@ -165,18 +185,18 @@ def run_load(images, nodes):
         n = 'fit'+n
         command = "rhubarbe-load {} -i {}; ".format(n, image)
         ans_cmd = run(command, 0)
+
         loaded_nodes = parse_results_from_load(ans_cmd['output'])
-        if len(loaded_nodes) > 0:
-            print('INFO: working in nodes {}. Please, wait...'.format(",".join(sorted(loaded_nodes))))
         diff = list(set(nodes[i])-set(loaded_nodes))
         if diff != []:
             failed = failed + diff
     if failed == []:
         print('INFO: images loaded.')
         print('INFO: wait some seconds for images start...')
+        wait_for_sec = 30
         widgets = ['INFO: ', Percentage(), ' | ', Bar(), ' | ', Timer()]
-        bar = progressbar.ProgressBar(widgets=widgets,maxval=10).start()
-        for i in range(1,11):
+        bar = progressbar.ProgressBar(widgets=widgets,maxval=wait_for_sec).start()
+        for i in range(1,wait_for_sec+1):
             time.sleep(1)
             bar.update(i)
         print('\r')
