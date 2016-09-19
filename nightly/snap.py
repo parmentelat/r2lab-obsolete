@@ -466,12 +466,12 @@ def fetch_saved_file_by_rhubarbe(node, errors):
     if ans_cmd['status']:
         ans = ans_cmd['output']
         if 'No such file or directory' in ans or ans == "":
-            errors.append('WARNING: could not detect the snap image for node {}. A default {} was set.'.format(node, DEFAULT_IMAGE))
+            errors.append('WARNING: could not detect the image for node {}. A default {} was set.'.format(node, DEFAULT_IMAGE))
             return IMAGEDIR+DEFAULT_IMAGE
         else:
             return ans
     else:
-        errors.append('WARNING: could not detect the snap image for node {}. A default {} was set.'.format(node, DEFAULT_IMAGE))
+        errors.append('WARNING: could not detect the image for node {}. A default {} was set.'.format(node, DEFAULT_IMAGE))
         return IMAGEDIR+DEFAULT_IMAGE
 
 
