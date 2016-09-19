@@ -459,6 +459,7 @@ def code():
     """ give me a small hash code from user name
     """
     user = fetch_user()
+    print(user)
     return str(abs(hash(user)) % (10 ** 8))
 
 
