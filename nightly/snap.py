@@ -297,6 +297,8 @@ def persist_image(on_nodes, snapshot, db, errors):
         if saved_file:
             user_folder = my_user_folder()
             os.rename(saved_file, user_folder+image_name)
+            print(saved_file)
+            print(user_folder+imagename)
         else:
             errors.append('ERROR: could not find file for node fit{}.'.format(node))
         i = i + 1
@@ -467,6 +469,7 @@ def clean_old_files():
     user_folder = my_user_folder()
     file_part_name = code()+ADD_IN_NAME
     command = "mv {}*saving__*{}.ndz {}".format(USER_IMAGEDIR, file_part_name, user_folder)
+    print(command)
     ans_cmd = run(command)
 
 
