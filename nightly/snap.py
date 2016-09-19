@@ -126,7 +126,7 @@ def save(nodes, snapshot, persist=False):
         for error in errors:
             print(error)
     else:
-        print('INFO: snapshot saved. Enjoy!')
+        print('INFO: snapshot saved.')
 
 
 
@@ -143,6 +143,8 @@ def load(snapshot):
             content = {}
     print('INFO: loading {} snapshot. This may take a little while.'.format(snapshot))
     (the_images, the_nodes) = group_nodes_and_images(content)
+
+    putting_down_all_nodes(all_nodes())
 
     if run_load(the_images, the_nodes):
         print('INFO: snapshot {} loaded. Enjoy!'.format(snapshot))
@@ -213,6 +215,22 @@ def run_load(images, nodes):
 
 
 
+def putting_down_all_nodes(nodes):
+    """ turn off all platform
+    """
+    action  = 'off'
+    command = map(lambda x:'curl reboot'+ x +'/'+action, nodes)
+    command = '; '.join(command)
+    ans_cmd = run(command)
+    time.sleep(5)
+    if ans_cmd['status']:
+        return True
+    else:
+        print('ERROR: something went wrong in turning off nodes!')
+        return False
+
+
+
 def group_nodes_and_images(db):
     """ return the nodes that have the same image to load
     """
@@ -220,7 +238,7 @@ def group_nodes_and_images(db):
     related_image = []
     for node in db:
         state = db[node]['state']
-        if state in "on":
+        if state in "on": #let's ignore nodes in off state for now
             image = db[node]['imagepath']+db[node]['imagename']
 
             try:
