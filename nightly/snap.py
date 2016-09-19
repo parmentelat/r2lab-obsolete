@@ -185,7 +185,7 @@ def run_load(images, nodes):
     for i,image in enumerate(images):
         n = ',fit'.join(nodes[i])
         n = 'fit'+n
-        print('INFO: working on nodes: '.format(nodes[i]))
+        print('INFO: fetching nodes: {}'.format(nodes[i]))
         command = "rhubarbe-load {} -i {}; ".format(n, image)
         ans_cmd = run(command, 0)
         loaded_nodes = parse_results_from_load(ans_cmd['output'])
