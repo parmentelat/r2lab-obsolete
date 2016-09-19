@@ -140,11 +140,10 @@ def load(nodes, snapshot):
         except Exception as e:
             content = {}
     print('INFO: loading {} snapshot. This may take a little while.'.format(snapshot))
-    the_images, the_nodes = group_nodes_and_images(content)
+    (the_images, the_nodes) = group_nodes_and_images(content)
 
     if run_load(the_images, the_nodes):
-        if given_on_off_status(content, user, session):
-            print('INFO: snapshot {} loaded. Enjoy!'.format(session))
+        print('INFO: snapshot {} loaded. Enjoy!'.format(snapshot))
 
 
 
@@ -187,14 +186,17 @@ def group_nodes_and_images(db):
     grouped_nodes = []
     related_image = []
     for node in db:
-        image = db[node]['imagepath']+db[node]['imagename']
-        try:
-            pos = related_image.index(image)
-            grouped_nodes[pos].append(node)
-        except Exception as e:
-            related_image.append(image)
-            grouped_nodes.append([node])
-    return [related_image, grouped_nodes]
+        state = db[node]['state']
+        if state is "on":
+            image = db[node]['imagepath']+db[node]['imagename']
+
+            try:
+                pos = related_image.index(image)
+                grouped_nodes[pos].append(node)
+            except Exception as e:
+                related_image.append(image)
+                grouped_nodes.append([node])
+    return (related_image, grouped_nodes)
 
 
 
