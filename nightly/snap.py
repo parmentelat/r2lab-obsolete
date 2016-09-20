@@ -358,7 +358,6 @@ def fetch_last_image(node, errors):
     try:
         command = "ssh root@fit{} cat {} | tail -n1 | awk '{{print $7}}'".format(node, NODE_TAG_IMAGE)
         ans_cmd = run(command)
-        print(ans_cmd)
         if ans_cmd['status']:
             ans = ans_cmd['output'].lower()
             if not 'no such file' in ans and not 'could not resolve' in ans and not 'no route to host' in ans:
@@ -384,7 +383,6 @@ def try_guess_the_image(node):
 
     command = "ssh -q root@fit{}".format(node) + " cat /etc/fedora-release 2> /dev/null /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
     ans_cmd = run(command)
-    print(ans_cmd)
     if not ans_cmd['status'] or ans_cmd['output'] == "":
         pass
     else:
@@ -397,7 +395,6 @@ def try_guess_the_image(node):
 def which_version(version):
     """ try to identify the version in the machine and return the version to install
     """
-    print(version)
     OSS        = [ "fedora"           , "ubuntu"                                               ]
     VERSIONS   = [ ["23", "22", "21"] , ["16.04", "15.10", "15.04", "14.10", "14.04", "12.04"] ]
     oss         = OSS
@@ -412,12 +409,12 @@ def which_version(version):
     if found_at == -1:
         try_version = oss[0] + '-' + version[0][0]
     else:
-        found_at = -1
+        found_at2 = -1
         for i,v in enumerate(versions[found_at]):
             if v in version:
-                found_at    = i
+                found_at2   = i
                 try_version = try_version + v + ".ndz"
-        if found_at == -1:
+        if found_at2 == -1:
             try_version = try_version + versions[0][0] + ".ndz"
 
     return try_version
