@@ -384,6 +384,7 @@ def try_guess_the_image(node):
 
     command = "ssh -q root@fit{}".format(node) + " cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
     ans_cmd = run(command)
+    print(ans_cmd)
     if not ans_cmd['status'] or ans_cmd['output'] == "":
         pass
     else:
@@ -396,6 +397,7 @@ def try_guess_the_image(node):
 def which_version(version):
     """ try to identify the version in the machine and return the version to install
     """
+    print(version)
     OSS        = [ "fedora"           , "ubuntu"                                               ]
     VERSIONS   = [ ["23", "22", "21"] , ["16.04", "15.10", "15.04", "14.10", "14.04", "12.04"] ]
     oss         = OSS
