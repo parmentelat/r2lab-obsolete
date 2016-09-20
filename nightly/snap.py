@@ -83,8 +83,9 @@ def main():
 def save(nodes, snapshot, persist=False):
     """ save a snapshot for the user according nodes state using threading
     """
-    file    = snapshot+'.snap'
-    path    = os.getcwd()+'/'+file
+    file_name, file_extension = os.path.splitext(snapshot)
+    file_extension = '.snap'
+    path = os.getcwd()+'/'+file_name+file_extension
     db      = {}
     errors  = []
 
@@ -167,12 +168,12 @@ def view(snapshot, all_state=True):
         node  = 'fit{}'.format(node)
         if all_state:
             if(state in 'off'):
-                print("{} is {} | {}".format( node, state, image))
+                print("{} is {} | {}".format( node, state, image[:-4]))
             else:
-                print("{} is {}  | {}".format(node, state, image))
+                print("{} is {}  | {}".format(node, state, image[:-4]))
         else:
             if(state not in 'off'):
-                print("{} is {} | {}".format(node, state, image))
+                print("{} is {} | {}".format(node, state, image[:-4]))
     print("___________________________________")
 
 
