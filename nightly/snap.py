@@ -382,7 +382,7 @@ def try_guess_the_image(node):
     """
     image_name = DEFAULT_IMAGE
 
-    command = "ssh -q root@fit{}".format(node) + " cat /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
+    command = "ssh -q root@fit{}".format(node) + " cat /etc/fedora-release 2> /dev/null /etc/*-release | uniq -u | awk /PRETTY_NAME=/ | awk -F= '{print $2}'"
     ans_cmd = run(command)
     print(ans_cmd)
     if not ans_cmd['status'] or ans_cmd['output'] == "":
