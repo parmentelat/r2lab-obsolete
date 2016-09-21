@@ -218,7 +218,7 @@ def putting_down_all_nodes(nodes):
     """ turn off all platform
     """
     action  = 'off'
-    command = map(lambda x:'curl reboot'+ x +'/'+action, nodes)
+    command = map(lambda x:'curl -s reboot'+ x +'/'+action, nodes)
     command = '; '.join(command)
     ans_cmd = run(command)
     time.sleep(5)
@@ -474,7 +474,7 @@ def wait_and_update_progress_bar(wait_for):
 def command_in_curl(nodes, action='status'):
     """ transform the command to execute in CURL format
     """
-    in_curl = map(lambda x:'curl reboot'+str('0'+str(x) if x<10 else x)+'/'+action, nodes)
+    in_curl = map(lambda x:'curl -s reboot'+str('0'+str(x) if x<10 else x)+'/'+action, nodes)
     in_curl = '; '.join(in_curl)
     return in_curl
 

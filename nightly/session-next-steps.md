@@ -18,9 +18,9 @@ I'm still not sure about using either `snap` or `snapshot` or `testbed` as the k
 
 * Let us emphasize at this point that embedding this into `rhubarbe` wouldd also means optimal performance, in using the native classes instead of forking various instances of `rhubarbe-load` or similar as external processes, especially in terms of parallelization.
 
-* Each snapshot must be created in an isolated json file, like `.snap`. This way we can use regular Unix commands to move, rename and delete stuff around; or promote one snapshot from user-local to publicly available - much like we do for images.
+* ~~Each snapshot must be created in an isolated json file, like `.snap`. This way we can use regular Unix commands to move, rename and delete stuff around; or promote one snapshot from user-local to publicly available - much like we do for images.~~
 
-* The supported interface could then be something like
+* ~~The supported interface could then be something like~~
 
 ```
 rhubarbe snap --save|-s snapname
@@ -38,7 +38,7 @@ In terms of node selection, several angles can be taken
 
 ### (A) Always save the whole testbed
 
-In this simplest mode, saving would create a full dictionary of items of the form
+~~In this simplest mode, saving would create a full dictionary of items of the form~~
 
 ```
 hostname -> (on_or_off, image_name)
@@ -49,8 +49,8 @@ Or some other equivalent data. ***XXX*** In particular, if a node is off, we can
 Anyways, in this mode a snapshot would always remember the complete status of the testbed.
 From that point we can image 2 submodes:
 
-1. Restoring (loading) would always put the testbed exactly like it was
-1. or we add options to the `--save` feature so that some nodes can be left as they are
+1. ~~Restoring (loading) would always put the testbed exactly like it was~~
+1. ~~or we add options to the `--save` feature so that some nodes can be left as they are~~
 
 I like the first option in fact, because it's simple and thus immune to errors; but at the same time I am also sure that we will occasionally face situations where this is an impediment.
 

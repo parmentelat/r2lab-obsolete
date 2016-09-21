@@ -128,7 +128,7 @@ def main():
     results     = {}
 
     for node in all_nodes:
-        cmd = "curl reboot{}/status;".format(node)
+        cmd = "curl -s reboot{}/status;".format(node)
         result = execute(cmd, key=node)
         results.update(result)
 
@@ -459,7 +459,7 @@ def command_in_curl(nodes, action='status'):
     """ Transform the command to execute in CURL format """
     nodes = number_node(nodes)
 
-    in_curl = map(lambda x:'curl reboot'+str('0'+str(x) if x<10 else x)+'/'+action, nodes)
+    in_curl = map(lambda x:'curl -s reboot'+str('0'+str(x) if x<10 else x)+'/'+action, nodes)
     in_curl = '; '.join(in_curl)
 
     return in_curl
