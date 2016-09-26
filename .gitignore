@@ -18,3 +18,15 @@ nightly_data.txt
 maintenance_nodes.json
 session_nodes.json
 *.snap
+r2lab.dnsmasq
+r2lab-prep.spare-nodes
+r2lab-rhubarbe.json
+r2lab.hosts
+r2lab-diana.db
+r2lab-nagios-groups.cfg
+r2lab-nagios-nodes.cfg
+r2lab-omf.json
+r2lab-prep-omf.json
+r2lab-prep-rhubarbe.json
+r2lab-prep.dnsmasq
+r2lab-prep.hosts
