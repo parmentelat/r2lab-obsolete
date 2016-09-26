@@ -73,9 +73,9 @@ def main():
         load(load_snapshot)
     #view
     elif view_default:
-        view(view_default, False)
+        view(view_default)
     else:
-        view(view_snapshot)
+        view(view_snapshot, False)
     return 0
 
 
