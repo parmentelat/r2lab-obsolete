@@ -11,7 +11,6 @@ The actual set of scripts and their logs are all preserved on the node in `/etc/
 # Warnings
 
 * Tool is for local usage only
-* should be run in the same directory where `build-image.sh` sits
 
 # Synopsis
 
@@ -41,6 +40,17 @@ Here 3 scripts:
 ```
 build-image.py root@faraday.inria.fr fit02 ubuntu ubuntu-prime foo.sh bar.sh "./imaging.sh init-node-ssh-key"
 ```
+
+## Included bash
+
+In particular for the stuff in `r2lab/infra/user-env`; for example
+
+`oai-gw.sh` requires `nodes.sh` and `oai-common.sh`
+
+```
+~/git/r2lab/infra/user-env $ ../../rhubarbe-images/build-image.py -f $(plr faraday) 1 ubuntu-16.04-v4-node-env oai1609-gw-001 "oai-gw.sh cn-git-fetch" -i oai-common.sh -i nodes.sh
+```
+
 
 ## Inspect results
 

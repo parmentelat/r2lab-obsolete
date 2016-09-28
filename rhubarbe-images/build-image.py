@@ -17,7 +17,7 @@ from apssh.jobs.sshjobs import SshNode, SshJob, SshJobScript, SshJobPusher
 #
 class ImageBuilder:
 
-    def __init__(self, gateway, node, from_image, to_image, scripts, includes):
+    def __init__(self, gateway, node, from_image, to_image, scripts, includes, path):
         """
         scripts is expected to be a list of strings
         each may contain spaces if arguments are passed
@@ -29,6 +29,7 @@ class ImageBuilder:
         # normalize this one as a list of lists
         self.scripts = [ s.split() for s in scripts ]
         self.includes = includes
+        self.path = path
         
     def user_host(self, input):
         try:
@@ -36,6 +37,18 @@ class ImageBuilder:
         except:
             username, hostname = "root", input
         return username, hostname
+
+    def locate_companion_shell(self):
+        self.companion = None
+        for path in [ '.' ] + self.path.split(":"):
+            candidate = os.path.join(path, "build-image.sh")
+            if os.path.exists(candidate):
+                self.companion = candidate
+                break
+        if not self.companion:
+            print("Cannot locate build-image.sh in {}"
+                  .format(self.path))
+            exit(1)
 
     def prepare_tar(self, dirname):
         """
@@ -83,6 +96,9 @@ class ImageBuilder:
             
         if fast:
             print("WARNING: using fast mode - no image load or save")
+
+        self.locate_companion_shell()
+        if verbose: print("Located companion in {}".format(self.companion))
 
         if verbose: print("Preparing tar of input shell scripts .. ", end="")
         tarfile = self.prepare_tar(self.to_image)
@@ -139,7 +155,7 @@ class ImageBuilder:
             ),
             SshJobScript(
                 node = node_proxy,
-                command = [ "./build-image.sh", self.from_image, self.to_image ],
+                command = [ self.companion, self.from_image, self.to_image ],
                 label = "run scripts",
             ),
         )
@@ -197,6 +213,10 @@ def main():
     parser.add_argument("scripts", nargs='+')
     args = parser.parse_args()
 
+    # find out where the command is stored so we can locate build-image.sh
+    import sys
+    command_dir = os.path.dirname(sys.argv[0])
+
     try:
         node_id = int(args.node.replace('fit', ''))
         node = "fit{:02d}".format(node_id)
@@ -207,7 +227,7 @@ def main():
         exit(1)
 
     builder = ImageBuilder(args.gateway, node, args.from_image, args.to_image,
-                           args.scripts, args.includes)
+                           args.scripts, args.includes, command_dir)
     run_code = builder.run(verbose=args.verbose, debug=args.debug, fast = args.fast)
     return 0 if run_code else 1
 
