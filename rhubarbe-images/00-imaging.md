@@ -31,6 +31,44 @@ chmod +x imaging-utils.sh
 ./imaging-utils.sh help
 ```
 
+# 2016/09/26 - fedora-24
+
+* done on fit42 
+* created a USB stick by just running 
+
+```
+dd if=/Users/parmentelat/Downloads/os-images/Fedora-Server-netinst-x86_64-24-1.2.iso of=/dev/rdisk2 bs=1m
+```
+
+* ~~**not working in text mode** in text mode; graphic mode looked unusable; however I could not use my partitioning in text mode~~
+* eventually could use ***Install in basic graphics mode***, which is in the **Toubleshooting** submenu when running the fedora installer
+* **Partitioning**
+  * could not actually preserve the partitionin that I had `rhubarbe-load`-ed from `ubuntu-16`
+  * redid something similar
+  * make sure to select **ext4** as it defaults to **xfs**
+* selected *Minimal install*
+* defined usual root password
+* --- rebooted
+* `fdisk -l` - for checking partitions
+* `dnf -y udpate` - not needed as I was using a net install, but it does help to update the internal db or cache of dnf
+* `mkdir ~/.ssh ; chmod 700 ~/.ssh`
+* open up root ssh access for `root@bemol`'s public key 
+  * `# root@bemol scp ~/.ssh/id_rsa.pub root@fit42:.ssh/authorized_keys`
+* **snapshot here** with `# rsave 42 -o fedora-24-v0-bemol-only`
+
+## this needs more work:
+
+* the following does not work at all and I can't figure out why
+  * can't log into the node at all through ssh afterwards - it prompts for a passwd, that should be empty
+  * have also tried to turn off selinux to no avail
+
+``` 
+./build.py $(plr faraday) fit01 fedora-24-v0-bemol-only fedora-24-v1-test clear-password.sh
+```
+
+* also, i have noticed that the following flaws with this image; they make everything slow and tedious:
+  * ssh takes a long time (in the 1-2 minutes) before it accepts incomping connections
+  * and more marginally, grub would need tweaking, we'd lose a good 5s stupidly waiting for grub input at boot-time
 
 # 2016/04/25 - `ubuntu-14.04`
 
@@ -209,10 +247,13 @@ I am tweaking /etc/network/interfaces and /etc/network/interfaces.d/data so that
 * done on fit38 on may 21 2015
 * same partitioning as usual with ext4
 
+```
 #
 Number  Start   End    Size    Type     File system     Flags
      1      1049kB  215GB  215GB   primary  ext4            boot
      2      215GB   240GB  25.3GB  primary  linux-swap(v1)
+```
+
 * added emacs-nox, cleared root password and enabled ssh access
 
 ## `rough`
