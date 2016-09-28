@@ -22,6 +22,10 @@ function run-build-image-scripts() {
     tarfile=${to_image}.tar
     cd $rhub_dir
     [ -f $tarfile ] || die "Cannot find tarfile $tarfile"
+
+    ##### try to install tar if missing
+    type tar || dnf install -y tar || apt-get install -y tar
+    
     echo Extracting $tarfile in $(pwd)
     tar -xvf $tarfile
 
