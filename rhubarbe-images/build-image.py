@@ -17,7 +17,7 @@ from apssh.jobs.sshjobs import SshNode, SshJob, SshJobScript, SshJobPusher
 #
 class ImageBuilder:
 
-    def __init__(self, gateway, node, from_image, to_image, scripts):
+    def __init__(self, gateway, node, from_image, to_image, scripts, includes):
         """
         scripts is expected to be a list of strings
         each may contain spaces if arguments are passed
@@ -28,6 +28,7 @@ class ImageBuilder:
         self.to_image = to_image
         # normalize this one as a list of lists
         self.scripts = [ s.split() for s in scripts ]
+        self.includes = includes
         
     def user_host(self, input):
         try:
@@ -42,6 +43,7 @@ class ImageBuilder:
         * create a subdir named dirname
         * create 3 subdirs scripts/ args/ logs/
         * create symlinks named scripts/nnn-script -> script[0] starting at 001
+        * create symlinks in scripts/ for all the includes 
         * create files named args/nnn-script -> the arguments to be passed to <script>
         * create a tarfile <dirname>.tar of subdir/ that can be transferred remotely 
         """
@@ -62,6 +64,10 @@ class ImageBuilder:
             os.symlink(os.path.abspath(localfile), linkname)
             with open(os.path.join(dirname, 'args', numbered), 'w') as out:
                 out.write(" ".join(script_args))
+        for include in self.includes:
+            basename = os.path.basename(include)
+            linkname = os.path.join(dirname, 'scripts', basename)
+            os.symlink(os.path.abspath(include), linkname)
         tarname = "{}.tar".format(dirname)
         with tarfile.TarFile(tarname, 'w', dereference=True) as tar:
             tar.add(dirname)
@@ -183,6 +189,7 @@ def main():
                         help="skip load and save, for when developping scripts")
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-d", "--debug", action='store_true', default=False)
+    parser.add_argument("-i", "--includes", action='append', default=[])
     parser.add_argument("gateway")
     parser.add_argument("node")
     parser.add_argument("from_image")
@@ -199,7 +206,8 @@ def main():
         traceback.print_exc()
         exit(1)
 
-    builder = ImageBuilder(args.gateway, node, args.from_image, args.to_image, args.scripts)
+    builder = ImageBuilder(args.gateway, node, args.from_image, args.to_image,
+                           args.scripts, args.includes)
     run_code = builder.run(verbose=args.verbose, debug=args.debug, fast = args.fast)
     return 0 if run_code else 1
 
