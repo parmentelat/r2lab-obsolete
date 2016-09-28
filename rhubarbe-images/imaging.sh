@@ -8,7 +8,7 @@ function record-help () {
 }
 
 function help () {
-    echo $help_message
+    echo -e $help_message
 }
 
 #################### README
@@ -153,35 +153,32 @@ function init-node-ssh-key () {
 	echo "Cannot find standard R2lab node key - cannot proceed"; return;
     }
     for ext in "" ".pub"; do
-	cp /root/r2lab/rhubarbe-images/r2lab-nodes-key${ext} /etc/ssh/ssh_host_rsa_key${ext}
+	cp -v /root/r2lab/rhubarbe-images/r2lab-nodes-key${ext} /etc/ssh/ssh_host_rsa_key${ext}
 	chown root:root /etc/ssh/ssh_host_rsa_key${ext}
     done
     chmod 600 /etc/ssh/ssh_host_rsa_key
     chmod 444 /etc/ssh/ssh_host_rsa_key.pub
 }
 
-########################################
 # FEDORA
-########################################
-
-# todo...
-
-
 # need to tweak /etc/sysconfig/network-scripts as well
 # done manually:
 # (*) renamed ifcfg-files
 # renamed NAME= inside
 # added DEVICE= inside
 
-
-# need to tweak /etc/network/interfaces accordingly, of course
-# turning on DHCP on the data interface cannot be tested on bemol (no data interface..)
+####################
+# several usages:
+# (*) source imaging.sh
+#     can be useful when things are done interactively
+# (*) imaging.sh subcommand [.. args]
+#     this is useful in conjunction with build.py
+# like e.g.
+# build-image.py $(plr faraday) 1 ubuntu ubuntu-prime "imaging.sh init-infra-nodes" "imaging.sh another-subcommand"
 
 if [[ -z "$@" ]] ; then
     help
 else
-    for subcommand in "$@"; do
-	echo Running subcommand $subcommand
-	$subcommand
-    done
+    subcommand=$1; shift
+    $subcommand "$@"
 fi
