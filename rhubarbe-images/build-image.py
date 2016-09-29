@@ -98,7 +98,7 @@ class ImageBuilder:
         print("Using node {} through gateway {}".format(self.node, self.gateway))
         print("In order to produce {} from {}".format(self.to_image, self.from_image))
         print("The following scripts will be run:")
-        for i, script in enumerate(self.scripts):
+        for i, script in enumerate(self.scripts, 1):
             print("{:03d}:{}".format(i, " ".join(script)))
             
         if fast:
