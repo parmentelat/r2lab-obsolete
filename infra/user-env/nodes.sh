@@ -389,3 +389,6 @@ function offload-off () {
     done
 }
 
+define-main
+
+main "$@"
