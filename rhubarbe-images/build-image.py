@@ -10,7 +10,7 @@ from asynciojobs import Engine, Sequence, Job
 
 from apssh.formatters import ColonFormatter
 from apssh.keys import load_agent_keys
-from apssh.jobs.sshjobs import SshNode, SshJob, SshJobScript, SshJobPusher
+from apssh.jobs.sshjobs import SshNode, SshJob, SshJobScript, SshJobPusher, SshJobCollector
 
 async def aprint(*args, **kwds):
     print(*args, **kwds)
@@ -169,6 +169,13 @@ class ImageBuilder:
                 node = node_proxy,
                 command = [ self.companion, self.from_image, self.to_image ],
                 label = "run scripts",
+            ),
+            SshJobCollector(
+                node = node_proxy,
+                remotepaths = "/etc/rhubarbe-history/{}/logs/".format(self.to_image),
+                localpath = "{}/logs/".format(self.to_image),
+                label = "retrieve logs",
+                recurse = True,
             ),
         )
 
