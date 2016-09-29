@@ -7,11 +7,10 @@ DIRNAME=$(dirname "$0")
 #echo Loading $DIRNAME/nodes.sh  >&2-
 source $DIRNAME/nodes.sh
 
-doc-sep "#################### subcommands to the oai command (alias o)"
+doc-nodes-sep "#################### subcommands to the oai command (alias o)"
 
 source $DIRNAME/oai-common.sh
 
-####################
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
 lte_log="$run_dir/softmodem.log"
 add-to-logs $lte_log
@@ -24,7 +23,7 @@ add-to-configs $conf_dir/$config
 
 #requires_chmod_x="/root/openairinterface5g/targets/RT/USER/init_b200.sh"
 
-doc-fun dumpvars "list environment variables"
+doc-nodes dumpvars "list environment variables"
 function dumpvars() {
     echo "oai_role=${oai_role}"
     echo "oai_ifname=${oai_ifname}"
@@ -45,13 +44,13 @@ texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsf
 "
 
 ####################
-doc-fun base "the script to install base software on top of a raw image" 
+doc-nodes base "the script to install base software on top of a raw image" 
 function base() {
 
     gitup
 
     # apt-get requirements
-    apt-update
+    apt-get update
     apt-get install -y $base_packages
 
     # 
@@ -77,8 +76,8 @@ function base() {
     echo "========== Done - save image in oai-enb-base"
 }
 
-doc-fun image-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
-function image-uhd-ettus() {
+doc-nodes build-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
+function build-uhd-ettus() {
     cd
     echo "========== Building UHD from ettus git repo"
     if [ -d uhd ]; then
@@ -95,15 +94,15 @@ function image-uhd-ettus() {
     make install
 }
 
-doc-fun image-uhd-oai "build UHD using the OAI recipe" 
-function image-uhd-oai() {
+doc-nodes build-uhd-oai "build UHD using the OAI recipe" 
+function build-uhd-oai() {
     gitup
     cd /root/openairinterface5g/cmake_targets
     run-in-log build-oai.log ./build_oai -w USRP -I
     # saved in oai-enb-oaiuhd 
 }
 
-doc-fun image-oai5g "builds oai5g - run with -x for building with software oscilloscope" 
+doc-nodes image-oai5g "builds oai5g - run with -x for building with software oscilloscope" 
 function image-oai5g() {
 
     oscillo=""
@@ -151,25 +150,25 @@ EOF
     # but since it was for a soft phone initially I skip it from the builds image
 }
 
-doc-fun image "builds uhd and oai5g for an oai image"
+doc-nodes image "builds uhd and oai5g for an oai image"
 function image() {
 
     gitup
     cd
     
-    image-uhd-ettus >& image-uhd-ettus.log
+    build-uhd-ettus >& build-uhd-ettus.log
 
     image-oai5g >& image-oai5g.log
 
     echo "========== Done - save image in oai-enb-builds"
 }
 
-doc-fun build "build eNodeB"
+doc-nodes build "build eNodeB"
 function build() {
     echo "empty build on enb" 
 }
 
-doc-fun configure "configure eNodeB (requires define-peer)"
+doc-nodes configure "configure eNodeB (requires define-peer)"
 function configure() {
 
     gw_id=$(get-peer)
@@ -200,7 +199,7 @@ EOF
     cd - >& /dev/null
 }
 
-doc-fun init "initializes clock after NTP"
+doc-nodes init "initializes clock after NTP"
 function init() {
     # clock
     init-clock
@@ -212,7 +211,7 @@ function init() {
 #    ip link set dev ${oai_ifname} mtu 1536
 }
 
-doc-fun start "starts lte-softmodem - run with -d to turn on soft oscilloscope" 
+doc-nodes start "starts lte-softmodem - run with -d to turn on soft oscilloscope" 
 function start() {
 
     oscillo=""
@@ -230,15 +229,15 @@ cd $run_dir
     cd - >& /dev/null
 }
 
-doc-fun status "displays the status of the softmodem-related processes"
-doc-fun stop "stops the softmodem-related processes"
+doc-nodes status "displays the status of the softmodem-related processes"
+doc-nodes stop "stops the softmodem-related processes"
 
 function -list-processes() {
     pids="$(pgrep lte-softmodem)"
     echo $pids
 }
 
-doc-fun ureset "Reset the URSP attached to this node"
+doc-nodes ureset "Reset the URSP attached to this node"
 function ureset() {
     id=$(r2lab-id)
     # WARNING this might not work on a node that
@@ -252,7 +251,7 @@ function ureset() {
     curl http://$cmc/usrpon
 }
 
-doc-fun scramble "shortcuts for scrambling the r2lab demo; use -blast to use max. gain"
+doc-nodes scramble "shortcuts for scrambling the r2lab demo; use -blast to use max. gain"
 function scramble() {
     mode=$1; shift
     command="uhd_siggen --freq=2.53G --gaussian --amplitude=0.9"
@@ -266,7 +265,5 @@ function scramble() {
 }
 
 ####################
-define_main
-
-########################################
+define-main
 main "$@"

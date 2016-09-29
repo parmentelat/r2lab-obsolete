@@ -8,38 +8,17 @@
 # 
 #
 
+# use the micro doc-help tool
+source $(dirname $BASH_SOURCE)/common.sh
+
+define-doc-category nodes "#################### commands available on each r2lab node"
+augment-help-with nodes
+
+####################
 unalias ls 2> /dev/null
 
-########## micro doc tool
-_doc_nodes="#################### commands available on each r2lab node"
-
-# sort of decorator to define the doc-* functions
-# the job here is to add to one of the 3 variables
-# _doc_* above, in general a single line with function name and explanation
-function _doc_helper () {
-    msg_varname=$1; shift
-    fun=$1; shift;
-    docstring="$*"
-    [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
-    [ "$docstring" == 'function' ] && docstring=$(type $fun)
-    length=$(wc -c <<< $fun)
-    [ $length -ge 16 ] && docstring="\n\t\t$docstring"
-    assign="$msg_varname=\"${!msg_varname}\n$fun\r\t\t$docstring\""
-    eval "$assign"
-}
-
-function doc-fun()	{ _doc_helper _doc_nodes "$@"; }
-
-function doc-sep() {
-    name="$1"; shift
-    if [ -z "$name" ] ; then
-	_doc_nodes="$_doc_nodes\n---------------"
-    else
-	_doc_nodes="$_doc_nodes\n============================== $name"
-    fi
-} 
 ##########
-doc-fun gitup "updates /root/r2lab from git repo (as well as OAI repos if found)"
+doc-nodes gitup "updates /root/r2lab from git repo (as well as OAI repos if found)"
 git_repos="/root/r2lab /root/openair-cn /root/openairinterface5g"
 function gitup() {
     [[ -n "$@" ]] && repos="$@" || repos="$git_repos"
@@ -54,14 +33,14 @@ function gitup() {
 }
 
 # reload this file after a gitup
-doc-fun bashrc "reload ~/.bashrc"
+doc-nodes bashrc "reload ~/.bashrc"
 function bashrc() { echo "Reloading ~/.bashrc"; source ~/.bashrc; }
 
 # update and reload
-doc-fun refresh "gitup + bashrc"
+doc-nodes refresh "gitup + bashrc"
 function refresh() { gitup /root/r2lab; bashrc; }
 
-doc-fun init-clock "Sets date from ntp"
+doc-nodes init-clock "Sets date from ntp"
 function init-clock() {
     type ntpdate >& /dev/null && {
 	echo "Running ntpdate faraday3"
@@ -72,15 +51,18 @@ function init-clock() {
     }
 }
 
-doc-fun apt-update "refresh all packages with apt-get"
-function apt-update() {
+doc-nodes apt-upgrade-all "refresh all packages with apt-get"
+function apt-upgrade-all() {
     apt-get update
+    # for grub-pc
+    debconf-set-selections <<< 'grub-pc	grub-pc/install_devices_disks_changed multiselect /dev/sda'
+    debconf-set-selections <<< 'grub-pc	grub-pc/install_devices	multiselect /dev/sda'
     apt-get upgrade -y
 }
 ##########
-doc-sep
+doc-nodes-sep
 
-doc-fun r2lab-id "returns id in the range 01-37; adjusts hostname if needed"
+doc-nodes r2lab-id "returns id in the range 01-37; adjusts hostname if needed"
 function r2lab-id() {
     # when hostname is correctly set, e.g. fit16
     fitid=$(hostname)
@@ -103,7 +85,7 @@ function r2lab-id() {
     echo $id
 }    
 
-doc-fun data-up "turn up the data interface; returns the interface name (should be data)"
+doc-nodes data-up "turn up the data interface; returns the interface name (should be data)"
 # should maybe better use wait-forinterface-on-driver e1000e
 data_ifnames="data"
 # can be used with ifname=$(data-up)
@@ -120,7 +102,7 @@ function data-up() {
     done
 }
 
-doc-fun list-interfaces "list the current status of all interfaces"
+doc-nodes list-interfaces "list the current status of all interfaces"
 function list-interfaces () {
     set +x
     for f in /sys/class/net/*; do
@@ -134,7 +116,7 @@ function list-interfaces () {
     done
 }
 
-doc-fun details-on-interface "gives extensive details on one interface"
+doc-nodes details-on-interface "gives extensive details on one interface"
 function details-on-interface () {
     dev=$1; shift
     echo ==================== ip addr sh $dev
@@ -147,7 +129,7 @@ function details-on-interface () {
     iw dev $dev info
 }    
 
-doc-fun find-interface-by-driver "returns first interface bound to given driver"
+doc-nodes find-interface-by-driver "returns first interface bound to given driver"
 function find-interface-by-driver () {
     set +x
     search_driver=$1; shift
@@ -164,7 +146,7 @@ function find-interface-by-driver () {
 
 # wait for one interface to show up using this driver
 # prints interface name on stdout
-doc-fun wait-for-interface-on-driver "locates and waits for device bound to provided driver, returns its name"
+doc-nodes wait-for-interface-on-driver "locates and waits for device bound to provided driver, returns its name"
 function wait-for-interface-on-driver() {
     driver=$1; shift
     while true; do
@@ -180,7 +162,7 @@ function wait-for-interface-on-driver() {
     done
 }
 
-doc-fun wait-for-device "wait for device to be up or down; example: wait-for-device data up"
+doc-nodes wait-for-device "wait for device to be up or down; example: wait-for-device data up"
 function wait-for-device () {
     set +x
     dev=$1; shift
@@ -198,7 +180,7 @@ function wait-for-device () {
     done
 }
 
-doc-sep
+doc-nodes-sep
 ##########
 # the utility to select which function the oai alias should point to
 # in most cases, we just want oai to be an alias to e.g.
@@ -231,7 +213,7 @@ function define-oai() {
     alias o=_oai
 }
 
-doc-fun oai-loadvars "displays and loads env variables related to oai"
+doc-nodes oai-loadvars "displays and loads env variables related to oai"
 function oai-loadvars() {
     _oai dumpvars > /root/oai-vars
     source /root/oai-vars
@@ -241,19 +223,19 @@ function oai-loadvars() {
 }
 
 
-doc-fun oai-as-gw "defines the 'oai' command for a HSS+EPC oai gateway, and related env. vars"
+doc-nodes oai-as-gw "defines the 'oai' command for a HSS+EPC oai gateway, and related env. vars"
 function oai-as-gw() { define-oai gw; echo function "'oai'" now defined; oai-loadvars; }
 
-doc-fun oai-as-hss "defines the 'oai' command for a HSS-only oai box, and related env. vars"
+doc-nodes oai-as-hss "defines the 'oai' command for a HSS-only oai box, and related env. vars"
 function oai-as-hss() { define-oai hss; echo function "'oai'" now defined; oai-loadvars; }
 
-doc-fun oai-as-epc "defines the 'oai' command for an EPC-only oai box, and related env. vars"
+doc-nodes oai-as-epc "defines the 'oai' command for an EPC-only oai box, and related env. vars"
 function oai-as-epc() { define-oai epc; echo function "'oai'" now defined; oai-loadvars; }
 
-doc-fun oai-as-enb "defines the 'oai' command for an oai eNodeB, and related env. vars"
+doc-nodes oai-as-enb "defines the 'oai' command for an oai eNodeB, and related env. vars"
 function oai-as-enb() { define-oai enb; echo function "'oai'" now defined; echo role=$oai_role; oai-loadvars; }
 
-doc-sep
+doc-nodes-sep
 
 ########## utilities to deal with a set of files of the same kind
 function create-file-category() {
@@ -298,12 +280,12 @@ create-file-category config
 create-file-category lock
 
 
-doc-fun ls-logs     "list (using ls) the log files defined with add-to-logs"
-doc-fun grep-logs   "run grep on logs, e.g grep-logs -i open"
-doc-fun ls-configs  "lists config files declared with add-to-configs"
-doc-fun ls-datas    "you got the idea; you have also grep-configs and similar combinations"
+doc-nodes ls-logs     "list (using ls) the log files defined with add-to-logs"
+doc-nodes grep-logs   "run grep on logs, e.g grep-logs -i open"
+doc-nodes ls-configs  "lists config files declared with add-to-configs"
+doc-nodes ls-datas    "you got the idea; you have also grep-configs and similar combinations"
 
-doc-fun capture-all "captures logs and datas and configs in a tgz"
+doc-nodes capture-all "captures logs and datas and configs in a tgz"
 function capture-all() {
     output=$1; shift
     [ -z "$output" ] && { echo usage: capture-all output; return; }
@@ -314,10 +296,10 @@ function capture-all() {
     ls -l $allfiles
 }    
 
-doc-sep
+doc-nodes-sep
 
 peer_id_file=/root/peer.id
-doc-fun define-peer "defines the id of a peer - stores it in $peer_id_file; e.g. define-peer 16"
+doc-nodes define-peer "defines the id of a peer - stores it in $peer_id_file; e.g. define-peer 16"
 # define-peer allows you to store the identity of the node being used as a gateway
 # example: define-peer 16
 # this is stored in file $peer_id_file
@@ -328,7 +310,7 @@ function define-peer() {
     echo "peer now defined as : " $(cat $peer_id_file)
 }
 
-doc-fun get-peer "retrieve the value defined with define-peer"
+doc-nodes get-peer "retrieve the value defined with define-peer"
 function get-peer() {
     if [ ! -f $peer_id_file ]; then
 	echo "ERRROR: you need to run define-peer first" >&2-
@@ -338,7 +320,7 @@ function get-peer() {
 }
 
 #################### debugging
-doc-fun dump-dmesg "run dmesg every second and stores into /root/dmesg/dmesg-hh-mm-ss"
+doc-nodes dump-dmesg "run dmesg every second and stores into /root/dmesg/dmesg-hh-mm-ss"
 function dump-dmesg() {
     mkdir -p /root/dmesg
     while true; do
@@ -348,7 +330,7 @@ function dump-dmesg() {
     done	 
 }    
 
-doc-fun unbuf-var-log-syslog "reconfigures rsyslog to write in /var/sys/syslog unbuffered on ubuntu"
+doc-nodes unbuf-var-log-syslog "reconfigures rsyslog to write in /var/sys/syslog unbuffered on ubuntu"
 function unbuf-var-log-syslog() {
     # 
     local conf=/etc/rsyslog.d/50-default.conf
@@ -357,7 +339,7 @@ function unbuf-var-log-syslog() {
     echo "Writing to /var/log/syslog is now unbeffered"
 }
 
-doc-fun demo "set ups nodes for the skype demo - based on their id"
+doc-nodes demo "set ups nodes for the skype demo - based on their id"
 function demo() {
     demo-init-git
     case $(r2lab-id) in
@@ -397,7 +379,7 @@ function demo() {
 # long names are tcp-segmentation-offload udp-fragmentation-offload
 # generic-segmentation-offload generic-receive-offload
 # plus, udp-fragmentation-offload is fixed on our nodes
-doc-fun offload-off "turn off various offload features on specified wired interface" 
+doc-nodes offload-off "turn off various offload features on specified wired interface" 
 function offload-off () {
     ifname=$1; shift
     for feature in tso gso gro ; do
@@ -407,4 +389,3 @@ function offload-off () {
     done
 }
 
-function help() { echo -e $_doc_nodes; }

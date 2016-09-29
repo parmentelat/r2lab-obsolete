@@ -4,12 +4,16 @@ import os, os.path
 import stat
 import tarfile
 import shutil
+import asyncio
 
-from asynciojobs import Engine, Sequence
+from asynciojobs import Engine, Sequence, Job
 
 from apssh.formatters import ColonFormatter
 from apssh.keys import load_agent_keys
 from apssh.jobs.sshjobs import SshNode, SshJob, SshJobScript, SshJobPusher
+
+async def aprint(*args, **kwds):
+    print(*args, **kwds)
 
 #
 # Usage:
@@ -87,6 +91,9 @@ class ImageBuilder:
         return tarname
 
     def run(self, verbose, debug, fast):
+        """
+        fast means do **not** run load and save
+        """
 
         print("Using node {} through gateway {}".format(self.node, self.gateway))
         print("In order to produce {} from {}".format(self.to_image, self.from_image))
@@ -129,8 +136,13 @@ class ImageBuilder:
             debug = debug,
         )
 
+        banner = 20*'*'
         #################### the little pieces
         sequence = Sequence(
+            Job(aprint(banner, "loading image {}".format(self.from_image)
+                       if not fast
+                       else "fast-mode: skipping image load"
+                   )),
             SshJob(
                 node = gateway_proxy,
                 commands = [
@@ -164,6 +176,19 @@ class ImageBuilder:
         if not fast:
             sequence.append(
                 Sequence(
+                    Job(aprint(banner, "saving image {} ..."
+                               .format(self.to_image))),
+                    # make sure we capture all the logs and all that
+                    SshJob(
+                        node = node_proxy,
+                        commands = [
+                            ["sync"],
+                            ["sleep", "1"],
+                            ["sync"],
+                            ["sleep", "1"],
+                        ],
+                        label = 'sync',
+                    ),
                     SshJob(
                         node = gateway_proxy,
                         command = [ "rhubarbe", "save", "-o", self.to_image, self.node ],
@@ -201,7 +226,7 @@ from argparse import ArgumentParser
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("-f", "--fast", action='store_true', default=False,
+    parser.add_argument("-n", "--no-load-save", action='store_true', default=False,
                         help="skip load and save, for when developping scripts")
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-d", "--debug", action='store_true', default=False)
@@ -228,7 +253,7 @@ def main():
 
     builder = ImageBuilder(args.gateway, node, args.from_image, args.to_image,
                            args.scripts, args.includes, command_dir)
-    run_code = builder.run(verbose=args.verbose, debug=args.debug, fast = args.fast)
+    run_code = builder.run(verbose=args.verbose, debug=args.debug, fast = args.no_load_save)
     return 0 if run_code else 1
 
 if __name__ == '__main__':

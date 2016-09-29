@@ -1,15 +1,9 @@
 #!/bin/bash
 
-help_message=""
-function record-help () {
-    for line in "$@"; do
-	help_message="${help_message}${line}\n"
-    done
-}
+source $(dirname $BASH_SOURCE)/common.sh
 
-function help () {
-    echo -e $help_message
-}
+define-doc-category imaging "tools for creating images"
+augment-help-with imaging
 
 #################### README
 # here's a list of additional stuff that we need to integrate in
@@ -17,13 +11,23 @@ function help () {
 # * initialize r2lab/ and trigger infra/user-env/nodes.sh - together with a command to update from git
 # * all images should have a common ssh key so that users don't need to mess with their known_hosts
 
-
 ########################################
 # UBUNTU
 ########################################
 
-record-help "ubuntu-ssh: tweaks sshd_config, remove dummy r2lab user, remove root password, restart ssh"
-function ubuntu-ssh () {
+doc-imaging ubuntu-setup-ntp "installs ntp"
+function ubuntu-setup-ntp () {
+    apt-get install -y ntp ntpdate
+    # let's not tweak ntp.conf, use DHCP instead
+    # see faraday:/etc/dnsmasq.conf
+    systemctl restart ntp || service ntp start
+    # I have no idea how to do this on systemctl-less ubuntus
+    # hopefully the dpkg install will do it
+    systemctl enable ntp || echo "systemctl-less ubuntus : not supported"
+}
+
+doc-imaging "ubuntu-setup-ssh: tweaks sshd_config, remove dummy r2lab user, remove root password, restart ssh"
+function ubuntu-setup-ssh () {
 
 ####################
 # expected result is this
@@ -59,7 +63,7 @@ EOF
 }
 
 
-record-help "ubuntu-base: remove /etc/hostname, install base packages"
+doc-imaging "ubuntu-base: remove /etc/hostname, install base packages"
 function ubuntu-base () {
     ###
     rm /etc/hostname
@@ -74,7 +78,7 @@ iw ethtool tcpdump wireshark bridge-utils
 }
 
 
-record-help "ubuntu-interfaces: overwrite /etc/network/interfaces"
+doc-imaging "ubuntu-interfaces: overwrite /etc/network/interfaces"
 function ubuntu-interfaces () {
     cat > /etc/network/interfaces <<EOF
 source /etc/network/interfaces.d/*
@@ -95,7 +99,7 @@ EOF
 }
 
 
-record-help "ubuntu-dev: add udev rules for canonical interface names"
+doc-imaging "ubuntu-dev: add udev rules for canonical interface names"
 function ubuntu-udev () {
 ####################
 # udev
@@ -134,8 +138,22 @@ EOF
 
 }
 
-record-help "init-infra-nodes: set up /root/r2lab and add infra/user-env/nodes.sh to /etc/profile.d"
-function init-infra-nodes () {
+########################################
+# FEDORA
+########################################
+# very incomplete for now...
+doc-imaging fedora-setup-ntp "installs ntp"
+function fedora-setup-ntp() {
+    dnf -y install ntp
+    systemctl enable ntpd
+    systemctl start ntpd
+}
+
+########################################
+# common
+########################################
+doc-imaging "common-setup-user-env: set up /root/r2lab and add infra/user-env/nodes.sh to /etc/profile.d"
+function common-setup-user-env () {
     type -p git 2> /dev/null || { echo "git not installed - cannot proceed"; return; }
     cd /root
     [ -d r2lab ] || git clone https://github.com/parmentelat/r2lab.git
@@ -146,8 +164,8 @@ function init-infra-nodes () {
 }
 
 
-record-help "init-node-ssh-key: install standard R2lab key as the ssh node's key"
-function init-node-ssh-key () {
+doc-imaging "common-setup-node-ssh-key: install standard R2lab key as the ssh node's key"
+function common-setup-node-ssh-key () {
     [ -f /root/r2lab/rhubarbe-images/r2lab-nodes-key -a \
 	 -f /root/r2lab/rhubarbe-images/r2lab-nodes-key.pub ] || {
 	echo "Cannot find standard R2lab node key - cannot proceed"; return;
@@ -160,25 +178,6 @@ function init-node-ssh-key () {
     chmod 444 /etc/ssh/ssh_host_rsa_key.pub
 }
 
-# FEDORA
-# need to tweak /etc/sysconfig/network-scripts as well
-# done manually:
-# (*) renamed ifcfg-files
-# renamed NAME= inside
-# added DEVICE= inside
-
-####################
-# several usages:
-# (*) source imaging.sh
-#     can be useful when things are done interactively
-# (*) imaging.sh subcommand [.. args]
-#     this is useful in conjunction with build.py
-# like e.g.
-# build-image.py $(plr faraday) 1 ubuntu ubuntu-prime "imaging.sh init-infra-nodes" "imaging.sh another-subcommand"
-
-if [[ -z "$@" ]] ; then
-    help
-else
-    subcommand=$1; shift
-    $subcommand "$@"
-fi
+########################################
+define-main
+main "$@"

@@ -1,14 +1,12 @@
 #!/bin/bash
 
-DIRNAME=$(dirname "$0")
-#echo Loading $DIRNAME/nodes.sh  >&2-
-source $DIRNAME/nodes.sh
+source $(dirname $BASH_SOURCE)/nodes.sh
 
-doc-sep "#################### subcommands to the oai command (alias o)"
+doc-nodes-sep "#################### subcommands to the oai command (alias o)"
 
-source $DIRNAME/oai-common.sh
+source $(dirname $BASH_SOURCE)/oai-common.sh
 
-COMMAND=$(basename "$0")
+COMMAND=$(basename "$BASH_SOURCE")
 case $COMMAND in
     oai-gw*)
 	runs_epc=true; runs_hss=true ;;
@@ -18,32 +16,7 @@ case $COMMAND in
 	runs_epc=true; runs_hss=     ;;
 esac
     
-
-##########
-doc-fun cn-git-fetch "run fetch origin in openair-cn git repo"
-function cn-git-fetch() {
-    cd /root/openair-cn
-    git fetch origin
-    cd - >& /dev/null
-}
-
-doc-fun cn-git-select-branch "select branch in openair-cn; typically master or unstable or v0.3.1"
-function cn-git-select-branch() {
-    branch=$1; shift
-    if [ -z "$branch" ]; then
-	cn-git-get-branch
-    else
-	cd /root/openair-cn
-	git reset --hard HEAD
-	rm BUILD/EPC/epc.conf.in
-	git checkout --force $branch
-	cd - >& /dev/null
-    fi
-}
-
 ####################
-# 
-
 run_dir=/root/openair-cn/SCRIPTS
 [ -n "$runs_hss" ] && {
     log_hss=$run_dir/hss.log
@@ -66,7 +39,7 @@ run_dir=/root/openair-cn/SCRIPTS
     add-to-datas /etc/hosts
 }
 
-doc-fun dumpvars "list environment variables"
+doc-nodes dumpvars "list environment variables"
 function dumpvars() {
     echo "oai_role=${oai_role}"
     echo "oai_ifname=${oai_ifname}"
@@ -81,20 +54,46 @@ function dumpvars() {
     echo "_locks=\"$(get-locks)\""
 }
 
+# would make sense to add more stuff in the base image - see the NEWS file
+base_packages="git cmake build-essential gdb"
 
-doc-fun base "the script to install base software on top of a raw image" 
+####################
+doc-nodes image "the entry point for nightly image builds"
+
+function image() {
+    base
+    build
+}
+
+doc-nodes base "the script to install base software on top of a raw image" 
 function base() {
 
     gitup
-    echo "NOTE : the following installs expect input and cannot be run unattended" 
-    echo "========== Installing mysql-server - select apache2 and set password=linux - press enter .."
-    read _
+    # apt-get requirements
+    apt-get update
+    apt-get install -y $base_packages
+
+    # use debconf-get-selections | grep mysql-server
+    # to see the available settings
+    # this requires
+    # apt-get install -y debconf-utils
+
+    echo "========== Installing mysql-server"
+    debconf-set-selections <<< 'mysql-server mysql-server/root_password password linux'
+    debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password linux'
     apt-get install -y mysql-server
 
     echo "========== Installing phpmyadmin - provide mysql-server password as linux and set password=admin"
-    echo "Press enter .."
-    read _
+    debconf-set-selections <<< 'phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2' 
+    debconf-set-selections <<< 'phpmyadmin phpmyadmin/dbconfig-install boolean true' 
+    # the one we used just above for mysql-server
+    debconf-set-selections <<< 'phpmyadmin phpmyadmin/mysql/admin-pass password linux'
+    # password for phpadmin itself
+    debconf-set-selections <<< 'phpmyadmin phpmyadmin/mysql/app-pass password admin' 
+    debconf-set-selections <<< 'phpmyadmin phpmyadmin/app-password-confirm password admin' 
     apt-get install -y phpmyadmin
+
+
 
     echo "========== Running git clone for openair-cn and r2lab .."
     cd
@@ -115,11 +114,10 @@ function base() {
     cd
     cpufreq-info > cpufreq.info
 
-    echo "========== Done - save image in oai-gw-base"
 }
 
-doc-fun image "builds hss and epc and installs dependencies" 
-function image() {
+doc-nodes build "builds hss and epc and installs dependencies" 
+function build() {
     
     gitup
     cd $run_dir
@@ -132,15 +130,43 @@ function image() {
     fi
     # building the kernel module : deferred to the init step
     # it looks like it won't run fine at that early stage
-    echo "========== Done - save image in oai-gw-builds"
 }
+
+
+
+
+
+##########
+doc-nodes cn-git-fetch "run fetch origin in openair-cn git repo"
+function cn-git-fetch() {
+    cd /root/openair-cn
+    git fetch origin
+    cd - >& /dev/null
+}
+
+doc-nodes cn-git-select-branch "select branch in openair-cn; typically master or unstable or v0.3.1"
+function cn-git-select-branch() {
+    branch=$1; shift
+    if [ -z "$branch" ]; then
+	cn-git-get-branch
+    else
+	cd /root/openair-cn
+	git reset --hard HEAD
+	rm BUILD/EPC/epc.conf.in
+	git checkout --force $branch
+	cd - >& /dev/null
+    fi
+}
+
+####################
+# 
 
 function clean-hosts() {
     sed --in-place '/fit/d' /etc/hosts
     sed --in-place '/hss/d' /etc/hosts
 }
 
-doc-fun check-etc-hosts "adjusts /etc/hosts; run with hss as first arg to define hss"
+doc-nodes check-etc-hosts "adjusts /etc/hosts; run with hss as first arg to define hss"
 function check-etc-hosts() {
     clean-hosts
 
@@ -165,7 +191,7 @@ function check-etc-hosts() {
 }
 	
     
-doc-fun init "sync clock from NTP, checks /etc/hosts, rebuilds gtpu and runs depmod"
+doc-nodes init "sync clock from NTP, checks /etc/hosts, rebuilds gtpu and runs depmod"
 function init() {
 
     # clock
@@ -193,13 +219,13 @@ function init() {
 #    popd
 }
 
-doc-fun build "build hss and/or epc"
+doc-nodes build "build hss and/or epc"
 function build() {
     build-hss
     build-epc
 }
 
-doc-fun configure "configure hss and/or epc"
+doc-nodes configure "configure hss and/or epc"
 function configure() {
     echo "========== Checking /etc/hosts"
     check-etc-hosts
@@ -443,7 +469,7 @@ function populate-db() {
     
 }
 
-doc-fun start "starts the hss and/or epc service(s)"
+doc-nodes start "starts the hss and/or epc service(s)"
 function start() {
     cd $run_dir
     if [ -n "$runs_hss" ]; then
@@ -462,10 +488,10 @@ locks=""
 [ -n "$runs_epc" ] && add-to-locks /var/run/mme_gw.pid /var/run/mme.pid /var/run/mmed.pid /var/run/spgw.pid
 
 ########################################
-doc-fun status "displays the status of the epc and/or hss processes"
-doc-fun stop "stops the epc and/or hss processes & clears locks"
-doc-fun status "displays the status of the softmodem-related processes"
-doc-fun stop "stops the softmodem-related processes"
+doc-nodes status "displays the status of the epc and/or hss processes"
+doc-nodes stop "stops the epc and/or hss processes & clears locks"
+doc-nodes status "displays the status of the softmodem-related processes"
+doc-nodes stop "stops the softmodem-related processes"
 
 function -list-processes() {
     pids=""
@@ -476,13 +502,11 @@ function -list-processes() {
 }
 
 ##############################
-doc-fun manage-db "runs mysql on the oai_db database" 
+doc-nodes manage-db "runs mysql on the oai_db database" 
 function manage-db() {
     mysql --user=root --password=linux oai_db
 }
 
 ####################
-define_main
-
-########################################
+define-main
 main "$@"
