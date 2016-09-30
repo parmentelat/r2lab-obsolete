@@ -1,36 +1,15 @@
 unalias ls 2> /dev/null
 
 ########## pseudo docstrings
-_doc_nodes="#################### commands that work on a selection of nodes"
-_doc_alt="#################### other commands"
-_doc_admin="#################### admin commands"
+source $(dirname $BASH_SOURCE)/r2labutils.sh
 
-# sort of decorator to define the doc-* functions
-# the job here is to add to one of the 3 variables
-# _doc_* above, in general a single line with function name and explanation
-function _doc_helper () {
-    msg_varname=$1; shift
-    fun=$1; shift;
-    docstring="$*"
-    [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
-    [ "$docstring" == 'function' ] && docstring=$(type $fun)
-    length=$(wc -c <<< $fun)
-    [ $length -ge 16 ] && docstring="\n\t\t$docstring"
-    assign="$msg_varname=\"${!msg_varname}\n$fun\r\t\t$docstring\""
-    eval "$assign"
-}
-
-function doc-nodes()	{ _doc_helper _doc_nodes "$@"; }
-function doc-alt()	{ _doc_helper _doc_alt "$@"; }
-function doc-admin()	{ _doc_helper _doc_admin "$@"; }
-
-function help-nodes () { echo -e $_doc_nodes; }
-function help-alt () { echo -e $_doc_alt; }
-function help-admin () { echo -e $_doc_admin; }
-function help () { help-nodes; }
+define-doc-category selection "commands that work on a selection of nodes"
+augment-help-with selection
+define-doc-category alt "other commands"
+define-doc-category admin "admin commands"
 
 #################### contextual data
-function bemol () { hostname | grep -q bemol; }
+function preplab () { hostname | grep -q bemol; }
 
 control_dev=control
 
@@ -197,7 +176,7 @@ function nodes () {
     echo "export NBNODES=$(nbnodes)"
 }
 alias n=nodes
-doc-nodes nodes "(alias n) show or define currently selected nodes; eg nodes 1-10,12 13 ~5"
+doc-selection nodes "(alias n) show or define currently selected nodes; eg nodes 1-10,12 13 ~5"
 
 
 function nbnodes () {
@@ -212,7 +191,7 @@ function nodes-add () {
     nodes
 }
 alias n+=nodes-add
-doc-nodes nodes-add "(alias n+) add nodes to current selection"
+doc-selection nodes-add "(alias n+) add nodes to current selection"
 function nodes-sub () {
     subspec=""
     for rngspec in "$@"; do
@@ -222,7 +201,7 @@ function nodes-sub () {
     nodes
 }
 alias n-=nodes-sub
-doc-nodes nodes-sub "(alias n-) remove nodes from current selection"
+doc-selection nodes-sub "(alias n-) remove nodes from current selection"
 
 # snapshot current set of nodes for later
 # nodes_save foo
@@ -242,8 +221,8 @@ function nodes-restore () {
 }
 doc-alt nodes-restore "use previously named selection"
 
-#bemol && export _all_nodes=38-42 || export _all_nodes=1-37
-#bemol && export _all_nodes=4,38-41 || export _all_nodes=1-37
+#preplab && export _all_nodes=38-42 || export _all_nodes=1-37
+#preplab && export _all_nodes=4,38-41 || export _all_nodes=1-37
 
 _all_nodes=""
 function _get_all_nodes () {
@@ -252,110 +231,100 @@ function _get_all_nodes () {
 }
 
 function all-nodes () { nodes $(_get_all_nodes); }
-doc-nodes all-nodes "select all available nodes"
+doc-selection all-nodes "select all available nodes"
 
 # nodes-on : filter nodes that are on from args, or NODES if not provided
 function show-nodes-on () {
     [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     rhubarbe status $nodes | grep 'on' | cut -d: -f1 | sed -e s,reboot,fit,
 }
-doc-nodes show-nodes-on "display only selected nodes that are ON - does not change selection"
+doc-selection show-nodes-on "display only selected nodes that are ON - does not change selection"
 function focus-nodes-on () {
     nodes $(show-nodes-on)
 }
-doc-nodes focus-nodes-on "restrict current selection to nodes that are ON"
+doc-selection focus-nodes-on "restrict current selection to nodes that are ON"
 
 ### first things first
 alias rleases="rhubarbe leases"
-doc-nodes rleases "display current leases (rhubarbe leases)"
+doc-selection rleases "display current leases (rhubarbe leases)"
 
 #
 alias ron="rhubarbe on"
 alias on=ron
-doc-nodes "(r)on" "turn selected nodes on (rhubarbe on)"
+doc-selection "(r)on" "turn selected nodes on (rhubarbe on)"
 alias roff="rhubarbe off"
 alias off=roff
-doc-nodes "(r)off" "turn selected nodes off (rhubarbe off)"
+doc-selection "(r)off" "turn selected nodes off (rhubarbe off)"
 alias rreset="rhubarbe reset"
 alias reset=rreset
-doc-nodes "(r)reset" "reset selected nodes (rhubarbe reset)"
+doc-selection "(r)reset" "reset selected nodes (rhubarbe reset)"
 
 alias rstatus="rhubarbe status"
-doc-nodes "rstatus" "show status (on or off) selected nodes (rhubarbe status)"
+doc-selection "rstatus" "show status (on or off) selected nodes (rhubarbe status)"
 alias st=rstatus
-doc-nodes "st" "like rstatus (status is a well-known command on ubuntu)"
+doc-selection "st" "like rstatus (status is a well-known command on ubuntu)"
 
 alias rinfo="rhubarbe info"
 alias info=rinfo
-doc-nodes "(r)info" "get version info from selected nodes CMC (rhubarbe info)"
+doc-selection "(r)info" "get version info from selected nodes CMC (rhubarbe info)"
 
 alias rwait="rhubarbe wait"
-doc-nodes rwait "wait for nodes to be reachable through ssh (rhubarbe wait)"
+doc-selection rwait "wait for nodes to be reachable through ssh (rhubarbe wait)"
 alias rw=rwait
-doc-nodes rw alias
+doc-selection rw alias
 
 
 alias rusrpon="rhubarbe usrpon"
-doc-nodes "rusrpon" "turn selected nodes usrpon (rhubarbe usrpon)"
 alias uon=rusrpon
-doc-nodes "uon" alias
+doc-selection "rusrpon|uon" "turn selected nodes usrpon (rhubarbe usrpon)"
+
 alias rusrpoff="rhubarbe usrpoff"
-doc-nodes "rusrpoff" "turn selected nodes usrpoff (rhubarbe usrpoff)"
 alias uoff=rusrpoff
-doc-nodes uoff alias
+doc-selection "rusrpoff|uoff" "turn selected nodes usrpoff (rhubarbe usrpoff)"
+
 alias rusrpstatus="rhubarbe usrpstatus"
-doc-nodes "rusrpstatus" "show status (usrpon or usrpoff) of selected nodes USRP (rhubarbe usrpstatus)"
 alias ust=rusrpstatus
-doc-nodes "ust" alias
+doc-selection "rusrpstatus|ust" "show status (usrpon or usrpoff) of selected nodes USRP (rhubarbe usrpstatus)"
 
 alias rload="rhubarbe load"
-doc-nodes rload "load image (specify with -i) on selected nodes (rhubarbe load)"
+doc-selection rload "load image (specify with -i) on selected nodes (rhubarbe load)"
 alias rsave="rhubarbe save"
-doc-nodes rsave "save image from one node (rhubarbe save)"
+doc-selection rsave "save image from one node (rhubarbe save)"
 alias rshare="rhubarbe share"
-doc-nodes rshare "share image with community (rhubarbe share)"
+doc-selection rshare "share image with community (rhubarbe share)"
 
-
-# map command [args]
-# -> run command on $NODES
-# e.g. map hostname
-function map () {
-    [ -z "$1" ] && { echo "usage: map command [args] - map command on $NODES"; return; }
+# sequential - and mostly obsolete
+function smap () {
+    [ -z "$1" ] && { echo "usage: $0 command [args] - sequential map command on $NODES"; return; }
     for node in $NODES; do
 	echo ==================== $node
 	ssh root@$node "$@"
     done
 }
 
-function rmap () {
-    [ -z "$1" ] && { echo "usage: rmap command - runs command on $NODES with apssh"; return; }
+# parallel version thanks to apssh
+function map () {
+    [ -z "$1" ] && { echo "usage: map command - runs command on $NODES with apssh"; return; }
     apssh -t "$NODES" "$@"
 }
-doc-nodes rmap "run an ssh command on all selected nodes"
+alias rmap=map
+doc-selection map "parallel run an ssh command on all selected nodes"
 
 alias rimages="rhubarbe images"
-doc-nodes rimages "display available images (rhubarbe images)"
+doc-selection rimages "display available images (rhubarbe images)"
 
 alias load-fedora="rload -i fedora"
-doc-nodes load-fedora alias
+doc-selection load-fedora alias
 alias load-ubuntu="rload -i ubuntu"
-doc-nodes load-ubuntu alias
-alias load-f21="rload -i fedora-21"
-doc-nodes load-f21 alias
+doc-selection load-ubuntu alias
 alias load-f22="rload -i fedora-22"
-doc-nodes load-f22 alias
+doc-selection load-f22 alias
 alias load-f23="rload -i fedora-23"
-doc-nodes load-f23 alias
+doc-selection load-f23 alias
 alias load-u1404="rload -i ubuntu-14.04"
-doc-nodes load-u1404 alias
-alias load-u1410="rload -i ubuntu-14.10"
-doc-nodes load-u1410 alias
-alias load-u1504="rload -i ubuntu-15.04"
-doc-nodes load-u1504 alias
-alias load-u1510="rload -i ubuntu-15.10"
-doc-nodes load-u1510 alias
+doc-selection load-u1404 alias
 alias load-u1604="rload -i ubuntu-16.04"
-doc-nodes load-u1604 alias
+doc-selection load-u1604 alias
 
 function load-gr-u1410 () { load-image gnuradio-ubuntu-14.10.ndz "$@" ; }
 function load-gr-u1504 () { load-image gnuradio-ubuntu-15.04.ndz "$@" ; }
@@ -364,10 +333,6 @@ function load-gr-f21 ()   { load-image gnuradio-fedora-21.ndz "$@" ; }
 alias load-ubuntu=load-u1510
 alias load-fedora=load-f23
 alias load-gnuradio=load-gr-u1410
-
-doc-nodes load-ubuntu "upload latest ubuntu image on all nodes"
-doc-nodes load-fedora "... latest fedora image"
-doc-nodes load-gnuradio "... latest recommended gnuradio image"
 
 # releases
 # -> show fedora/debian releases for $NODES
@@ -382,7 +347,7 @@ function releases () {
 }
 
 alias rel=releases
-doc-nodes releases "(alias rel) use ssh to display current release (ubuntu or fedora + gnuradio)"
+doc-selection releases "(alias rel) use ssh to display current release (ubuntu or fedora + gnuradio)"
 
 function prefix () {
     token="$1"; shift
@@ -456,7 +421,7 @@ doc-admin nitos-frisbee-bandwidth "show configured bandwidth"
 # not needed anymore now that we use new frisbee, but just in case
 # this is to use the 'old' binaries as shipped with OMF
 function pxe-old () {
-#    bemol || { echo "designed for bemol only" ; return 1; }
+#    preplab || { echo "designed for bemol only" ; return 1; }
     rsync -a /usr/sbin/frisbee-old-64 /usr/sbin/frisbee
     rsync -a /usr/sbin/frisbeed-old-64 /usr/sbin/frisbeed
     rsync -a /tftpboot/irfs-pxefrisbee.igz.old /tftpboot/irfs-pxefrisbee.igz
@@ -467,7 +432,7 @@ doc-admin pxe-old "DO NOT USE THIS - Configure the system to use old frisbee bin
 
 # this is to use ours
 function pxe-new () {
-#    bemol || { echo "designed for bemol only" ; return 1; }
+#    preplab || { echo "designed for bemol only" ; return 1; }
     rsync -a /usr/sbin/frisbee-new-64 /usr/sbin/frisbee
     rsync -a /usr/sbin/frisbeed-new-64 /usr/sbin/frisbeed
     rsync -a /tftpboot/irfs-pxefrisbee.igz.new /tftpboot/irfs-pxefrisbee.igz
@@ -600,18 +565,18 @@ function -do-first () {
 alias ss="-do-first ssh"
 alias tn="-do-first telnet"
 
-doc-nodes ss "Enter first selected node using ssh\n\t\targ if present is taken as a node, not a command"
+doc-selection ss "Enter first selected node using ssh\n\t\targ if present is taken as a node, not a command"
 doc-admin tn "Enter first selected node using telnet - ditto"
 
 #################### manually run a old or new frisbee server
 function serve_ubuntu_old () {
-    bemol || { echo "designed for bemol only"; return 1; }
+    preplab || { echo "designed for preplab only"; return 1; }
     command="/root/images/frisbee-binaries-uth/frisbeed-old-64 -i 192.168.3.200 -m 224.0.0.1 -p 10000 -W 90000000 /var/lib/omf-images-6/ubuntu14.10-ext2.ndz"
     echo $command
     $command
 }
 function serve_ubuntu_new () {
-    bemol || { echo "designed for bemol only"; return 1; }
+    preplab || { echo "designed for preplab only"; return 1; }
     command="/root/images/frisbee-binaries-inria/frisbeed -i 192.168.3.200 -m 224.0.0.1 -p 10000 -W 90000000 /var/lib/omf-images-6/ubuntu14.10-ext2.ndz"
     echo $command
     $command

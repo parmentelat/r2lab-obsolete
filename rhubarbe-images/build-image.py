@@ -33,30 +33,38 @@ class ImageBuilder:
         # normalize this one as a list of lists
         self.scripts = [ s.split() for s in scripts ]
         self.includes = includes
-        self.path = path
+        # : separated list of paths to search - like $PATH
+        # we add automatically so as to locate build-image.sh
+        self.paths = path.split(":") + [ '.' ]
         
     def user_host(self, input):
+        # callers can mention localhost as the gateway to avoid
+        # the extra ssh leg
+        if 'localhost' in input:
+            return None, None
         try:
             username, hostname = input.split('@')
         except:
             username, hostname = "root", input
         return username, hostname
 
-    def locate_companion_shell(self):
-        self.companion = None
-        for path in [ '.' ] + self.path.split(":"):
-            candidate = os.path.join(path, "build-image.sh")
+    def locate_script(self, script):
+        result = None
+        for path in self.paths:
+            candidate = os.path.join(path, script)
             if os.path.exists(candidate):
-                self.companion = candidate
-                break
-        if not self.companion:
+                return candidate
+
+    def locate_companion_shell(self):
+        self.companion = self.locate_script("build-image.sh")
+        if self.companion is None:
             print("Cannot locate build-image.sh in {}"
-                  .format(self.path))
+                  .format(self.paths))
             exit(1)
 
     def prepare_tar(self, dirname):
         """
-        given the normalized list of scripts in self.scripts, this will
+        given the list of scripts and includes in self, this will
         * create a subdir named dirname
         * create 3 subdirs scripts/ args/ logs/
         * create symlinks named scripts/nnn-script -> script[0] starting at 001
@@ -74,6 +82,11 @@ class ImageBuilder:
             os.mkdir(os.path.join(dirname, subdir))
         for i, script in enumerate(self.scripts, 1):
             localfile, *script_args = script
+            # search script in self.path
+            localfile = self.locate_script(localfile)
+            if not localfile:
+                print("Cannot locate {} - exiting".format(script[0]))
+                exit(1)
             os.chmod(localfile, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
             basename = os.path.basename(localfile)
             numbered = "{:03d}-{}".format(i, basename)
@@ -82,6 +95,10 @@ class ImageBuilder:
             with open(os.path.join(dirname, 'args', numbered), 'w') as out:
                 out.write(" ".join(script_args))
         for include in self.includes:
+            include = self.locate_script(include)
+            if not include:
+                print("Cannot locate {} - exiting".format(script[0]))
+                exit(1)
             basename = os.path.basename(include)
             linkname = os.path.join(dirname, 'scripts', basename)
             os.symlink(os.path.abspath(include), linkname)
@@ -117,7 +134,7 @@ class ImageBuilder:
         #################### the 2 nodes we need to talk to
         gateway_proxy = None
         username, hostname = self.user_host(self.gateway)
-        gateway_proxy = SshNode(
+        gateway_proxy = None if not username else SshNode(
             hostname = hostname,
             username = username,
             client_keys = keys,
@@ -238,6 +255,8 @@ def main():
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-d", "--debug", action='store_true', default=False)
     parser.add_argument("-i", "--includes", action='append', default=[])
+    parser.add_argument("-p", "--path", dest='paths',
+                        help="colon-separated list of dirs to search")
     parser.add_argument("gateway")
     parser.add_argument("node")
     parser.add_argument("from_image")
@@ -259,10 +278,9 @@ def main():
         exit(1)
 
     builder = ImageBuilder(args.gateway, node, args.from_image, args.to_image,
-                           args.scripts, args.includes, command_dir)
+                           args.scripts, args.includes, args.paths + ':' + command_dir)
     run_code = builder.run(verbose=args.verbose, debug=args.debug, fast = args.no_load_save)
     return 0 if run_code else 1
 
 if __name__ == '__main__':
     exit(main())
-        

@@ -1,15 +1,9 @@
 #!/bin/bash
 
-source $(dirname $BASH_SOURCE)/common.sh
+source $(dirname $BASH_SOURCE)/r2labutils.sh
 
 define-doc-category imaging "tools for creating images"
 augment-help-with imaging
-
-#################### README
-# here's a list of additional stuff that we need to integrate in
-# the standard image-building process
-# * initialize r2lab/ and trigger infra/user-env/nodes.sh - together with a command to update from git
-# * all images should have a common ssh key so that users don't need to mess with their known_hosts
 
 ########################################
 # UBUNTU
@@ -161,6 +155,7 @@ function common-setup-user-env () {
     git pull
     cd /etc/profile.d
     ln -sf /root/r2lab/infra/user-env/nodes.sh .
+    ln -sf /root/r2lab/infra/user-env/r2labutils.sh .
 }
 
 

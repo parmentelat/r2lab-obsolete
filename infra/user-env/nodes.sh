@@ -9,7 +9,7 @@
 #
 
 # use the micro doc-help tool
-source $(dirname $BASH_SOURCE)/common.sh
+source $(dirname $BASH_SOURCE)/r2labutils.sh
 
 define-doc-category nodes "#################### commands available on each r2lab node"
 augment-help-with nodes

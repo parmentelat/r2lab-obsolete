@@ -1,16 +1,24 @@
 #/bin/bash
 
-gitroot=$HOME/git/r2lab
+case $(hostname) in
+    faraday*)
+	gateway=localhost
+	gitroot=/root/r2lab
+	;;
+    *)
+	gateway=root@faraday.inria.fr
+	gitroot=$HOME/git/r2lab
+	;;
+esac
 
 ###
 build=$gitroot/rhubarbe-images/build-image.py
-gateway=root@faraday.inria.fr
 
-cd $gitroot/infra/user-env
-
-# ew don't need all this but it makes it easier
+# we don't need all these includes everywhere but it makes it easier
 function bim () {
-    $build $gateway -i oai-common.sh -i nodes.sh -i common.sh "$@"
+    command="$build $gateway -p $gitroot/infra/user-env -i oai-common.sh -i nodes.sh -i r2labutils.sh"
+    echo $command "$@"
+    $command "$@"
 }
 
 # augment ubuntu-16.04 with ntp
