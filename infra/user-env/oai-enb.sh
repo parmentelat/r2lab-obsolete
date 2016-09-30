@@ -1,15 +1,10 @@
 #!/bin/bash
 
-# WARNING: start from the lowlatency image !
- 
-
-DIRNAME=$(dirname "$0")
-#echo Loading $DIRNAME/nodes.sh  >&2-
-source $DIRNAME/nodes.sh
+source $(dirname $BASH_SOURCE)/nodes.sh
 
 doc-nodes-sep "#################### subcommands to the oai command (alias o)"
 
-source $DIRNAME/oai-common.sh
+source $(dirname $BASH_SOURCE)/oai-common.sh
 
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
 lte_log="$run_dir/softmodem.log"
@@ -44,6 +39,14 @@ texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsf
 "
 
 ####################
+doc-nodes image "the entry point for nightly image builds"
+function image() {
+    dumpvars
+    base
+    deps
+}
+
+####################
 doc-nodes base "the script to install base software on top of a raw image" 
 function base() {
 
@@ -73,7 +76,21 @@ function base() {
     cd
     cpufreq-info > cpufreq.info
 
-    echo "========== Done - save image in oai-enb-base"
+}
+
+doc-nodes deps "builds uhd and oai5g for an oai image"
+function deps() {
+
+    gitup
+
+    cd
+    echo Building ETTUS - see $HOME/build-uhd-ettus.log
+    build-uhd-ettus >& build-uhd-ettus.log
+
+    cd
+    echo Building OAI5G - see $HOME/build-oai5g.log
+    build-oai5g >& build-oai5g.log
+
 }
 
 doc-nodes build-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
@@ -98,18 +115,18 @@ doc-nodes build-uhd-oai "build UHD using the OAI recipe"
 function build-uhd-oai() {
     gitup
     cd /root/openairinterface5g/cmake_targets
-    run-in-log build-oai.log ./build_oai -w USRP -I
+    run-in-log build-uhd-oai.log ./build_oai -w USRP -I
     # saved in oai-enb-oaiuhd 
 }
 
-doc-nodes image-oai5g "builds oai5g - run with -x for building with software oscilloscope" 
-function image-oai5g() {
+doc-nodes build-oai5g "builds oai5g - run with -x for building with software oscilloscope" 
+function build-oai5g() {
 
     oscillo=""
     if [ -n "$1" ]; then
 	case $1 in
 	    -x) oscillo="-x" ;;
-	    *) echo "usage: image-oai5g [-x]"; return 1 ;;
+	    *) echo "usage: build-oai5g [-x]"; return 1 ;;
 	esac
     fi
 
@@ -137,6 +154,7 @@ EOF
 
     cd $HOME/openairinterface5g/cmake_targets/
     # xxx l'original avait une seule ligne :
+    echo Building in $(pwd) - see 'build*log'
     run-in-log build-oai-1.log ./build_oai -I -w USRP
     run-in-log build-oai-2.log ./build_oai --eNB -c -w USRP
     [ -n "$oscillo" ] && run-in-log build-oai-3.log ./build_oai -x
@@ -150,23 +168,9 @@ EOF
     # but since it was for a soft phone initially I skip it from the builds image
 }
 
-doc-nodes image "builds uhd and oai5g for an oai image"
-function image() {
-
-    gitup
-    cd
-    
-    build-uhd-ettus >& build-uhd-ettus.log
-
-    image-oai5g >& image-oai5g.log
-
-    echo "========== Done - save image in oai-enb-builds"
-}
-
-doc-nodes build "build eNodeB"
-function build() {
-    echo "empty build on enb" 
-}
+########################################
+# end of image
+########################################
 
 doc-nodes configure "configure eNodeB (requires define-peer)"
 function configure() {
@@ -218,7 +222,7 @@ function start() {
     if [ -n "$1" ]; then
 	case $1 in
 	    -d) oscillo="-d" ;;
-	    *) echo "usage: image-oai5g [-d]"; return 1 ;;
+	    *) echo "usage: start [-d]"; return 1 ;;
 	esac
     fi
 

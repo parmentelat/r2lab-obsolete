@@ -13,6 +13,7 @@ function die() { echo "$@" "-- exiting" ; exit 1; }
 #
 function run-build-image-scripts() {
     set -e
+    node=$1; shift
     from_image=$1; shift
     to_image=$1; shift
 
@@ -35,8 +36,9 @@ function run-build-image-scripts() {
 	basename=$(basename $shell)
 	args_file=args/$basename
 	arguments=$(cat $args_file)
-	echo "********"running $shell $arguments
-	$shell $arguments 2>&1 | tee logs/$basename.log
+	# store nodename in logs for easier forensics
+	{ echo "******** on $node in $(pwd): running $shell $arguments"; \
+	  $shell $arguments 2>&1; } | tee logs/$basename.log
     done
 }
 

@@ -15,7 +15,7 @@ function define-doc-category () {
     # initialize docstring for this category
     varname=_doc_$category
     # initialize docstring with rest of arguments to define-doc-category
-    assign="$varname=\"#################### $@\""
+    assign="$varname=\"#################### R2lab: $@\""
     eval "$assign"
     # define help-<> function
     defun="function help-$category() { echo -e \$$varname; }"
@@ -46,7 +46,7 @@ function -doc-helper () {
     category=$1; shift
     varname=_doc_$category
     fun=$1; shift;
-    docstring="$*"
+    docstring="$@"
     [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
     [ "$docstring" == 'function' ] && docstring=$(type $fun)
     length=$(wc -c <<< $fun)
@@ -56,8 +56,9 @@ function -doc-helper () {
 }
 
 function -doc-helper-sep() {
-    varname=$1; shift
-    contents="$@"; shift
+    category=$1; shift
+    varname=_doc_$category
+    contents="$@"
     if [ -z "$contents" ] ; then
 	assign="$varname=\"${!varname}\n---------------\""
     else
@@ -74,7 +75,7 @@ function define-main() {
     function main() {
 	if [[ -z "$@" ]]; then
 	    # help
-	    echo subcommand expected
+	    # echo subcommand expected
 	    return
 	fi
 	subcommand="$1"; shift
@@ -83,7 +84,7 @@ function define-main() {
 	    function)
 		$subcommand "$@" ;;
 	    *) 
-		echo "$subcommand not a function - exiting" ;;
+		echo "$subcommand not a function : $(type -t $subcommand) - exiting" ;;
 	esac
     }
 }

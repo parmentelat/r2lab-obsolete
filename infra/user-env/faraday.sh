@@ -5,8 +5,8 @@ source $(dirname $BASH_SOURCE)/r2labutils.sh
 
 define-doc-category selection "commands that work on a selection of nodes"
 augment-help-with selection
-define-doc-category alt "other commands"
-define-doc-category admin "admin commands"
+define-doc-category alt "other convenient user-oriented commands"
+define-doc-category admin "admin-oriented commands"
 
 #################### contextual data
 function preplab () { hostname | grep -q bemol; }
@@ -233,14 +233,14 @@ function _get_all_nodes () {
 function all-nodes () { nodes $(_get_all_nodes); }
 doc-selection all-nodes "select all available nodes"
 
-# nodes-on : filter nodes that are on from args, or NODES if not provided
+# show-nodes-on : filter nodes that are on from args, or NODES if not provided
 function show-nodes-on () {
     [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     rhubarbe status $nodes | grep 'on' | cut -d: -f1 | sed -e s,reboot,fit,
 }
 doc-selection show-nodes-on "display only selected nodes that are ON - does not change selection"
 function focus-nodes-on () {
-    nodes $(show-nodes-on)
+    nodes $(show-nodes-on "$@")
 }
 doc-selection focus-nodes-on "restrict current selection to nodes that are ON"
 
@@ -321,18 +321,10 @@ alias load-f22="rload -i fedora-22"
 doc-selection load-f22 alias
 alias load-f23="rload -i fedora-23"
 doc-selection load-f23 alias
-alias load-u1404="rload -i ubuntu-14.04"
+alias load-u14="rload -i ubuntu-14.04"
 doc-selection load-u1404 alias
-alias load-u1604="rload -i ubuntu-16.04"
+alias load-u16="rload -i ubuntu-16.04"
 doc-selection load-u1604 alias
-
-function load-gr-u1410 () { load-image gnuradio-ubuntu-14.10.ndz "$@" ; }
-function load-gr-u1504 () { load-image gnuradio-ubuntu-15.04.ndz "$@" ; }
-function load-gr-f21 ()   { load-image gnuradio-fedora-21.ndz "$@" ; }
-
-alias load-ubuntu=load-u1510
-alias load-fedora=load-f23
-alias load-gnuradio=load-gr-u1410
 
 # releases
 # -> show fedora/debian releases for $NODES
@@ -727,3 +719,5 @@ doc-alt macphone "Enter the (Mac) phone gateway as user 'tester'"
 function macphone() {
     ssh -i /home/faraday/r2lab/inventory/macphone tester@macphone
 }
+
+doc-selection-sep "See also help-alt for other commands"

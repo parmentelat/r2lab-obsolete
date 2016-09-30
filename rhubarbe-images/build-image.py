@@ -107,9 +107,9 @@ class ImageBuilder:
             tar.add(dirname)
         return tarname
 
-    def run(self, verbose, debug, fast):
+    def run(self, verbose, debug, no_load, no_save):
         """
-        fast means do **not** run load and save
+        can skip the load or save phases
         """
 
         print("Using node {} through gateway {}".format(self.node, self.gateway))
@@ -118,8 +118,12 @@ class ImageBuilder:
         for i, script in enumerate(self.scripts, 1):
             print("{:03d}:{}".format(i, " ".join(script)))
             
-        if fast:
-            print("WARNING: using fast mode - no image load or save")
+        items = []
+        if no_load: items.append("skip load")
+        if no_save: items.append("skip save")
+        if items:
+            print("WARNING: using fast-track mode {}"
+                  .format(' & '.join(items)))
 
         self.locate_companion_shell()
         if verbose: print("Located companion in {}".format(self.companion))
@@ -133,20 +137,20 @@ class ImageBuilder:
 
         #################### the 2 nodes we need to talk to
         gateway_proxy = None
-        username, hostname = self.user_host(self.gateway)
-        gateway_proxy = None if not username else SshNode(
-            hostname = hostname,
-            username = username,
+        gwuser, gwname = self.user_host(self.gateway)
+        gateway_proxy = None if not gwuser else SshNode(
+            hostname = gwname,
+            username = gwuser,
             client_keys = keys,
             formatter = ColonFormatter(),
             debug = debug,
         )
 
         # really not sure it makes sense to use username other than root
-        username, hostname = self.user_host(self.node)
+        username, nodename = self.user_host(self.node)
         node_proxy = SshNode(
             gateway = gateway_proxy,
-            hostname = hostname,
+            hostname = nodename,
             username = username,
             client_keys = keys,
             formatter = ColonFormatter(),
@@ -157,14 +161,14 @@ class ImageBuilder:
         #################### the little pieces
         sequence = Sequence(
             Job(aprint(banner, "loading image {}".format(self.from_image)
-                       if not fast
-                       else "fast-mode: skipping image load"
+                       if not no_load 
+                       else "fast-track: skipping image load"
                    )),
             SshJob(
                 node = gateway_proxy,
                 commands = [
-                    [ "rhubarbe", "load", "-i", self.from_image, self.node ] if not fast else None,
-                    [ "rhubarbe", "wait", self.node ],
+                    [ "rhubarbe", "load", "-i", self.from_image, nodename ] if not no_load else None,
+                    [ "rhubarbe", "wait", "-v", nodename ],
                 ],
                 label = "load and wait image {}".format(self.from_image),
             ),
@@ -184,7 +188,7 @@ class ImageBuilder:
             ),
             SshJobScript(
                 node = node_proxy,
-                command = [ self.companion, self.from_image, self.to_image ],
+                command = [ self.companion, nodename, self.from_image, self.to_image ],
                 label = "run scripts",
             ),
             SshJobCollector(
@@ -197,7 +201,10 @@ class ImageBuilder:
         )
 
         # xxx some flag
-        if not fast:
+        if no_save:
+            sequence.append(
+                Job(aprint(banner, "fast-track: skipping image save")))
+        else:
             sequence.append(
                 Sequence(
                     Job(aprint(banner, "saving image {} ..."
@@ -215,7 +222,7 @@ class ImageBuilder:
                     ),
                     SshJob(
                         node = gateway_proxy,
-                        command = [ "rhubarbe", "save", "-o", self.to_image, self.node ],
+                        command = [ "rhubarbe", "save", "-o", self.to_image, nodename ],
                         label = "save image {}".format(self.to_image),
                     ),
                     SshJob(
@@ -249,25 +256,43 @@ class ImageBuilder:
 from argparse import ArgumentParser
 
 def main():
+    usage = """
+Create an R2lab image by loading 'from_image', running some scripts, and save into 'to_image'
+
+All scripts are searched in 
+* the path provided with -p
+* the location of this command (esp. useful for spotting 'build-image.sh')
+* .
+
+Included scripts are useful if one of your own scripts sources another one.
+Bear in mind that all scripts are first copied over on the target node in 
+/etc/rhubarbe-history/to_image/scripts
+together with their arguments and stuff
+"""
     parser = ArgumentParser()
     parser.add_argument("-n", "--no-load-save", action='store_true', default=False,
                         help="skip load and save, for when developping scripts")
+    parser.add_argument("-c", "--chain", action='store_true', default=False,
+                        help="avoid loading given image, useful when chaining builds")
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-d", "--debug", action='store_true', default=False)
     parser.add_argument("-i", "--includes", action='append', default=[])
-    parser.add_argument("-p", "--path", dest='paths',
+    parser.add_argument("-p", "--path", dest='paths', default="",
                         help="colon-separated list of dirs to search")
-    parser.add_argument("gateway")
-    parser.add_argument("node")
-    parser.add_argument("from_image")
-    parser.add_argument("to_image")
-    parser.add_argument("scripts", nargs='+')
+    parser.add_argument("gateway", help="no gateway if this contains 'localhost'")
+    parser.add_argument("node", help="fit node to use - name or number")
+    parser.add_argument("from_image", help="the image to start from")
+    parser.add_argument("to_image", help="the image to create; use '==' to keep the same")
+    parser.add_argument("scripts", nargs='+', help="each scripts is a space separated command")
     args = parser.parse_args()
 
     # find out where the command is stored so we can locate build-image.sh
     import sys
     command_dir = os.path.dirname(sys.argv[0])
 
+    # keep the same image name over daily updates : use == in to_image
+    to_image = args.from_image if '==' in args.to_image else args.to_image
+    
     try:
         node_id = int(args.node.replace('fit', ''))
         node = "fit{:02d}".format(node_id)
@@ -277,9 +302,20 @@ def main():
         traceback.print_exc()
         exit(1)
 
-    builder = ImageBuilder(args.gateway, node, args.from_image, args.to_image,
-                           args.scripts, args.includes, args.paths + ':' + command_dir)
-    run_code = builder.run(verbose=args.verbose, debug=args.debug, fast = args.no_load_save)
+    paths = "{}:{}".format(args.paths, command_dir)
+        
+    # default is of course to load and save
+    no_load, no_save = False, False
+    # -n means realy no load and no save
+    if args.no_load_save:
+        no_load, no_save = True, True
+    if args.chain:
+        no_load = True
+
+    builder = ImageBuilder(args.gateway, node, args.from_image, to_image,
+                           args.scripts, args.includes, paths)
+    run_code = builder.run(verbose=args.verbose, debug=args.debug,
+                           no_load=no_load, no_save=no_save)
     return 0 if run_code else 1
 
 if __name__ == '__main__':

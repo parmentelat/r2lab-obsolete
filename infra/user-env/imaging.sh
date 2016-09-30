@@ -9,6 +9,36 @@ augment-help-with imaging
 # UBUNTU
 ########################################
 
+# started with this howto here:
+# http://ubuntuhandbook.org/index.php/2016/07/install-linux-kernel-4-7-ubuntu-16-04/
+# see also of course here for any new stuff:
+# http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/
+doc-imaging ubuntu-k47-lowlatency "install 4.7 lowlatency kernel"
+function ubuntu-k47-lowlatency() {
+
+    already_installed=true
+    uname -a | grep -q lowlatency || already_installed=
+    uname -a | fgrep -q 4.7 || already_installed=
+    [ -n "$already_installed" ] && { echo lowlatency 4.7 already installed; return; }
+    
+    urls="
+http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/linux-headers-4.7.0-040700_4.7.0-040700.201608021801_all.deb
+http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/linux-headers-4.7.0-040700-lowlatency_4.7.0-040700.201608021801_amd64.deb
+http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/linux-headers-4.7.0-040700-generic_4.7.0-040700.201608021801_amd64.deb
+http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/linux-image-4.7.0-040700-lowlatency_4.7.0-040700.201608021801_amd64.deb
+"
+
+    debs=""
+    for url in $urls; do
+	# looks like dpkg -i $url won't work ..
+	curl -O $url
+	debs="$debs $(basename $url)"
+    done
+
+    dpkg -i $debs
+
+}
+
 doc-imaging ubuntu-setup-ntp "installs ntp"
 function ubuntu-setup-ntp () {
     apt-get install -y ntp ntpdate

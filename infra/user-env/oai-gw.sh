@@ -8,12 +8,15 @@ source $(dirname $BASH_SOURCE)/oai-common.sh
 
 COMMAND=$(basename "$BASH_SOURCE")
 case $COMMAND in
-    oai-gw*)
+    *oai-gw*)
+	echo YES
 	runs_epc=true; runs_hss=true ;;
-    oai-hss*)
+    *oai-hss*)
 	runs_epc=;     runs_hss=true ;;
-    oai-epc*)
+    *oai-epc*)
 	runs_epc=true; runs_hss=     ;;
+    *)
+	echo OOPS ;;
 esac
     
 ####################
@@ -59,10 +62,10 @@ base_packages="git cmake build-essential gdb"
 
 ####################
 doc-nodes image "the entry point for nightly image builds"
-
 function image() {
+    dumpvars
     base
-    build
+    deps
 }
 
 doc-nodes base "the script to install base software on top of a raw image" 
@@ -93,8 +96,6 @@ function base() {
     debconf-set-selections <<< 'phpmyadmin phpmyadmin/app-password-confirm password admin' 
     apt-get install -y phpmyadmin
 
-
-
     echo "========== Running git clone for openair-cn and r2lab .."
     cd
     echo -n | \
@@ -116,25 +117,27 @@ function base() {
 
 }
 
-doc-nodes build "builds hss and epc and installs dependencies" 
-function build() {
+doc-nodes deps "builds hss and epc and installs dependencies" 
+function deps() {
     
+    echo "HERE build !!!"
     gitup
     cd $run_dir
     echo "========== Building HSS"
-    [ -n "$runs_hss" ] && run-in-log  build-hss-image.log ./build_hss -i
+    echo HERE runs_epc=$runs_hss
+    [ -n "$runs_hss" ] && run-in-log  build-hss-image.log ./build_hss -i -F
     echo "========== Building EPC"
     if [ -n "$runs_epc" ]; then
-	run-in-log build-mme-image-i.log ./build_mme -i
-	run-in-log build-spgw-image-i.log ./build_spgw -i
+	run-in-log build-mme-image-i.log ./build_mme -i -f
+	run-in-log build-spgw-image-i.log ./build_spgw -i -f
     fi
     # building the kernel module : deferred to the init step
     # it looks like it won't run fine at that early stage
 }
 
-
-
-
+########################################
+# end of image
+########################################
 
 ##########
 doc-nodes cn-git-fetch "run fetch origin in openair-cn git repo"
