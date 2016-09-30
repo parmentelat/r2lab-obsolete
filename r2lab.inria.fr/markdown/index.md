@@ -3,6 +3,14 @@ tab: index
 widget_login_template: r2lab/widget_login.html
 ---
 
+<h2 class="text-center" style="color:green;" >
+  <a href="/tour.md" style="color:green; text-decoration: none;">
+  check out our platform in a virtual tour<br>
+  <span class="text-muted lead">quickly and easily to visit R2lab</span><br></a>
+</h2>
+
+<br>
+
 <div class="container text-center">
   <div class="row">
     <div class="col-lg-4">

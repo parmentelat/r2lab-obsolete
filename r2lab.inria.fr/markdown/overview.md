@@ -24,6 +24,12 @@ widget_login_template: r2lab/widget_login.html
   </div>
 </div>
 
+<h2 class="text-center" style="color:green;" >
+  <a href="/tour.md" style="color:green; text-decoration: none;">
+  check out our platform in a virtual tour<br>
+  <span class="text-muted lead">quickly and easily to visit R2lab</span><br></a>
+</h2>
+
 <br>
 ### The nodes
 <div class="row" markdown="1">
