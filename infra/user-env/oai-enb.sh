@@ -190,8 +190,9 @@ function configure() {
     # /etc/network/interfaces as well
     # /etc/udev/rules.d/70..blabla as well
     cat <<EOF > oai-enb.sed
-s|mobile_network_code =.*|mobile_network_code = "95";|
-s|pucch_p0_Nominal.*|pucch_p0_Nominal = -96;|
+s|eNB_name[ 	]*=.*|eNB_name = "softmodem_$fitid";|
+s|mobile_network_code[ 	]*=.*|mobile_network_code = "95";|
+s|pucch_p0_Nominal[ 	]*=.*|pucch_p0_Nominal = -96;|
 s|mme_ip_address[ 	]*=.*|mme_ip_address = ( { ipv4 = "192.168.${oai_subnet}.$gw_id";|
 s|ENB_INTERFACE_NAME_FOR_S1_MME[ 	]*=.*|ENB_INTERFACE_NAME_FOR_S1_MME = "${oai_ifname}";|
 s|ENB_INTERFACE_NAME_FOR_S1U[ 	]*=.*|ENB_INTERFACE_NAME_FOR_S1U = "${oai_ifname}";|
