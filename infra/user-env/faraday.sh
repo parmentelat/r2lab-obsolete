@@ -317,14 +317,6 @@ alias load-fedora="rload -i fedora"
 doc-selection load-fedora alias
 alias load-ubuntu="rload -i ubuntu"
 doc-selection load-ubuntu alias
-alias load-f22="rload -i fedora-22"
-doc-selection load-f22 alias
-alias load-f23="rload -i fedora-23"
-doc-selection load-f23 alias
-alias load-u14="rload -i ubuntu-14.04"
-doc-selection load-u1404 alias
-alias load-u16="rload -i ubuntu-16.04"
-doc-selection load-u1604 alias
 
 # releases
 # -> show fedora/debian releases for $NODES
