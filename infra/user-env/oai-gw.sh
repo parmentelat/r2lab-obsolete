@@ -482,7 +482,8 @@ function start() {
     if [ -n "$runs_epc" ]; then
 	echo "Launching mme and spgw in background"
 	./run_mme >& $log_mme &
-	./run_spgw -r >& $log_spgw &
+#	./run_spgw -r >& $log_spgw &
+	./run_spgw >& $log_spgw &
     fi
 }
 
