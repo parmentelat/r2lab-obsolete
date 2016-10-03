@@ -12,7 +12,8 @@ add-to-logs $lte_log
 lte_pcap="$run_dir/softmodem.pcap"
 add-to-datas $lte_pcap
 conf_dir=/root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
-template=enb.band7.tm1.usrpb210.epc.remote.conf
+#template=enb.band7.tm1.usrpb210.epc.remote.conf
+template=enb.band7.tm1.usrpb210.conf
 config=r2lab.conf
 add-to-configs $conf_dir/$config
 
