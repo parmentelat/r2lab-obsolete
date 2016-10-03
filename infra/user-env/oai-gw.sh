@@ -201,15 +201,15 @@ function init() {
     init-clock
     # data interface if relevant
     [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
-    echo "========== Rebuilding the GTPU module"
-    cd $run_dir
-    run-in-log init-spgw-j.log ./build_spgw -j -f
-    echo "========== Refreshing the depmod index"
-    depmod -a
-    echo "========== turning off offload negociations on ${oai_ifname}"
-    offload-off ${oai_ifname}
-    echo "========== turning off offload negociations on control"
-    offload-off control
+### #    echo "========== Rebuilding the GTPU module"
+### #    cd $run_dir
+### #    run-in-log init-spgw-j.log ./build_spgw -j -f
+### #    echo "========== Refreshing the depmod index"
+### #    depmod -a
+#    echo "========== turning off offload negociations on ${oai_ifname}"
+#    offload-off ${oai_ifname}
+# ###    echo "========== turning off offload negociations on control"
+# ###    offload-off control
 #    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
 #    ip link set dev ${oai_ifname} mtu 1536
 #    echo "========== patching sgw_config.c to set MTU to 1536"
