@@ -9,7 +9,6 @@ source $(dirname $BASH_SOURCE)/oai-common.sh
 COMMAND=$(basename "$BASH_SOURCE")
 case $COMMAND in
     *oai-gw*)
-	echo YES
 	runs_epc=true; runs_hss=true ;;
     *oai-hss*)
 	runs_epc=;     runs_hss=true ;;
@@ -494,8 +493,6 @@ locks=""
 ########################################
 doc-nodes status "displays the status of the epc and/or hss processes"
 doc-nodes stop "stops the epc and/or hss processes & clears locks"
-doc-nodes status "displays the status of the softmodem-related processes"
-doc-nodes stop "stops the softmodem-related processes"
 
 function -list-processes() {
     pids=""
@@ -511,6 +508,6 @@ function manage-db() {
     mysql --user=root --password=linux oai_db
 }
 
-####################
-define-main
+########################################
+define-main "$0" "$BASH_SOURCE" 
 main "$@"

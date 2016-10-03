@@ -190,11 +190,13 @@ function configure() {
     # /etc/network/interfaces as well
     # /etc/udev/rules.d/70..blabla as well
     cat <<EOF > oai-enb.sed
-s,mobile_network_code =.*,mobile_network_code = "95";,
-s,192.168.12.70,192.168.${oai_subnet}.$gw_id,
-s,eth0,${oai_ifname},
-s,192.168.12.150/24,192.168.${oai_subnet}.$id/24,g
-s,pucch_p0_Nominal.*,pucch_p0_Nominal = -96;,
+s|mobile_network_code =.*|mobile_network_code = "95";|
+s|pucch_p0_Nominal.*|pucch_p0_Nominal = -96;|
+s|mme_ip_address[ 	]*=.*|mme_ip_address = ( { ipv4 = "192.168.${oai_subnet}.$gw_id";|
+s|ENB_INTERFACE_NAME_FOR_S1_MME[ 	]*=.*|ENB_INTERFACE_NAME_FOR_S1_MME = "${oai_ifname}";|
+s|ENB_INTERFACE_NAME_FOR_S1U[ 	]*=.*|ENB_INTERFACE_NAME_FOR_S1U = "${oai_ifname}";|
+s|ENB_IPV4_ADDRESS_FOR_S1_MME[ 	]*=.*|ENB_IPV4_ADDRESS_FOR_S1_MME = "192.168.${oai_subnet}.$id/24";|
+s|ENB_IPV4_ADDRESS_FOR_S1U[ 	]*=.*|ENB_IPV4_ADDRESS_FOR_S1U = "192.168.${oai_subnet}.$id/24";|
 EOF
 # s,tx_gain.*,tx_gain = 80;,
 # s,rx_gain.*,rx_gain = 80;,
@@ -269,6 +271,6 @@ function scramble() {
     $command
 }
 
-####################
-define-main
+########################################
+define-main "$0" "$BASH_SOURCE"
 main "$@"

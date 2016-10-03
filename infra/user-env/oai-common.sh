@@ -80,11 +80,11 @@ function status() { -manage-processes status $(-list-processes); }
 function stop()   { -manage-processes stop   $(-list-processes); }
 
 ##########
-doc-nodes prepare " = init + build + configure"
-function prepare() {
+doc-nodes prepare " = init + configure"
+function scenario() {
     init
-    build
     configure
+    start
 }
 
 ##########
@@ -98,5 +98,9 @@ function restart() {
     start
 }
 
+##########
 doc-nodes-sep
 
+########################################
+define-main "$0" "$BASH_SOURCE" 
+main "$@"

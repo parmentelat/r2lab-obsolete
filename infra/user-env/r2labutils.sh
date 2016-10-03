@@ -69,23 +69,35 @@ function -doc-helper-sep() {
 
 ########################################
 #
-### do not document : a simple utility for the oai*.sh stubs
+# this is not user-oriented
+# it allows to turn a source-able shell file
+# into a stub that can call it's internal functions
+# like e.g.
+# nodes.sh demo
 #
 function define-main() {
+    zero="$1"; shift
+    bash_source="$1"; shift
     function main() {
-	if [[ -z "$@" ]]; then
-	    # help
-	    # echo subcommand expected
-	    return
+	if [ "$zero" = "$bash_source" ]; then
+	    if [[ -z "$@" ]]; then
+		 help
+		 return
+	    fi
+	    subcommand="$1"; shift
+	    # accept only subcommands that match a function
+	    case $(type -t $subcommand) in
+		function)
+		    $subcommand "$@" ;;
+		*) 
+		    echo "$subcommand not a function : $(type -t $subcommand) - exiting" ;;
+	    esac
 	fi
-	subcommand="$1"; shift
-	# accept only subcommands that match a function
-	case $(type -t $subcommand) in
-	    function)
-		$subcommand "$@" ;;
-	    *) 
-		echo "$subcommand not a function : $(type -t $subcommand) - exiting" ;;
-	esac
     }
 }
 
+####################
+# said file just needs to end up with these 2 lines
+####################
+define-main "$0" "$BASH_SOURCE" 
+main "$@"

@@ -721,3 +721,7 @@ function macphone() {
 }
 
 doc-selection-sep "See also help-alt for other commands"
+
+########################################
+define-main "$0" "$BASH_SOURCE" 
+main "$@"

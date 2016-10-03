@@ -42,13 +42,13 @@ function refresh() { gitup /root/r2lab; bashrc; }
 
 doc-nodes init-clock "Sets date from ntp"
 function init-clock() {
-    type ntpdate >& /dev/null && {
+    if type ntpdate >& /dev/null; then
 	echo "Running ntpdate faraday3"
 	ntpdate faraday3
-    } || {
+    else
 	echo "ERROR: cannot init clock - ntpdate not found"
 	return 1
-    }
+    fi
 }
 
 doc-nodes apt-upgrade-all "refresh all packages with apt-get"
@@ -389,6 +389,6 @@ function offload-off () {
     done
 }
 
-define-main
-
+########################################
+define-main "$0" "$BASH_SOURCE"
 main "$@"

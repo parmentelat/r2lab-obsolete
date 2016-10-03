@@ -204,5 +204,5 @@ function common-setup-node-ssh-key () {
 }
 
 ########################################
-define-main
+define-main "$0" "$BASH_SOURCE"
 main "$@"
