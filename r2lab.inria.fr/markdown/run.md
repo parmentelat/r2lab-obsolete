@@ -44,7 +44,7 @@ require_login: true
       <div id="current-slice" data-current-slice-color="#000"></div>
     </div>
     <div class="col-md-7">
-    <div id="livemap_container"></div>
+    <div id="livemap_container">For more details about each node, please click in the node number or badge.</div>
     <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
     <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
     <script>
