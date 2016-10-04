@@ -3,7 +3,7 @@
 
 source $(dirname "$BASH_SOURCE")/r2labutils.sh
 
-define-doc-category phone "tools for managing phone from macphone"
+create-doc-category phone "tools for managing phone from macphone"
 augment-help-with phone
 
 doc-phone phone-on "turn off airplane mode"

@@ -1,7 +1,7 @@
 # this is included (i.e. source'd) from places that all have
 # included nodes.sh
 # so in this context we have done 
-# define-doc-category nodes
+# create-doc-category nodes
 # and so doc-nodes and doc-nodes-sep are available
 
 # nominally we'd like to use the data network

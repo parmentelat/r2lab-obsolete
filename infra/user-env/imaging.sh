@@ -2,7 +2,7 @@
 
 source $(dirname $BASH_SOURCE)/r2labutils.sh
 
-define-doc-category imaging "tools for creating images"
+create-doc-category imaging "tools for creating images"
 augment-help-with imaging
 
 ########################################

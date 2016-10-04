@@ -11,7 +11,7 @@
 # use the micro doc-help tool
 source $(dirname $BASH_SOURCE)/r2labutils.sh
 
-define-doc-category nodes "#################### commands available on each r2lab node"
+create-doc-category nodes "#################### commands available on each r2lab node"
 augment-help-with nodes
 
 ####################
@@ -181,6 +181,7 @@ function wait-for-device () {
 }
 
 doc-nodes-sep
+
 ##########
 # the utility to select which function the oai alias should point to
 # in most cases, we just want oai to be an alias to e.g.
@@ -189,7 +190,7 @@ doc-nodes-sep
 # if present
 
 # the place where the standard (git) scripts are located
-oai_scripts=/root/r2lab/infra/user-env
+oai_scripts=$(dirname "$BASH_SOURCE")
 
 # the mess with /tmp is so that scripts can get tested before they are committed
 # it can be dangerous though, as nodes.sh is also loaded at login-time, so beware..
@@ -237,44 +238,9 @@ function oai-as-enb() { define-oai enb; echo function "'oai'" now defined; echo 
 
 doc-nodes-sep
 
-########## utilities to deal with a set of files of the same kind
-function create-file-category() {
-    catname=$1; shift
-    plural=${catname}s
-    codefile='/tmp/def-category'
-    cat << EOF > $codefile
-function add-to-${plural}() {
-    _${plural}="\$_${plural} \$@";
-}
-# get-logs will just echo $_logs, while get-logs <anything> will issue
-# a warning on stderr if the result is empty
-function get-${plural}() {
-    if [ -n "\$1" -a -z "\$_${plural}" ]; then
-        echo "The \'_${plural}\' env. variable is empty - Use add-to-${plural} to define some"  >&2-
-    fi
-    echo \$_${plural};
-}
-function ls-${plural}() {
-    local files=\$(get-${plural} "\$@")
-    [ -n "\$files" ] && ls \$files
-}
-function grep-${plural}() {
-    [[ -z "\$@" ]] && { echo usage: grep-${plural} grep-arg..s; return; }
-    grep "\$@" \$(ls-${plural})
-}
-function tail-${plural}() {
-    local files="\$(ls-${plural})"
-    for file in \$files; do
-	[ -f \$file ] || { echo "Touching \$file"; touch \$file; }
-    done
-    tail -f \$files
-}
-EOF
-    source $codefile
-}
-
-# this will define add-to-logs and get-logs
+# this will define add-to-logs and get-logs and grep-logs and tail-logs
 create-file-category log
+# other similar categories
 create-file-category data
 create-file-category config
 create-file-category lock
@@ -355,6 +321,7 @@ function demo() {
 	    oai-as-enb
 	    define-peer 39
 	    ;;
+
 	23)
 	    oai-as-hss
 	    define-peer 16
@@ -365,10 +332,12 @@ function demo() {
 	    ;;
 	11)
 	    oai-as-enb
-	    define-peer 16 ;;
+	    define-peer 16
+	    ;;
 	19)
 	    oai-as-enb
-	    define-peer 16 ;;
+	    define-peer 16
+	    ;;
     esac
     echo "========== Demo setup on node $(r2lab-id)"
     echo "running as a ${oai_role}"

@@ -4,17 +4,17 @@
 
 # sort of decorators to define the doc-* functions
 #
-# define-doc-category cat message
+# create-doc-category cat message
 #    will define 3 functions
 #    help-cat : user-oriented, to get help on that category
 #    doc-cat  : devel-oriented, to add a line in that help
 #    dac-cat-sep : same, but to insert separators
 
-function define-doc-category () {
+function create-doc-category () {
     category="$1"; shift
     # initialize docstring for this category
     varname=_doc_$category
-    # initialize docstring with rest of arguments to define-doc-category
+    # initialize docstring with rest of arguments to create-doc-category
     assign="$varname=\"#################### R2lab: $@\""
     eval "$assign"
     # define help-<> function
@@ -66,6 +66,44 @@ function -doc-helper-sep() {
     fi
     eval "$assign"
 } 
+
+########################################
+########## utilities to deal with a set of files of the same kind
+function create-file-category() {
+    catname=$1; shift
+    plural=${catname}s
+    codefile='/tmp/def-category'
+    cat << EOF > $codefile
+_${plural}=""
+function add-to-${plural}() {
+    _${plural}="\$_${plural} \$@";
+}
+# get-logs will just echo $_logs, while get-logs <anything> will issue
+# a warning on stderr if the result is empty
+function get-${plural}() {
+    if [ -n "\$1" -a -z "\$_${plural}" ]; then
+        echo "The \'_${plural}\' env. variable is empty - Use add-to-${plural} to define some"  >&2-
+    fi
+    echo \$_${plural};
+}
+function ls-${plural}() {
+    local files=\$(get-${plural} "\$@")
+    [ -n "\$files" ] && ls \$files
+}
+function grep-${plural}() {
+    [[ -z "\$@" ]] && { echo usage: grep-${plural} grep-arg..s; return; }
+    grep "\$@" \$(ls-${plural})
+}
+function tail-${plural}() {
+    local files="\$(ls-${plural})"
+    for file in \$files; do
+	[ -f \$file ] || { echo "Touching \$file"; touch \$file; }
+    done
+    tail -f \$files
+}
+EOF
+    source $codefile
+}
 
 ########################################
 #

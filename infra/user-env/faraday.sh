@@ -3,10 +3,10 @@ unalias ls 2> /dev/null
 ########## pseudo docstrings
 source $(dirname $BASH_SOURCE)/r2labutils.sh
 
-define-doc-category selection "commands that work on a selection of nodes"
+create-doc-category selection "commands that work on a selection of nodes"
 augment-help-with selection
-define-doc-category alt "other convenient user-oriented commands"
-define-doc-category admin "admin-oriented commands"
+create-doc-category alt "other convenient user-oriented commands"
+create-doc-category admin "admin-oriented commands"
 
 #################### contextual data
 function preplab () { hostname | grep -q bemol; }
