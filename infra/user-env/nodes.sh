@@ -9,7 +9,7 @@
 #
 
 # use the micro doc-help tool
-source $(dirname $(readlink $BASH_SOURCE))/r2labutils.sh
+source $(dirname $(readlink -f $BASH_SOURCE))/r2labutils.sh
 
 create-doc-category nodes "#################### commands available on each r2lab node"
 augment-help-with nodes
@@ -190,7 +190,7 @@ doc-nodes-sep
 # if present
 
 # the place where the standard (git) scripts are located
-oai_scripts=$(dirname "$BASH_SOURCE")
+oai_scripts=$(dirname $(readlink -f "$BASH_SOURCE"))
 echo oai_scripts=$oai_scripts
 
 # the mess with /tmp is so that scripts can get tested before they are committed

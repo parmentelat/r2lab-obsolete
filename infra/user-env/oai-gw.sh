@@ -1,10 +1,10 @@
 #!/bin/bash
 
-source $(dirname $(readlink $BASH_SOURCE))/nodes.sh
+source $(dirname $(readlink -f $BASH_SOURCE))/nodes.sh
 
 doc-nodes-sep "#################### subcommands to the oai command (alias o)"
 
-source $(dirname $(readlink $BASH_SOURCE))/oai-common.sh
+source $(dirname $(readlink -f $BASH_SOURCE))/oai-common.sh
 
 COMMAND=$(basename "$BASH_SOURCE")
 case $COMMAND in

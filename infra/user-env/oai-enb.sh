@@ -1,10 +1,10 @@
 #!/bin/bash
 
-source $(dirname $(readlink $BASH_SOURCE))/nodes.sh
+source $(dirname $(readlink -f $BASH_SOURCE))/nodes.sh
 
 doc-nodes-sep "#################### subcommands to the oai command (alias o)"
 
-source $(dirname $(readlink $BASH_SOURCE))/oai-common.sh
+source $(dirname $(readlink -f $BASH_SOURCE))/oai-common.sh
 
 run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
 lte_log="$run_dir/softmodem.log"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $(dirname $(readlink $BASH_SOURCE))/r2labutils.sh
+source $(dirname $(readlink -f $BASH_SOURCE))/r2labutils.sh
 
 create-doc-category imaging "tools for creating images"
 augment-help-with imaging

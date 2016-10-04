@@ -42,9 +42,9 @@ function run-build-image-scripts() {
     cd $to_image
     # data ggathering is best-effort, no worries if parts are failing
     set +e
-    gather-build-data 2>&1 > logs/00-build-data
+    gather-build-data 2>&1 > logs/000-build-data
     set -e
-    cat /etc/rhubarbe-image > logs/00-rhubarbe-image
+    cat /etc/rhubarbe-image > logs/000-rhubarbe-image
     for shell in scripts/[0-9][0-9][0-9]*; do
 	basename=$(basename $shell)
 	args_file=args/$basename
