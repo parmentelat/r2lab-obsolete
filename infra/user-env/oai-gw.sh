@@ -65,6 +65,7 @@ function image() {
     dumpvars
     base
     deps
+    build
 }
 
 doc-nodes base "the script to install base software on top of a raw image" 
