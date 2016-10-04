@@ -459,13 +459,13 @@ function populate-db() {
     mysql --user=root --password=linux -e "$hack_command" oai_db
 
     # mmeidentity table
-    insert_command="INSERT INTO mmeidentity (idmmeidentity, mmehost, mmerealm) VALUES ("
+    insert_command="INSERT INTO mmeidentity (idmmeidentity, mmehost, mmerealm, \`UE-Reachability\`) VALUES ("
     update_command="ON DUPLICATE KEY UPDATE "
 
     name_value idmmeidentity ${idmmeidentity}
     name_value mmehost "'${mmehost}'"
     name_value mmerealm "'${oai_realm}'" 
-    name_value UE-Reachability 0 last
+    name_value "\`UE-Reachability\`" 0 last
     
     echo issuing SQL "$insert_command $update_command"
     mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
