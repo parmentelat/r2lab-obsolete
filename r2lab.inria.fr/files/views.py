@@ -67,7 +67,6 @@ class FilesProxy(View):
             return self.http_response_from_struct(
                 { 'error' : "File not found or not alowed" })
 
-
     def remove_issue_after_maintenance(self, line):
         """
         remove elements after maintenance to send to the page the data after maintenance

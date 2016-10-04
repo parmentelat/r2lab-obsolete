@@ -58,3 +58,11 @@ a.in_blue:visited {
 a.in_blue:active {
     color: #00A0D0;
 }
+
+div.title_tour {
+    position: absolute;
+    background: #FFF;
+    height: 85px;
+    width: 95.7%;
+    text-align: center;
+}

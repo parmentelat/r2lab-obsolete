@@ -1,4 +1,4 @@
-////////// must be in sync with r2lab-sidecar.js 
+////////// must be in sync with r2lab-sidecar.js
 // the 2 socket.io channels that are used
 // (1) this is where actual JSON status is sent
 var channel = 'chan-status';
@@ -38,7 +38,7 @@ var nb_nodes = 37;
 var TableNode = function (id) {
     this.id = id;
     this.cells_data = [
-	[ span_html(id, 'badge'), '' ],  // id 
+	[ span_html(id, 'badge'), '' ],  // id
 	undefined,			// avail
 	undefined,			// on/off
 	undefined,			// ping
@@ -46,7 +46,7 @@ var TableNode = function (id) {
 	undefined,			// os_release
 	undefined			// image_radical
     ];
-		 
+
     this.is_alive = function() {
 	return this.cmc_on_off == 'on'
 	    && this.control_ping == 'on'
@@ -74,7 +74,7 @@ var TableNode = function (id) {
 	this.cells_data[col++] =
 	    (this.available == 'ko') ?
 	    [ 'Out of order', 'error' ] : [ 'Good to go', 'ok' ];
-	// 
+	//
 	this.cells_data[col++] =
 	    this.cmc_on_off == 'fail' ? [ 'N/A', 'error' ]
 	    : this.cmc_on_off == 'on' ? [ span_html('', 'fa fa-toggle-on'), 'ok' ]
@@ -161,7 +161,7 @@ var get_class = function(tuple) {return tuple[1];}
 function LiveTable() {
 
     this.nodes = [];
-    
+
     this.init = function() {
 	this.init_dom();
 	this.init_nodes();
@@ -192,11 +192,11 @@ function LiveTable() {
 	    header_rows.append('th').html('w1-rx').attr('class','rxtx');
 	    header_rows.append('th').html('w1-tx').attr('class','rxtx');
 	}
-	
+
     }
 
     this.init_nodes = function () {
-	for (var i=0; i < nb_nodes; i++) { 
+	for (var i=0; i < nb_nodes; i++) {
 	    this.nodes[i] = new TableNode(i+1);
 	}
     }
@@ -204,7 +204,7 @@ function LiveTable() {
     this.locate_node_by_id = function(id) {
 	return this.nodes[id-1];
     }
-    
+
     /* mode is either 'all' or 'alive' */
     this.view_mode = 'all';
     this.toggle_view_mode = function () {
@@ -286,7 +286,7 @@ function LiveTable() {
     this.init_sidecar_socket_io = function() {
 	// try to figure hostname to get in touch with
 	var sidecar_hostname = ""
-	sidecar_hostname = new URL(window.location.href).hostname;
+	sidecar_hostname = "r2lab.inria.fr"//new URL(window.location.href).hostname;
 	if ( ! sidecar_hostname)
 	    sidecar_hostname = 'localhost';
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
