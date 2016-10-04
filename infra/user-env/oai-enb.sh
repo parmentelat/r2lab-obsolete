@@ -196,8 +196,12 @@ function configure() {
     # note that this requires changes in
     # /etc/network/interfaces as well
     # /etc/udev/rules.d/70..blabla as well
+    # xxx on his printed stabyloed configs, Thierry T
+    # had also changed this
+    #s|eNB_name[ 	]*=.*|eNB_name = "softmodem_$fitid";|
+    # but I suspect it actually causes this
+    # r2lab.conf, mismatch between 1 active eNBs and 0 corresponding defined eNBs !
     cat <<EOF > oai-enb.sed
-s|eNB_name[ 	]*=.*|eNB_name = "softmodem_$fitid";|
 s|mobile_network_code[ 	]*=.*|mobile_network_code = "95";|
 s|pucch_p0_Nominal[ 	]*=.*|pucch_p0_Nominal = -96;|
 s|mme_ip_address[ 	]*=.*|mme_ip_address = ( { ipv4 = "192.168.${oai_subnet}.$gw_id";|
