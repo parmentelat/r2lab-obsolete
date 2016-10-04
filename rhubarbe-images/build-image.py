@@ -21,7 +21,7 @@ async def aprint(*args, **kwds):
 #
 class ImageBuilder:
 
-    def __init__(self, gateway, node, from_image, to_image, scripts, includes, path):
+    def __init__(self, gateway, node, from_image, to_image, scripts, includes, extra_logs, path):
         """
         scripts is expected to be a list of strings
         each may contain spaces if arguments are passed
@@ -33,6 +33,7 @@ class ImageBuilder:
         # normalize this one as a list of lists
         self.scripts = [ s.split() for s in scripts ]
         self.includes = includes
+        self.extra_logs = [] if extra_logs is None else extra_logs
         # : separated list of paths to search - like $PATH
         # we add automatically so as to locate build-image.sh
         self.paths = path.split(":") + [ '.' ]
@@ -168,7 +169,7 @@ class ImageBuilder:
                 node = gateway_proxy,
                 commands = [
                     [ "rhubarbe", "load", "-i", self.from_image, nodename ] if not no_load else None,
-                    [ "rhubarbe", "wait", "-v", nodename ],
+                    [ "rhubarbe", "wait", "-v", "-t", "240", nodename ],
                 ],
                 label = "load and wait image {}".format(self.from_image),
             ),
@@ -199,6 +200,18 @@ class ImageBuilder:
                 recurse = True,
             ),
         )
+
+        # retrieve extr logs before saving
+        for extra_log in self.extra_logs:
+            sequence.append(
+                SshJobCollector(
+                    node = node_proxy,
+                    remotepaths = extra_log,
+                    localpath = "{}/logs/".format(self.to_image),
+                    label = "retrieve extra log {}".format(extra_log),
+                    recurse = True,
+                )
+            )
 
         # xxx some flag
         if no_save:
@@ -277,8 +290,12 @@ together with their arguments and stuff
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
     parser.add_argument("-d", "--debug", action='store_true', default=False)
     parser.add_argument("-i", "--includes", action='append', default=[])
-    parser.add_argument("-p", "--path", dest='paths', default="",
+    parser.add_argument("-l", "--logs", dest='extra_logs', action='append', default=[],
+                        help="additional logs to be collected")
+    parser.add_argument("-p", "--path", action='append', dest='paths', default=[],
                         help="colon-separated list of dirs to search")
+    parser.add_argument("-s", "--silent", action='store_true', default=False,
+                        help="redirect stdout and stder to <to_image>.log")
     parser.add_argument("gateway", help="no gateway if this contains 'localhost'")
     parser.add_argument("node", help="fit node to use - name or number")
     parser.add_argument("from_image", help="the image to start from")
@@ -302,7 +319,8 @@ together with their arguments and stuff
         traceback.print_exc()
         exit(1)
 
-    paths = "{}:{}".format(args.paths, command_dir)
+    # add the location of this command to the path
+    path = ":".join(args.paths + [ command_dir ] )
         
     # default is of course to load and save
     no_load, no_save = False, False
@@ -312,8 +330,13 @@ together with their arguments and stuff
     if args.chain:
         no_load = True
 
-    builder = ImageBuilder(args.gateway, node, args.from_image, to_image,
-                           args.scripts, args.includes, paths)
+    if args.silent:
+        import sys
+        sys.stdout = sys.stderr = open("{}.log".format(to_image), 'w')
+    builder = ImageBuilder(gateway=args.gateway, node=node,
+                           from_image=args.from_image, to_image=to_image,
+                           scripts=args.scripts, includes=args.includes,
+                           extra_logs=args.extra_logs, path=path)
     run_code = builder.run(verbose=args.verbose, debug=args.debug,
                            no_load=no_load, no_save=no_save)
     return 0 if run_code else 1
