@@ -465,6 +465,7 @@ function populate-db() {
     name_value idmmeidentity ${idmmeidentity}
     name_value mmehost "'${mmehost}'"
     name_value mmerealm "'${oai_realm}'" last
+    name_value UE-Reachability 0
     
     echo issuing SQL "$insert_command $update_command"
     mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
