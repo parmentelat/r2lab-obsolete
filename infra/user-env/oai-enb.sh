@@ -45,6 +45,7 @@ function image() {
     dumpvars
     base
     deps
+    build
 }
 
 ####################
@@ -79,18 +80,13 @@ function base() {
 
 }
 
-doc-nodes deps "builds uhd and oai5g for an oai image"
+doc-nodes deps "builds uhd for an oai image"
 function deps() {
 
     gitup
-
     cd
     echo Building ETTUS - see $HOME/build-uhd-ettus.log
     build-uhd-ettus >& build-uhd-ettus.log
-
-    cd
-    echo Building OAI5G - see $HOME/build-oai5g.log
-    build-oai5g >& build-oai5g.log
 
 }
 
@@ -118,6 +114,17 @@ function build-uhd-oai() {
     cd /root/openairinterface5g/cmake_targets
     run-in-log build-uhd-oai.log ./build_oai -w USRP -I
     # saved in oai-enb-oaiuhd 
+}
+
+doc-nodes build "builds oai5g for an oai image"
+function build() {
+
+    gitup
+
+    cd
+    echo Building OAI5G - see $HOME/build-oai5g.log
+    build-oai5g >& build-oai5g.log
+
 }
 
 doc-nodes build-oai5g "builds oai5g - run with -x for building with software oscilloscope" 
