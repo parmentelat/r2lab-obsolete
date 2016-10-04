@@ -1,7 +1,7 @@
 unalias ls 2> /dev/null
 
 ########## pseudo docstrings
-source $(dirname $BASH_SOURCE)/r2labutils.sh
+source $(dirname $(readlink $BASH_SOURCE))/r2labutils.sh
 
 create-doc-category selection "commands that work on a selection of nodes"
 augment-help-with selection

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $(dirname $BASH_SOURCE)/r2labutils.sh
+source $(dirname $(readlink $BASH_SOURCE))/r2labutils.sh
 
 create-doc-category imaging "tools for creating images"
 augment-help-with imaging
@@ -185,7 +185,8 @@ function common-setup-user-env () {
     git pull
     cd /etc/profile.d
     ln -sf /root/r2lab/infra/user-env/nodes.sh .
-    ln -sf /root/r2lab/infra/user-env/r2labutils.sh .
+    # to make sure to undo previous versions that were wrong in creating this
+    rm -f /root/r2lab/infra/r2labutils.sh
 }
 
 

@@ -142,7 +142,7 @@ class ImageBuilder:
         gateway_proxy = None if not gwuser else SshNode(
             hostname = gwname,
             username = gwuser,
-            client_keys = keys,
+            keys = keys,
             formatter = ColonFormatter(),
             debug = debug,
         )
@@ -153,7 +153,7 @@ class ImageBuilder:
             gateway = gateway_proxy,
             hostname = nodename,
             username = username,
-            client_keys = keys,
+            keys = keys,
             formatter = ColonFormatter(),
             debug = debug,
         )

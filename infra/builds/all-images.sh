@@ -18,7 +18,7 @@ build=$gitroot/rhubarbe-images/build-image.py
 function bim () {
     command="$build $gateway -p $gitroot/infra/user-env -i oai-common.sh -i nodes.sh -i r2labutils.sh"
     echo $command "$@"
-    $command --silent "$@" &
+    $command --silent "$@"
 }
 
 # run with an arg to get the command to run manually
@@ -38,8 +38,8 @@ function bim () {
 #0#     "nodes.sh gitup"
 
 
-#bim 1 ubuntu-16.04-v5-ntp == "imaging.sh common-setup-user-env"
-#bim 2 ubuntu-16.04-v5-ntp u16-lowlat47 "imaging.sh ubuntu-k47-lowlatency"
+bim 1 ubuntu-16.04-v5-ntp == "imaging.sh common-setup-user-env"
+bim 2 ubuntu-16.04-v5-ntp u16-lowlat47 "imaging.sh ubuntu-k47-lowlatency"
 bim 23 u16-lowlat47 u16-oai-gw "oai-gw.sh image"
 # skip 4 that is crap all right
 bim 19 u16-lowlat47 u16-oai-enb "oai-enb.sh image" -l /root/build-uhd-ettus.log -l /root/build-oai5g.log 
