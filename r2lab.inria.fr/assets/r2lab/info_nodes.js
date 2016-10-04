@@ -13,14 +13,6 @@ function info_nodes(node) {
 }
 
 
-function set_tabs(file) {
-  // $.get( file, function( data ) {
-  //   $( ".result" ).html( data );
-  //   alert( "Load was performed." );
-  // });
-}
-
-
 function post_request (urlpath, request, callback) {
   var xhttp = new XMLHttpRequest();
   xhttp.open("POST", urlpath, true);
@@ -123,7 +115,6 @@ function set_info(node, info) {
 
 
 function show(node, info) {
-  set_tabs(node)
   set_info(node, info)
 
   $('#'+panel_name).modal('toggle');
