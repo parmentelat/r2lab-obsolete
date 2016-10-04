@@ -88,7 +88,7 @@ function set_info(node, info) {
   else
     remove_tabs();
 
-  $('#node_details_title').html("Node <b>" + node + "</b> Thechinical Details");
+  $('#node_details_title').html("Node <b>" + node + "</b> Technical Details");
   for(index = 0; index < tabs; index++) {
     var active1 = '';
     var active2 = '';
