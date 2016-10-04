@@ -120,11 +120,9 @@ function base() {
 doc-nodes deps "builds hss and epc and installs dependencies" 
 function deps() {
     
-    echo "HERE build !!!"
     gitup
     cd $run_dir
     echo "========== Building HSS"
-    echo HERE runs_epc=$runs_hss
     [ -n "$runs_hss" ] && run-in-log  build-hss-image.log ./build_hss -i -F
     echo "========== Building EPC"
     if [ -n "$runs_epc" ]; then
@@ -238,8 +236,6 @@ function configure() {
 
 function build-epc() {
 
-    [ -n "$runs_epc" ] || { echo not running epc - skipping ; return; }
-
     echo "========== Rebuilding mme"
     # option --debug is in the doc but not in the code
     run-in-log build-mme.log ./build_mme --clean
@@ -312,13 +308,7 @@ EOF
 
 function build-hss() {
     cd $run_dir
-    if [ -n "$runs_epc" ]; then
-	# both services are local
-	# xxx never seen this setup yet
-	echo "ERROR : new-style config of HSS+EPC in the same box is unsupported"
-    else
-	run-in-log build-hss-remote.log ./build_hss --clean
-    fi
+    run-in-log build-hss-remote.log ./build_hss --clean
 }
 
 function configure-hss() {
