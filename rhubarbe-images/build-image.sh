@@ -4,6 +4,14 @@ COMMAND=$(basename $0)
 
 function die() { echo "$@" "-- exiting" ; exit 1; }
 
+function gather-build-data() {
+    set -x
+    date
+    uname -a
+    cat /etc/fedora-release /etc/lsb-release 2> /dev/null
+    ip add sh
+}
+
 #
 # this function assumes that /etc/rhubarbe-history/<to_image>/
 # has been populated with a file hierarchy
@@ -32,13 +40,18 @@ function run-build-image-scripts() {
 
     ########## Running then
     cd $to_image
+    # data ggathering is best-effort, no worries if parts are failing
+    set +e
+    gather-build-data 2>&1 > logs/00-build-data
+    set -e
+    cat /etc/rhubarbe-image > logs/00-rhubarbe-image
     for shell in scripts/[0-9][0-9][0-9]*; do
 	basename=$(basename $shell)
 	args_file=args/$basename
 	arguments=$(cat $args_file)
 	# store nodename in logs for easier forensics
 	{ echo "******** on $node in $(pwd): running $shell $arguments"; \
-	  $shell $arguments 2>&1; } | tee logs/$basename.log
+	  bash -x $shell $arguments 2>&1; } | tee logs/$basename.log
     done
 }
 
