@@ -161,6 +161,18 @@ function build-epc() {
 # end of image
 ########################################
 
+doc-nodes run-hss "run-hss 12: does init/configure/start with epc running on node 12"
+function run-hss() {
+    set -x
+    peer=$1; shift
+    init
+    configure $peer
+    start
+}
+
+doc-nodes run-epc "run-epc 12: does init/configure/start with hss running on node 12"
+alias run-epc=run-hss
+
 doc-nodes init "sync clock from NTP, checks /etc/hosts, rebuilds gtpu and runs depmod"
 function init() {
 

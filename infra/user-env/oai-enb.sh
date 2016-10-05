@@ -182,12 +182,13 @@ EOF
 ########################################
 
 # entry point for global orchestration
-doc-nodes run-enb "run-enb 12: start softmodem with epc running on node 12"
+doc-nodes run-enb "run-enb 12: does init/configure/start with epc running on node 12"
 function run-enb() {
     set -x
     peer=$1; shift
     init
     configure $peer
+    ureset
     start
 }
 
