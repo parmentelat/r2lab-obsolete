@@ -709,7 +709,7 @@ function un-tgz() {
 # the private key for macphone is in inventory/macphone
 doc-alt macphone "Enter the (Mac) phone gateway as user 'tester'"
 function macphone() {
-    ssh -i /home/faraday/r2lab/inventory/macphone tester@macphone
+    ssh -i /home/faraday/r2lab/inventory/macphone tester@macphone "$@"
 }
 
 doc-selection-sep "See also help-alt for other commands"
