@@ -184,12 +184,14 @@ EOF
 # entry point for global orchestration
 doc-nodes run-enb "run-enb 12: does init/configure/start with epc running on node 12"
 function run-enb() {
-    set -x
     peer=$1; shift
+    stop
+    status
     init
     configure $peer
     ureset
     start
+    status
 }
 
 ####################
