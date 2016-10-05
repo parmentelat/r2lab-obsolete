@@ -3,7 +3,10 @@
 
 source $(dirname "$BASH_SOURCE")/r2labutils.sh
 
-create-doc-category phone "tools for managing phone from macphone"
+type -p abd >& /dev/null || alias adb="$HOME/nexustools/adb"
+type -p abd >& /dev/null || echo "WARNING: adb command not found in $BASH_SOURCE"
+
+create-doc-category phone "tools for managing R2lab phone from macphone"
 augment-help-with phone
 
 doc-phone phone-on "turn off airplane mode"
