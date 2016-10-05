@@ -44,11 +44,11 @@ function augment-help-with() {
 # -doc-helper <category> 
 function -doc-helper () {
     category=$1; shift
-    varname=_doc_$category
     fun=$1; shift;
+    varname=_doc_$category
     docstring="$@"
-    [ "$docstring" == 'alias' ] && docstring=$(alias $fun)
-    [ "$docstring" == 'function' ] && docstring=$(type $fun)
+    [ "$docstring" == 'alias' ] && docstring="$(alias $fun)"
+    [ "$docstring" == 'function' ] && docstring="$(type $fun)"
     length=$(wc -c <<< $fun)
     [ $length -ge 16 ] && docstring="\n\t\t$docstring"
     assign="$varname=\"${!varname}\n$fun\r\t\t$docstring\""
@@ -74,7 +74,10 @@ function create-file-category() {
     plural=${catname}s
     codefile='/tmp/def-category'
     cat << EOF > $codefile
-_${plural}=""
+function clear-${plural}() {
+    _${plural}=""
+}
+clear-${plural}
 function add-to-${plural}() {
     _${plural}="\$_${plural} \$@";
 }

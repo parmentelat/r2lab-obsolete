@@ -2,7 +2,7 @@
 
 source $(dirname $(readlink -f $BASH_SOURCE))/nodes.sh
 
-doc-nodes-sep "#################### subcommands to the oai command (alias o)"
+doc-nodes-sep "#################### For managing an OAI enodeb"
 
 source $(dirname $(readlink -f $BASH_SOURCE))/oai-common.sh
 
@@ -27,17 +27,12 @@ function dumpvars() {
     echo "run_dir=$run_dir"
     echo "conf_dir=$conf_dir"
     echo "template=$template"
+    [[ -z "$@" ]] && return
     echo "_configs=\"$(get-configs)\""
     echo "_logs=\"$(get-logs)\""
     echo "_datas=\"$(get-datas)\""
     echo "_locks=\"$(get-locks)\""
 }
-
-# would make sense to add more stuff in the base image - see the NEWS file
-base_packages="git libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential libffi-dev
-texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsfonts imagemagick-common 
- gdb ruby flex bison gfortran xterm mysql-common python-pip python-numpy qtcore4-l10n tcl tk xorg-sgml-doctools
-"
 
 ####################
 doc-nodes image "the entry point for nightly image builds"
@@ -49,7 +44,13 @@ function image() {
 }
 
 ####################
-doc-nodes base "the script to install base software on top of a raw image" 
+# would make sense to add more stuff in the base image - see the NEWS file
+base_packages="git libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential libffi-dev
+texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsfonts imagemagick-common 
+ gdb ruby flex bison gfortran xterm mysql-common python-pip python-numpy qtcore4-l10n tcl tk xorg-sgml-doctools
+"
+
+doc-nodes base "the script to ins<tall base software on top of a raw image" 
 function base() {
 
     gitup
@@ -180,13 +181,43 @@ EOF
 # end of image
 ########################################
 
-doc-nodes configure "configure eNodeB (requires define-peer)"
+# entry point for global orchestration
+doc-nodes run-enb "run-enb 12: start softmodem with epc running on node 12"
+function run-enb() {
+    set -x
+    peer=$1; shift
+    init
+    configure $peer
+    start
+}
+
+####################
+doc-nodes init "initializes clock after NTP"
+function init() {
+    # clock
+    init-clock
+    # data interface if relevant
+    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
+    echo "========== turning off offload negociations on ${oai_ifname}"
+    offload-off ${oai_ifname}
+#    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
+#    ip link set dev ${oai_ifname} mtu 1536
+}
+
+####################
 function configure() {
+    configure-enb "$@"
+}
+doc-nodes configure "function"
 
-    gw_id=$(get-peer)
-    [ -z "$gw_id" ] && { echo "no peer defined"; return; }
+doc-nodes configure "configure eNodeB (requires define-peer)"
+function configure-enb() {
 
-    echo "Using gateway $gw_id"
+    # pass peer id on the command line, or define it it with define-peer
+    gw_id=$1; shift
+    [ -z "$gw_id" ] && gw_id=$(get-peer)
+    [ -z "$gw_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
+    echo "ENB: Using gateway (EPC) on $gw_id"
 
     gitup
     id=$(r2lab-id)
@@ -218,18 +249,7 @@ EOF
     cd - >& /dev/null
 }
 
-doc-nodes init "initializes clock after NTP"
-function init() {
-    # clock
-    init-clock
-    # data interface if relevant
-    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
-    echo "========== turning off offload negociations on ${oai_ifname}"
-    offload-off ${oai_ifname}
-#    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
-#    ip link set dev ${oai_ifname} mtu 1536
-}
-
+####################
 doc-nodes start "starts lte-softmodem - run with -d to turn on soft oscilloscope" 
 function start() {
 
@@ -256,6 +276,7 @@ function -list-processes() {
     echo $pids
 }
 
+####################
 doc-nodes ureset "Reset the URSP attached to this node"
 function ureset() {
     id=$(r2lab-id)

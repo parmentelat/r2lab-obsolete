@@ -12,7 +12,6 @@ oai_realm="r2lab.fr"
 oai_ifname=data
 oai_cn_branch=unstable
 
-
 case ${oai_ifname} in
     control)
 	oai_subnet=3 ;;
@@ -78,14 +77,6 @@ function -manage-processes() {
 
 function status() { -manage-processes status $(-list-processes); }
 function stop()   { -manage-processes stop   $(-list-processes); }
-
-##########
-doc-nodes prepare " = init + configure"
-function scenario() {
-    init
-    configure
-    start
-}
 
 ##########
 doc-nodes restart " = stop [+ sleep] + start; give delay as arg1 - defaults to 1"

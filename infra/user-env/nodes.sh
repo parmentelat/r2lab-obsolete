@@ -191,51 +191,36 @@ doc-nodes-sep
 
 # the place where the standard (git) scripts are located
 oai_scripts=$(dirname $(readlink -f "$BASH_SOURCE"))
-echo oai_scripts=$oai_scripts
+#echo oai_scripts=$oai_scripts
 
 # the mess with /tmp is so that scripts can get tested before they are committed
 # it can be dangerous though, as nodes.sh is also loaded at login-time, so beware..
 
-function define-oai() {
+function oai-as() {
     # oai_role should be gw or epc or hss or enb
     export oai_role=$1; shift
-    function _oai() {
-	local candidates="/tmp $oai_scripts"
-	local candidate=""
-	local script=""
-	for candidate in $candidates; do
-	    local path=$candidate/oai-${oai_role}.sh
-	    [ -f $path ] && { script=$path; break; }
-	done
-	[ -n "$script" ] || { echo "Cannot locate oai-${oai_role}.sh" >&2-; return; }
-	echo Invoking script $script >&2-
-	$script "$@"
-    }
-    alias oai=_oai
-    alias o=_oai
+    local candidates="/tmp $oai_scripts"
+    local candidate=""
+    local script=""
+    for candidate in $candidates; do
+	local path=$candidate/oai-${oai_role}.sh
+	[ -f $path ] && { script=$path; break; }
+    done
+    [ -n "$script" ] || { echo "Cannot locate oai-${oai_role}.sh" >&2-; return; }
+    source $path
 }
 
-doc-nodes oai-loadvars "displays and loads env variables related to oai"
-function oai-loadvars() {
-    _oai dumpvars > /root/oai-vars
-    source /root/oai-vars
-    echo "=== Following vars now in your env" >&2-
-    cat /root/oai-vars
-    echo === >&2-
-}
-
-
-doc-nodes oai-as-gw "defines the 'oai' command for a HSS+EPC oai gateway, and related env. vars"
-function oai-as-gw() { define-oai gw; echo function "'oai'" now defined; oai-loadvars; }
+doc-nodes oai-as-gw "load additional functions for dealing with an OAI gateway"
+function oai-as-gw() { oai-as gw; }
 
 doc-nodes oai-as-hss "defines the 'oai' command for a HSS-only oai box, and related env. vars"
-function oai-as-hss() { define-oai hss; echo function "'oai'" now defined; oai-loadvars; }
+function oai-as-hss() { oai-as hss; }
 
 doc-nodes oai-as-epc "defines the 'oai' command for an EPC-only oai box, and related env. vars"
-function oai-as-epc() { define-oai epc; echo function "'oai'" now defined; oai-loadvars; }
+function oai-as-epc() { oai-as epc; }
 
 doc-nodes oai-as-enb "defines the 'oai' command for an oai eNodeB, and related env. vars"
-function oai-as-enb() { define-oai enb; echo function "'oai'" now defined; echo role=$oai_role; oai-loadvars; }
+function oai-as-enb() { oai-as enb; }
 
 doc-nodes-sep
 
@@ -308,7 +293,6 @@ function unbuf-var-log-syslog() {
 
 doc-nodes demo "set ups nodes for the skype demo - based on their id"
 function demo() {
-    demo-init-git
     case $(r2lab-id) in
 	38)
 	    oai-as-hss

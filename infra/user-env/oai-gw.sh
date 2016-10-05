@@ -2,8 +2,6 @@
 
 source $(dirname $(readlink -f $BASH_SOURCE))/nodes.sh
 
-doc-nodes-sep "#################### subcommands to the oai command (alias o)"
-
 source $(dirname $(readlink -f $BASH_SOURCE))/oai-common.sh
 
 COMMAND=$(basename "$BASH_SOURCE")
@@ -18,6 +16,8 @@ case $COMMAND in
 	echo OOPS ;;
 esac
     
+doc-nodes-sep "#################### commands for managing an OAI gateway"
+
 ####################
 run_dir=/root/openair-cn/SCRIPTS
 [ -n "$runs_hss" ] && {
@@ -50,14 +50,12 @@ function dumpvars() {
     echo "run_dir=$run_dir"
     echo "template_dir=$template_dir"
     echo "conf_dir=$conf_dir"
+    [[ -z "$@" ]] && return
     echo "_configs=\"$(get-configs)\""
     echo "_logs=\"$(get-logs)\""
     echo "_datas=\"$(get-datas)\""
     echo "_locks=\"$(get-locks)\""
 }
-
-# would make sense to add more stuff in the base image - see the NEWS file
-base_packages="git cmake build-essential gdb"
 
 ####################
 doc-nodes image "the entry point for nightly image builds"
@@ -67,6 +65,10 @@ function image() {
     deps
     build
 }
+
+#####
+# would make sense to add more stuff in the base image - see the NEWS file
+base_packages="git cmake build-essential gdb"
 
 doc-nodes base "the script to install base software on top of a raw image" 
 function base() {
@@ -133,35 +135,48 @@ function deps() {
     # it looks like it won't run fine at that early stage
 }
 
+#################### build
+function build() {
+    build-hss
+    build-epc
+}
+doc-nodes build "function"
+
+function build-hss() {
+    cd $run_dir
+    run-in-log build-hss-remote.log ./build_hss --clean
+}
+
+function build-epc() {
+    echo "========== Rebuilding mme"
+    # option --debug is in the doc but not in the code
+    run-in-log build-mme.log ./build_mme --clean
+    
+    echo "========== Rebuilding spgw"
+    run-in-log build-spgw.log ./build_spgw --clean
+    
+}    
+
 ########################################
 # end of image
 ########################################
 
-##########
-doc-nodes cn-git-fetch "run fetch origin in openair-cn git repo"
-function cn-git-fetch() {
-    cd /root/openair-cn
-    git fetch origin
-    cd - >& /dev/null
+doc-nodes init "sync clock from NTP, checks /etc/hosts, rebuilds gtpu and runs depmod"
+function init() {
+
+    # clock
+    init-clock
+    # data interface if relevant
+    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
+###    echo "========== turning off offload negociations on ${oai_ifname}"
+###    offload-off ${oai_ifname}
+###    echo "========== turning off offload negociations on control"
+###    offload-off control
+###    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
+###    ip link set dev ${oai_ifname} mtu 1536
 }
 
-doc-nodes cn-git-select-branch "select branch in openair-cn; typically master or unstable or v0.3.1"
-function cn-git-select-branch() {
-    branch=$1; shift
-    if [ -z "$branch" ]; then
-	cn-git-get-branch
-    else
-	cd /root/openair-cn
-	git reset --hard HEAD
-	rm BUILD/EPC/epc.conf.in
-	git checkout --force $branch
-	cd - >& /dev/null
-    fi
-}
-
-####################
-# 
-
+#################### configure
 function clean-hosts() {
     sed --in-place '/fit/d' /etc/hosts
     sed --in-place '/hss/d' /etc/hosts
@@ -169,6 +184,9 @@ function clean-hosts() {
 
 doc-nodes check-etc-hosts "adjusts /etc/hosts; run with hss as first arg to define hss"
 function check-etc-hosts() {
+    hss_id=$1; shift
+    [ -z "$hss_id" ] && { echo "check-etc-hosts requires hss-id - exiting" ; return ; }
+    echo "========== Checking /etc/hosts"
     clean-hosts
 
     id=$(r2lab-id)
@@ -182,79 +200,38 @@ function check-etc-hosts() {
 	echo "127.0.1.1 $fitid $fitid.${oai_realm}" >> /etc/hosts
 	echo "192.168.${oai_subnet}.${id} hss hss.${oai_realm}" >> /etc/hosts
     else
-	# EPC only : need to know where the hss server is running
-	hss_id=$(get-peer)
 	[ -z "$hss_id" ] && { echo "ERROR: no peer defined"; return; }
-	echo "Using hss $gw_id"
+	echo "Using HSS on $hss_id"
 	echo "127.0.1.1 $fitid $fitid.${oai_realm}" >> /etc/hosts
 	echo "192.168.${oai_subnet}.${hss_id} hss hss.${oai_realm}" >> /etc/hosts
     fi
 }
 	
     
-doc-nodes init "sync clock from NTP, checks /etc/hosts, rebuilds gtpu and runs depmod"
-function init() {
-
-    # clock
-    init-clock
-    # data interface if relevant
-    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
-### #    echo "========== Rebuilding the GTPU module"
-### #    cd $run_dir
-### #    run-in-log init-spgw-j.log ./build_spgw -j -f
-### #    echo "========== Refreshing the depmod index"
-### #    depmod -a
-#    echo "========== turning off offload negociations on ${oai_ifname}"
-#    offload-off ${oai_ifname}
-# ###    echo "========== turning off offload negociations on control"
-# ###    offload-off control
-#    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
-#    ip link set dev ${oai_ifname} mtu 1536
-#    echo "========== patching sgw_config.c to set MTU to 1536"
-#    pushd /root/openair-cn/SRC/SGW >& /dev/null
-#    # do not run gitup on purpose
-#    sed --in-place -e 's,modprobe xt_GTPUSP gtpu_enb_port=,modprobe xt_GTPUSP mtu=1536 gtpu_enb_port=,' sgw_config.c
-#    sed --in-place -e 's,1463,1428,' pgw_pco.c pgw_config.c
-#    echo "--- visual check"
-#    git diff | cat
-#    popd
-}
-
-doc-nodes build "build hss and/or epc"
-function build() {
-    build-hss
-    build-epc
-}
-
-doc-nodes configure "configure hss and/or epc"
 function configure() {
-    echo "========== Checking /etc/hosts"
-    check-etc-hosts
-    configure-hss
-    configure-epc
+    configure-hss "$@"
+    configure-epc "$@"
 }
-
-function build-epc() {
-
-    echo "========== Rebuilding mme"
-    # option --debug is in the doc but not in the code
-    run-in-log build-mme.log ./build_mme --clean
-    
-    echo "========== Rebuilding spgw"
-    run-in-log build-spgw.log ./build_spgw --clean
-    
-}    
+doc-nodes configure function
 
 function configure-epc() {
 
     [ -n "$runs_epc" ] || { echo not running epc - skipping ; return; }
 
+    # pass peer id on the command line, or define it it with define-peer
+    hss_id=$1; shift
+    [ -z "$hss_id" ] && hss_id=$(get-peer)
+    [ -z "$hss_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
+    echo "EPC: Using  HSS on $hss_id"
+
+    check-etc-hosts $hss_id
+
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
     local fitid=fit$id
     local localip="192.168.${oai_subnet}.${id}/24"
-    local hssid=$(get-peer)
-    local hssip="192.168.${oai_subnet}.${hssid}"
+    local hss_id=$(get-peer)
+    local hssip="192.168.${oai_subnet}.${hss_id}"
 
     cd $template_dir
 
@@ -306,14 +283,15 @@ EOF
 
 }
 
-function build-hss() {
-    cd $run_dir
-    run-in-log build-hss-remote.log ./build_hss --clean
-}
-
 function configure-hss() {
 
     [ -n "$runs_hss" ] || { echo not running hss - skipping ; return; }
+
+    # pass peer id on the command line, or define it it with define-peer
+    epcid=$1; shift
+    [ -z "$epcid" ] && epcid=$(get-peer)
+    [ -z "$epcid" ] && { echo "configure-enb: no peer defined - exiting"; return; }
+    echo "HSS: Using EPC on $epcid"
 
     fitid=fit$(r2lab-id)
 
@@ -349,11 +327,15 @@ EOF
     # xxx ???
     ./hss_db_create localhost root linux hssadmin admin oai_db
     ./hss_db_import localhost root linux oai_db ../SRC/OAI_HSS/db/oai_db.sql
-    populate-db
+    populate-hss-db "$epcid"
 }
 
-# not declared in available since it's called by build
-function populate-db() {
+# not declared in available since it's called by configure
+function populate-hss-db() {
+
+    epc_id=$1; shift
+    [ -z "$epc_id" ] && { echo "check-etc-hosts requires hss-id - exiting" ; return ; }
+    
     # insert our SIM in the hss db
     # NOTE: setting the 'key' column raises a special issue as key is a keyword in
     # the mysql syntax
@@ -421,13 +403,7 @@ function populate-db() {
     }
 
     idmmeidentity=100
-    # this runs in the hss box
-    if [ -n "$runs_epc" ] ; then
-	mmehost=fit$(r2lab-id).${oai_realm}
-    else
-	epc_id=$(get-peer)
-	mmehost=fit${epc_id}.${oai_realm}
-    fi	
+    mmehost=fit${epc_id}.${oai_realm}
 
 ###    
 ###    # users table
@@ -463,14 +439,24 @@ function populate-db() {
     
 }
 
-doc-nodes start "starts the hss and/or epc service(s)"
+####################
 function start() {
-    cd $run_dir
+    start-hss
+    start-epc
+}
+doc-nodes start "function"
+
+function start-hss() {
     if [ -n "$runs_hss" ]; then
+	cd $run_dir
 	echo "Running run_hss in background"
 	./run_hss >& $log_hss &
     fi
+}
+
+function start-epc() {
     if [ -n "$runs_epc" ]; then
+	cd $run_dir
 	echo "Launching mme and spgw in background"
 	./run_mme >& $log_mme &
 #	./run_spgw -r >& $log_spgw &
@@ -482,7 +468,7 @@ locks=""
 [ -n "$runs_hss" ] && add-to-locks /var/run/oai_hss.pid
 [ -n "$runs_epc" ] && add-to-locks /var/run/mme_gw.pid /var/run/mme.pid /var/run/mmed.pid /var/run/spgw.pid
 
-########################################
+####################
 doc-nodes status "displays the status of the epc and/or hss processes"
 doc-nodes stop "stops the epc and/or hss processes & clears locks"
 
@@ -494,7 +480,7 @@ function -list-processes() {
     echo $pids
 }
 
-##############################
+####################
 doc-nodes manage-db "runs mysql on the oai_db database" 
 function manage-db() {
     mysql --user=root --password=linux oai_db
