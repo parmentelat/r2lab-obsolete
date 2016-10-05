@@ -240,12 +240,15 @@ doc-nodes ls-datas    "you got the idea; you have also grep-configs and similar 
 doc-nodes capture-all "captures logs and datas and configs in a tgz"
 function capture-all() {
     output=$1; shift
+    echo "++++++++++++++++++++++++++++++++++++++++"
+    echo "capture-all: output = $output"
     [ -z "$output" ] && { echo usage: capture-all output; return; }
     allfiles="$(ls-logs) $(ls-configs) $(ls-datas)"
     outpath=$HOME/$output.tgz
     tar -czf $outpath $allfiles
     echo "Captured in $outpath the following files:"
     ls -l $allfiles
+    echo "++++++++++++++++++++++++++++++++++++++++"
 }    
 
 doc-nodes-sep

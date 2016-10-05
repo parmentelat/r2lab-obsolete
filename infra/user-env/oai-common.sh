@@ -1,3 +1,5 @@
+source $(dirname $(readlink -f $BASH_SOURCE))/nodes.sh
+
 # this is included (i.e. source'd) from places that all have
 # included nodes.sh
 # so in this context we have done 
@@ -33,10 +35,14 @@ doc-nodes logs "tail-logs"
 function logs() {
     tail-logs
 }
+
 doc-nodes capture "expects one arg - capture logs and datas and configs under provided name, suffixed with -\$oai_role"
-function capture() {
-    capture-all $1-${oai_role}
-}
+function capture() { capture-all "$1"-${oai_role}; }
+
+function capture-hss() { oai-as-hss; capture-all "$1"-hss; }
+function capture-epc() { oai-as-epc; capture-all "$1"-epc; }
+function capture-enb() { oai-as-enb; capture-all "$1"-enb; }
+function capture-scr() { oai-as-enb; capture-all "$1"-scr; }
 
 doc-nodes sctp "tcpdump the SCTP traffic on interface ${oai_ifname} - with one arg, stores into a .pcap"
 function sctp() {

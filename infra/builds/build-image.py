@@ -143,7 +143,7 @@ class ImageBuilder:
             hostname = gwname,
             username = gwuser,
             keys = keys,
-            formatter = ColonFormatter(),
+            formatter = ColonFormatter(verbose=verbose),
             debug = debug,
         )
 
@@ -154,7 +154,7 @@ class ImageBuilder:
             hostname = nodename,
             username = username,
             keys = keys,
-            formatter = ColonFormatter(),
+            formatter = ColonFormatter(verbose=verbose),
             debug = debug,
         )
 
