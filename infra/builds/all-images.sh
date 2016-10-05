@@ -12,7 +12,7 @@ case $(hostname) in
 esac
 
 ###
-build=$gitroot/rhubarbe-images/build-image.py
+build=$(dirname $0)/build-image.py
 
 # we don't need all these includes everywhere but it makes it easier
 function bim () {

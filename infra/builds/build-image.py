@@ -240,7 +240,7 @@ class ImageBuilder:
                     ),
                     SshJob(
                         node = gateway_proxy,
-                        command = [ "rhubarbe", "images"],
+                        command = [ "rhubarbe", "images", "-d" ],
                         label = "list current images",
                     ),
                 )
