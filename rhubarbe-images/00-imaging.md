@@ -2,6 +2,29 @@
 * OAI-related details in a separate file `01-oai.md`
 * List of known issues in `02-fixes.md`
 
+# building 4.7 on Ubuntu-14.04
+
+* first attempt to run [4.7.0/lowlatency kernel inside ubuntu-**16.04**](http://ubuntuhandbook.org/index.php/2016/07/install-linux-kernel-4-7-ubuntu-16-04/) ran without a glitch by just installing pre-packaged stuff
+* but on **14.04** though the same recipe did dot work out
+
+It took me a while to spot the issue:
+
+* symptom was node not booting on that new kernel
+* had to do with `/sys/kernel/uevent_helper`
+* [this message is a good starting point](http://askubuntu.com/questions/809843/is-ubuntu-14-04-available-to-use-4-7-kernel-or-above)
+* [kernel is ill-configured](http://tuxthink.blogspot.fr/2014/10/can-not-create-syskernelueventhelper.html)
+* I gave a try at 4.7.2 as published on kernel.ubuntu.com, to no avail either
+
+So evntually I just went for the yekkety / 16.10 vanilla kernel debs, which gave me a nice 4.8.0 with lowlatency that runs fine with both ubuntu-14 and ubuntu-16
+
+# update - Oct. 2016
+
+* in `infra/builds/`
+* there is a script `build-image.py`
+* that allows to build an image in an unattended manner
+* and `all-images.sh` take advantage of that to list all the recipes that we use - some of them on a nightly basis eventually
+* this also uses code actually in `infra/user/imaging.sh` 
+
 # generic ubuntu stuff
 
 ## workflow

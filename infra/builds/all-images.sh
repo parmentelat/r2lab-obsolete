@@ -38,19 +38,30 @@ function bim () {
 #0#     "nodes.sh gitup"
 
 
+function u16() {
+
 bim 1 ubuntu-16.04-v5-ntp == "imaging.sh common-setup-user-env"
-bim 2 ubuntu-16.04-v5-ntp u16-lowlat47 "imaging.sh ubuntu-k47-lowlatency"
-bim 23 u16-lowlat47 u16-oai-gw "oai-gw.sh image"
-# skip 4 that is crap all right
-bim 19 u16-lowlat47 u16-oai-enb "oai-enb.sh image" -l /root/build-uhd-ettus.log -l /root/build-oai5g.log 
+bim 2 ubuntu-16.04-v5-ntp u16-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
+bim 23 u16-lowlat48 u16-oai-gw "oai-gw.sh image"
+bim 19 u16-lowlat48 u16-oai-enb "oai-enb.sh image" -l /root/build-uhd-ettus.log -l /root/build-oai5g.log 
 
+}
+
+function u14(){
+
+bim 5 ubuntu-14.04-v5-ntp == "imaging.sh common-setup-user-env"
+bim 6 ubuntu-14.04-v5-ntp u14-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
+bim 7 u14-lowlat48 u14-oai-gw "oai-gw.sh image"
+bim 8 u14-lowlat48 u14-oai-enb "oai-enb.sh image" -l /root/build-uhd-ettus.log -l /root/build-oai5g.log
+
+}
+
+# to go into u16
+
+u16
+u14
+ssh root@faraday.inria.fr rhubarbe off -a
 exit
-
-# on the u14 front, the lowlatency kernel image built this way won't reboot
-bim 6 ubuntu-14.04-v5-ntp == "imaging.sh common-setup-user-env"
-bim 7 ubuntu-14.04-v5-ntp u14-lowlat47 "imaging.sh ubuntu-k47-lowlatency"
-bim 8 u14-lowlat47 u14-oai-gw "oai-gw.sh image"
-bim 9 u14-lowlat47 u14-oai-enb "oai-enb.sh image" -l /root/build-uhd-ettus.log -l /root/build-oai5g.log
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work

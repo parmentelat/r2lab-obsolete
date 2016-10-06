@@ -9,17 +9,45 @@ augment-help-with imaging
 # UBUNTU
 ########################################
 
+# looks like dpkg -i $url won't work ..
+# so this utility fetches a bunch of URLs and shoves them into dpkg
+function -dpkg-from-urls() {
+    urls="$@"
+    debs=""
+    for url in $urls; do
+	curl -O $url
+	debs="$debs $(basename $url)"
+    done
+    
+    if dpkg -i $debs; then
+	rm $debs
+	return 0
+    else
+	echo dpkg failed - preserving debs $debs
+	return 1
+    fi
+}
+
+function -dpkg-is-installed() {
+    package="$1"
+    if dpkg -l $package >& /dev/null; then
+	echo package $package already installed
+	return 0
+    else
+	return 1
+    fi
+}
+
+####################
 # started with this howto here:
 # http://ubuntuhandbook.org/index.php/2016/07/install-linux-kernel-4-7-ubuntu-16-04/
 # see also of course here for any new stuff:
 # http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/
+# won't work with ubuntu-14 though
 doc-imaging ubuntu-k47-lowlatency "install 4.7 lowlatency kernel"
 function ubuntu-k47-lowlatency() {
-
-    already_installed=true
-    uname -a | grep -q lowlatency || already_installed=
-    uname -a | fgrep -q 4.7 || already_installed=
-    [ -n "$already_installed" ] && { echo lowlatency 4.7 already installed; return; }
+    
+    -dpkg-is-installed linux-image-4.7.0-040700-lowlatency && return
     
     urls="
 http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/linux-headers-4.7.0-040700_4.7.0-040700.201608021801_all.deb
@@ -28,14 +56,23 @@ http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/linux-headers-4.7.0-040700-ge
 http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/linux-image-4.7.0-040700-lowlatency_4.7.0-040700.201608021801_amd64.deb
 "
 
-    debs=""
-    for url in $urls; do
-	# looks like dpkg -i $url won't work ..
-	curl -O $url
-	debs="$debs $(basename $url)"
-    done
+    -dpkg-from-urls $urls
+}
 
-    dpkg -i $debs
+# this one is based on the mainstream kernel for 16.10/yikkety
+# it works fine on top of both ubuntu 14 and ubuntu 16
+function ubuntu-k48-lowlatency() {
+
+    -dpkg-is-installed linux-image-4.8.0-21-lowlatency && return
+    
+    urls="
+http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-4.8.0-21_4.8.0-21.23_all.deb
+http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-4.8.0-21-lowlatency_4.8.0-21.23_amd64.deb
+http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-4.8.0-21-generic_4.8.0-21.23_amd64.deb
+http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-image-4.8.0-21-lowlatency_4.8.0-21.23_amd64.deb
+"
+
+    -dpkg-from-urls $urls
 
 }
 
