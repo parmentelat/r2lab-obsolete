@@ -22,5 +22,5 @@ esac
 # Thierry - Apr 26 2016 : 
 # it is much safer to *NOT* mention --delete
 # as images can be saved directly on faraday 
-rsync "$@" -av --exclude $this --exclude archive --exclude \*.log --exclude root-node\* --exclude saving\* $from $to
+rsync "$@" -av --exclude $this --exclude archive\* --exclude \*.log --exclude root-node\* --exclude saving\* $from $to
 
