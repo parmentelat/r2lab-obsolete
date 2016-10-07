@@ -31,3 +31,5 @@ r2lab-prep-rhubarbe.json
 r2lab-prep.dnsmasq
 r2lab-prep.hosts
 nodes_info.json
+r2lab.inria.fr/nodes/images
+r2lab.inria.fr/nodes/info
