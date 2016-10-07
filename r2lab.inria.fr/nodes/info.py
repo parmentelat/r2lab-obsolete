@@ -9,6 +9,8 @@ These info managed by this script is pubilshed at run/status at r2lab.inria.fr
 
 import argparse
 from argparse import ArgumentParser
+import subprocess
+from subprocess import Popen
 import os
 import os.path
 from datetime import datetime
@@ -20,12 +22,16 @@ import copy
 from collections import OrderedDict
 
 parser = ArgumentParser()
-parser.add_argument(dest="nodes", nargs='?', default='all',
+parser.add_argument("-n", "--nodes", dest="nodes", default='all',
                     help="View nodes information stored.")
 parser.add_argument("-i", "--include", nargs='*', dest="include",
                     help="Set information for a given node. <Node id>, <tab title> and <file name1, file name2,...> are the parameters order.")
-parser.add_argument("-r", "--remove", nargs='*', dest="remove",
+parser.add_argument("-r", "--remove", dest="remove",
                     help="Remove node informations.")
+parser.add_argument("-t+", dest="tabp", action='store_true',
+                    help="Add node tab.")
+parser.add_argument("-t", dest="tabl",
+                    help="Remove node tab.")
 parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
                     help="Drop and initialize the nodes information. All data is erased.")
 
@@ -38,6 +44,8 @@ except Exception as e:
     FILEDIR = "/Users/nano/Documents/Inria/r2lab/r2lab.inria.fr/nodes/"
 FILENAME = "nodes_info.json"
 
+LOC_DIR_IMGS = 'images/'
+LOC_DIR_INFO = 'info/'
 
 
 def main(args):
@@ -47,28 +55,26 @@ def main(args):
     nodes_r = args.remove
     drop    = args.drop
     nodes   = args.nodes
+    tabp     = args.tabp
+    tabl     = args.tabl
 
     if nodes_i is not None:
         try:
-            nodes, tab = nodes_i[0], nodes_i[1]
-            files      = nodes_i[2:]
-            include_node(nodes, tab, files)
+            nodes, tabname, files = nodes_i[0], nodes_i[1], nodes_i[2:]
         except Exception as e:
-            print('ERROR: check the number of args.')
+            print('ERROR: check the number of args. [nodes] [tab text] [option files]')
+            exit()
+        include_node(nodes, tabname, files, tabp)
     elif nodes_r is not None:
-        try:
-            if len(nodes_r) > 1:
-                nodes, tab = nodes_r[0], nodes_r[1]
-            else:
-                nodes = nodes_r[0]
-                tab   = None
-        except Exception as e:
-            print('ERROR: check the number of args.')
-        remove_node(nodes, tab)
+        nodes = nodes_r
+        if tabl:
+            tabl = int(tabl) - 1
+        remove_node(nodes, tabl)
     elif drop:
         reset_file()
     else:
         check_node(format_nodes(nodes))
+
 
 
 def reset_file():
@@ -77,18 +83,44 @@ def reset_file():
     dir         = FILEDIR
     file_name   = FILENAME
     content = {}
-    with open(os.path.join(dir, file_name), "w") as js:
-        js.write(json.dumps(content)+"\n")
-    print('INFO: the file was erased')
+    pub_img = FILEDIR + LOC_DIR_IMGS
+    pub_mds = FILEDIR + LOC_DIR_INFO
+    choi = None
+    while not choi:
+        choi = input( 'Confirm action? [Y/n]')
+        if choi in ['Y']:
+            choi = True
+
+            command = "rm {}*; rm {}*".format(pub_mds, pub_img)
+            ans_cmd = run(command)
+            if not ans_cmd['status']:
+                print('ERROR: something went wrong in clear dir.')
+                print(ans_cmd['output'])
+                exit()
+
+            with open(os.path.join(dir, file_name), "w") as js:
+                js.write(json.dumps(content)+"\n")
+            print('INFO: the file was erased')
+        else:
+            print('INFO: no action made.')
 
 
 
 def sync_files(files):
     """ copy files to folders
     """
-    copiar os arquivos para as pastas info e images dentro de nodes
-    tornar a pasta images dentro de nodes estática nas confs do django
-    remover a sincronização do git para estas duas pastas
+    pub_img = FILEDIR + LOC_DIR_IMGS
+    pub_mds = FILEDIR + LOC_DIR_INFO
+
+    if type(files) is list:
+        command = "cp {} {}".format(' '.join(files), pub_img)
+    else:
+        command = "cp {} {}".format(files, pub_mds)
+    ans_cmd = run(command)
+    if not ans_cmd['status']:
+        print('ERROR: something went wrong in coping file(s).')
+        print(ans_cmd['output'])
+        exit()
 
 
 
@@ -138,7 +170,7 @@ def check_node(nodes):
 
 
 
-def include_node(nodes, tab, files):
+def include_node(nodes, tab, files, append):
     """ include nodes in the list
     """
     dir       = FILEDIR
@@ -151,16 +183,53 @@ def include_node(nodes, tab, files):
             content = {}
 
     files = touch_file(files)
-
     for node in format_nodes(nodes):
         try:
-            content.update({ node : [{"tab":tab, "file":files}] })
+            tabs = content[node]
         except Exception as e:
+            tabs = []
+        try:
+            if append:
+                try:
+                    content[node].append({"tab":tab, "file":files})
+                except Exception as e:
+                    for tb, tabf in enumerate(tabs):
+                        fl = content[node][tb]['file'] #sometime is array of files
+                        remove_single_file(fl)
+                    content.update({ node : [{"tab":tab, "file":files}] })
+            else:
+                for tb, tabf in enumerate(tabs):
+                    fl = content[node][tb]['file'] #sometime is array of files
+                    remove_single_file(fl)
+                content.update({ node : [{"tab":tab, "file":files}] })
+        except Exception as e:
+            for tb, tabf in enumerate(tabs):
+                fl = content[node][tb]['file'] #sometime is array of files
+                remove_single_file(fl)
             content[node].update({"tab":tab, "file":files})
-
+    if files:
+        sync_files(files)
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
     print('INFO: information for node(s) * {} * included.'.format(nodes))
+
+
+
+def remove_single_file(files):
+    """ remove single file from folder info or nodes
+    """
+    pub_img = FILEDIR + LOC_DIR_IMGS
+    pub_mds = FILEDIR + LOC_DIR_INFO
+
+    if files:
+        if type(files) is list:
+            command = "rm {}{}".format(pub_img,' {}'.format(pub_img).join(files))
+        else:
+            command = "rm {}{}".format(pub_mds, files)
+        ans_cmd = run(command)
+        if not ans_cmd['status']: #here we do not stop in error case
+            print('WARNING: something went wrong in removing file(s) or files were already removed.')
+            print(ans_cmd['output'])
 
 
 
@@ -179,6 +248,10 @@ def remove_node(nodes, tab=None):
     for node in format_nodes(nodes):
         if tab is None:
             try:
+                tabs = content[node]
+                for tb, tabf in enumerate(tabs):
+                    fl = content[node][tb]['file'] #sometime is array of files
+                    remove_single_file(fl)
                 content.pop(node)
             except Exception as e:
                 print('WARNING: node * {} * not found.'.format(node))
@@ -187,6 +260,8 @@ def remove_node(nodes, tab=None):
                 tabs = content[node]
                 for tb, tabf in enumerate(tabs):
                     if int(tb) == int(tab):
+                        fl = content[node][tb]['file'] #sometime is array of files
+                        remove_single_file(fl)
                         del content[node][tb]
                 if len(content[node]) == 0:
                     content.pop(node)
@@ -204,12 +279,19 @@ def touch_file(files):
     images  = ['.jpg', '.jpeg', '.gif', '.png']
     content = ['.md']
     allow   = images + content
+
     for file in files:
         ftype  = os.path.splitext(file)[1]
         if not ftype in allow:
             print('ERROR: file {} not allowed.'.format(file))
             exit()
 
+    if len(files)  > 1:
+        for file in files:
+            ftype  = os.path.splitext(file)[1]
+            if not ftype in images:
+                print('ERROR: multiple files supported only for images. Check the file {}.'.format(file))
+                exit()
     if len(files) == 1:
         ftype  = os.path.splitext(files[0])[1]
         if ftype in content:
@@ -275,6 +357,22 @@ def now():
     """ current datetime
     """
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+
+def run(command, std=True):
+    """ run the commands
+    """
+    if std:
+        p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    else:
+        p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    (out, err) = p.communicate()
+    ret        = p.wait()
+    out        = out.strip().decode('ascii')
+    err        = err
+    ret        = True if ret == 0 else False
+    return dict({'output': out, 'error': err, 'status': ret})
 
 
 
