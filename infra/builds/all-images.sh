@@ -43,7 +43,11 @@ function u16() {
 bim 1 ubuntu-16.04-v5-ntp == "imaging.sh common-setup-user-env"
 bim 2 ubuntu-16.04-v5-ntp u16-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
 bim 23 u16-lowlat48 u16-oai-gw "oai-gw.sh image"
-bim 19 u16-lowlat48 u16-oai-enb "oai-enb.sh image" -l /root/build-uhd-ettus.log -l /root/build-oai5g.log 
+bim 19 u16-lowlat48 u16-oai-enb "oai-enb.sh image" \
+    -l /root/build-uhd-ettus.log -l /root/build-oai5g.log \
+    -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt \
+    -l /root/openairinterface5g/cmake_targets/build-oai-1.log \
+    -l /root/openairinterface5g/cmake_targets/build-oai-2.log \
 
 }
 
@@ -52,7 +56,11 @@ function u14(){
 bim 5 ubuntu-14.04-v5-ntp == "imaging.sh common-setup-user-env"
 bim 6 ubuntu-14.04-v5-ntp u14-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
 bim 7 u14-lowlat48 u14-oai-gw "oai-gw.sh image"
-bim 8 u14-lowlat48 u14-oai-enb "oai-enb.sh image" -l /root/build-uhd-ettus.log -l /root/build-oai5g.log
+bim 8 u14-lowlat48 u14-oai-enb "oai-enb.sh image" \
+    -l /root/build-uhd-ettus.log -l /root/build-oai5g.log \
+    -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt \
+    -l /root/openairinterface5g/cmake_targets/build-oai-1.log \
+    -l /root/openairinterface5g/cmake_targets/build-oai-2.log \
 
 }
 
