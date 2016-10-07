@@ -60,12 +60,9 @@ function base() {
     apt-get install -y $base_packages
 
     # 
+    git-ssl-turn-off-verification
     echo "========== Running git clone for openair-cn and r2lab and openinterface5g"
     cd
-    echo -n | \
-	openssl s_client -showcerts -connect gitlab.eurecom.fr:443 2>/dev/null | \
-	sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >> \
-	    /etc/ssl/certs/ca-certificates.crt
     [ -d openair-cn ] || git clone https://gitlab.eurecom.fr/oai/openair-cn.git
     [ -d openairinterface5g ] || git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git
     [ -d /root/r2lab ] || git clone https://github.com/parmentelat/r2lab.git
@@ -192,6 +189,7 @@ function run-enb() {
     ureset
     start
     status
+    return 0
 }
 
 ####################

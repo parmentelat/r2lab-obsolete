@@ -99,11 +99,8 @@ function base() {
     apt-get install -y phpmyadmin
 
     echo "========== Running git clone for openair-cn and r2lab .."
+    git-ssl-turn-off-verification
     cd
-    echo -n | \
-	openssl s_client -showcerts -connect gitlab.eurecom.fr:443 2>/dev/null | \
-	sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >> \
-	    /etc/ssl/certs/ca-certificates.crt
     [ -d openair-cn ] || git clone https://gitlab.eurecom.fr/oai/openair-cn.git
     # this is probably useless, but well
     [ -d r2lab ] || git clone https://github.com/parmentelat/r2lab.git
@@ -169,6 +166,7 @@ function run-all() {
     configure $peer
     start
     status
+    return 0
 }
 
 doc-nodes run-hss "run-hss 12: does init/configure/start with epc running on node 12"

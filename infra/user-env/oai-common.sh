@@ -23,7 +23,7 @@ case ${oai_ifname} in
 	echo "ERROR cannot set oai_subnet" ;;
 esac
 
-
+####################
 function run-in-log() {
     local log=$1; shift
     local command="$@"
@@ -36,6 +36,7 @@ function logs() {
     tail-logs
 }
 
+####################
 doc-nodes capture "expects one arg - capture logs and datas and configs under provided name, suffixed with -\$oai_role"
 function capture() { capture-all "$1"-${oai_role}; }
 
@@ -44,6 +45,28 @@ function capture-epc() { oai-as-epc; capture-all "$1"-epc; }
 function capture-enb() { oai-as-enb; capture-all "$1"-enb; }
 function capture-scr() { oai-as-enb; capture-all "$1"-scr; }
 
+####################
+### get git to accept using eurecom's certificates
+# option 1: manually fetch the certificate and store it in /etc/ssl
+# this however is fragile, we found on ubuntu14 that
+# the change could get lost; not 100% clear how, but maybe
+# some package installed later on (which one?) is overwriting the global certs
+function git-ssl-fetch-eurecom-certificates() {
+    echo -n | \
+	openssl s_client -showcerts -connect gitlab.eurecom.fr:443 2>/dev/null | \
+	sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' \ 
+	    >> /etc/ssl/certs/ca-certificates.crt
+    echo "Added Eurecom gitlab certificates here:"
+    ls -l  /etc/ssl/certs/ca-certificates.crt
+}
+
+# this looks more robust even if a bit less secure
+# but we don't care that much anyways 
+function git-ssl-turn-off-verification() {
+    git config --global --add http.sslVerify false
+}
+
+####################
 doc-nodes sctp "tcpdump the SCTP traffic on interface ${oai_ifname} - with one arg, stores into a .pcap"
 function sctp() {
     local output="$1"; shift
