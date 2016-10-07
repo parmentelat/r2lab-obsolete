@@ -45,4 +45,5 @@ urlpatterns = [
 #    url(r'^admin/', admin.site.urls),
 ] \
     + static( '/assets/', document_root=settings.BASE_DIR+'/assets/') \
+    + static( '/nodes/images/', document_root=settings.BASE_DIR+'/nodes/images/') \
     + static( '/code/', document_root=settings.BASE_DIR+'/code/')
