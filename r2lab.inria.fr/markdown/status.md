@@ -11,7 +11,7 @@ This page gives you live details on the individual nodes in the R2lab testbed.
 For accurate dimensions of the room, please see the [static blueprint
 at the bottom of this page](#accurate-layout)
 
-For more details about each node, please click in the node number/badge/icon.
+For more details about each node, please click in the node number or badge.
 
 <div class="row" id="all">
   <div class="col-lg-2"></div>
