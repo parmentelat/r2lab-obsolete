@@ -9,6 +9,20 @@ Most recent first&nbsp;:
 
 * Inauguration ceremony. Program to be announced shortly.
 
+### October 1
+
+* We now use [an automated tool](https://github.com/parmentelat/r2lab/blob/master/infra/builds/build-image.py) for building images [on a nightly basis](https://github.com/parmentelat/r2lab/blob/master/infra/builds/all-images.sh)
+
+### September 15
+
+* We have been working on a replacement for NEPI
+* We have published 2 python libraries on pypi
+  * [`asynciojobs`](https://github.com/parmentelat/asynciojobs)
+  * [`apssh`](https://github.com/parmentelat/apssh), see also [this link](https://github.com/parmentelat/apssh/blob/master/README-jobs.md)
+* We have [our first workable script](https://github.com/parmentelat/r2lab/blob/master/demos/jobs-angle-measure/angle-measure.py) that uses this combination of tools for running an experiment on R2lab
+* You can compare with [the same experiment written with NEPI](https://github.com/parmentelat/r2lab/blob/master/demos/nepi-angle-measure/angle-measure.py)
+* This new paradigm runs several times faster than the initial version.
+
 ### September 2
 
 * upgrade of the physical server `faraday.inria.fr` to ubuntu-16.04-LTS
