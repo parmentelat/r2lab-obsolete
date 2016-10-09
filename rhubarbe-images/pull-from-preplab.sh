@@ -1,26 +1,27 @@
 #!/bin/bash
 
-this=$(basename $0)
-
 repo=/var/lib/rhubarbe-images
 preplab=bemol.pl.sophia.inria.fr
 
+# waterfall model : MUST run on faraday
 hostname | grep -q faraday || { echo "Must run on faraday"; exit 1; }
 
-case "$1" in
-    push|reverse)
-	shift
+###
+command=$(basename $0)
+
+case $command in
+    pull*)
+	from=$preplab:$repo/
+	to=$repo/
+	;;
+    push*)
 	from=$repo/
 	to=$preplab:$repo/
 	;;
     *)
-	from=$preplab:$repo/
-	to=$repo/
-	;;
 esac
     
 # Thierry - Apr 26 2016 : 
 # it is much safer to *NOT* mention --delete
 # as images can be saved directly on faraday 
-rsync "$@" -av --exclude $this --exclude archive\* --exclude \*.log --exclude root-node\* --exclude saving\* $from $to
-
+rsync "$@" -av --exclude '*preplab*' --exclude archive\* --exclude \*.log --exclude root-node\* --exclude saving\* $from $to
