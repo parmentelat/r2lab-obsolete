@@ -156,7 +156,7 @@ function maintenance () {
   fi
 }
 
-function infos () {
+function exinfo () {
   python3 /root/r2lab/nodes/info.py "$@"
   if [ $? -eq 0 ]; then
     for i in "$@" ; do
