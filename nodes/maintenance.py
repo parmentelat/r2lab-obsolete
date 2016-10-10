@@ -44,6 +44,13 @@ except Exception as e:
     FILEDIR = "/Users/nano/Documents/Inria/r2lab/nodes/"
 FILENAME = "maintenance_nodes.json"
 
+try:
+    with open(os.path.join(FILEDIR, FILENAME)) as data_file:
+        pass
+except Exception as e:
+    with open(os.path.join(FILEDIR, FILENAME), "w") as js:
+        js.write(json.dumps({})+"\n")
+
 
 
 def main(args):
