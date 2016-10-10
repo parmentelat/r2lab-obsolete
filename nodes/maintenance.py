@@ -37,11 +37,11 @@ parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
 
 args = parser.parse_args()
 
-FILEDIR = "/root/r2lab/nightly/"
+FILEDIR = "/root/r2lab/nodes/"
 try:
     os.listdir(FILEDIR)
 except Exception as e:
-    FILEDIR = "/Users/nano/Documents/Inria/r2lab/nightly/"
+    FILEDIR = "/Users/nano/Documents/Inria/r2lab/nodes/"
 FILENAME = "maintenance_nodes.json"
 
 

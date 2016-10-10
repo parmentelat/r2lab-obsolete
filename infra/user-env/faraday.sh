@@ -134,13 +134,13 @@ EOF
 }
 
 function snap () {
-  python3 /root/r2lab/nightly/snap.py "$@"
+  python3 /root/r2lab/nodes/snap.py "$@"
 }
 alias snapshot=snap
 alias rsnap="rhubarbe snap"
 
 function maintenance () {
-  python3 /root/r2lab/nightly/maintenance.py "$@"
+  python3 /root/r2lab/nodes/maintenance.py "$@"
   if [ $? -eq 0 ]; then
     for i in "$@" ; do
       if [[ $i == "-i" || $i == "-r" ]] ; then
@@ -715,5 +715,5 @@ function macphone() {
 doc-selection-sep "See also help-alt for other commands"
 
 ########################################
-define-main "$0" "$BASH_SOURCE" 
+define-main "$0" "$BASH_SOURCE"
 main "$@"

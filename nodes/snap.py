@@ -32,12 +32,12 @@ ADD_IN_NAME     = '_snap_'
 ADD_IN_FOLDER   = '_snapshots'
 DEFAULT_IMAGE   = 'fedora-23.ndz'
 
-FILEDIR = "/root/r2lab/nightly/"
+FILEDIR = "/root/r2lab/nodes/"
 try:
     os.listdir(FILEDIR)
 except Exception as e:
     #for my local dir
-    FILEDIR = "/Users/nano/Documents/Inria/r2lab/nightly/"
+    FILEDIR = "/Users/nano/Documents/Inria/r2lab/nodes/"
 
 
 
