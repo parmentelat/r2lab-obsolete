@@ -156,6 +156,23 @@ function maintenance () {
   fi
 }
 
+function info () {
+  python3 /root/r2lab/nodes/info.py "$@"
+  if [ $? -eq 0 ]; then
+    for i in "$@" ; do
+      if [[ $i == "-i" || $i == "-r" ]] ; then
+        /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
+        echo 'INFO: send info to r2lab website and updating...'
+        ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
+        echo 'INFO: updated in r2lab!'
+        break
+      fi
+    done
+  else
+    echo 'ERROR: something went wrong in maintenance command. Type maintenance -h to see options.'
+  fi
+}
+
 # normalization
 # the intention is you can provide any type of inputs, and get the expected format
 # norm 1 03 fit04 5-8 ~7 -> fit01 fit03 fit04 fit05 fit06 fit08
