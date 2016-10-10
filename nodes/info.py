@@ -25,7 +25,7 @@ parser = ArgumentParser()
 parser.add_argument("-n", "--nodes", dest="nodes", default='all',
                     help="View nodes information stored.")
 parser.add_argument("-i", "--include", nargs='*', dest="include",
-                    help="Set information for a given node. <Node id>, <tab title> and <file name1, file name2,...> are the parameters order.")
+                    help="Set information for a given node. <Node id>, <tab title> and <file_name1 file_name2 ...> are the parameters order.")
 parser.add_argument("-r", "--remove", dest="remove",
                     help="Remove node informations.")
 parser.add_argument("-t+", dest="tabp", action='store_true',
@@ -190,6 +190,7 @@ def include_node(nodes, tab, files, append):
             content = {}
 
     files = touch_file(files)
+    selif = change_path(files)
     for node in format_nodes(nodes):
         try:
             tabs = content[node]
@@ -198,22 +199,22 @@ def include_node(nodes, tab, files, append):
         try:
             if append:
                 try:
-                    content[node].append({"tab":tab, "file":files})
+                    content[node].append({"tab":tab, "file":selif})
                 except Exception as e:
                     for tb, tabf in enumerate(tabs):
                         fl = content[node][tb]['file'] #sometime is array of files
                         remove_single_file(fl)
-                    content.update({ node : [{"tab":tab, "file":files}] })
+                    content.update({ node : [{"tab":tab, "file":selif}] })
             else:
                 for tb, tabf in enumerate(tabs):
                     fl = content[node][tb]['file'] #sometime is array of files
                     remove_single_file(fl)
-                content.update({ node : [{"tab":tab, "file":files}] })
+                content.update({ node : [{"tab":tab, "file":selif}] })
         except Exception as e:
             for tb, tabf in enumerate(tabs):
                 fl = content[node][tb]['file'] #sometime is array of files
                 remove_single_file(fl)
-            content[node].update({"tab":tab, "file":files})
+            content[node].update({"tab":tab, "file":selif})
     if files:
         sync_files(files)
     with open(os.path.join(dir, file_name), "w") as js:
@@ -222,17 +223,30 @@ def include_node(nodes, tab, files, append):
 
 
 
+def change_path(files):
+    """ changing the cmd line given path for assets path
+    """
+    selif = copy.deepcopy(files)
+    if files:
+        if type(files) is list:
+            for idx, file in enumerate(files):
+                head, tail = os.path.split(file)
+                selif[idx] = LOC_DIR_IMGS + tail
+        else:
+            head, tail = os.path.split(files)
+            selif = LOC_DIR_INFO + tail
+    return selif
+
+
+
 def remove_single_file(files):
     """ remove single file from folder info or nodes
     """
-    pub_img = FILEDIR + LOC_DIR_IMGS
-    pub_mds = FILEDIR + LOC_DIR_INFO
-
     if files:
         if type(files) is list:
-            command = "rm {}{}".format(pub_img,' {}'.format(pub_img).join(files))
+            command = "rm {}{}".format(FILEDIR,' {}'.format(FILEDIR).join(files))
         else:
-            command = "rm {}{}".format(pub_mds, files)
+            command = "rm {}{}".format(FILEDIR, files)
         ans_cmd = run(command)
         if not ans_cmd['status']: #here we do not stop in error case
             print('WARNING: something went wrong in removing file(s) or files were already removed.')
