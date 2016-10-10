@@ -156,7 +156,7 @@ function maintenance () {
   fi
 }
 
-function info () {
+function information () {
   python3 /root/r2lab/nodes/info.py "$@"
   if [ $? -eq 0 ]; then
     for i in "$@" ; do
@@ -169,7 +169,7 @@ function info () {
       fi
     done
   else
-    echo 'ERROR: something went wrong in maintenance command. Type maintenance -h to see options.'
+    echo 'ERROR: something went wrong in info command. Type info -h to see options.'
   fi
 }
 
