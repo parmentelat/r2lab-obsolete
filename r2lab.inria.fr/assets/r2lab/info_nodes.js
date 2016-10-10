@@ -19,14 +19,14 @@ function post_request (urlpath, request, callback) {
   xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   var csrftoken = getCookie('csrftoken');
   xhttp.setRequestHeader("X-CSRFToken", csrftoken);
-  xhttp.send(request);
+  xhttp.send(JSON.stringify(request));
   xhttp.onreadystatechange = function(){callback(xhttp);};
 }
 
 
 function get_info(node) {
-  var request = node;
-  post_request('/nodes/get', request, function(xhttp) {
+  var request = {"file" : {'info' : node}};
+  post_request('/files/get', request, function(xhttp) {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
       info = JSON.parse(xhttp.responseText);
       if (info) {

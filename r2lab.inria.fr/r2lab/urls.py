@@ -26,7 +26,6 @@ import leases.views
 import slices.views
 import users.views
 import files.views
-import nodes.views
 
 urlpatterns = [
     # default: empty or just / -> md/index.md
@@ -40,10 +39,9 @@ urlpatterns = [
     url(r'^slices/(?P<verb>(get|renew))', slices.views.SlicesProxy.as_view()),
     url(r'^users/(?P<verb>(get|renew))', users.views.UsersProxy.as_view()),
     url(r'^files/(?P<verb>(get))', files.views.FilesProxy.as_view()),
-    url(r'^nodes/(?P<verb>(get))', nodes.views.NodesProxy.as_view()),
     # probably not useful
 #    url(r'^admin/', admin.site.urls),
 ] \
     + static( '/assets/', document_root=settings.BASE_DIR+'/assets/') \
-    + static( '/nodes/images/', document_root=settings.BASE_DIR+'/nodes/images/') \
+    + static( '/files/nodes/images/', document_root=settings.BASE_DIR+'/files/nodes/images/') \
     + static( '/code/', document_root=settings.BASE_DIR+'/code/')

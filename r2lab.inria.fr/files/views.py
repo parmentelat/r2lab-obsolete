@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic import View
 from django.http import HttpResponse
 from datetime import datetime
+import markdown2
 
 # Create your views here.
 class FilesProxy(View):
@@ -33,7 +34,7 @@ class FilesProxy(View):
         try:
             record = self.decode_body_as_json(request)
             if verb == 'get':
-                return self.get_file(record)
+                return self.which_file(record)
             else:
                 return self.http_response_from_struct(
                     {'error' : "Unknown verb {}".format(verb)})
@@ -42,30 +43,85 @@ class FilesProxy(View):
                 { 'error' : "Failure when running verb {}".format(verb),
                   'message' : e})
 
-    def get_file(self, record):
+    def which_file(self, record):
         """
         return nigthly routine file in json format
+        """
+        option = record['file']
+
+        if option == 'nigthly':
+            return self.get_nigthly()
+        elif int(option['info']) in list(range(1,38)):
+            node = option['info']
+            return self.get_info(node)
+        else:
+            return self.http_response_from_struct(
+                { 'error' : "File not found or not alowed" })
+
+    def get_nigthly(self):
+        """
+        return nodes infos in json format
         """
         directory = os.path.dirname(os.path.abspath(__file__))
         directory = directory+'/nightly/'
         data      = []
-
-        if record['file'] == 'nigthly':
-            the_file  = 'nightly_data.json'
-            try:
-                with open(directory + the_file) as f:
-                    for line in f:
-                        temp_line = self.remove_issue_after_maintenance(line)
-                        data.append(json.loads(temp_line))
-                    f.close()
-                    return self.http_response_from_struct(data)
-            except Exception as e:
-                return self.http_response_from_struct(
-                    { 'error' : "Failure running get file",
-                      'message' : e})
-        else:
+        the_file  = 'nightly_data.json'
+        try:
+            with open(directory + the_file) as f:
+                for line in f:
+                    temp_line = self.remove_issue_after_maintenance(line)
+                    data.append(json.loads(temp_line))
+                f.close()
+                return self.http_response_from_struct(data)
+        except Exception as e:
             return self.http_response_from_struct(
-                { 'error' : "File not found or not alowed" })
+                { 'error' : "Failure running get file",
+                  'message' : e})
+
+    def get_info(self, node):
+        """
+        return nodes infos in json format
+        """
+        try:
+            content = self.build_node_info(node)
+            return self.http_response_from_struct(content)
+        except Exception as e:
+            return self.http_response_from_struct(
+                { 'error' : "Failure running get file",
+                  'message' : e})
+
+    def build_node_info(self, node):
+        """
+        find the node info throught the files already saved
+        """
+        directory = os.path.dirname(os.path.abspath(__file__))
+        directory = directory+'/nodes/'
+        data      = False
+        setup_file= 'info_nodes.json'
+        try:
+            with open(directory + setup_file) as f:
+                data = json.load(f)
+                f.close()
+        except Exception as e:
+            print("Failure in read node config file - {} - {} - {}".format(directory, setup_file, e))
+
+        if data:
+            for dt in data:
+                if dt == node:
+                    #find the files and serve them
+                    tabs = data[dt]
+                    for tb, tab in enumerate(tabs):
+                        file = tab["file"]
+                        if not type(file) is list:
+                            try:
+                                with open(directory + file) as f:
+                                    lines = f.readlines()
+                                    lines = ('').join([markdown2.markdown(x.rstrip()) for x in lines])
+                                    data[dt][tb]["content"] = lines
+                                    f.close()
+                            except Exception as e:
+                                pass
+        return json.dumps(data)
 
     def remove_issue_after_maintenance(self, line):
         """
@@ -73,7 +129,7 @@ class FilesProxy(View):
         'node' : 'maintenance date'
         """
         directory = os.path.dirname(os.path.abspath(__file__))
-        directory = directory+'/nightly/'
+        directory = directory+'/nodes/'
         the_file  = 'maintenance_nodes.json'
         data      = []
 
