@@ -160,9 +160,6 @@ def main():
     set_node_status(range(1,38),  'ok')
     set_node_status(failed_nodes, 'ko')
 
-    print "INFO: send email"
-    summary_in_mail(failed_nodes, send_results_to)
-
     print "INFO: write in file"
     #this is the old file containing all info since we start nightly
     write_in_file(failed_nodes, "nightly.txt", dir_name)
@@ -170,6 +167,9 @@ def main():
     print "INFO: write in file in new format"
     save_data_in_txt (phases, "nightly_data.txt",  dir_name)
     save_data_in_json(phases, "nightly_data.json", dir_name)
+
+    print "INFO: send email"
+    summary_in_mail(failed_nodes, send_results_to)
 
     print "INFO: end of main"
     print "INFO: {}".format(now())
