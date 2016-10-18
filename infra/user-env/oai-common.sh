@@ -67,8 +67,10 @@ function git-ssl-turn-off-verification() {
 }
 
 ####################
-doc-nodes sctp "tcpdump the SCTP traffic on interface ${oai_ifname} - with one arg, stores into a .pcap"
-function sctp() {
+# designed for interactive usage; tcpdump stops upon Control-C
+doc-nodes tcpdump-sctp "interactive tcpdump of the SCTP traffic on interface ${oai_ifname}
+		with one arg, stores into a .pcap"
+function tcpdump-sctp() {
     local output="$1"; shift
     command="tcpdump -i ${oai_ifname} ip proto 132"
     [ -n "$output" ] && {
@@ -78,6 +80,37 @@ function sctp() {
     }
     echo Running $command
     $command
+}
+
+# same but we have 2 commands to start and stop stuff
+# plus, the output name is hard-wired as $run_dir/sctp.pcap
+doc-nodes start-tcpdump-sctp "Start recording pcap data about SCTP traffic"
+function start-tcpdump-sctp() {
+    cd $run_dir
+    pcap="sctp-$(r2lab-id).pcap"
+    pidfile="tcpdump-sctp.pid"
+    command="tcpdump -n -i ${oai_ifname} -U -w $pcap ip proto 132"
+    echo "SCTP traffic tcpdump'ed into $pcap with command:"
+    echo "$command"
+    nohup $command >& /dev/null < /dev/null &
+    pid=$!
+    ps $pid
+    echo $pid > $pidfile
+}
+    
+doc-nodes stop-tcpdump-sctp "Stop recording pcap data about SCTP traffic"
+function stop-tcpdump-sctp() {
+    cd $run_dir
+    pcap="sctp-${oai_role}.pcap"
+    pidfile="tcpdump-sctp.pid"
+    if [ ! -f $pidfile ]; then
+	echo "Could not spot tcpdump pid from $pidfile - exiting"
+    else
+	pid=$(cat $pidfile)
+	echo "Killing tcpdump pid $pid"
+	kill $pid
+	rm $pidfile
+    fi
 }
 
 ##############################

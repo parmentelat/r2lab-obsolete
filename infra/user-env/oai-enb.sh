@@ -187,10 +187,15 @@ function run-enb() {
     init
     configure $peer
     ureset
+    start-tcpdump-sctp
+    sleep 3
     start
     status
     return 0
 }
+
+# the output of start-tcpdump-sctp
+add-to-datas "$run_dir/sctp-$(r2lab-id).pcap"
 
 ####################
 doc-nodes init "initializes clock after NTP"

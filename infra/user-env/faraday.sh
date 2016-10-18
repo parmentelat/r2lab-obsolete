@@ -13,12 +13,12 @@ function preplab () { hostname | grep -q bemol; }
 
 control_dev=control
 
+doc-admin igmp-watch "tcpdump igmp packets on the $control_dev interface"
 function igmp-watch () {
     set -x
     tcpdump -i $control_dev igmp
     set +x
 }
-doc-admin igmp-watch "tcpdump igmp packets on the $control_dev interface"
 
 ####################
 #### some stuff is just too hard / too awkward in shell...
@@ -407,13 +407,13 @@ doc-alt refresh "install latest version of these utilities"
 ####################
 # faraday has p2p1@switches and bemol has eth1 - use control_dev
 # spy on frisbee traffic
-function t7000 () {
+doc-admin tcpdump-frisbee "tcpdump on port 7000 on the control interface"
+function tcpdump-frisbee () {
     [ -n "$1" ] && options="-c $1"
     set -x
     tcpdump $options -i $control_dev port 7000
     set +x
 }
-doc-admin t7000 "tcpdump on port 7000 on the control interface"
 
 function nitos-restart () {
     service omf-sfa stop

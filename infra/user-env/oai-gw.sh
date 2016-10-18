@@ -161,10 +161,14 @@ function run-all() {
     status
     init
     configure $peer
+    start-tcpdump-sctp    
     start
     status
     return 0
 }
+
+# the output of start-tcpdump-sctp
+add-to-datas "$run_dir/sctp-$(r2lab-id).pcap"
 
 doc-nodes run-hss "run-hss 12: does init/configure/start with epc running on node 12"
 function run-hss() { run-all "$@"; }
