@@ -245,7 +245,6 @@ function configure-epc() {
     local id=$(r2lab-id)
     local fitid=fit$id
     local localip="192.168.${oai_subnet}.${id}/24"
-    local hss_id=$(get-peer)
     local hssip="192.168.${oai_subnet}.${hss_id}"
 
     cd $template_dir
