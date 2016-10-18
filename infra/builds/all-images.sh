@@ -38,51 +38,44 @@ function bim () {
 #0#     "nodes.sh gitup"
 
 
+gw_options="
+    -l /root/openair-cn/SCRIPTS/build-hss-deps.log
+    -l /root/openair-cn/SCRIPTS/build-mme-deps.log	
+    -l /root/openair-cn/SCRIPTS/build-spgw-deps.log
+"
+
+enb_options="
+    -l /root/build-uhd-ettus.log -l /root/build-oai5g.log
+    -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt
+    -l /root/openairinterface5g/cmake_targets/build-oai-1.log
+    -l /root/openairinterface5g/cmake_targets/build-oai-2.log
+"
+
 function u16-48() {
-
-bim 1 ubuntu-16.04-v5-ntp == "imaging.sh common-setup-user-env"
-bim 2 ubuntu-16.04-v5-ntp u16-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
-bim 3 u16-lowlat48 u16.48-oai-gw "oai-gw.sh image"
-bim 5 u16-lowlat48 u16.48-oai-enb "oai-enb.sh image" \
-    -l /root/build-uhd-ettus.log -l /root/build-oai5g.log \
-    -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt \
-    -l /root/openairinterface5g/cmake_targets/build-oai-1.log \
-    -l /root/openairinterface5g/cmake_targets/build-oai-2.log \
-
+    #bim 1 ubuntu-16.04-v5-ntp == "imaging.sh common-setup-user-env"
+    #bim 2 ubuntu-16.04-v5-ntp u16-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
+    bim $gw_options  1 u16-lowlat48 u16.48-oai-gw "oai-gw.sh image"
+    bim $enb_options 2 u16-lowlat48 u16.48-oai-enb "oai-enb.sh image"
 }
 
 function u16-47() {
-
-bim 1 ubuntu-16.04-v5-ntp == "imaging.sh common-setup-user-env"
-bim 2 ubuntu-16.04-v5-ntp u16-lowlat47 "imaging.sh ubuntu-k47-lowlatency"
-bim 3 u16-lowlat47 u16.47-oai-gw "oai-gw.sh image"
-bim 5 u16-lowlat47 u16.47-oai-enb "oai-enb.sh image" \
-    -l /root/build-uhd-ettus.log -l /root/build-oai5g.log \
-    -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt \
-    -l /root/openairinterface5g/cmake_targets/build-oai-1.log \
-    -l /root/openairinterface5g/cmake_targets/build-oai-2.log \
-
+    #bim 1 ubuntu-16.04-v5-ntp == "imaging.sh common-setup-user-env"
+    #bim 2 ubuntu-16.04-v5-ntp u16-lowlat47 "imaging.sh ubuntu-k47-lowlatency"
+    bim $gw_options  3 u16-lowlat47 u16.47-oai-gw "oai-gw.sh image"
+    bim $enb_options 5 u16-lowlat47 u16.47-oai-enb "oai-enb.sh image"
 }
 
 function u14-48(){
-
-bim 6 ubuntu-14.04-v5-ntp == "imaging.sh common-setup-user-env"
-bim 7 ubuntu-14.04-v5-ntp u14-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
-bim 8 u14-lowlat48 u14.48-oai-gw "oai-gw.sh image"
-bim 9 u14-lowlat48 u14.48-oai-enb "oai-enb.sh image" \
-    -l /root/build-uhd-ettus.log -l /root/build-oai5g.log \
-    -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt \
-    -l /root/openairinterface5g/cmake_targets/build-oai-1.log \
-    -l /root/openairinterface5g/cmake_targets/build-oai-2.log \
-
+    #bim 6 ubuntu-14.04-v5-ntp == "imaging.sh common-setup-user-env"
+    #bim 7 ubuntu-14.04-v5-ntp u14-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
+    bim $gw_options  6 u14-lowlat48 u14.48-oai-gw "oai-gw.sh image"
+    bim $enb_options 7 u14-lowlat48 u14.48-oai-enb "oai-enb.sh image"
 }
 
 ssh root@faraday.inria.fr rhubarbe off -a
-u16-48
-u14-48
-ssh root@faraday.inria.fr rhubarbe off -a
-exit
-u16-47
+u14-48 &
+u16-48 &
+u16-47 &
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work
