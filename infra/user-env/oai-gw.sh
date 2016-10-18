@@ -122,12 +122,10 @@ function deps() {
     gitup
     cd $run_dir
     echo "========== Building HSS"
-    [ -n "$runs_hss" ] && run-in-log  build-hss-image.log ./build_hss -i -F
+    run-in-log  build-hss-deps.log ./build_hss -c -i -F
     echo "========== Building EPC"
-    if [ -n "$runs_epc" ]; then
-	run-in-log build-mme-image-i.log ./build_mme -i -f
-	run-in-log build-spgw-image-i.log ./build_spgw -i -f
-    fi
+    run-in-log build-mme-deps.log ./build_mme -c -i -f
+    run-in-log build-spgw-deps.log ./build_spgw -c -i -f
     # building the kernel module : deferred to the init step
     # it looks like it won't run fine at that early stage
 }
@@ -151,7 +149,6 @@ function build-epc() {
     
     echo "========== Rebuilding spgw"
     run-in-log build-spgw.log ./build_spgw --clean
-    
 }    
 
 ########################################
