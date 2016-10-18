@@ -346,6 +346,9 @@ doc-selection map "parallel run an ssh command on all selected nodes"
 
 alias rimages="rhubarbe images"
 doc-selection rimages "display available images (rhubarbe images)"
+alias rresolve="rhubarbe resolve"
+alias res="rhubarbe resolve"
+doc-selection "res|rresolve" "show which file would be picked when doing rload -i (rhubarbe resolve)"
 
 alias load-fedora="rload -i fedora"
 doc-selection load-fedora alias
