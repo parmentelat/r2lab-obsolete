@@ -182,23 +182,26 @@ EOF
 doc-nodes run-enb "run-enb 12: does init/configure/start with epc running on node 12"
 function run-enb() {
     peer=$1; shift
+    oai_role=enb
     stop
     status
     init
     configure $peer
     ureset
-    start-tcpdump-sctp
-    sleep 3
+    start-tcpdump-data ${oai_role}
+    delay=5
+    echo XXXXXXXXXXXXXXXXXXXX waiting for a fixed $delay s
+    sleep $delay
     start
     status
     return 0
 }
 
-# the output of start-tcpdump-sctp
-add-to-datas "$run_dir/sctp-$(r2lab-id).pcap"
+# the output of start-tcpdump-data
+add-to-datas "/root/data-${oai_role}.pcap"
 
 ####################
-doc-nodes init "initializes clock after NTP"
+doc-nodes init "initializes clock after NTP, and tweaks MTU's"
 function init() {
     # clock
     init-clock
@@ -206,8 +209,8 @@ function init() {
     [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     echo "========== turning off offload negociations on ${oai_ifname}"
     offload-off ${oai_ifname}
-#    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
-#    ip link set dev ${oai_ifname} mtu 1536
+    echo "========== setting mtu to 9000 on interface ${oai_ifname}"
+    ip link set dev ${oai_ifname} mtu 9000
 }
 
 ####################

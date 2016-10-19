@@ -7,11 +7,11 @@ source $(dirname $(readlink -f $BASH_SOURCE))/oai-common.sh
 COMMAND=$(basename "$BASH_SOURCE")
 case $COMMAND in
     *oai-gw*)
-	runs_epc=true; runs_hss=true ;;
+	runs_epc=true; runs_hss=true; oai_role=epc ;;
     *oai-hss*)
-	runs_epc=;     runs_hss=true ;;
+	runs_epc=;     runs_hss=true; oai_role=hss ;;
     *oai-epc*)
-	runs_epc=true; runs_hss=     ;;
+	runs_epc=true; runs_hss=    ; oai_role=epc ;;
     *)
 	echo OOPS ;;
 esac
@@ -156,39 +156,40 @@ function build-epc() {
 ########################################
 
 function run-all() {
+    oai_role=$1; shift
     peer=$1; shift
     stop
     status
     init
     configure $peer
-    start-tcpdump-sctp    
+    start-tcpdump-data ${oai_role}
     start
     status
     return 0
 }
 
-# the output of start-tcpdump-sctp
-add-to-datas "$run_dir/sctp-$(r2lab-id).pcap"
+# the output of start-tcpdump-data
+add-to-datas "/root/data-${oai_role}.pcap"
 
 doc-nodes run-hss "run-hss 12: does init/configure/start with epc running on node 12"
-function run-hss() { run-all "$@"; }
+function run-hss() { run-all hss "$@"; }
 
 doc-nodes run-epc "run-epc 12: does init/configure/start with hss running on node 12"
-function run-epc() { run-all "$@"; }
+function run-epc() { run-all epc "$@"; }
 
-doc-nodes init "sync clock from NTP, checks /etc/hosts, rebuilds gtpu and runs depmod"
+doc-nodes init "sync clock from NTP, checks /etc/hosts, and tweaks MTU's"
 function init() {
 
     # clock
     init-clock
     # data interface if relevant
     [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
-###    echo "========== turning off offload negociations on ${oai_ifname}"
-###    offload-off ${oai_ifname}
+    echo "========== turning off offload negociations on ${oai_ifname}"
+    offload-off ${oai_ifname}
 ###    echo "========== turning off offload negociations on control"
 ###    offload-off control
-###    echo "========== setting mtu to 1536 on interface ${oai_ifname}"
-###    ip link set dev ${oai_ifname} mtu 1536
+    echo "========== setting mtu to 9000 on interface ${oai_ifname}"
+    ip link set dev ${oai_ifname} mtu 9000
 }
 
 #################### configure
@@ -285,6 +286,7 @@ s|PGW_INTERFACE_NAME_FOR_SGI.*=.*|PGW_INTERFACE_NAME_FOR_SGI = "control";|
 s|PGW_IPV4_ADDRESS_FOR_SGI.*=.*|PGW_IPV4_ADDRESS_FOR_SGI = "192.168.3.${id}/24";|
 s|DEFAULT_DNS_IPV4_ADDRESS.*=.*|DEFAULT_DNS_IPV4_ADDRESS = "138.96.0.10";|
 s|DEFAULT_DNS_SEC_IPV4_ADDRESS.*=.*|DEFAULT_DNS_SEC_IPV4_ADDRESS = "138.96.0.11";|
+s|PGW_MASQUERADE_SGI.*=.*|PGW_MASQUERADE_SGI = "yes";|
 s|192.188.0.0/24|192.168.10.0/24|g
 s|192.188.1.0/24|192.168.11.0/24|g
 EOF

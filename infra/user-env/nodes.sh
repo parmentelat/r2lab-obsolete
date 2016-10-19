@@ -294,6 +294,55 @@ function unbuf-var-log-syslog() {
     echo "Writing to /var/log/syslog is now unbeffered"
 }
 
+#################### tcpdump
+# 2 commands to start and stop tcpdump on the data interface
+# output is in /root/data-<name>.pcap
+# with <name> provided as a first argument (defaults to r2lab-id)
+# it is desirable to set a different name on each host, so that when collected
+# data gets merged into a single file tree they don't overlap each other
+
+# Usage -start-tcpdump data|control some-distinctive-name tcpdump-arg..s
+function -start-tcpdump() {
+    interface="$1"; shift
+    name="$1"; shift
+    [ -z "$name" ] && name=$(r2lab-id)
+    cd 
+    pcap="${interface}-${name}.pcap"
+    pidfile="tcpdump-${interface}.pid"
+    command="tcpdump -n -U -w $pcap -i ${interface}" "$@"
+    echo "${interface} traffic tcpdump'ed into $pcap with command:"
+    echo "$command"
+    nohup $command >& /dev/null < /dev/null &
+    pid=$!
+    ps $pid
+    echo $pid > $pidfile
+}
+    
+# Usage -stop-tcpdump data|control some-distinctive-name
+function -stop-tcpdump() {
+    interface="$1"; shift
+    name="$1"; shift
+    [ -z "$name" ] && name=$(r2lab-id)
+    cd
+    pcap="${interface}-${name}.pcap"
+    pidfile="tcpdump-${interface}.pid"
+    if [ ! -f $pidfile ]; then
+	echo "Could not spot tcpdump pid from $pidfile - exiting"
+    else
+	pid=$(cat $pidfile)
+	echo "Killing tcpdump pid $pid"
+	kill $pid
+	rm $pidfile
+    fi
+}
+
+doc-nodes start-tcpdump-data "Start recording pcap data about traffic on the data interface"
+function start-tcpdump-data() { -start-tcpdump data "$@"; }
+doc-nodes stop-tcpdump-data "Stop recording pcap data about SCTP traffic"
+function stop-tcpdump-data() { -stop-tcpdump data "$@"; }
+
+####################
+
 doc-nodes demo "set ups nodes for the skype demo - based on their id"
 function demo() {
     case $(r2lab-id) in
