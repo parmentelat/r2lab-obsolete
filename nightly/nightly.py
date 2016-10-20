@@ -42,6 +42,8 @@ def main():
                         help="Directory to save text file")
     parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="send_to_email",
                         help="Email to receive the execution results")
+    parser.add_argument("-w", "--weekday", default="sunday", dest="weekday",
+                        help="Day of week to trigger the statistic graph")
     #parser.add_argument("-d", "--days", dest="days", default=['wed','sun'],
     #                    help="Comma separated list of weekday to run")
     args = parser.parse_args()
@@ -55,10 +57,11 @@ def main():
     version        = args.version
     avoid_nodes    = args.avoid_nodes
     dir_name       = args.text_dir
+    weekday        = args.weekday
     nodes          = format_nodes(nodes, avoid_nodes)
     all_nodes      = name_node(nodes)
     send_results_to= [str(send_to_email)] #default in args send_to_email: fit-r2lab-users@inria.fr
-
+    WEEKDAY_STAT   = weekday
     # if not should_i_run(days):
     #     print "INFO: none of the informed days match with the current. Let's skip and exit..."
     #     exit(0)
@@ -742,6 +745,9 @@ def historic_file_in_array():
     file_name = "nightly.txt"
     with open(dir_name+file_name) as f:
         lines = f.read().splitlines()
+    print "==================="
+    print lines
+    print "==================="
     return lines
 
 
@@ -762,6 +768,9 @@ def treat_historic_file(data):
         del line[0]
         node.append(line)
     node = reduce(lambda c, x: c + x, node, [])
+    print "==================="
+    print node
+    print "==================="
     return node
 
 
@@ -820,6 +829,9 @@ def generate_graph(data_nodes, nodes=None):
         if (percent > 0):
             lines = lines + temp_line
 
+    print "==================="
+    print header+lines+footer
+    print "==================="
     return header+lines+footer
 
 
