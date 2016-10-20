@@ -66,6 +66,11 @@ def main():
     #     print "INFO: none of the informed days match with the current. Let's skip and exit..."
     #     exit(0)
 
+    print type(WEEKDAY_STAT)
+    print WEEKDAY_STAT
+    print get_statistic(WEEKDAY_STAT)
+    exit()
+
     for node in nodes:
         create_phases_db(node)
 
@@ -845,6 +850,9 @@ def get_statistic(the_day="monday"):
 
     today = date.today()
     week_day = calendar.day_name[today.weekday()]
+    print week_day.lower()
+    print the_day.lower()
+
     if week_day.lower() == the_day.lower():
         h = historic_file_in_array()
         d = treat_historic_file(h)
