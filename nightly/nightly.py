@@ -22,7 +22,7 @@ from nepi.util.sshfuncs import logger
 
 
 
-WEEKDAY_STAT = "thursday"
+WEEKDAY_STAT = "sunday"
 phases       = {}
 
 
