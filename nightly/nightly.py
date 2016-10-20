@@ -66,11 +66,6 @@ def main():
     #     print "INFO: none of the informed days match with the current. Let's skip and exit..."
     #     exit(0)
 
-    print type(WEEKDAY_STAT)
-    print WEEKDAY_STAT
-    print get_statistic(WEEKDAY_STAT)
-    exit()
-
     for node in nodes:
         create_phases_db(node)
 
