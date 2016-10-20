@@ -741,9 +741,7 @@ def historic_file_in_array():
     file_name = "nightly.txt"
     with open(dir_name+file_name) as f:
         lines = f.read().splitlines()
-    print "==================="
-    print lines
-    print "==================="
+
     return lines
 
 
@@ -764,9 +762,7 @@ def treat_historic_file(data):
         del line[0]
         node.append(line)
     node = reduce(lambda c, x: c + x, node, [])
-    print "==================="
-    print node
-    print "==================="
+
     return node
 
 
@@ -825,9 +821,6 @@ def generate_graph(data_nodes, nodes=None):
         if (percent > 0):
             lines = lines + temp_line
 
-    print "==================="
-    print header+lines+footer
-    print "==================="
     return header+lines+footer
 
 
@@ -841,8 +834,6 @@ def get_statistic(the_day="monday"):
 
     today = date.today()
     week_day = calendar.day_name[today.weekday()]
-    print week_day.lower()
-    print the_day.lower()
 
     if week_day.lower() == the_day.lower():
         h = historic_file_in_array()
