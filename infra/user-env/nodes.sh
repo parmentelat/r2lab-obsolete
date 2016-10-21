@@ -385,14 +385,25 @@ function demo() {
 # long names are tcp-segmentation-offload udp-fragmentation-offload
 # generic-segmentation-offload generic-receive-offload
 # plus, udp-fragmentation-offload is fixed on our nodes
-doc-nodes offload-off "turn off various offload features on specified wired interface" 
-function offload-off () {
+doc-nodes "offload-(on|off)" "turn on or off various offload features on specified wired interface" 
+function offload-off () { -offload off "$@"; }
+function offload-on () { -offload on "$@"; }
+
+function -offload () {
+    mode="$1"; shift
     ifname=$1; shift
     for feature in tso gso gro ; do
-	command="ethtool -K $ifname $feature off"
+	command="ethtool -K $ifname $feature $mode"
 	echo $command
 	$command
     done
+}
+
+doc-nodes enable-nat-data "Makes the data interface NAT-enabled to reach the outside world"
+function enable-nat-data() {
+    id=$(r2lab-id)
+    ip route add default via 192.168.2.100 dev data table 200
+    ip rule add from 192.168.2.2/24 table 200 priority 200
 }
 
 ########################################

@@ -7,21 +7,9 @@ source $(dirname $(readlink -f $BASH_SOURCE))/nodes.sh
 # and so doc-nodes and doc-nodes-sep are available
 
 # nominally we'd like to use the data network
-# however this is not available on bemol so for now
-# we switch to using control
-# should not be a big deal..
 oai_realm="r2lab.fr"
 oai_ifname=data
-oai_cn_branch=unstable
-
-case ${oai_ifname} in
-    control)
-	oai_subnet=3 ;;
-    data)
-	oai_subnet=2 ;;
-    *)
-	echo "ERROR cannot set oai_subnet" ;;
-esac
+oai_subnet=2
 
 ####################
 function run-in-log() {

@@ -10,5 +10,5 @@ Our usage model is that the whole testbed is reserved as a single resource, so t
 
 Also we offer bare metal, with a few predefined images available, so that users can run any O.S. and software they need to. Available hardware includes WiFi, USRP and OpenAirInterface.
 
-All technical details, including node specifications, live status, and tutorials, can be found [at the testbed's website http://r2lab.inria.fr/](http://r2lab.inria.fr/).
+All technical details, including node specifications, live status, and tutorials, can be found [at the testbed's website http://r2lab.inria.fr/](http://r2lab.inria.fr/); which actually is a django app based on the `r2lab.inria.fr` subdirectory right here.
 

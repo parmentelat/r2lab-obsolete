@@ -3,21 +3,29 @@
 
 source $(dirname "$BASH_SOURCE")/r2labutils.sh
 
-adb="$HOME/nexustools/adb"
-[ -x $adb ] || echo "WARNING: from $BASH_SOURCE : $adb not executable"
+adb=$(type -p adb)
+
+if [ -z "$adb" ]; then
+    adb="$HOME/nexustools/adb"
+    [ -x $adb ] || echo "WARNING: from $BASH_SOURCE : $adb not executable"
+fi
+    
 
 create-doc-category phone "tools for managing R2lab phone from macphone"
 augment-help-with phone
 
 doc-phone phone-on "turn off airplane mode"
 function phone-on() {
-    echo "Turning ON phone - i.e. turning off airplane mode"
+    echo "Turning ON phone : turning off airplane mode"
     $adb shell "settings put global airplane_mode_on 0; am broadcast -a android.intent.action.AIRPLANE_MODE --ez state false"
 }
 
 doc-phone phone-off "turn off airplane mode"
 function phone-off() {
-    echo "Turning OFF phone - i.e. turning on airplane mode"
+    # also turn off wifi while we're at it
+    echo "Turning OFF phone : disabling wifi"
+    $adb shell "svc wifi disable"
+    echo "Turning OFF phone : turning on airplane mode"
     $adb shell "settings put global airplane_mode_on 1; am broadcast -a android.intent.action.AIRPLANE_MODE --ez state true"
 }
 

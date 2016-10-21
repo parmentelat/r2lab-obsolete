@@ -184,12 +184,14 @@ function init() {
     init-clock
     # data interface if relevant
     [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
-    echo "========== turning off offload negociations on ${oai_ifname}"
-    offload-off ${oai_ifname}
-###    echo "========== turning off offload negociations on control"
-###    offload-off control
-    echo "========== setting mtu to 9000 on interface ${oai_ifname}"
-    ip link set dev ${oai_ifname} mtu 9000
+    for interface in data control; do
+	echo "========== setting mtu to 9000 on interface $interface"
+	ip link set dev $interface mtu 9000
+	echo "========== turning on offload negociations on $interface"
+	offload-on $interface
+    done
+
+    enable-nat-data
 }
 
 #################### configure

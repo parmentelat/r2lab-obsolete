@@ -182,16 +182,19 @@ EOF
 doc-nodes run-enb "run-enb 12: does init/configure/start with epc running on node 12"
 function run-enb() {
     peer=$1; shift
+    # pass exactly 'False' to skip usrp_reset
+    reset_usrp=$1; shift
     oai_role=enb
     stop
     status
     init
     configure $peer
-    ureset
+    if [ "$reset_usrp" == "False" ]; then
+	echo "SKIPPING USRP reset"
+    else
+	reset_usrp
+    fi
     start-tcpdump-data ${oai_role}
-    delay=5
-    echo XXXXXXXXXXXXXXXXXXXX waiting for a fixed $delay s
-    sleep $delay
     start
     status
     return 0
@@ -207,8 +210,8 @@ function init() {
     init-clock
     # data interface if relevant
     [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
-    echo "========== turning off offload negociations on ${oai_ifname}"
-    offload-off ${oai_ifname}
+    echo "========== turning on offload negociations on ${oai_ifname}"
+    offload-on ${oai_ifname}
     echo "========== setting mtu to 9000 on interface ${oai_ifname}"
     ip link set dev ${oai_ifname} mtu 9000
 }
@@ -286,8 +289,8 @@ function -list-processes() {
 }
 
 ####################
-doc-nodes ureset "Reset the URSP attached to this node"
-function ureset() {
+doc-nodes reset_usrp "Reset the URSP attached to this node"
+function reset_usrp() {
     id=$(r2lab-id)
     # WARNING this might not work on a node that
     # is not in its nominal location, like node 42 that
