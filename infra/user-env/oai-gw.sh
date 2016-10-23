@@ -187,8 +187,8 @@ function init() {
     for interface in data control; do
 	echo "========== setting mtu to 9000 on interface $interface"
 	ip link set dev $interface mtu 9000
-	echo "========== turning on offload negociations on $interface"
-	offload-on $interface
+#	echo "========== turning on offload negociations on $interface"
+#	offload-on $interface
     done
 
     enable-nat-data

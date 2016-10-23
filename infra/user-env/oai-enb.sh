@@ -210,8 +210,8 @@ function init() {
     init-clock
     # data interface if relevant
     [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
-    echo "========== turning on offload negociations on ${oai_ifname}"
-    offload-on ${oai_ifname}
+#    echo "========== turning on offload negociations on ${oai_ifname}"
+#    offload-on ${oai_ifname}
     echo "========== setting mtu to 9000 on interface ${oai_ifname}"
     ip link set dev ${oai_ifname} mtu 9000
 }
