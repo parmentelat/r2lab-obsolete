@@ -61,6 +61,9 @@ $(document).ready(function() {
     var body  = ''
 
     $("#comparative").html('');
+    if(order.length == 0){
+      $("#comparative").html('<tr><td>no info yet</td></tr>');
+    }
 
     $.each(order, function (id, val) {
       $.each(infos[val], function (i, v) {

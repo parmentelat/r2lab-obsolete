@@ -74,7 +74,6 @@ tab: platform
 <script type="text/javascript" src="/assets/r2lab/detail_nodes.js"></script>
 <table id="comparative" class="table table-hover dt_table">
   <tr><td>no info yet</td></tr>
-  <tr><td></td></tr>
 <table>
 <br>
 <!-- Latest compiled and minified JavaScript -->
