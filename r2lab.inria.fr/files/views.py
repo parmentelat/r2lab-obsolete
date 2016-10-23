@@ -48,15 +48,33 @@ class FilesProxy(View):
         return nigthly routine file in json format
         """
         option = record['file']
-
         if option == 'nigthly':
             return self.get_nigthly()
+        elif option == 'detail':
+            return self.get_detail()
         elif int(option['info']) in list(range(1,38)):
             node = option['info']
             return self.get_info(node)
         else:
             return self.http_response_from_struct(
                 { 'error' : "File not found or not alowed" })
+
+    def get_detail(self):
+        """
+        return nodes details in json format
+        """
+        directory    = os.path.dirname(os.path.abspath(__file__))
+        directory    = directory+'/nodes/'
+        the_file     = 'detail_nodes.json'
+        try:
+            with open(directory + the_file) as data_file:
+                data = json.load(data_file)
+            data = self.build_detail(data)
+            return self.http_response_from_struct(data)
+        except Exception as e:
+            data = {}
+            print("Failure in read node detail file - {} - {} - {}".format(directory, the_file, e))
+            return self.http_response_from_struct(detail_nodes)
 
     def get_nigthly(self):
         """
@@ -89,6 +107,36 @@ class FilesProxy(View):
             return self.http_response_from_struct(
                 { 'error' : "Failure running get file",
                   'message' : e})
+
+    def build_detail(self, data):
+        """
+        parse image to <img src> and md to html
+        """
+        directory = os.path.dirname(os.path.abspath(__file__))
+        directory = directory+'/nodes/'
+        images   = ['.jpg', '.jpeg', '.png']
+        content  = ['.md']
+        new_data = data
+
+        for dt in data:
+            for d in data[dt]:
+                file  = d['value']
+                ftype = os.path.splitext(file)[1]
+
+                if ftype in content:
+                    try:
+                        with open(directory + file) as f:
+                            lines = f.readlines()
+                            lines = ('').join([markdown2.markdown(x.rstrip()) for x in lines])
+                            d['value'] = lines
+                            f.close()
+                        d['value'] = '<div class="in_md">{}</div>'.format(d['value'])
+                    except Exception as e:
+                        pass
+                elif ftype in images:
+                    img_tag     = '<img src="files/nodes/{}" alt="" style="cursor: pointer;" alt="click to enlarge" width="60" onclick=show_image("files/nodes/{}");>'.format(file, file)
+                    d['value']  = img_tag
+        return new_data
 
     def build_node_info(self, node):
         """
