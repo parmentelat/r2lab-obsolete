@@ -141,54 +141,26 @@ alias rsnap="rhubarbe snap"
 
 function maintenance () {
   python3 /root/r2lab/nodes/maintenance.py "$@"
-  if [ $? -eq 0 ]; then
-    for i in "$@" ; do
-      if [[ $i == "--publish" ]] ; then
-        /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
-        echo 'INFO: send info to r2lab website and updating...'
-        ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
-        echo 'INFO: updated in r2lab!'
-        break
-      fi
-    done
-  else
-    echo 'ERROR: something went wrong in maintenance command. Type maintenance -h to see options.'
-  fi
+  echo 'INFO: do not forget to publish the updates. Type publish to do it!'
 }
 
 function information () {
   python3 /root/r2lab/nodes/info.py "$@"
-  if [ $? -eq 0 ]; then
-    for i in "$@" ; do
-      if [[ $i == "--publish" ]] ; then
-        /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
-        echo 'INFO: send info to r2lab website and updating...'
-        ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
-        echo 'INFO: updated in r2lab!'
-        break
-      fi
-    done
-  else
-    echo 'ERROR: something went wrong in info command. Type info -h to see options.'
-  fi
+  echo 'INFO: do not forget to publish the updates. Type publish to do it!'
 }
 
 function detail () {
-  if [ $@ -eq "--publish" ]; then
-    if [ $? -eq 0 ]; then
-      /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
-      echo 'INFO: send info to r2lab website and updating...'
-      ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
-      echo 'INFO: updated in r2lab!'
-      break
-    else
-      echo 'ERROR: something went wrong in detail command. Type info -h to see options.'
-    fi
-  else
-    python3 /root/r2lab/nodes/detail.py "$@"
-  fi
+  python3 /root/r2lab/nodes/detail.py "$@"
+  echo 'INFO: do not forget to publish the updates. Type publish to do it!'
 }
 
+function publish () {
+  /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
+  echo 'INFO: send info to r2lab website and updating...'
+  ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
+  echo 'INFO: updated in r2lab!'
+  break
+}
 # normalization
 # the intention is you can provide any type of inputs, and get the expected format
 # norm 1 03 fit04 5-8 ~7 -> fit01 fit03 fit04 fit05 fit06 fit08
