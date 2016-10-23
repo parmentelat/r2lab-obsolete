@@ -50,7 +50,7 @@ function remove_tabs() {
 
 
 function create_slider(tab_file) {
-  var path = 'assets/img/'
+  var path = 'files/nodes/'
   var imgs = ''
 
   $.each(tab_file, function (i, file) {
@@ -116,6 +116,5 @@ function set_info(node, info) {
 
 function show(node, info) {
   set_info(node, info)
-
   $('#'+panel_name).modal('toggle');
 }

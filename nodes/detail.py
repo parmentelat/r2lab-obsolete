@@ -9,6 +9,8 @@ The detail script used to store nodes info details.
 from argparse import ArgumentParser
 import os
 import os.path
+import subprocess
+from subprocess import Popen
 from datetime import datetime
 import time
 import sys
@@ -49,6 +51,8 @@ except Exception as e:
     with open(os.path.join(FILEDIR, FILENAME), "w") as js:
         js.write(json.dumps({})+"\n")
 
+LOC_DIR_IMGS = 'images_dt/'
+LOC_DIR_INFO = 'info_dt/'
 
 
 def main(args):
@@ -80,9 +84,41 @@ def reset_file():
     dir         = FILEDIR
     file_name   = FILENAME
     content = {}
-    with open(os.path.join(dir, file_name), "w") as js:
-        js.write(json.dumps(content)+"\n")
-    print('INFO: the file was erased')
+    pub_img = FILEDIR + LOC_DIR_IMGS
+    pub_mds = FILEDIR + LOC_DIR_INFO
+    choi = None
+    while not choi:
+        choi = input( 'Confirm action? [Y/n]')
+        if choi in ['Y']:
+            choi = True
+
+            command = "rm {}*; rm {}*".format(pub_mds, pub_img)
+            ans_cmd = run(command)
+            if not ans_cmd['status']:
+                print('ERROR: something went wrong in clear dir.')
+                print(ans_cmd['output'])
+
+            with open(os.path.join(dir, file_name), "w") as js:
+                js.write(json.dumps(content)+"\n")
+            print('INFO: the file was erased')
+        else:
+            print('INFO: no action made.')
+
+
+
+def run(command, std=True):
+    """ run the commands
+    """
+    if std:
+        p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    else:
+        p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    (out, err) = p.communicate()
+    ret        = p.wait()
+    out        = out.strip().decode('ascii')
+    err        = err
+    ret        = True if ret == 0 else False
+    return dict({'output': out, 'error': err, 'status': ret})
 
 
 
@@ -125,6 +161,9 @@ def include_node(nodes, attribute, value, date):
         attribute = ""
     if value is None:
         value = ""
+    else:
+        value = touch_file(value)
+
     with open(os.path.join(dir, file_name)) as data_file:
         try:
             content = json.load(data_file)
@@ -154,12 +193,12 @@ def remove_node(nodes, attribute):
             content = {}
     old_content = copy.copy(content)
     for node in nodes:
+        try_remove(old_content[node], attribute)
         if attribute is None:
             try:
                 content.pop(node)
                 print('---NODE {}'.format(node))
                 ans = json.dumps(old_content[node], sort_keys=True, indent=2)
-                print(beautify(ans))
                 print('INFO: node #{} was removed.'.format(node))
                 print('')
             except Exception as e:
@@ -189,6 +228,79 @@ def all_nodes():
         if int(v) < 10:
             nodes[k] = v.rjust(2, '0')
     return nodes
+
+
+
+def try_remove(data, attribute=None):
+    """ parse files to try remove
+    """
+
+    if attribute is None:
+        for dt in data:
+            file = dt['value']
+            ftype = os.path.splitext(file)[1]
+            if ftype:
+                remove_single_file(file)
+    else:
+        for dt in data:
+            if dt['attribute'] == attribute:
+                file = dt['value']
+                ftype = os.path.splitext(file)[1]
+                if ftype:
+                    remove_single_file(file)
+
+
+
+def remove_single_file(files):
+    """ remove single file from folder info or nodes
+    """
+    if files:
+        command = "rm {}{}".format(FILEDIR, files)
+        ans_cmd = run(command)
+        if not ans_cmd['status']: #here we do not stop in error case
+            print('WARNING: something went wrong in removing file(s) or files were already removed.')
+            print(ans_cmd['output'])
+
+
+
+def touch_file(file):
+    """ ensure the correct files
+    """
+    images  = ['.jpg', '.jpeg', '.png']
+    content = ['.md']
+    allow   = images + content
+    ftype   = os.path.splitext(file)[1]
+
+    if ftype in content:
+        sync_files(file, LOC_DIR_INFO)
+        file = change_path(file, LOC_DIR_INFO)
+    elif ftype in images:
+        sync_files(file, LOC_DIR_IMGS)
+        file = change_path(file, LOC_DIR_IMGS)
+    return file
+
+
+
+def sync_files(files, locdir):
+    """ copy files to folders
+    """
+    command = "cp {} {}".format(files, FILEDIR + locdir)
+    ans_cmd = run(command)
+    if not ans_cmd['status']:
+        print('ERROR: something went wrong in coping file(s).')
+        print(ans_cmd['output'])
+        exit()
+
+
+
+def change_path(files, dir):
+    """ changing the cmd line given path for assets path
+    """
+    selif = copy.deepcopy(files)
+    if files:
+        head, tail = os.path.split(files)
+        selif = dir + tail
+    return selif
 
 
 

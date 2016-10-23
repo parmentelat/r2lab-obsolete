@@ -1,53 +1,107 @@
 title: Hardware
 tab: platform
 ---
-
-**Thirty-seven** nodes are available in R2lab to provide a modern testbed infra structure.
-The nodes are distributed in a grid layout and are customizable, allowing great variety of experimentation scenarios.
-
-<h2 class="text-center" style="color:green;" >
-  Full control and access to bare metal
-  <br>
-  <span class="text-muted lead">
-    The nodes are totally open and users can install any software stack they need
-  </span>
-  <br>
-</h2>
-
-*****
-
-<div class="row">
-  <div class="col-md-4">
-    <span>
-      <h3>The node is yours</h3>
-    </span>
-    This implies that you can run, reboot, load, and reload disparate
-    operating system in each node. A full access to the node is handled by
-    a remote access and a root user is available during your
-    experimentation.
-  </div>
-  <div class="col-md-4">
-    <span>
-      <h3>Node details</h3>
-    </span>
-    Our anechoic chamber is equipped with powerful nodes that can run high-level OS Linux.
-    They can run many applications and advanced experimentations.
-  </div>
-  <div class="col-md-4">
-    <span>
-      <h3>Gateway connection</h3>
-    </span>
-    R2lab offers a connection to the testbed infrastructure through a gateway access
-    which allows the researchers to control each reserved node.
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <p>
+        <b>Thirty-seven</b> nodes are available in R2lab to provide a modern testbed infra structure.
+        The nodes are distributed in a grid layout and are customizable, allowing great variety of experimentation scenarios.
+        <h2 class="text-center" style="color:green;" >
+          Full control and access to bare metal
+          <br>
+          <span class="text-muted lead">
+            The nodes are totally open and users can install any software stack they need
+          </span>
+          <br>
+        </h2>
+      </p>
+    </div>
   </div>
 </div>
 
-*****
+</hr>
 
-<div class="row" markdown="1">
-  <div class="col-md-8">
-    <h3>All nodes</h3>
-    All 37 nodes are based on <a href="http://nitlab.inf.uth.gr/NITlab/" target="_blank">Nitos X50</a> and feature
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <span>
+        <h3>The node is yours</h3>
+      </span>
+      <p>
+        This implies that you can run, reboot, load, and reload disparate
+        operating system in each node. A full access to the node is handled by
+        a remote access and a root user is available during your
+        experimentation.
+        </p>
+    </div>
+    <div class="col-md-4">
+      <span>
+        <h3>Node details</h3>
+      </span>
+      <p>
+        Our anechoic chamber is equipped with powerful nodes that can run high-level OS Linux.
+        They can run many applications and advanced experimentations.
+      </p>
+    </div>
+    <div class="col-md-4">
+      <span>
+        <h3>Gateway connection</h3>
+      </span>
+      <p>
+        R2lab offers a connection to the testbed infrastructure through a gateway access
+        which allows the researchers to control each reserved node.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <p>
+        <h2 class="text-center" style="color:green;" >
+          Comparative table
+        </h2>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- DyNAMIC TABLE CREATED BY CMD line in faraday-->
+<br>
+<style type="text/css"> @import url("/assets/r2lab/detail_nodes.css"); </style>
+<script type="text/javascript" src="/assets/r2lab/detail_nodes.js"></script>
+<table id="comparative" class="table table-hover dt_table">
+  <tr><td>no info yet</td></tr>
+  <tr><td></td></tr>
+<table>
+<br>
+<!-- Latest compiled and minified JavaScript -->
+<div class="modal fade" id="big_photo" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+	      </button>
+      <h4 class="modal-title" id="big_image_title">Image</h4>
+      </div>
+      <div class="modal-body" id="big_image_content">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+  <div class="row" markdown="1">
+    <div class="col-md-8 new_pad">
+      <h3>All nodes</h3>
+      All 37 nodes are based on <a href="http://nitlab.inf.uth.gr/NITlab/" target="_blank">Nitos X50</a> and feature
       <ul>
         <li>State of the art motherboard
           <ul>
@@ -69,76 +123,90 @@ The nodes are distributed in a grid layout and are customizable, allowing great 
           </ul>
         </li>
       </ul>  
-  </div>
-  <div class="col-md-4">
-    <br>
-    <img src="/assets/img/node_interface_3.png" width="300px">
-    <center>Fig. 1 - Icarus Nodes in the testbed</center>
-  </div>
-</div>
-
-<div class="row" markdown="1">
-  <div class="col-md-8">
-### USRP nodes
-
-Some nodes are equipped with USRP extensions, for SDR-based experiments&nbsp;:
-
-* Based on  [USRP N210](http://www.ettus.com/product/details/UN210-KIT),
-  or on [USRP B210](http://www.ettus.com/product/details/UB210-KIT),
-  as well as some older USRP2 and USRP1, all models from [ETTUS](http://www.ettus.com)
-* Remote-controllable for reset-like operations
-* Current deployment: 4 nodes - target: 10 nodes
-  </div>
-  <div class="col-md-4">
-    <br><br>
-    <img src="/assets/img/icarus6i.png" width="300px">
-    <center>Fig. 2 - Icarus node standalone</center>
+    </div>
+    <div class="col-md-4">
+      <br>
+      <img src="/assets/img/node_interface_3.png" width="300px">
+      <center>Fig. 1 - Icarus Nodes in the testbed</center>
+    </div>
   </div>
 </div>
 
-<div class="row" markdown="1">
-  <div class="col-md-8">
-
-### Nexus Phone
-
-A nexus phone is available right inside the chamber.
-
-* It is reachable through a Mac (that also sits in the room)
-  that has its wireless card physically disabled, and that has a USB cable to the phone
-* The Mac can be reached from the gateway as `ssh tester@macphone` (or the `macphone` convenience shell shortcut)
-* Once logged in the Mac you can use convenience helpers to manage the phone (type `help` for details), or use `adb` manually.
-* The mac can also be managed using apple screen sharing tools (VNC-compliant), pointing directly at `faraday.inria.fr`
-  </div>
-  <div class="col-md-4">
-    <br><br>
-    <img src="/assets/img/macphone.png" width="300px">
-    <center>Fig. 3 - Commercial phone</center>
+<div class="container">
+  <div class="row" markdown="1">
+    <div class="col-md-8 new_pad">
+      <h3>USRP nodes</h3>
+      Some nodes are equipped with USRP extensions, for SDR-based experiments:
+      <ul>
+        <li>Based on  <a href="http://www.ettus.com/product/details/UN210-KIT" target="_blank">USRP N210</a>, or on <a href="http://www.ettus.com/product/details/UB210-KIT" target="_blank">USRP B210</a>,
+        as well as some older USRP2 and USRP1, all models from <a href="http://www.ettus.com" target="_blank">ETTUS</a>
+        </li>
+        <li>Remote-controllable for reset-like operations
+        </li>
+        <li>Current deployment: 4 nodes - target: 10 nodes
+        </li>
+    </div>
+    <div class="col-md-4">
+      <br><br>
+      <img src="/assets/img/icarus6i.png" width="300px">
+      <center>Fig. 2 - Icarus node standalone</center>
+    </div>
   </div>
 </div>
 
-****
+<div class="container">
+  <div class="row" markdown="1">
+    <div class="col-md-8 new_pad">
+      <h3>Nexus Phone</h3>
+      A nexus phone is available right inside the chamber:
+      <ul>
+        <li>It is reachable through a Mac (that also sits in the room)
+        that has its wireless card physically disabled, and that has a USB cable to the phone
+        <li>The Mac can be reached from the gateway as <code>ssh tester@macphone</code> (or the <code>macphone</code> convenience shell shortcut)
+        </li>
+        <li>Once logged in the Mac you can use convenience helpers to manage the phone (type <code>help</code> for details), or use <code>adb</code> manually.
+        </li>
+        <li>The mac can also be managed using apple screen sharing tools (VNC-compliant), pointing directly at <code>faraday.inria.fr</code>
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-4">
+      <br><br>
+      <img src="/assets/img/macphone.png" width="300px">
+      <center>Fig. 3 - Commercial phone</center>
+    </div>
+  </div>
+</div>
 
-### Statistics on nodes health</h3>
+<hr>
 
-The testbed routinely runs a thorough raincheck procedure, to make
-sure that all is in order.  Historically, this was performed every
-night during the early stages; maturity is now such that we feel
-comfortable with running it only twice a week ([see the booking page
-for details](/book.md)).
+<div class="container">
+  <div class="row" markdown="1">
+    <div class="col-md-12">
+      <h3>Statistics on nodes health</h3>
+      The testbed routinely runs a thorough raincheck procedure, to make
+      sure that all is in order.  Historically, this was performed every
+      night during the early stages; maturity is now such that we feel
+      comfortable with running it only twice a week
+      <a href="/book.md">see the booking page
+      for details</a>.
 
-In any case, below is a summary of the issues found since Jan. 2016.
+      In any case, below is a summary of the issues found since Jan. 2016.
 
-<script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="/assets/js/moment.min.js"></script>
-<script src="/assets/js/underscore-min.js"></script>
-<style type="text/css"> @import url("/assets/css/daterangepicker.css"); </style>
-<script src="/assets/js/daterangepicker.js"></script>
-<script type="text/javascript" src="/assets/r2lab/range-calendar.js"></script>
-<script src="/assets/js/chartlib/src/charts/Chart.Heat.js"></script>
-<script type="text/javascript" src="/assets/r2lab/charts.js"></script>
-<style type="text/css"> @import url("/assets/r2lab/charts.css"); </style>
-<script src="/assets/js/chartlib/dist/Chart.bundle.min.js"></script>
+      <script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+      <script src="/assets/js/moment.min.js"></script>
+      <script src="/assets/js/underscore-min.js"></script>
+      <style type="text/css"> @import url("/assets/css/daterangepicker.css"); </style>
+      <script src="/assets/js/daterangepicker.js"></script>
+      <script type="text/javascript" src="/assets/r2lab/range-calendar.js"></script>
+      <script src="/assets/js/chartlib/src/charts/Chart.Heat.js"></script>
+      <script type="text/javascript" src="/assets/r2lab/charts.js"></script>
+      <style type="text/css"> @import url("/assets/r2lab/charts.css"); </style>
+      <script src="/assets/js/chartlib/dist/Chart.bundle.min.js"></script>
+    </div>
+  </div>
+</div>
 
 <div class="container">
   <div class="row">
@@ -224,3 +292,41 @@ In any case, below is a summary of the issues found since Jan. 2016.
   </div>
 
 </div>
+
+<!-- PARTIAL MODAL FOR NODES DETAILS - USED IN RUN OR STATUS -->
+<!-- PARTIAL MODAL FOR NODES DETAILS - USED IN RUN OR STATUS -->
+<script type='text/javascript' src='/assets/js/ug/ug-common-libraries.js'></script>
+<script type='text/javascript' src='/assets/js/ug/ug-functions.js'></script>
+<script type='text/javascript' src='/assets/js/ug/ug-slider.js'></script>
+<script type='text/javascript' src='/assets/js/ug/ug-sliderassets.js'></script>
+<script type='text/javascript' src='/assets/js/ug/ug-touchslider.js'></script>
+<script type='text/javascript' src='/assets/js/ug/ug-zoomslider.js'></script>
+<script type='text/javascript' src='/assets/js/ug/ug-video.js'></script>
+<script type='text/javascript' src='/assets/js/ug/ug-gallery.js'></script>
+<script type='text/javascript' src='/assets/js/ug/ug-carousel.js'></script>
+<script type='text/javascript' src='/assets/js/ug/ug-api.js'></script>
+<link rel='stylesheet' href='/assets/css/ug/unite-gallery.css' type='text/css' />
+<script type='text/javascript' src='/assets/js/ug/ug-theme-slider.js'></script>
+<link rel='stylesheet' href='/assets/css/ug/ug-theme-default.css' type='text/css' />
+<script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
+<script type="text/javascript" src="/assets/r2lab/info_nodes.js"></script>
+<div class="modal fade" id="node_details" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	  <span aria-hidden="true">&times;</span>
+	</button>
+        <h4 class="modal-title" id="node_details_title">Technical Details</h4>
+      </div>
+      <div class="modal-body" id="node_details_content">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
