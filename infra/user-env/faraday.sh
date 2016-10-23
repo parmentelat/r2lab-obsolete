@@ -143,7 +143,7 @@ function maintenance () {
   python3 /root/r2lab/nodes/maintenance.py "$@"
   if [ $? -eq 0 ]; then
     for i in "$@" ; do
-      if [[ $i == "-i" || $i == "-r" ]] ; then
+      if [[ $i == "--publish" ]] ; then
         /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
         echo 'INFO: send info to r2lab website and updating...'
         ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
@@ -160,7 +160,7 @@ function information () {
   python3 /root/r2lab/nodes/info.py "$@"
   if [ $? -eq 0 ]; then
     for i in "$@" ; do
-      if [[ $i == "-i" || $i == "-r" ]] ; then
+      if [[ $i == "--publish" ]] ; then
         /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
         echo 'INFO: send info to r2lab website and updating...'
         ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
@@ -177,7 +177,7 @@ function detail () {
   python3 /root/r2lab/nodes/detail.py "$@"
   if [ $? -eq 0 ]; then
     for i in "$@" ; do
-      if [[ $i == "-i" || $i == "-r" ]] ; then
+      if [[ $i == "--publish" ]] ; then
         /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
         echo 'INFO: send info to r2lab website and updating...'
         ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
