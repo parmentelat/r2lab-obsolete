@@ -174,19 +174,18 @@ function information () {
 }
 
 function detail () {
-  python3 /root/r2lab/nodes/detail.py "$@"
-  if [ $? -eq 0 ]; then
-    for i in "$@" ; do
-      if [[ $i == "--publish" ]] ; then
-        /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
-        echo 'INFO: send info to r2lab website and updating...'
-        ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
-        echo 'INFO: updated in r2lab!'
-        break
-      fi
-    done
+  if [ $@ -eq "--publish" ]; then
+    if [ $? -eq 0 ]; then
+      /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
+      echo 'INFO: send info to r2lab website and updating...'
+      ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
+      echo 'INFO: updated in r2lab!'
+      break
+    else
+      echo 'ERROR: something went wrong in detail command. Type info -h to see options.'
+    fi
   else
-    echo 'ERROR: something went wrong in detail command. Type info -h to see options.'
+    python3 /root/r2lab/nodes/detail.py "$@"
   fi
 }
 
