@@ -57,25 +57,18 @@ tab: platform
 </div>
 
 <div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <p>
-        <h2 class="text-center" style="color:green;" >
-          Comparative table
-        </h2>
-      </p>
+  <div class="row" markdown="1">
+    <div class="col-md-12 new_pad">
+      <h3>Nodes comparative table</h3>
+      <!-- DyNAMIC TABLE CREATED BY CMD line in faraday-->
+      <style type="text/css"> @import url("/assets/r2lab/detail_nodes.css"); </style>
+      <script type="text/javascript" src="/assets/r2lab/detail_nodes.js"></script>
+      <table id="comparative" class="table table-hover dt_table">
+        <tr><td>no info yet</td></tr>
+      <table>
     </div>
   </div>
 </div>
-
-<!-- DyNAMIC TABLE CREATED BY CMD line in faraday-->
-<br>
-<style type="text/css"> @import url("/assets/r2lab/detail_nodes.css"); </style>
-<script type="text/javascript" src="/assets/r2lab/detail_nodes.js"></script>
-<table id="comparative" class="table table-hover dt_table">
-  <tr><td>no info yet</td></tr>
-<table>
-<br>
 <!-- Latest compiled and minified JavaScript -->
 <div class="modal fade" id="big_photo" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
   <div class="modal-dialog modal-dialog-custom modal-lg" role="document">
