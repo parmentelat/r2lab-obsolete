@@ -62,7 +62,7 @@ $(document).ready(function() {
 
     $("#comparative").html('');
     if(order.length == 0){
-      $("#comparative").html('<tr><td>no info yet</td></tr>');
+      $("#comparative").html('<tr><td>no info available yet</td></tr>');
     }
 
     $.each(order, function (id, val) {
@@ -73,7 +73,7 @@ $(document).ready(function() {
     thead = $.unique(thead.sort());
 
     head =  '<tr class="dt_head">';
-    head += '<th></th>';
+    head += '<th>&nbsp;</th>';
     $.each(thead, function (id, val) {
       head += '<th>'+ val +'</th>'
     });
