@@ -66,75 +66,92 @@ From faraday's `/etc/hosts` through `ssh` (usual credentials)
 
 * it could be that deleting the startup-config would do the trick as well but I have not tried that at this point.
 
-* for saving to save the running config for next reboot (on the 55xx boxes, use instead `write memory`)
+* in order to save the running config for next reboot:
+  * `copy running-config startup-config` (62xx)
+  * `write memory`  (55xx)
 
-### 
-    copy running-config startup-config
-    
+
 ## Addressing
 
 * interfaces get addressed by strings like
 
-###
-    interface ethernet 1/g44	
-    
+```
+interface ethernet 1/g44
+```    
+
+* or by range
+
+```
+interface range ethernet 1/g1-1/g37
+```
+
 * example, inspecting
 
-###
-
-    switch-data#show interfaces status ethernet 1/g4
-    Port   Type                            Duplex  Speed    Neg  Link  Flow Control
-                                                                 State Status
-    -----  ------------------------------  ------  -------  ---- --------- ------------
-    1/g4   Gigabit - Level                 Full    1000     Auto Up        Active
+```
+switch-data#show interfaces status ethernet 1/g4
+Port   Type                            Duplex  Speed    Neg  Link  Flow Control
+                                                             State Status
+-----  ------------------------------  ------  -------  ---- --------- ------------
+1/g4   Gigabit - Level                 Full    1000     Auto Up        Active
     
-    Flow Control:Enabled
-
+Flow Control:Enabled
+```
 
 ## Mirroring/monitoring   
 
-    monitor session 1 source interface 1/g<x>
-    monitor session 1 destination interface 1/g<z>
+```
+monitor session 1 source interface 1/g<x>
+monitor session 1 destination interface 1/g<z>
+```
+At that point the session is not active; you can check this with (`exit` config mode of course)
 
-At that point the session is not active; you can check this with (exit config mode of course)
+```
+show monitor session 1
+```    
 
-    show monitor session 1
-    
 Turn on
 
-    monitor session 1 mode
-    
+```
+monitor session 1 mode
+```    
+
 Turn off
 
-    no monitor session 1 mode
+```
+no monitor session 1 mode
+```
 
 ## IGMP
 
-    ip igmp snooping
-    
-    show bridge multicast address-table
-    
+```
+ip igmp snooping
+show bridge multicast address-table
+```    
+
 # Reboot and Control switches - 5548
 
 ## config management
 
 * reset to factory defaults (do not save when prompted)
 
-###
-    delete startup-config
-    reload
+```
+delete startup-config
+reload
+```
 
 * save current config
 
-###
-    write memory
+```
+write memory
+```
 
 ## Addressing
 
 * interfaces get addressed by strings like
 
-###
-    interface gigabitethernet 1/0/4	
+```
+interface gigabitethernet 1/0/4
+```
     
 * c007 : `te1/0/1` (to faraday) and `te1/0/2` (to switch-data)
 * data : `1/xg3` (to swtich-data) 
@@ -143,12 +160,13 @@ Turn off
     
 * example, inspecting
 
-###
-    switch-reboot# show interfaces status gigabitethernet 1/0/4
-                                                 Flow Link          Back   Mdix
-    Port     Type         Duplex  Speed Neg      ctrl State       Pressure Mode
-    -------- ------------ ------  ----- -------- ---- ----------- -------- -------
-    gi1/0/4  1G-Copper    Full    100   Enabled  On   Up          Disabled Off
+```
+switch-reboot# show interfaces status gigabitethernet 1/0/4
+                                             Flow Link          Back   Mdix
+Port     Type         Duplex  Speed Neg      ctrl State       Pressure Mode
+-------- ------------ ------  ----- -------- ---- ----------- -------- -------
+gi1/0/4  1G-Copper    Full    100   Enabled  On   Up          Disabled Off
+```
 
 ## Mirroring/monitoring   
 
@@ -156,4 +174,6 @@ Turn off
 
 ## IGMP
 
-    ip igmp snooping
+```
+ip igmp snooping
+```
