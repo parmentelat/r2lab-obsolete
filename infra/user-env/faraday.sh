@@ -159,7 +159,6 @@ function publish () {
   echo 'INFO: send info to r2lab website and updating...'
   ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
   echo 'INFO: updated in r2lab!'
-  break
 }
 # normalization
 # the intention is you can provide any type of inputs, and get the expected format
