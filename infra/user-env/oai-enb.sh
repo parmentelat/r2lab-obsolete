@@ -48,6 +48,7 @@ function image() {
 base_packages="git libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential libffi-dev
 texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsfonts imagemagick-common 
  gdb ruby flex bison gfortran xterm mysql-common python-pip python-numpy qtcore4-l10n tcl tk xorg-sgml-doctools
+ i7z
 "
 
 doc-nodes base "the script to ins<tall base software on top of a raw image" 
@@ -76,6 +77,10 @@ function base() {
     cd
     cpufreq-info > cpufreq.info
 
+    # xxx turning off hyperthreading : adding noht to the line below does not seem to work
+    sed -i -e 's|GRUB_CMDLINE_LINUX_DEFAULT.*|GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_pstate=disable processor.max_cstate=1 intel_idle.max_cstate=0 idle=poll"|' /etc/default/grub
+    grub-update
+
 }
 
 doc-nodes deps "builds uhd for an oai image"
@@ -83,11 +88,12 @@ function deps() {
 
     gitup
     cd
-    echo Building ETTUS - see $HOME/build-uhd-ettus.log
-    build-uhd-ettus >& build-uhd-ettus.log
+    echo Building UHD with OAI recipe
+    build-uhd-oai >& build-uhd.log
 
 }
 
+# xxx Rohit says this is WRONG - use oai recipe instead
 doc-nodes build-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
 function build-uhd-ettus() {
     cd
@@ -110,8 +116,7 @@ doc-nodes build-uhd-oai "build UHD using the OAI recipe"
 function build-uhd-oai() {
     gitup
     cd /root/openairinterface5g/cmake_targets
-    run-in-log build-uhd-oai.log ./build_oai -w USRP -I
-    # saved in oai-enb-oaiuhd 
+    run-in-log build-uhd-oai.log ./build_oai -I --install-optional-packages -w USRP
 }
 
 doc-nodes build "builds oai5g for an oai image"
@@ -121,7 +126,7 @@ function build() {
 
     cd
     echo Building OAI5G - see $HOME/build-oai5g.log
-    build-oai5g >& build-oai5g.log
+    build-oai5g -x >& build-oai5g.log
 
 }
 
@@ -165,13 +170,6 @@ EOF
     run-in-log build-oai-2.log ./build_oai --eNB -c -w USRP
     [ -n "$oscillo" ] && run-in-log build-oai-3.log ./build_oai -x
 
-    # initial instructions from T. Turletti mentioned this
-    #cd $HOME/openairinterface5g/
-    #sudo chmod +x ./targets/bin/init_nas_nos1
-    #./targets/bin/init_nas_nos1
-    # In fact I found this script instead
-    #./cmake_targets/tools/init_nas_nos1
-    # but since it was for a soft phone initially I skip it from the builds image
 }
 
 ########################################
@@ -245,8 +243,8 @@ function configure-enb() {
     # but I suspect it actually causes this
     # r2lab.conf, mismatch between 1 active eNBs and 0 corresponding defined eNBs !
     cat <<EOF > oai-enb.sed
+s|pdsch_referenceSignalPower[ 	]*=.*|pdsch_referenceSignalPower = -24;|
 s|mobile_network_code[ 	]*=.*|mobile_network_code = "95";|
-s|pucch_p0_Nominal[ 	]*=.*|pucch_p0_Nominal = -96;|
 s|mme_ip_address[ 	]*=.*|mme_ip_address = ( { ipv4 = "192.168.${oai_subnet}.$gw_id";|
 s|ENB_INTERFACE_NAME_FOR_S1_MME[ 	]*=.*|ENB_INTERFACE_NAME_FOR_S1_MME = "${oai_ifname}";|
 s|ENB_INTERFACE_NAME_FOR_S1U[ 	]*=.*|ENB_INTERFACE_NAME_FOR_S1U = "${oai_ifname}";|

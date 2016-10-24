@@ -69,13 +69,20 @@ function u14-48(){
     #bim 6 ubuntu-14.04-v5-ntp == "imaging.sh common-setup-user-env"
     #bim 7 ubuntu-14.04-v5-ntp u14-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
     bim $gw_options  6 u14-lowlat48 u14.48-oai-gw "oai-gw.sh image"
-    bim $enb_options 7 u14-lowlat48 u14.48-oai-enb "oai-enb.sh image"
+    ###bim $enb_options 7 u14-lowlat48 u14.48-oai-enb "oai-enb.sh image"
+}
+
+function u14-319(){
+    bim 1 ubuntu-14.04-v5-ntp u14-lowlat319 "imaging.sh ubuntu-k319-lowlatency"
+    ###bim $gw_options  2 u14-lowlat48 u14.48-oai-gw "oai-gw.sh image"
+    bim $enb_options 3 u14-lowlat319 u14.319-oai-enb "oai-enb.sh image"
 }
 
 ssh root@faraday.inria.fr rhubarbe off -a
-u14-48 &
-u16-48 &
-u16-47 &
+#u14-48 &
+#u16-48 &
+#u16-47 &
+u14-319
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work
