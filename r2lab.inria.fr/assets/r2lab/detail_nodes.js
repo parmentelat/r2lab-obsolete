@@ -62,7 +62,7 @@ $(document).ready(function() {
 
     $("#comparative").html('');
     if(order.length == 0){
-      $("#comparative").html('<tr><td>no info yet</td></tr>');
+      $("#comparative").html('<tr><td>no info available yet</td></tr>');
     }
 
     $.each(order, function (id, val) {
@@ -73,9 +73,9 @@ $(document).ready(function() {
     thead = $.unique(thead.sort());
 
     head =  '<tr class="dt_head">';
-    head += '<td></td>';
+    head += '<th>&nbsp;</th>';
     $.each(thead, function (id, val) {
-      head += '<td>'+ val +'</td>'
+      head += '<th>'+ val +'</th>'
     });
     head += '</tr>';
 
@@ -102,7 +102,7 @@ $(document).ready(function() {
       body += '</tr>';
     });
 
-    table = head + body
+    table = '<thead>'+head+'</thead>'+'<tbody>'+body+'</tbody>'
     $("#comparative").append(table)
   }
 
