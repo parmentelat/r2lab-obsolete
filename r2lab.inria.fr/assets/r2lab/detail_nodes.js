@@ -73,9 +73,9 @@ $(document).ready(function() {
     thead = $.unique(thead.sort());
 
     head =  '<tr class="dt_head">';
-    head += '<td></td>';
+    head += '<th></th>';
     $.each(thead, function (id, val) {
-      head += '<td>'+ val +'</td>'
+      head += '<th>'+ val +'</th>'
     });
     head += '</tr>';
 
@@ -102,7 +102,7 @@ $(document).ready(function() {
       body += '</tr>';
     });
 
-    table = head + body
+    table = '<thead>'+head+'</thead>'+'<tbody>'+body+'</tbody>'
     $("#comparative").append(table)
   }
 

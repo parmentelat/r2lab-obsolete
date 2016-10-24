@@ -64,11 +64,13 @@ tab: platform
       <style type="text/css"> @import url("/assets/r2lab/detail_nodes.css"); </style>
       <script type="text/javascript" src="/assets/r2lab/detail_nodes.js"></script>
       <table id="comparative" class="table table-hover dt_table">
-        <tr><td>no info yet</td></tr>
-      <table>
+        <thead><tr><th></th></tr></thead>
+        <tbody><tr><td>no info yet</td></tr></tbody>
+      </table>
     </div>
   </div>
 </div>
+
 <!-- Latest compiled and minified JavaScript -->
 <div class="modal fade" id="big_photo" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
   <div class="modal-dialog modal-dialog-custom modal-lg" role="document">
