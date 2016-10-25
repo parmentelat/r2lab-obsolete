@@ -37,8 +37,10 @@ var nb_nodes = 37;
 // their table row and cells get created through d3 enter mechanism
 var TableNode = function (id) {
     this.id = id;
+    badge = '<span class="custom-badge">'+id+'</span>'
+
     this.cells_data = [
-	[ span_html(id, 'badge'), '' ],  // id
+	[ badge, '' ],  // id
 	undefined,			// avail
 	undefined,			// on/off
 	undefined,			// ping
@@ -73,7 +75,7 @@ var TableNode = function (id) {
 	// available
 	this.cells_data[col++] =
 	    (this.available == 'ko') ?
-	    [ 'Out of order', 'error' ] : [ 'Good to go', 'ok' ];
+	    [ 'Out of order', 'error' ] : [ 'good to go', 'ok' ];
 	//
 	this.cells_data[col++] =
 	    this.cmc_on_off == 'fail' ? [ 'N/A', 'error' ]
@@ -179,11 +181,11 @@ function LiveTable() {
 	    .attr('class', 'all')
 	    .on('click', function(){self.toggle_view_mode();})
 	;
-	header_rows.append('th').html('#');
+	header_rows.append('th').html('Node');
 	header_rows.append('th').html('Availability');
-	header_rows.append('th').html('On/Off');
+	header_rows.append('th').html('ON/OFF');
 	header_rows.append('th').html('Ping');
-	header_rows.append('th').html('Ssh');
+	header_rows.append('th').html('SSH');
 	header_rows.append('th').html('Last O.S.');
 	header_rows.append('th').html('Last Image');
 	if (livetable_show_rxtx_rates) {

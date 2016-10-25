@@ -90,7 +90,7 @@ $(document).ready(function() {
 
     $.each(order, function (id, node) {
       body += '<tr id="line_'+node+'" class="">';
-      body += '<td style="font:15px helveticaneue, Arial, Tahoma, Sans-serif;"><span style="cursor: pointer; border-radius: 50%; border: 2px solid #525252; width: 32px; height: 32px; line-height: 30px; display: block; text-align: center;"><span style="cursor: pointer; color: #525252;" onclick="info_nodes('+pad(node)+');">'+node+'</span></span></td>'
+      body += '<td style="font:15px helveticaneue, Arial, Tahoma, Sans-serif;"><span class="custom-badge" onclick="info_nodes('+pad(node)+');">'+node+'</span></td>'
 
       // body += '<td class="dt_left"><span class="badge" onclick="info_nodes('+node+');">'+ node +'</span></td>';
       $.each(thead, function (i, attr) {

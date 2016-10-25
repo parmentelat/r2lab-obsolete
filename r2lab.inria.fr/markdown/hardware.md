@@ -63,7 +63,7 @@ tab: platform
       <!-- DyNAMIC TABLE CREATED BY CMD line in faraday-->
       <style type="text/css"> @import url("/assets/r2lab/detail_nodes.css"); </style>
       <script type="text/javascript" src="/assets/r2lab/detail_nodes.js"></script>
-      <table id="comparative" class="table table-hover dt_table">
+      <table id="comparative" class="table dt_table">
         <thead><tr><th>&nbsp;</th></tr></thead>
         <tbody><tr><td>no info available yet</td></tr></tbody>
       </table>

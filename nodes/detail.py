@@ -233,7 +233,7 @@ def remove_node(nodes, attribute):
 
 
 def edit_node(nodes, old_attr, new_attr, date):
-    """ include nodes in the list
+    """ edit nodes in the list
     """
     dir       = FILEDIR
     file_name = FILENAME

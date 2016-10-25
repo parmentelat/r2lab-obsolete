@@ -1,11 +1,18 @@
 #livetable_container th, #livetable_container td {
-    text-align: center;
+    text-align: left;
+    font-size: .9em;
+    font-family: "Source Sans Pro", sans-serif;
+    color: #404042;
+    vertical-align: middle;
 }
 
 /* headers */
 #livetable_container th {
-    font-size: x-medium;
-    font-style: bold;
+  color: #404042;
+  font-size: 1.0em;
+  font-family: "Source Sans Pro", sans-serif;
+  font-style: bold;
+  vertical-align: middle;
 }
 
 /* body - except for the id column */
@@ -17,7 +24,7 @@
 
 
 #livetable_container td.ok {
-    color: green;
+    color: #5EAE10;
 }
 #livetable_container td.ko {
     color: #ababab;
@@ -27,16 +34,19 @@
 }
 
 #livetable_container td.os {
-    font-size:	12px;
-    color:	navy;
-    text-align:	middle;
+  font-size: .9em;
+  font-family: "Source Sans Pro", sans-serif;
+  color:	navy;
+  text-align:	middle;
+  vertical-align: middle;
 }
 
 #livetable_container td.image {
-    font-family: Monaco, Courier-New;
-    font-size:   12px;
-    color:	 navy;
-    text-align:	 middle;
+  font-size: .9em;
+  font-family: "Source Sans Pro", sans-serif;
+  color:	 navy;
+  text-align:	 middle;
+  vertical-align: middle;
 }
 
 
@@ -52,9 +62,22 @@
 }
 
 .livetable_header tr.all {
-    background-color: #ccc;
+    background-color: #fff;
 }
 
 .livetable_header tr:not(.all) {
-    background-color: #aca;
+    background-color: #fff;
+}
+
+.custom-badge {
+  cursor: pointer;
+  border-radius: 50%;
+  border: .12em solid #404042;
+  width: 32px;
+  height: 32px;
+  line-height: 30px;
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  color: #404042;
 }
