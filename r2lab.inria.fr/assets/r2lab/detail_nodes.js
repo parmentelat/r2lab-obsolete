@@ -85,10 +85,11 @@ $(document).ready(function() {
     $.each(thead, function (id, val) {
       head += '<th>'+ val +'</th>'
     });
+    head += '<th><span style="cursor: pointer; color: #525252;" alt="reset nodes" onclick="reset_node();"><span class="glyphicon glyphicon-repeat text-success" aria-hidden="true"></span></span></th>';
     head += '</tr>';
 
     $.each(order, function (id, node) {
-      body += '<tr id="line_'+node+'">';
+      body += '<tr id="line_'+node+'" class="">';
       body += '<td style="font:15px helveticaneue, Arial, Tahoma, Sans-serif;"><span style="cursor: pointer; border-radius: 50%; border: 2px solid #525252; width: 32px; height: 32px; line-height: 30px; display: block; text-align: center;"><span style="cursor: pointer; color: #525252;" onclick="info_nodes('+pad(node)+');">'+node+'</span></span></td>'
 
       // body += '<td class="dt_left"><span class="badge" onclick="info_nodes('+node+');">'+ node +'</span></td>';
@@ -131,5 +132,11 @@ function show_image(img) {
 }
 
 function remove_node(node) {
-  $('#line_'+pad(node)).remove();
+  $('#line_'+pad(node)).removeClass('show-line');
+  $('#line_'+pad(node)).addClass('hide-line');
+}
+
+function reset_node() {
+  $('[id^=line_]').removeClass('hide-line');
+  $('[id^=line_]').addClass('show-line');
 }
