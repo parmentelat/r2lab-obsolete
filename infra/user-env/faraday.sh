@@ -139,46 +139,46 @@ function snap () {
 alias snapshot=snap
 alias rsnap="rhubarbe snap"
 
-function maintenance () {
-  python3 /root/r2lab/nodes/maintenance.py "$@"
-  if [ $? -eq 0 ]; then
-    for i in "$@" ; do
-      if [[ $i == "-p" || $i == "--publish" ]] ; then
-        publish()
-      fi
-    done
-  else
-    echo 'ERROR: something went wrong in info command. Type info -h to see options.'
-
-  echo 'INFO: do not forget to publish the updates. Type publish to do it!'
-}
-
-function information () {
-  python3 /root/r2lab/nodes/info.py "$@"
-  if [ $? -eq 0 ]; then
-    for i in "$@" ; do
-      if [[ $i == "-p" || $i == "--publish" ]] ; then
-        publish()
-      fi
-    done
-  else
-    echo 'ERROR: something went wrong in info command. Type info -h to see options.'
-  echo 'INFO: do not forget to publish the updates. Type publish to do it!'
-}
-
-function detail () {
-  python3 /root/r2lab/nodes/detail.py "$@"
-  if [ $? -eq 0 ]; then
-    for i in "$@" ; do
-      if [[ $i == "-p" || $i == "--publish" ]] ; then
-        publish()
-      fi
-    done
-  else
-    echo 'ERROR: something went wrong in info command. Type info -h to see options.'
-  echo 'INFO: do not forget to publish the updates. Type publish to do it!'
-}
-alias details=detail
+### fixme function maintenance () {
+### fixme   python3 /root/r2lab/nodes/maintenance.py "$@"
+### fixme   if [ $? -eq 0 ]; then
+### fixme     for i in "$@" ; do
+### fixme       if [[ $i == "-p" || $i == "--publish" ]] ; then
+### fixme         publish()
+### fixme       fi
+### fixme     done
+### fixme   else
+### fixme     echo 'ERROR: something went wrong in info command. Type info -h to see options.'
+### fixme 
+### fixme   echo 'INFO: do not forget to publish the updates. Type publish to do it!'
+### fixme }
+### fixme 
+### fixme function information () {
+### fixme   python3 /root/r2lab/nodes/info.py "$@"
+### fixme   if [ $? -eq 0 ]; then
+### fixme     for i in "$@" ; do
+### fixme       if [[ $i == "-p" || $i == "--publish" ]] ; then
+### fixme         publish()
+### fixme       fi
+### fixme     done
+### fixme   else
+### fixme     echo 'ERROR: something went wrong in info command. Type info -h to see options.'
+### fixme   echo 'INFO: do not forget to publish the updates. Type publish to do it!'
+### fixme }
+### fixme 
+### fixme function detail () {
+### fixme   python3 /root/r2lab/nodes/detail.py "$@"
+### fixme   if [ $? -eq 0 ]; then
+### fixme     for i in "$@" ; do
+### fixme       if [[ $i == "-p" || $i == "--publish" ]] ; then
+### fixme         publish()
+### fixme       fi
+### fixme     done
+### fixme   else
+### fixme     echo 'ERROR: something went wrong in info command. Type info -h to see options.'
+### fixme   echo 'INFO: do not forget to publish the updates. Type publish to do it!'
+### fixme }
+### fixme alias details=detail
 
 function publish () {
   /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
