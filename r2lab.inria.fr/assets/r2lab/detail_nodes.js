@@ -106,10 +106,8 @@ $(document).ready(function() {
         } else {
           body += '<td>-</td>';
         }
-
-        body += '<td><span style="cursor: pointer; color: #525252;" alt="remove node" onclick="remove_node('+node+');"><span class="glyphicon glyphicon-trash red" aria-hidden="true"></span></span></td>';
-
       });
+      body += '<td><span style="cursor: pointer; color: #525252;" alt="remove node" onclick="remove_node('+node+');"><span class="glyphicon glyphicon-trash red" aria-hidden="true"></span></span></td>';
       body += '</tr>';
     });
 
