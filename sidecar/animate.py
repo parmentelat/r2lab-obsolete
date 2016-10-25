@@ -24,23 +24,21 @@ def drange(start, stop, step):
         r += step
     return result
 
-rates_range = drange(0., 20. * 10**6, 6. * 10**5)
-image_radical_range = [ 'ubuntu-15.04', 'oai-scrambler', '', None ]
+wlan_rates_range = drange(0., 20. * 10**6, 6. * 10**5)
+
 ######## valid values for initializing
 field_possible_values = {
-    'cmc_on_off' : [ 'on', 'off', 'fail' ],
+    'available' : [ None, 'ko'] + 3*['ok'],
+    'cmc_on_off' : [ 'fail' ] + 3 * [ 'on', 'off' ],
     'control_ping' : [ 'on', 'off' ],
     'control_ssh' : ['on', 'off'],
-    'os_release' : [ 'fedora-21', 'ubuntu-15.04',
-                     'fedora-21-gnuradio',
-                     'other',
-                     ],
-    'wlan0_rx_rate' : rates_range,
-    'wlan0_tx_rate' : rates_range,
-    'wlan1_rx_rate' : rates_range,
-    'wlan1_tx_rate' : rates_range,
-    'available' : [ None, 'ko'] + 3*['ok'],
-    'image_radical' : image_radical_range,
+    'os_release' : [ 'fedora-21', 'ubuntu-15.04', 'other', ],
+    'gnuradio_release' : ['3.7.10', '', None], 
+    'image_radical' : [ 'ubuntu-15.04', 'oai-scrambler', '', None ],
+#    'wlan0_rx_rate' : wlan_rates_range,
+#    'wlan0_tx_rate' : wlan_rates_range,
+#    'wlan1_rx_rate' : wlan_rates_range,
+#    'wlan1_tx_rate' : wlan_rates_range,
 }
 
 ####################    
@@ -92,9 +90,8 @@ def get_leases():
             resources = obj['resource_response']['resources']
             return resources
     except:
-        print("unable to read {}".format(leases_file))
-        import traceback
-        traceback/print_exc()
+        print("WARNING: unable to read leases file {} - not sending leases".format(leases_file))
+        return []
 
 def main():
     parser = ArgumentParser()
@@ -151,7 +148,8 @@ def main():
         socketIO.emit('chan-status', json.dumps(news_infos), io_callback)
 
         leases = get_leases()
-        socketIO.emit('chan-leases', json.dumps(leases), io_callback)
+        if leases:
+            socketIO.emit('chan-leases', json.dumps(leases), io_callback)
         counter += 1
         if args.runs and counter >= args.runs:
             break
