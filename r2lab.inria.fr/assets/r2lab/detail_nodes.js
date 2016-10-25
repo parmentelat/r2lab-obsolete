@@ -85,7 +85,7 @@ $(document).ready(function() {
     $.each(thead, function (id, val) {
       head += '<th>'+ val +'</th>'
     });
-    head += '<th><span style="cursor: pointer; color: #525252;" alt="reset nodes" onclick="reset_node();"><span class="glyphicon glyphicon-repeat text-success" aria-hidden="true"></span></span></th>';
+    head += '<th><span style="cursor: pointer; color: #525252;" alt="reset nodes" onclick="reset_node();"><span class="glyphicon glyphicon-refresh text-success" aria-hidden="true"></span></span></th>';
     head += '</tr>';
 
     $.each(order, function (id, node) {

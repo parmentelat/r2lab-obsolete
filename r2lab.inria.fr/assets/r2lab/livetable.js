@@ -46,7 +46,8 @@ var TableNode = function (id) {
 	undefined,			// ping
 	undefined,			// ssh
 	undefined,			// os_release
-	undefined			// image_radical
+	undefined,			// image_radical
+  undefined
     ];
 
     this.is_alive = function() {
@@ -89,6 +90,7 @@ var TableNode = function (id) {
 	    : [ span_html('', 'fa fa-circle-o'), 'ko' ];
 	this.cells_data[col++] = this.release_cell(this.os_release);
 	this.cells_data[col++] = this.image_cell(this.image_radical)
+  this.cells_data[col++] = ""
 	// optional
 	if (livetable_show_rxtx_rates) {
 	    var alive = this.is_alive();
@@ -188,6 +190,7 @@ function LiveTable() {
 	header_rows.append('th').html('SSH');
 	header_rows.append('th').html('Last O.S.');
 	header_rows.append('th').html('Last Image');
+  header_rows.append('th').html('<span style="cursor: pointer; alt="filter ON nodes"">' + span_html('', 'glyphicon glyphicon-filter') + '</span>');
 	if (livetable_show_rxtx_rates) {
 	    header_rows.append('th').html('w0-rx').attr('class','rxtx');
 	    header_rows.append('th').html('w0-tx').attr('class','rxtx');
