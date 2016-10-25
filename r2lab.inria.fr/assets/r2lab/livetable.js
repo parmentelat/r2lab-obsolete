@@ -50,10 +50,19 @@ var TableNode = function (id) {
   undefined
     ];
 
+    // fully present nodes
     this.is_alive = function() {
 	return this.cmc_on_off == 'on'
 	    && this.control_ping == 'on'
 	    && this.control_ssh == 'on'
+	    && this.available != 'ko';
+    }
+
+    // nodes worth being followed when clicking on the table banner
+    this.is_worth = function() {
+	return (this.cmc_on_off == 'on'
+		|| this.control_ping == 'on'
+		|| this.control_ssh == 'on' )
 	    && this.available != 'ko';
     }
 
@@ -93,7 +102,6 @@ var TableNode = function (id) {
   this.cells_data[col++] = ""
 	// optional
 	if (livetable_show_rxtx_rates) {
-	    var alive = this.is_alive();
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan0_rx_rate);
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan0_tx_rate);
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_rx_rate);
@@ -128,6 +136,7 @@ var TableNode = function (id) {
     // raw data is bits/s
     this.rxtx_cell = function(value) {
 	var klass = 'rxtx';
+	// forget about nodes that are not fully operational
 	if ((value == undefined) || (! this.is_alive()))
 	    return ["-", klass] ;
 	// we need to format this into kbps, Mbps, etc..
@@ -210,17 +219,17 @@ function LiveTable() {
 	return this.nodes[id-1];
     }
 
-    /* mode is either 'all' or 'alive' */
+    /* mode is either 'all' or 'worth' */
     this.view_mode = 'all';
     this.toggle_view_mode = function () {
-	this.view_mode = (this.view_mode == 'all') ? 'alive' : 'all';
+	this.view_mode = (this.view_mode == 'all') ? 'worth' : 'all';
 	this.display_nodes(this.view_mode);
 	$(".livetable_header tr").toggleClass('all');
     }
     this.display_nodes = function(mode) {
 	for (var i in this.nodes) {
 	    var node=this.nodes[i];
-	    var display = (mode=='all') ? true : (node.is_alive());
+	    var display = (mode=='all') ? true : (node.is_worth());
 	    node.set_display(display);
 	}
     }
