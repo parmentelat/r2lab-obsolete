@@ -45,10 +45,12 @@ gw_options="
 "
 
 enb_options="
+    -l /root/openairinterface5g/cmake_targets/build-uhd.log
     -l /root/build-uhd-ettus.log -l /root/build-oai5g.log
     -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt
     -l /root/openairinterface5g/cmake_targets/build-oai-1.log
     -l /root/openairinterface5g/cmake_targets/build-oai-2.log
+    -l /root/openairinterface5g/cmake_targets/build-oai-3.log
 "
 
 function u16-48() {
@@ -73,12 +75,12 @@ function u14-48(){
 }
 
 function u14-319(){
-    bim 1 ubuntu-14.04-v5-ntp u14-lowlat319 "imaging.sh ubuntu-k319-lowlatency"
+    #bim 1 ubuntu-14.04-v5-ntp u14-lowlat319 "imaging.sh ubuntu-k319-lowlatency"
     ###bim $gw_options  2 u14-lowlat48 u14.48-oai-gw "oai-gw.sh image"
     bim $enb_options 3 u14-lowlat319 u14.319-oai-enb "oai-enb.sh image"
 }
 
-ssh root@faraday.inria.fr rhubarbe off -a
+#ssh root@faraday.inria.fr rhubarbe off 1-10
 #u14-48 &
 #u16-48 &
 #u16-47 &

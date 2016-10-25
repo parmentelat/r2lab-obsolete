@@ -89,7 +89,7 @@ function deps() {
     gitup
     cd
     echo Building UHD with OAI recipe
-    build-uhd-oai >& build-uhd.log
+    build-uhd-oai 
 
 }
 
@@ -116,7 +116,7 @@ doc-nodes build-uhd-oai "build UHD using the OAI recipe"
 function build-uhd-oai() {
     gitup
     cd /root/openairinterface5g/cmake_targets
-    run-in-log build-uhd-oai.log ./build_oai -I --install-optional-packages -w USRP
+    run-in-log build-uhd.log ./build_oai -I --install-optional-packages -w USRP
 }
 
 doc-nodes build "builds oai5g for an oai image"

@@ -79,19 +79,21 @@ http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-image-4.8.0-21-lowla
 # enb insists on running on 3.19
 function ubuntu-k319-lowlatency() {
 
-    apt-get install linux-image-3.19.0-61-lowlatency linux-headers-3.19.0-61-lowlatency
+    # this recipe proposed by Rohit won't work for us
+    # apt-get install linux-image-3.19.0-61-lowlatency linux-headers-3.19.0-61-lowlatency
     
+    # let's go back to ours
+    # XXX this however is not enough as it won't change the default kernel for grub
+    -dpkg-is-installed linux-image-3.19.0-031900-lowlatency && return
     
-#    -dpkg-is-installed linux-image-3.19.0-031900-lowlatency && return
-#    
-#    urls="
-#http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-headers-3.19.0-031900_3.19.0-031900.201504091832_all.deb
-#http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-headers-3.19.0-031900-generic_3.19.0-031900.201504091832_amd64.deb
-#http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-headers-3.19.0-031900-lowlatency_3.19.0-031900.201504091832_amd64.deb
-#http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-image-3.19.0-031900-lowlatency_3.19.0-031900.201504091832_amd64.deb
-#"
-#
-#    -dpkg-from-urls $urls
+    urls="
+http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-headers-3.19.0-031900_3.19.0-031900.201504091832_all.deb
+http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-headers-3.19.0-031900-generic_3.19.0-031900.201504091832_amd64.deb
+http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-headers-3.19.0-031900-lowlatency_3.19.0-031900.201504091832_amd64.deb
+http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-image-3.19.0-031900-lowlatency_3.19.0-031900.201504091832_amd64.deb
+"
+
+    -dpkg-from-urls $urls
 
 }
 

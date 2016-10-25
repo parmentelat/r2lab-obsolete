@@ -209,6 +209,9 @@ class ImageBuilder:
                     remotepaths = extra_log,
                     localpath = "{}/logs/".format(self.to_image),
                     label = "retrieve extra log {}".format(extra_log),
+                    # best effort to retrieve logs : don't cancel
+                    # if not found on the remote node
+                    critical = False,
                     recurse = True,
                 )
             )
