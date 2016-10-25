@@ -178,6 +178,7 @@ function detail () {
     echo 'ERROR: something went wrong in info command. Type info -h to see options.'
   echo 'INFO: do not forget to publish the updates. Type publish to do it!'
 }
+alias details=detail
 
 function publish () {
   /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
