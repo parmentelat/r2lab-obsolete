@@ -53,6 +53,14 @@ $(document).ready(function() {
   }
 
 
+  function pad(str){
+    max = 2
+    str = str.toString();
+    str = str.length < max ? pad("0" + str, max) : str;
+    return str
+  }
+
+
   function show(infos) {
     var thead = []
     var order = sortObject(infos);
@@ -80,8 +88,8 @@ $(document).ready(function() {
     head += '</tr>';
 
     $.each(order, function (id, node) {
-      body += '<tr>';
-      body += '<td style="font:15px helveticaneue, Arial, Tahoma, Sans-serif;"><span style="cursor: pointer; border-radius: 50%; border: 2px solid #525252; width: 32px; height: 32px; line-height: 30px; display: block; text-align: center;"><span style="cursor: pointer; color: #525252;" onclick="info_nodes('+node+');">'+node+'</span></span></td>'
+      body += '<tr id="line_'+node+'">';
+      body += '<td style="font:15px helveticaneue, Arial, Tahoma, Sans-serif;"><span style="cursor: pointer; border-radius: 50%; border: 2px solid #525252; width: 32px; height: 32px; line-height: 30px; display: block; text-align: center;"><span style="cursor: pointer; color: #525252;" onclick="info_nodes('+pad(node)+');">'+node+'</span></span></td>'
 
       // body += '<td class="dt_left"><span class="badge" onclick="info_nodes('+node+');">'+ node +'</span></td>';
       $.each(thead, function (i, attr) {
@@ -98,6 +106,9 @@ $(document).ready(function() {
         } else {
           body += '<td>-</td>';
         }
+
+        body += '<td><span style="cursor: pointer; color: #525252;" alt="remove node" onclick="remove_node('+node+');"><span class="glyphicon glyphicon-trash red" aria-hidden="true"></span></span></td>';
+
       });
       body += '</tr>';
     });
@@ -119,4 +130,8 @@ $(document).ready(function() {
 function show_image(img) {
   $('#big_image_content').html('<img src="'+img+'">');
   $('#big_photo').modal('toggle');
+}
+
+function remove_node(node) {
+  $('#line_'+pad(node)).remove();
 }
