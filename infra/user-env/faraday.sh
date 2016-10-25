@@ -145,7 +145,6 @@ function maintenance () {
     for i in "$@" ; do
       if [[ $i == "-p" || $i == "--publish" ]] ; then
         publish()
-        break
       fi
     done
   else
@@ -160,7 +159,6 @@ function information () {
     for i in "$@" ; do
       if [[ $i == "-p" || $i == "--publish" ]] ; then
         publish()
-        break
       fi
     done
   else
@@ -175,7 +173,6 @@ function detail () {
     for i in "$@" ; do
       if [[ $i == "-p" || $i == "--publish" ]] ; then
         publish()
-        break
       fi
     done
   else
