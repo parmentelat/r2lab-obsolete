@@ -11,6 +11,8 @@ the statistics presented in the graphs at hardware.md page (nodes link) at r2lab
 from argparse import ArgumentParser
 import os
 import os.path
+import subprocess
+from subprocess import Popen
 from datetime import datetime
 import time
 import sys
@@ -32,6 +34,8 @@ parser.add_argument("-m", "--message", dest="message",
                     help="Single message to remember the maintenance action")
 parser.add_argument("-e", "--reset", dest="reset", choices=['yes','no'],
                     help="A flag that indicates if the statistics must be reset")
+parser.add_argument("-p", "--publish", dest="publish", action='store_true',
+                    help="Publish the results")
 parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
                     help="Drop and initialize the file. All data is erased")
 
@@ -63,13 +67,16 @@ def main(args):
     reset   = args.reset
     nodes   = args.nodes
     drop    = args.drop
+    publish = args.publish
 
-    if nodes_i is None and nodes_r is None:
+    if nodes_i is None and nodes_r is None and not drop and not publish:
         check_node(nodes)
     if nodes_i is not None:
         include_node(nodes_i, a_date, message, reset)
     if nodes_r is not None:
         remove_node(nodes_r, a_date)
+    if publish:
+        print("Publish started...")
     if drop:
         reset_file()
 
@@ -80,10 +87,19 @@ def reset_file():
     """
     dir         = FILEDIR
     file_name   = FILENAME
+    the_db  = FILEDIR + FILENAME
+    bkp_db  = FILEDIR + 'bkp_{}_'.format(now(True)) + FILENAME
     content = {}
+
+    command = "cp {} {};".format(the_db, bkp_db)
+    ans_cmd = run(command)
+    if not ans_cmd['status']:
+        print('ERROR: something went wrong in copy/clear dir.')
+        print(ans_cmd['output'])
+
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
-    print('INFO: the file was erased')
+    print('INFO: the file was erased. A backup was also made.')
 
 
 
@@ -226,10 +242,13 @@ def format_nodes(nodes, avoid=None):
 
 
 
-def now():
+def now(bkp=None):
     """ current datetime
     """
-    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    if bkp is None:
+        return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    else:
+        return datetime.now().strftime('%Y%m%d%H%M%S')
 
 
 
@@ -243,6 +262,22 @@ def beautify(text):
     new_text = new_text.replace("{", '').replace("}", '\n').replace("[", '').replace("]", '').replace(",", '\n')
     new_text = new_text.replace("]", '')
     return new_text
+
+
+
+def run(command, std=True):
+    """ run the commands
+    """
+    if std:
+        p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    else:
+        p   = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
+    (out, err) = p.communicate()
+    ret        = p.wait()
+    out        = out.strip().decode('ascii')
+    err        = err
+    ret        = True if ret == 0 else False
+    return dict({'output': out, 'error': err, 'status': ret})
 
 
 

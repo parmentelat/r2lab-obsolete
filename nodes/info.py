@@ -32,6 +32,8 @@ parser.add_argument("-t+", dest="tabp", action='store_true',
                     help="Add node tab.")
 parser.add_argument("-t", dest="tabl",
                     help="Remove node tab.")
+parser.add_argument("-p", "--publish", dest="publish", action='store_true',
+                    help="Publish the results")
 parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
                     help="Drop and initialize the nodes information. All data is erased.")
 
@@ -62,8 +64,9 @@ def main(args):
     nodes_r = args.remove
     drop    = args.drop
     nodes   = args.nodes
-    tabp     = args.tabp
-    tabl     = args.tabl
+    tabp    = args.tabp
+    tabl    = args.tabl
+    publish = args.publish
 
     if nodes_i is not None:
         try:
@@ -77,6 +80,8 @@ def main(args):
         if tabl:
             tabl = int(tabl) - 1
         remove_node(nodes, tabl)
+    elif publish:
+        print("Publish started...")
     elif drop:
         reset_file()
     else:
@@ -92,22 +97,23 @@ def reset_file():
     content = {}
     pub_img = FILEDIR + LOC_DIR_IMGS
     pub_mds = FILEDIR + LOC_DIR_INFO
+    the_db  = FILEDIR + FILENAME
+    bkp_db  = FILEDIR + 'bkp_{}_'.format(now(True)) + FILENAME
     choi = None
     while not choi:
         choi = input( 'Confirm action? [Y/n]')
         if choi in ['Y']:
             choi = True
 
-            command = "rm {}*; rm {}*".format(pub_mds, pub_img)
+            command = "cp {} {}; rm {}*; rm {}*".format(the_db, bkp_db, pub_mds, pub_img)
             ans_cmd = run(command)
             if not ans_cmd['status']:
-                print('ERROR: something went wrong in clear dir.')
+                print('ERROR: something went wrong in copy/clear dir.')
                 print(ans_cmd['output'])
-                exit()
 
             with open(os.path.join(dir, file_name), "w") as js:
                 js.write(json.dumps(content)+"\n")
-            print('INFO: the file was erased')
+            print('INFO: the file was erased. A backup was also made.')
         else:
             print('INFO: no action made.')
 
@@ -374,10 +380,13 @@ def format_nodes(nodes, avoid=None):
 
 
 
-def now():
+def now(bkp=None):
     """ current datetime
     """
-    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    if bkp is None:
+        return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    else:
+        return datetime.now().strftime('%Y%m%d%H%M%S')
 
 
 

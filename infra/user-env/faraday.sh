@@ -141,16 +141,41 @@ alias rsnap="rhubarbe snap"
 
 function maintenance () {
   python3 /root/r2lab/nodes/maintenance.py "$@"
+  if [ $? -eq 0 ]; then
+    for i in "$@" ; do
+      if [[ $i == "-p" || $i == "--publish" ]] ; then
+        publish()
+      fi
+    done
+  else
+    echo 'ERROR: something went wrong in info command. Type info -h to see options.'
+
   echo 'INFO: do not forget to publish the updates. Type publish to do it!'
 }
 
 function information () {
   python3 /root/r2lab/nodes/info.py "$@"
+  if [ $? -eq 0 ]; then
+    for i in "$@" ; do
+      if [[ $i == "-p" || $i == "--publish" ]] ; then
+        publish()
+      fi
+    done
+  else
+    echo 'ERROR: something went wrong in info command. Type info -h to see options.'
   echo 'INFO: do not forget to publish the updates. Type publish to do it!'
 }
 
 function detail () {
   python3 /root/r2lab/nodes/detail.py "$@"
+  if [ $? -eq 0 ]; then
+    for i in "$@" ; do
+      if [[ $i == "-p" || $i == "--publish" ]] ; then
+        publish()
+      fi
+    done
+  else
+    echo 'ERROR: something went wrong in info command. Type info -h to see options.'
   echo 'INFO: do not forget to publish the updates. Type publish to do it!'
 }
 

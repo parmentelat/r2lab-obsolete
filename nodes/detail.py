@@ -21,17 +21,21 @@ from collections import OrderedDict
 
 parser = ArgumentParser()
 parser.add_argument("-n", "--nodes", dest="nodes", default="all",
-                    help="Comma separated list of nodes to check at the maintenance list")
+                    help="Comma separated list OR range of nodes")
 parser.add_argument("-i", "--include", dest="include_node", nargs=3,
-                    help="Comma separated list of nodes to include at the maintenance list")
+                    help="Comma separated list OR range of nodes to include")
 parser.add_argument("-r", "--remove", dest="remove_node",
-                    help="Comma separated list of nodes to remove from the maintenance list")
+                    help="Comma separated list OR range of nodes to remove")
+parser.add_argument("-e", "--edit", dest="edit_node", nargs=3,
+                    help="Comma separated list OR range of nodes to edit")
 parser.add_argument("-d", "--date", dest="a_date",
                     help="include/remove an specific date (format yyyy-mm-dd)")
 parser.add_argument("-a", "--attribute", dest="attribute",
                     help="Single attribute to remember the maintenance action")
 parser.add_argument("-v", "--value", dest="value",
                     help="The value of the attribute")
+parser.add_argument("-p", "--publish", dest="publish", action='store_true',
+                    help="Publish the results")
 parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
                     help="Drop and initialize the file. All data is erased")
 
@@ -60,19 +64,26 @@ def main(args):
     """
     nodes_i   = args.include_node
     nodes_r   = args.remove_node
+    nodes_e   = args.edit_node
     a_date    = args.a_date
     attribute = args.attribute
     value     = args.value
     nodes     = args.nodes
+    publish   = args.publish
     drop      = args.drop
 
-    if nodes_i is None and nodes_r is None:
+    if nodes_e is None and nodes_i is None and nodes_r is None and not drop and not publish:
         check_node(nodes)
     if nodes_i is not None:
         nd, attribute, value = nodes_i
         include_node(nd, attribute, value, a_date)
     if nodes_r is not None:
         remove_node(nodes_r, attribute)
+    if nodes_e is not None:
+        nd, old_attr, new_attr = nodes_e
+        edit_node(nd, old_attr, new_attr, a_date)
+    if publish:
+        print("Publish started...")
     if drop:
         reset_file()
 
@@ -86,21 +97,23 @@ def reset_file():
     content = {}
     pub_img = FILEDIR + LOC_DIR_IMGS
     pub_mds = FILEDIR + LOC_DIR_INFO
+    the_db  = FILEDIR + FILENAME
+    bkp_db  = FILEDIR + 'bkp_{}_'.format(now(True)) + FILENAME
     choi = None
     while not choi:
         choi = input( 'Confirm action? [Y/n]')
         if choi in ['Y']:
             choi = True
 
-            command = "rm {}*; rm {}*".format(pub_mds, pub_img)
+            command = "cp {} {}; rm {}*; rm {}*".format(the_db, bkp_db, pub_mds, pub_img)
             ans_cmd = run(command)
             if not ans_cmd['status']:
-                print('ERROR: something went wrong in clear dir.')
+                print('ERROR: something went wrong in copy/clear dir.')
                 print(ans_cmd['output'])
 
             with open(os.path.join(dir, file_name), "w") as js:
                 js.write(json.dumps(content)+"\n")
-            print('INFO: the file was erased')
+            print('INFO: the file was erased. A backup was also made.')
         else:
             print('INFO: no action made.')
 
@@ -216,6 +229,36 @@ def remove_node(nodes, attribute):
                 print('WARNING: node or attribute not found.'.format(node))
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
+
+
+
+def edit_node(nodes, old_attr, new_attr, date):
+    """ include nodes in the list
+    """
+    dir       = FILEDIR
+    file_name = FILENAME
+    date      = format_date(date)
+    nodes     = format_nodes(nodes)
+    if old_attr is None:
+        old_attr = "None"
+    if new_attr is None:
+        new_attr = "None"
+
+    with open(os.path.join(dir, file_name)) as data_file:
+        try:
+            content = json.load(data_file)
+        except Exception as e:
+            content = {}
+    for node in nodes:
+        try:
+            for att in content[node]:
+                if att['attribute'] == old_attr:
+                    att['attribute'] = new_attr
+        except Exception as e:
+            print('WARNING: attribute {} not found for node {}.'.format(old_attr, node))
+    with open(os.path.join(dir, file_name), "w") as js:
+        js.write(json.dumps(content)+"\n")
+    print('INFO: attribute {} updated to {}.'.format(old_attr, new_attr))
 
 
 
@@ -340,10 +383,13 @@ def format_nodes(nodes, avoid=None):
 
 
 
-def now():
+def now(bkp=None):
     """ current datetime
     """
-    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    if bkp is None:
+        return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    else:
+        return datetime.now().strftime('%Y%m%d%H%M%S')
 
 
 
