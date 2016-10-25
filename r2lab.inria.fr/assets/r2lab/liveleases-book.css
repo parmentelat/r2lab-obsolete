@@ -27,7 +27,7 @@
   font-family: ubunturegular, Arial, helvetica, sans-serif;
   background-color: #4CAF50; /* Green */
   color: #575757;
-  border: 1px solid #00A0D0; /* 4CAF50 Green */
+  border: 1px solid #d0d0d0; /* 4CAF50 Green */
   line-height: normal;
   -webkit-border-radius: 4px;
      -moz-border-radius: 4px;
@@ -69,7 +69,7 @@
   width: 170px;
   height: 398px;
   padding: 0 10px;
-  border: 1px solid #00A0D0; /*#ccc;*/
+  border: 1px solid #d0d0d0; /*#ccc;*/
   background: #eee;
   text-align: left;
 }
