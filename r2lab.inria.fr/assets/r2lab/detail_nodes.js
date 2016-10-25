@@ -75,7 +75,7 @@ $(document).ready(function() {
 
     $.each(order, function (id, val) {
       $.each(infos[val], function (i, v) {
-        thead.push(v['attribute']);
+        thead.push($.trim(v['attribute']));
       });
     });
     thead = $.unique(thead.sort());
