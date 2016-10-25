@@ -81,7 +81,7 @@ def main(args):
             tabl = int(tabl) - 1
         remove_node(nodes, tabl)
     elif publish:
-        print("Publish started...")
+        print("INFO: publish started...")
     elif drop:
         reset_file()
     else:
@@ -101,7 +101,7 @@ def reset_file():
     bkp_db  = FILEDIR + 'bkp_{}_'.format(now(True)) + FILENAME
     choi = None
     while not choi:
-        choi = input( 'Confirm action? [Y/n]')
+        choi = input('INPUT: confirm action? [Y/n]')
         if choi in ['Y']:
             choi = True
 

@@ -83,7 +83,7 @@ def main(args):
         nd, old_attr, new_attr = nodes_e
         edit_node(nd, old_attr, new_attr, a_date)
     if publish:
-        print("Publish started...")
+        print("INFO: publish started...")
     if drop:
         reset_file()
 
@@ -101,7 +101,7 @@ def reset_file():
     bkp_db  = FILEDIR + 'bkp_{}_'.format(now(True)) + FILENAME
     choi = None
     while not choi:
-        choi = input( 'Confirm action? [Y/n]')
+        choi = input('INPUT: confirm action? [Y/n]')
         if choi in ['Y']:
             choi = True
 
