@@ -48,14 +48,22 @@ See also [TODO about r2lab.inria.fr](../r2lab.inria.fr/TODO.md)
 
 ## JSON format
 
-### v0 - up to 2016/10
+## v0 - up to 2016/10
 
-What was flying on the bus up to Oct. 2016 was always
+What was flying on the bus was of 2 kinds
 
+### `leases` 
+
+* on channels `chan-leases` and `chan-leases-request`
+* no change made in this area 
+
+### `status` 
+
+* on channels `chan-status` and `chan-status-request`
 * a (possibly partial) list of records
 * each one having a mandatory `id` field, an integer
-* and this was implicitly about nodes since there was no other type of info available
-* the set of known fields in this record was
+* this is implicitly about **nodes** since there was no other type of info available
+* the set of known fields in this record is
   * `id` : node id
   * `available` : set manually by other means (nightly)
   * `cmc_on_off`
@@ -67,50 +75,44 @@ What was flying on the bus up to Oct. 2016 was always
   * `image_radical` : string from last line of `/etc/rhubarbe-image`
   * `wlan<n>_[rt]x_rate` - still in monitor.py --wlan but not mostly obsolete otherwise
 
-### v1 - end october 2016
+## v1 - end october 2016
 
-We want to be able to deal with more info, in 2 directions
+### channel names
 
-##### other types of subjects
+All channels are renamed as follows for consistency
 
-2 alternatives
+| old name            | new name       |
+|---------------------|----------------|
+| `chan-leases`         | `info:leases`    |
+| `chan-leases-request` | `request:leases` |
+| `chan-status`         | **`info:nodes`**     |
+| `chan-status-request` | **`request:nodes`**  |
+|                       | `info:phones` |
+|							| `request:phones` |
 
-* keep a single list of records but augment each record with a `type` 
+### `phones` 
 
-```
-[ {"id":1, "type":"node", ...},
-  {"id":1, "type":"phone", ...},
-]
-```
+* on the new channels `chan-phones` and `chan-phones-request`
+* we have a mechanism very close to the `nodes` thingy
+* with the following fields for now
+  * `wifi_on_off`: "on" or "off" or "fail"
+  * `airplane_mode` : "on" or "off" or "fail"
 
-* or always send a dictionary that has 
+### `nodes` 
 
-```
-{ "nodes": [ {"id":1 , ...}],
-  "phones": [ {"id":1}, ...],
-}
-```
+#### renamings
+  * the `chan-status` channel into `channel:nodes`
+  * the `chan-status-request` channel into `channel:nodes-request`
 
-##### more data probed for each node
+#### more data probed for each node
 
-* `usrp_on_off` : "on" or "off" or "fail" 
+* **OK** `usrp_on_off` : "on" or "off" or "fail" 
   * frequent updates from `monitor`
 * `usrp_type` : "b210" or "x310" or "none"
-  * could be filled manually for starters - a bit like `available`
+  * **needs to be filled manually** for starters - a bit like `available`
   * ideally the nightly should do that later on
-* `gnuradio_release`: 'none' or a version string
+* **OK** `gnuradio_release`: 'none' or a version string
   * this would undo the kind of hack we had in place previously
   * that would piggyback the gnuradio version on top of `os_release`
-* `uname`: could be beneficially added in the mix, in order to detect stupid mistakes earlier
-
-##### what do we know about a phone ?
-
-Fields specific to the "phone" object could be
-
-* `wifi_on_off`: "on" or "off" or "fail"
-* `airplane_mode` : "on" or "off" or "fail"
-* ... to be completed
-
-
- 
+* **OK** `uname`: could be beneficially added in the mix, in order to detect stupid mistakes earlier
 

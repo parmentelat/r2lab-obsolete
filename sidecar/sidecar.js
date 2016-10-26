@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+//// oct. 2016
+// major changes in channels naming scheme
+// with the addition of the 'phones' channels
+// see AA-overview.md for detail
+
 // dependencies
 var express_app = require('express')();
 var http = require('http').Server(express_app);
@@ -9,35 +14,34 @@ var path = require('path');
 
 //////// names for the channels used
 
-//// status
-// (*) sending deltas; json is flying on this channel
-var chan_status = 'chan-status';
-
-// (*) requesting a whole status; anything arriving
-// on this channel causes a full status to be exposed
-// on chan-status
-var chan_status_request = 'chan-status-request';
-
-//// leases
-// (*) the channel where the current state of leases is published
-var chan_leases = 'chan-leases';
-
-// (*) likewise: anything arriving on this channel requires
-// the leases status to be refreshed
-// in practical terms this will trigger an event sent back to
-// the monitor, asking it to short-circuit its loop
-// and to immediately refresh leases
-var chan_leases_request = 'chan-leases-request';
-// broadcast channel - only used between browsers
-// monitor is immune from that
-var chan_leases_broadcast = 'chan-leases-broadcast';
-
-//////// filenames
-// this is where we write current complete status
+//// (nodes) status
+// (*) sending deltas; actual json is flying on this channel
+var chan_nodes = 'info:nodes';
+// (*) requesting a whole (nodes) status; anything arriving
+// on this channel causes a full status to be sent on info:nodes
+var chan_nodes_request = 'request:nodes';
+// (*) the place where the current status is stored 
 // essentially for smooth restart
 // it is fine to delete, it will just take some while to rebuild itself
 // from the outcome of monitor
-var filename_complete = '/var/lib/sidecar/complete.json';
+var filename_status = '/var/lib/sidecar/nodes.json';
+
+
+//// phones status
+// 2 channels and one filename, like for nodes
+var chan_phones = 'info:phones';
+var chan_phones_request = 'request:phones';
+var filename_phones = '/var/lib/sidecar/phones.json';
+
+
+//// leases
+// 2 channels like for nodes and phones
+// in practical terms, a new request to publish leases
+// will trigger an event sent back to the monitor,
+// asking it to short-circuit its loop and to immediately refresh leases
+// so leases are different in the sense that we don't keep anything locally
+var chan_leases = 'info:leases';
+var chan_leases_request = 'request:leases';
 
 ////
 var port_number = 443;
@@ -57,10 +61,7 @@ function vdisplay(args){
 	display.apply(this, arguments);
 }
 
-//// historical
-// at some point in time, this server would answer
-// GET requests on /
-// this feature was unused so it's now turned off
+// we don't honour anymore GET requests on /
 
 // remainings of a socket.io example; this is only
 // marginally helpful to check for the server sanity
@@ -73,26 +74,39 @@ io.on('connection', function(socket){
 
 // arm callbacks for the channels we use
 io.on('connection', function(socket){
-    //////////////////// status
-    // preferred method is to send a news chunk through socket.io
-    // on chan-status
-    // in this case we:
-    // * update complete.json (i.e, read the file, apply changes, store again)
+    //////////////////// (nodes) status
+    // when receiving something on a status channel (that is, either nodes or phones), we
+    // * update nodes.json (i.e, read the file, apply changes, store again)
     // * and forward the news as-is
     // NOTE that this can also be used for debugging / tuning
     // by sending JSON messages manually (e.g. using a chat app)
-    vdisplay("arming callback for channel " + chan_status);
-    socket.on(chan_status, function(news_string){
-	vdisplay("received on channel " + chan_status + ": " + news_string)
-	update_complete_file_from_news(news_string);
-	vdisplay("emitting on "+ chan_status + " chunk " + news_string);
-	io.emit(chan_status, news_string);
+    vdisplay("arming callback for channel " + chan_nodes);
+    socket.on(chan_nodes, function(news_string){
+	vdisplay("received on channel " + chan_nodes + ": " + news_string)
+	update_complete_file_from_news(filename_status, news_string);
+	vdisplay("emitting on "+ chan_nodes + " chunk " + news_string);
+	io.emit(chan_nodes, news_string);
     });
-    // this is more crucial, this is how complete status gets transmitted initially
-    vdisplay("arming callback for channel " + chan_status_request);
-    socket.on(chan_status_request, function(msg){
-	display("Received " + msg + " on channel " + chan_status_request);
-	emit_file(filename_complete);
+    // this now is how complete status gets transmitted initially
+    vdisplay("arming callback for channel " + chan_nodes_request);
+    socket.on(chan_nodes_request, function(msg){
+	display("Received " + msg + " on channel " + chan_nodes_request);
+	emit_file(filename_status, chan_nodes);
+    });
+
+    //////////////////// phones
+    vdisplay("arming callback for channel " + chan_phones);
+    socket.on(chan_phones, function(news_string){
+	vdisplay("received on channel " + chan_phones + ": " + news_string)
+	update_complete_file_from_news(filename_phones, news_string);
+	vdisplay("emitting on "+ chan_phones + " chunk " + news_string);
+	io.emit(chan_phones, news_string);
+    });
+    // this now is how complete phones gets transmitted initially
+    vdisplay("arming callback for channel " + chan_phones_request);
+    socket.on(chan_phones_request, function(msg){
+	display("Received " + msg + " on channel " + chan_phones_request);
+	emit_file(filename_phones, chan_phones);
     });
 
     //////////////////// leases
@@ -109,12 +123,6 @@ io.on('connection', function(socket){
 	io.emit(chan_leases_request, anything);
     });
 
-    vdisplay("arming callback for channel " + chan_leases_broadcast);
-    socket.on(chan_leases_broadcast, function(anything){
-	display("Forwarding trigger message " + anything + " on channel "+ chan_leases_broadcast);
-	io.emit(chan_leases_broadcast, anything);
-    });
-
 });
 
 // convenience function to synchroneously read a file as a string
@@ -123,7 +131,7 @@ io.on('connection', function(socket){
 // apparently when watching a file we get to it too fast, so
 // allow for 2 attempts
 function sync_read_file_as_string(filename, verbose){
-    try{
+    try {
 	var contents = fs.readFileSync(filename, 'utf8');
 	if (verbose) vdisplay("sync read (1) " + filename + " -> " + contents);
 	if (contents == "") {
@@ -146,6 +154,10 @@ function sync_read_file_as_infos(filename) {
     } catch(err) {
 	display("Could not parse JSON in " + filename,
 		err.stack);
+	// return an empty list in this case
+	// useful for when the file does not exist yet
+	// a little hacky as this assumes all our files contain JSON lists
+	return [];
     }
 }
 
@@ -190,12 +202,12 @@ function merge_news_into_complete(complete_infos, news_infos){
 }
 
 
-// utility to open a file and broadcast its contents on chan_status
-function emit_file(filename){
+// utility to open a file and broadcast its contents on channel
+function emit_file(filename, channel){
     var complete_string = sync_read_file_as_string(filename);
     if (complete_string != "") {
-//	vdisplay("emit_file: sending on channel " + chan_status + ":" + complete_string);
-	io.emit(chan_status, complete_string);
+	vdisplay("emit_file: sending on channel " + channel + ":" + complete_string);
+	io.emit(channel, complete_string);
     } else {
 	display("OOPS - empty contents in " + filename)
     }
@@ -206,14 +218,14 @@ function emit_file(filename){
 // (*) open and read r2lab-complete
 // (*) merge news dictionary
 // (*) save result in r2lab-complete
-function update_complete_file_from_news(news_string){
+function update_complete_file_from_news(filename, news_string){
     if (news_string == "") {
 	display("OOPS - empty news feed - ignored");
 	return;
     }
-    try{
+    try {
 	// start from the complete infos
-	var complete_infos = sync_read_file_as_infos(filename_complete);
+	var complete_infos = sync_read_file_as_infos(filename);
 	// convert string into infos
 	var news_infos = JSON.parse(news_string);
 	vdisplay("updating complete file with " + news_infos.length + " news infos");
@@ -221,7 +233,7 @@ function update_complete_file_from_news(news_string){
 	complete_infos = merge_news_into_complete(complete_infos, news_infos);
 //	vdisplay("merged news : " + JSON.stringify(news_infos));
 	// save result
-	sync_save_infos_in_file(filename_complete, complete_infos);
+	sync_save_infos_in_file(filename, complete_infos);
 	return complete_infos;
     } catch(err) {
 	display(" OOPS - unexpected exception in update_complete_file_from_news",
@@ -239,11 +251,14 @@ function parse_args() {
 	    verbose_flag=true;
 	// local dev (use json files in .)
 	if (arg == "-l") {
-	    filename_complete = path.basename(filename_complete);
-	    console.log("local mode : using " + filename_complete);
+	    filename_status = path.basename(filename_status);
+	    console.log("local mode : using " + filename_status);
+	    filename_phones = path.basename(filename_phones);
+	    console.log("local mode : using " + filename_phones);
 	}
     });
-    vdisplay("complete file = " + filename_complete);
+    vdisplay("complete file = " + filename_status);
+    vdisplay("complete file = " + filename_phones);
 }
 
 // run http server

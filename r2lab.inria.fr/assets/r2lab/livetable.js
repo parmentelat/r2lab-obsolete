@@ -1,9 +1,9 @@
 ////////// must be in sync with r2lab-sidecar.js
 // the 2 socket.io channels that are used
 // (1) this is where actual JSON status is sent
-var channel = 'chan-status';
+var channel = 'info:nodes';
 // (2) this one is used for triggering a broadcast of the complete status
-var signalling = 'chan-status-request';
+var signalling = 'request:nodes';
 // port number
 var sidecar_port_number = 443;
 
@@ -99,7 +99,7 @@ var TableNode = function (id) {
 	    : [ span_html('', 'fa fa-circle-o'), 'ko' ];
 	this.cells_data[col++] = this.release_cell(this.os_release);
 	this.cells_data[col++] = this.image_cell(this.image_radical)
-  this.cells_data[col++] = ""
+	this.cells_data[col++] = ""
 	// optional
 	if (livetable_show_rxtx_rates) {
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan0_rx_rate);

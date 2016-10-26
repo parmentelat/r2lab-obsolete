@@ -24,9 +24,9 @@ livemap_radius_ko = 0;
 ////////// must be in sync with sidecar.js
 // the socket.io channels that are used
 // (1) this is where actual JSON status is sent
-var chan_status = 'chan-status';
+var chan_nodes = 'info:nodes';
 // (2) this one is used for requesting a broadcast of the complete status
-var chan_status_request = 'chan-status-request';
+var chan_nodes_request = 'request:nodes';
 
 // port number
 var sidecar_port_number = 443;
@@ -546,19 +546,19 @@ function LiveMap() {
 	this.sidecar_socket = io(url);
 	// what to do when receiving news from sidecar
 	var lab = this;
-	if (livemap_debug) console.log("arming callback on channel " + chan_status);
-	this.sidecar_socket.on(chan_status, function(json){
+	if (livemap_debug) console.log("arming callback on channel " + chan_nodes);
+	this.sidecar_socket.on(chan_nodes, function(json){
             lab.handle_json_status(json);
 	});
 	this.request_complete_from_sidecar();
     }
 
-    // request sidecar for initial status on chan_status_request
+    // request sidecar for initial status on chan_nodes_request
     // content is not actually used by sidecar server
     // could maybe send some client id instead
     this.request_complete_from_sidecar = function() {
-	if (livemap_debug) console.log("requesting complete status on channel " + chan_status_request);
-	this.sidecar_socket.emit(chan_status_request, 'INIT');
+	if (livemap_debug) console.log("requesting complete status on channel " + chan_nodes_request);
+	this.sidecar_socket.emit(chan_nodes_request, 'INIT');
     }
 
 }

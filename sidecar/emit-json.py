@@ -32,8 +32,8 @@ def s(infos):
     # can work only one dict -> wrap it in a list
     if isinstance(infos, dict):
         infos = [infos]
-    myemit('chan-status', infos)
-print("Run s({'id':4, 'cmc_on_off': 'on'}) to send a message on 'chan-status'")
+    myemit('info:nodes', infos)
+print("Run s({'id':4, 'cmc_on_off': 'on'}) to send a message on 'info:nodes'")
 
 def a(id, info):
     info['id'] = id
@@ -41,8 +41,8 @@ def a(id, info):
 print("Run a(4, {'cmc_on_off': 'off'}) to send a status message about a specific node")
 
 def sr():
-    myemit('chan-status-request', 'EMIT')
-print("Run sr() to send on chan-status-request")
+    myemit('request:nodes', 'EMIT')
+print("Run sr() to send on request:nodes")
 
 ####################
 lease_template = {
@@ -83,10 +83,10 @@ print("Run lea(14, 15) to build a lease record for today between 14:00 and 15:00
 
 def l(*args):
     lease = lea(*args)
-    myemit('chan-leases', [lease])
-print("Run l(14, 15) to send that lease on chan-leases")
+    myemit('info:leases', [lease])
+print("Run l(14, 15) to send that lease on info:leases")
 
 def lr():
-    myemit('chan-leases-request', 'EMIT')
-print("run lr() to send a message on chan-leases-request")    
+    myemit('request:leases', 'EMIT')
+print("run lr() to send a message on request:leases")    
     

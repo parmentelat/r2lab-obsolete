@@ -27,7 +27,7 @@ def drange(start, stop, step):
 wlan_rates_range = drange(0., 20. * 10**6, 6. * 10**5)
 
 ######## valid values for initializing
-field_possible_values = {
+nodes_field_possible_values = {
     'available' : [ None, 'ko'] + 3*['ok'],
     'cmc_on_off' : [ 'fail' ] + 3 * [ 'on', 'off' ],
     'control_ping' : [ 'on', 'off' ],
@@ -40,6 +40,11 @@ field_possible_values = {
 #    'wlan1_rx_rate' : wlan_rates_range,
 #    'wlan1_tx_rate' : wlan_rates_range,
 }
+
+phones_field_possible_values = {
+    'wifi_on_off' : [ 'on', 'off' ],
+    'airplane_mode' : [ 'on', 'off'],
+    }
 
 ####################    
 def random_ids(max_nodes_impacted):
@@ -59,24 +64,31 @@ def normalize_status(node_info):
                       })
     return node_info
 
-def random_status(id, index=0):
+def random_node_status(id, index=0):
     # for testing incomplete news on the livemap side
     # we expose one or the other or both
     # however the default always expose the full monty
     node_info = { 'id' : id }
     # fill node_info with all known keys
     node_info.update( { field : random.choice(values) 
-                       for field, values in field_possible_values.items() })
+                       for field, values in nodes_field_possible_values.items() })
     # make sure this is mostly consistent
     normalize_status(node_info)
     # index == 0 means we need a complete record
     # otherwise let's remove some
-    items_to_remove = index % len(field_possible_values)
-    keys_to_remove = random.sample(field_possible_values.keys(), items_to_remove)
+    items_to_remove = index % len(nodes_field_possible_values)
+    keys_to_remove = random.sample(nodes_field_possible_values.keys(), items_to_remove)
     for field in keys_to_remove:
         if field in node_info:
             del node_info[field]
     return node_info
+
+def random_phone_status(id):
+    phone_info = { 'id' : id }
+    # fill phone_info with all known keys
+    phone_info.update( { field : random.choice(values) 
+                       for field, values in phones_field_possible_values.items() })
+    return phone_info
 
 # too lazy to get this properly (need to turn off server auth)
 leases_url = "https://faraday.inria.fr:12346/resources/leases";
@@ -106,6 +118,8 @@ def main():
                         help="Maximum number of nodes impacted by each cycle")
     parser.add_argument('-l', '--live', dest='live', action='store_true', default=False,
                         help="If set, only rx/tx data are animated")
+    parser.add_argument('-p', '--phone-cycle', default=5, type=int,
+                        help='send a random phone status every n cycles')
     parser.add_argument('-s', '--socket-io-url', action='store', default=default_socket_io_url,
                         help="""Sends status data to this ws URL using socketio - use something like {}""".format(default_socket_io_url))
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
@@ -138,18 +152,25 @@ def main():
 
     counter = 0
     while True:
-        news_infos = [ random_status(id, index)
-                   for index, id in enumerate(random_ids(args.max_nodes_impacted)) ]
+        news_infos = [ random_node_status(id, index)
+                       for index, id in enumerate(random_ids(args.max_nodes_impacted)) ]
         if args.verbose:
             print("{} -- on {} nodes (id, len(fields)) : {}"
                   .format(counter, len(news_infos),
                           [ (info['id'], len(info)-1) for info in news_infos]))
             print(news_infos[0])
-        socketIO.emit('chan-status', json.dumps(news_infos), io_callback)
+        socketIO.emit('info:nodes', json.dumps(news_infos), io_callback)
+
+        # only one phone
+        if counter % args.phone_cycle == 0:
+            phone_infos = [ random_phone_status(id) for id in [1]]
+            if args.verbose:
+                print("phone: emitting {}".format(phone_infos[0]))
+            socketIO.emit('info:phones', json.dumps(phone_infos), io_callback)
 
         leases = get_leases()
         if leases:
-            socketIO.emit('chan-leases', json.dumps(leases), io_callback)
+            socketIO.emit('info:leases', json.dumps(leases), io_callback)
         counter += 1
         if args.runs and counter >= args.runs:
             break

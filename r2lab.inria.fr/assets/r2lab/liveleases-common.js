@@ -375,8 +375,8 @@ function isZombie(obj){
 // via django
 function refreshLeases(){
   msg = "INIT";
-  if (liveleases_debug) console.log("sending on chan-leases-request -> " + msg);
-  socket.emit('chan-leases-request', msg);
+  if (liveleases_debug) console.log("sending on request:leases -> " + msg);
+  socket.emit('request:leases', msg);
 }
 
 // show action immediately before it becomes confirmed
@@ -398,8 +398,8 @@ function showImmediate(action, event) {
 }
 
 function listenLeases(){
-  socket.on('chan-leases', function(msg){
-    if (liveleases_debug) console.log("incoming chan-leases");
+  socket.on('info:leases', function(msg){
+    if (liveleases_debug) console.log("incoming info:leases");
     setCurrentLeases(msg);
     resetActionsQueue();
     var leases = getCurrentLeases();

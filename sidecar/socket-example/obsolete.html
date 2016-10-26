@@ -43,25 +43,25 @@
     socket = io.connect(url);
     });
   $('#form-status').submit(function(){
-    socket.emit('chan-status', $('#status').val());
+    socket.emit('info:nodes', $('#status').val());
 /*    $('#status').val(''); */
     return false;
   });
   $('#form-leases').submit(function(){
-    socket.emit('chan-leases', $('#leases').val());
+    socket.emit('info:leases', $('#leases').val());
 /*    $('#leases').val('');*/
     return false;
   });
   $('#form-leases-request').submit(function(){
-    socket.emit('chan-leases-request', $('#leases-request').val());
+    socket.emit('request:leases', $('#leases-request').val());
 /*    $('#leases-request').val('');*/
     return false;
   });
-  socket.on('chan-status', function(msg){
+  socket.on('info:nodes', function(msg){
     $('#messages').append($('<li>').text('status: ' + msg));});
-  socket.on('chan-leases', function(msg){
+  socket.on('info:leases', function(msg){
     $('#messages').append($('<li>').text('leases: ' + msg));});
-  socket.on('chan-leases-request', function(msg){
+  socket.on('request:leases', function(msg){
     $('#messages').append($('<li>').text('leases-request: ' + msg));});
 </script>
   </body>
