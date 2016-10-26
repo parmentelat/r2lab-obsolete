@@ -49,7 +49,7 @@ function remove_tabs() {
 }
 
 
-function create_slider(tab_file) {
+function create_slider(tab_file, tab_name) {
   var path = 'files/nodes/'
   var imgs = ''
 
@@ -63,7 +63,7 @@ function create_slider(tab_file) {
   </div>\
   ';
 
-  $('#nodes_tabs').append('<li class=""><a data-toggle="tab" href="#tab_gal">Images Gallery</a></li>');
+  $('#nodes_tabs').append('<li class=""><a data-toggle="tab" href="#tab_gal">'+ tab_name +'</a></li>');
   $('#nodes_tabs_content').append('<div id="tab_gal" class="tab-pane fade"><br>'+ tab_body +'</div>');
 
   jQuery("#gallery").unitegallery({
@@ -104,11 +104,11 @@ function set_info(node, info) {
     if(tab_body == 'undefined' || tab_body == '' || tab_body == null){
       tab_body = '<br><p>No info about this yet.</p>';
     }
-    $('#nodes_tabs').append('<li class="'+ active1 +'"><a data-toggle="tab" href="#tab_'+ index +'">'+ tab_name +'</a></li>');
-    $('#nodes_tabs_content').append('<div id="tab_'+ index +'" class="tab-pane fade'+ active2 +'">'+ tab_body +'</div>');
-
     if($.isArray(tab_file)){
-      create_slider(tab_file)
+      create_slider(tab_file, tab_name)
+    } else {
+      $('#nodes_tabs').append('<li class="'+ active1 +'"><a data-toggle="tab" href="#tab_'+ index +'">'+ tab_name +'</a></li>');
+      $('#nodes_tabs_content').append('<div id="tab_'+ index +'" class="tab-pane fade'+ active2 +'">'+ tab_body +'</div>');
     }
   }
 }
