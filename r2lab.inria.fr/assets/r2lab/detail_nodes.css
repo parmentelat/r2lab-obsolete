@@ -1,6 +1,6 @@
 .dt_table {
   width: 100%;
-  font-size: .9em;
+  font-size: .75em;
   font-family: "Source Sans Pro", sans-serif;
   color: #404042;
   text-align: left;
@@ -19,7 +19,7 @@
 }
 .dt_head {
   padding: 5px;
-  font-size: 1.1em;
+  font-size: 1.3em;
   font-family: "Source Sans Pro", sans-serif;
   color: #404042;
   background-color: #fff;
@@ -32,7 +32,6 @@
 .in_md {
   text-align: left;
   vertical-align: top;
-  font-size: .5em;
 }
 
 .in_md p {
