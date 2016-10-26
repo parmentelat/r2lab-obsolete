@@ -9,7 +9,12 @@
   </head>
   <body>
     <div class="allpage"><span class="header">sidecar hostname</span>
-    <input id="hostname"/><button onclick="set_hostname()">Apply</button></div>
+    <input id="hostname"/>
+    <button id="connect" onclick="set_hostname()">Apply/Reconnect</button>
+    <button id="disconnect" onclick="pause()">Pause/Disconnect</button>
+    <button onclick="clear_contents()">Clear</button>
+    </div>
+
     <div id='requests'></div>
     <div id='contents'></div>
   </body>
