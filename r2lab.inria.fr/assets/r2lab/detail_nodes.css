@@ -69,3 +69,7 @@
   padding-left: .1em;
   line-height: 1.8em !important;
 }
+
+.max-img {
+  max-width: 750px;
+}

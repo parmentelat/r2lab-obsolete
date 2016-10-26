@@ -130,7 +130,7 @@ $(document).ready(function() {
 });
 
 function show_image(img) {
-  $('#big_image_content').html('<img src="'+img+'">');
+  $('#big_image_content').html('<img src="'+img+'" class="max-img" >');
   $('#big_photo').modal('toggle');
 }
 
