@@ -4,6 +4,9 @@
 // major changes in channels naming scheme
 // with the addition of the 'phones' channels
 // see AA-overview.md for detail
+//
+// another major change is about sidecar only sending along CHANGES
+// as compared to its current known state
 
 // dependencies
 var express_app = require('express')();
@@ -126,24 +129,20 @@ io.on('connection', function(socket){
 });
 
 // convenience function to synchroneously read a file as a string
-// xxx hack - sometimes (quite often indeed) we see
-// this read returning an empty string...
-// apparently when watching a file we get to it too fast, so
-// allow for 2 attempts
-function sync_read_file_as_string(filename, verbose){
+function sync_read_file_as_string(filename){
     try {
 	var contents = fs.readFileSync(filename, 'utf8');
-	if (verbose) vdisplay("sync read (1) " + filename + " -> " + contents);
-	if (contents == "") {
-	    display("sync read (2nd attempt) on " + filename);
-	    contents = fs.readFileSync(filename, 'utf8');
-	    if (verbose) vdisplay("sync read (2) -> " + contents);
+	vdisplay("sync read (1) " + filename + " -> " + contents);
+	if (! contents) {
+	    display(filename + ": WARNING, could not read");
+	    // artificially return an empty list
+	    return "[]";
+	} else {
+	    return contents;
 	}
-	if (contents == "")
-	    display("warning, file " + filename + " still read as empty after 2 attempts");
-	return contents;
     } catch(err){
-	display("Could not sync read " + filename + err.stack);
+	display(filename + ": Could not read - " + err);
+	return "[]";
     }
 }
 
@@ -152,8 +151,7 @@ function sync_read_file_as_infos(filename) {
     try {
 	return JSON.parse(sync_read_file_as_string(filename));
     } catch(err) {
-	display("Could not parse JSON in " + filename,
-		err.stack);
+	display(filename + ":could not parse JSON - " + err);
 	// return an empty list in this case
 	// useful for when the file does not exist yet
 	// a little hacky as this assumes all our files contain JSON lists
@@ -168,7 +166,7 @@ function sync_save_infos_in_file(filename, infos){
 	fs.writeFileSync(filename, JSON.stringify(infos), 'utf8');
 	vdisplay("sync (Over)wrote " + filename)
     } catch(err) {
-	display("Could not sync write " + filename + err);
+	display(filename + ":could not sync write - " + err);
     }
 }
 
@@ -205,7 +203,7 @@ function merge_news_into_complete(complete_infos, news_infos){
 // utility to open a file and broadcast its contents on channel
 function emit_file(filename, channel){
     var complete_string = sync_read_file_as_string(filename);
-    if (complete_string != "") {
+    if (complete_string) {
 	vdisplay("emit_file: sending on channel " + channel + ":" + complete_string);
 	io.emit(channel, complete_string);
     } else {
@@ -213,11 +211,11 @@ function emit_file(filename, channel){
     }
 }
 
-
 // convenience function to
-// (*) open and read r2lab-complete
-// (*) merge news dictionary
-// (*) save result in r2lab-complete
+// (*) open and read the complete status file - e.g. nodes.json
+// (*) merge new info into that dictionary
+// (*) save result in same file
+// (*) return the dictionaries to be sent as news
 function update_complete_file_from_news(filename, news_string){
     if (news_string == "") {
 	display("OOPS - empty news feed - ignored");
