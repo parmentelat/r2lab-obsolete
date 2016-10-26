@@ -54,8 +54,8 @@ depths['phones'] = 2;
 
 // a function to prettify the leases message
 var pretty_lease = function(json) {
-    var js = $.parseJSON(json);
-    var leases = js[0]; // not quite sure what this is about
+    console.log("json = " + json);
+    var leases = $.parseJSON(json);
     var html = "<ul>";
     leases.forEach(function(lease) {
 	var l_html = "<li>";

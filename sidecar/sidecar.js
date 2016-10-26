@@ -15,42 +15,44 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 var path = require('path');
 
-//////// names for the channels used
+//////// names for the channels used are
+// info:nodes
+// request:nodes
+// info:phones
+// request:phones
+// info:leases
+// request:leases
 
-//// (nodes) status
-// (*) sending deltas; actual json is flying on this channel
-var chan_nodes = 'info:nodes';
-// (*) requesting a whole (nodes) status; anything arriving
-// on this channel causes a full status to be sent on info:nodes
-var chan_nodes_request = 'request:nodes';
-// (*) the place where the current status is stored 
-// essentially for smooth restart
+// filenames used for persistent channels : essentially for smooth restart
+// /var/lib/sidecar/nodes.json
+// /var/lib/sidecar/phones.json
 // it is fine to delete, it will just take some while to rebuild itself
 // from the outcome of monitor
-var filename_status = '/var/lib/sidecar/nodes.json';
+// in local mode (for devel) these files are in current directory
 
 
-//// phones status
-// 2 channels and one filename, like for nodes
-var chan_phones = 'info:phones';
-var chan_phones_request = 'request:phones';
-var filename_phones = '/var/lib/sidecar/phones.json';
-
-
-//// leases
-// 2 channels like for nodes and phones
-// in practical terms, a new request to publish leases
-// will trigger an event sent back to the monitor,
-// asking it to short-circuit its loop and to immediately refresh leases
-// so leases are different in the sense that we don't keep anything locally
-var chan_leases = 'info:leases';
-var chan_leases_request = 'request:leases';
-
-////
+// in the following, name = 'nodes' or 'phones' or 'leases' 
+function info_channel_name(name) {
+    return "info:" + name;
+}
+function request_channel_name(name) {
+    return "request:" + name;
+}
+function db_filename(name) {
+    if (! local_flag) {
+	return "/var/lib/sidecar/" + name + ".json";
+    } else {
+	return "./" + name + ".json";
+    }
+}
+	
+//////////
 var port_number = 443;
 
 // use -v to turn on
 var verbose_flag = false;
+// use -l to turn on
+var local_flag = false;
 
 // always display
 function display(args){
@@ -75,56 +77,62 @@ io.on('connection', function(socket){
     });
 });
 
+// when receiving something on a status channel (that is, either nodes or phones), we
+// * update nodes.json (i.e, read the file, apply changes, store again)
+// * and forward the news as-is
+// NOTE that this can also be used for debugging / tuning
+// by sending JSON messages manually (e.g. using a chat app)
+//
+// this code is common to the 2 channels associated
+// to persistent data (nodes and phones)
+function prepare_persistent_channel(socket, name) {
+    var info_channel = info_channel_name(name);
+    var filename = db_filename(name);
+    vdisplay("arming callback for channel " + info_channel);
+    socket.on(info_channel, function(news_string){
+	vdisplay("received on channel " + info_channel + " chunk " + news_string)
+	update_complete_file_from_news(filename, news_string);
+	vdisplay("emitting on "+ info_channel + " chunk " + news_string);
+	io.emit(info_channel, news_string);
+    });
+    // this now is how complete status gets transmitted initially
+    var request_channel = request_channel_name(name);
+    vdisplay("arming callback for channel " + request_channel);
+    socket.on(request_channel, function(msg){
+	display("Received " + msg + " on channel " + request_channel);
+	emit_file(filename, info_channel);
+    });
+}
+
+// non-persistent channels are simpler,
+// e.g. we always propagate a complete list of leases
+function prepare_non_persistent_channel(socket, name) {
+    var info_channel = info_channel_name(name);
+    vdisplay("arming callback for channel " + info_channel);
+    socket.on(info_channel, function(infos){
+	vdisplay("Forwarding on non-persistent channel " + info_channel);
+	io.emit(info_channel, infos);
+    });
+
+    var request_channel = request_channel_name(name);
+    vdisplay("arming callback for channel " + request_channel);
+    socket.on(request_channel, function(anything) {
+	display("Forwarding trigger message " + anything + " on channel "+ request_channel);
+	io.emit(request_channel, anything);
+    });
+    
+}
+
 // arm callbacks for the channels we use
 io.on('connection', function(socket){
     //////////////////// (nodes) status
-    // when receiving something on a status channel (that is, either nodes or phones), we
-    // * update nodes.json (i.e, read the file, apply changes, store again)
-    // * and forward the news as-is
-    // NOTE that this can also be used for debugging / tuning
-    // by sending JSON messages manually (e.g. using a chat app)
-    vdisplay("arming callback for channel " + chan_nodes);
-    socket.on(chan_nodes, function(news_string){
-	vdisplay("received on channel " + chan_nodes + ": " + news_string)
-	update_complete_file_from_news(filename_status, news_string);
-	vdisplay("emitting on "+ chan_nodes + " chunk " + news_string);
-	io.emit(chan_nodes, news_string);
-    });
-    // this now is how complete status gets transmitted initially
-    vdisplay("arming callback for channel " + chan_nodes_request);
-    socket.on(chan_nodes_request, function(msg){
-	display("Received " + msg + " on channel " + chan_nodes_request);
-	emit_file(filename_status, chan_nodes);
-    });
+    prepare_persistent_channel(socket, 'nodes');
 
     //////////////////// phones
-    vdisplay("arming callback for channel " + chan_phones);
-    socket.on(chan_phones, function(news_string){
-	vdisplay("received on channel " + chan_phones + ": " + news_string)
-	update_complete_file_from_news(filename_phones, news_string);
-	vdisplay("emitting on "+ chan_phones + " chunk " + news_string);
-	io.emit(chan_phones, news_string);
-    });
-    // this now is how complete phones gets transmitted initially
-    vdisplay("arming callback for channel " + chan_phones_request);
-    socket.on(chan_phones_request, function(msg){
-	display("Received " + msg + " on channel " + chan_phones_request);
-	emit_file(filename_phones, chan_phones);
-    });
+    prepare_persistent_channel(socket, 'phones');
 
     //////////////////// leases
-    // it's simpler, we always propagate a complete list of leases
-    vdisplay("arming callback for channel " + chan_leases);
-    socket.on(chan_leases, function(leases){
-	vdisplay("Forwarding leases message " + leases);
-	io.emit(chan_leases, leases);
-    });
-
-    vdisplay("arming callback for channel " + chan_leases_request);
-    socket.on(chan_leases_request, function(anything){
-	display("Forwarding trigger message " + anything + " on channel "+ chan_leases_request);
-	io.emit(chan_leases_request, anything);
-    });
+    prepare_non_persistent_channel(socket, 'leases');
 
 });
 
@@ -141,7 +149,7 @@ function sync_read_file_as_string(filename){
 	    return contents;
 	}
     } catch(err){
-	display(filename + ": Could not read - " + err);
+	display(filename + ": could not read - " + err);
 	return "[]";
     }
 }
@@ -151,7 +159,7 @@ function sync_read_file_as_infos(filename) {
     try {
 	return JSON.parse(sync_read_file_as_string(filename));
     } catch(err) {
-	display(filename + ":could not parse JSON - " + err);
+	display(filename + ": could not parse JSON - " + err);
 	// return an empty list in this case
 	// useful for when the file does not exist yet
 	// a little hacky as this assumes all our files contain JSON lists
@@ -166,7 +174,7 @@ function sync_save_infos_in_file(filename, infos){
 	fs.writeFileSync(filename, JSON.stringify(infos), 'utf8');
 	vdisplay("sync (Over)wrote " + filename)
     } catch(err) {
-	display(filename + ":could not sync write - " + err);
+	display(filename + ": could not sync write - " + err);
     }
 }
 
@@ -246,17 +254,13 @@ function parse_args() {
 	console.log("scanning arg " + arg);
 	// verbose
 	if (arg == "-v")
-	    verbose_flag=true;
+	    verbose_flag = true;
 	// local dev (use json files in .)
 	if (arg == "-l") {
-	    filename_status = path.basename(filename_status);
-	    console.log("local mode : using " + filename_status);
-	    filename_phones = path.basename(filename_phones);
-	    console.log("local mode : using " + filename_phones);
+	    local_flag = true;
 	}
     });
-    vdisplay("complete file = " + filename_status);
-    vdisplay("complete file = " + filename_phones);
+    vdisplay("complete file for nodes = " + db_filename('node'));
 }
 
 // run http server
