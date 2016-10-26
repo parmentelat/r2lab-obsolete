@@ -121,8 +121,8 @@ var populate = function() {
 	    '<ul class="contents" id="ul-' + name + '"></ul>' + '</div>';
 	$("#contents").append(html);
     })
-    $("div#send-phones>input").val('{["id":1, "airplane_mode":"on"]}');
-    $("div#send-nodes>input").val('{["id":1, "available":"ko"]}');
+    $("div#send-phones>input").val('[{"id":1, "airplane_mode":"on"}]');
+    $("div#send-nodes>input").val('[{"id":1, "available":"ko"}]');
     $("div#send-leases>input").val('-- not recommended --');
     $("div#request-phones>input").val('REQUEST');
     $("div#request-nodes>input").val('REQUEST');
