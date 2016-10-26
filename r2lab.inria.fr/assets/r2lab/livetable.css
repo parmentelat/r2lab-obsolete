@@ -62,11 +62,11 @@
 }
 
 .livetable_header tr.all {
-    background-color: rgba(204, 199, 205, 0.63)
+    background-color: rgba(204, 199, 205, 0.63);
 }
 
 .livetable_header tr:not(.all) {
-    background-color: rgba(0, 200, 73, 0.26)
+    background-color: rgba(0, 200, 73, 0.26);
 }
 
 .custom-badge {

@@ -12,7 +12,7 @@
   font-size: .9em;
   font-family: "Source Sans Pro", sans-serif;
   color: #404042;
-  background-color: #fff;
+  background-color: rgba(204, 199, 205, 0.63);
   font-weight: bold;
   text-align: left;
   vertical-align: middle;
@@ -22,7 +22,7 @@
   font-size: 1.3em;
   font-family: "Source Sans Pro", sans-serif;
   color: #404042;
-  background-color: #fff;
+  background-color: rgba(204, 199, 205, 0.63);
   font-weight: bold;
 }
 .dt_value {
