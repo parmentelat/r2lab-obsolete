@@ -101,6 +101,9 @@ $(document).ready(function() {
             body += '<td class="dt_value">'+ res[1] +'</td>';
             //body += '<td class="dt_value"><a href="#">'+ res[1] +'</a></td>';
           }
+          else if(res[1].substr(0,1) == "|" && res[1].substr(res[1].length-1) == "|") {
+            body += '<td class="dt_value"><a href="javascript:void(0);" onclick="info_nodes('+node+');">'+ res[1].substr(1, res[1].length-1) +'</a></td>';
+          }
           else{
             body += '<td class="dt_value">'+ res[1] +'</td>';
           }
