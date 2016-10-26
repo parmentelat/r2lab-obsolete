@@ -1,5 +1,5 @@
 panel_name = 'node_details'
-
+var api;
 function pad(str){
   max = 2
   str = str.toString();
@@ -63,13 +63,15 @@ function create_slider(tab_file, tab_name) {
   </div>\
   ';
 
-  $('#nodes_tabs').append('<li class=""><a data-toggle="tab" href="#tab_gal">'+ tab_name +'</a></li>');
-  $('#nodes_tabs_content').append('<div id="tab_gal" class="tab-pane fade"><br>'+ tab_body +'</div>');
+  $('#nodes_tabs').append('<li class="active"><a data-toggle="tab" href="#tab_gal">'+ tab_name +'</a></li>');
+  $('#nodes_tabs_content').append('<div id="tab_gal" class="tab-pane fade active in"><br>'+ tab_body +'</div>');
 
-  jQuery("#gallery").unitegallery({
-		gallery_theme: "slider"
-	});
-}
+  	api = jQuery("#gallery").unitegallery({
+  		gallery_theme: "slider",
+      slider_enable_zoom_panel: true,
+      slider_scale_mode: "down",
+  	});
+  }
 
 
 function set_info(node, info) {
@@ -105,6 +107,7 @@ function set_info(node, info) {
       tab_body = '<br><p>No info about this yet.</p>';
     }
     if($.isArray(tab_file)){
+      // $('#nodes_tabs').append('<li class="'+ active1 +'"><a data-toggle="tab" href="#tab_'+ index +'">'+ tab_name +'</a></li>');
       create_slider(tab_file, tab_name)
     } else {
       $('#nodes_tabs').append('<li class="'+ active1 +'"><a data-toggle="tab" href="#tab_'+ index +'">'+ tab_name +'</a></li>');
