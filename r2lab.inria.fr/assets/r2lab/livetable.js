@@ -121,10 +121,13 @@ var TableNode = function (id) {
     }
 
     this.usrp_cell = function() {
+	var alt_text = "";
+	alt_text += (this.gnuradio_release) ? "gnuradio_release = " + this.gnuradio_release : "no gnuradio installed";
 	var text = this.usrp_type || 'none';
-	return (this.usrp_on_off == 'on') ? [text, 'ok']
-	    : (this.usrp_on_off == 'off') ? [text, 'ko']
-	    : [ text, 'error' ];
+	var cell = '<span title="' + alt_text + '">' + text + '</span>';
+	return (this.usrp_on_off == 'on') ? [cell, 'ok']
+	    : (this.usrp_on_off == 'off') ? [cell, 'ko']
+	    : [ cell, 'error' ];
     }
 
     this.release_cell = function(os_release) {
