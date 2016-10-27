@@ -29,6 +29,7 @@ function span_html(text, klass) {
 }
 
 var livetable_debug = false;
+ livetable_debug = true;
 
 //////////////////////////////
 var nb_nodes = 37;
@@ -37,16 +38,17 @@ var nb_nodes = 37;
 // their table row and cells get created through d3 enter mechanism
 var TableNode = function (id) {
     this.id = id;
-    badge = '<span class="custom-badge">'+id+'</span>'
 
     this.cells_data = [
-	[ badge, '' ],  // id
-	undefined,			// avail
-	undefined,			// on/off
-	undefined,			// ping
-	undefined,			// ssh
-	undefined,			// os_release
-	undefined,			// image_radical
+//	[ span_html(id, 'badge'), '' ],		// id
+	[ span_html(id, 'custom-badge'), '' ],	// id
+	undefined,				// avail
+	undefined,				// on/off
+	undefined,				// ping
+	undefined,				// ssh
+	undefined,				// os_release
+	undefined,				// uname
+	undefined				// image_radical
     ];
 
     // fully present nodes
@@ -71,11 +73,13 @@ var TableNode = function (id) {
     // don't bother if no change is detected
     this.update_from_news = function(node_info) {
 	var modified = false;
-	for (var prop in node_info)
+	for (var prop in node_info) {
+	    console.log("node_info['" + prop + "'] = " + node_info[prop]);
 	    if (node_info[prop] != this[prop]) {
 		this[prop] = node_info[prop];
 		modified = true;
 	    }
+	}
 	if (! modified) return;
 	// then rewrite actual representation in cells_data
 	// that will contain a list of ( html_text, class )
@@ -84,20 +88,25 @@ var TableNode = function (id) {
 	// available
 	this.cells_data[col++] =
 	    (this.available == 'ko') ?
-	    [ 'Out of order', 'error' ] : [ 'good to go', 'ok' ];
-	//
+	    [ span_html('', 'fa fa-ban'), 'error' ] :
+	    [ span_html('', 'fa fa-check'), 'ok' ];
+	// on/off
 	this.cells_data[col++] =
 	    this.cmc_on_off == 'fail' ? [ 'N/A', 'error' ]
 	    : this.cmc_on_off == 'on' ? [ span_html('', 'fa fa-toggle-on'), 'ok' ]
 	    : [ span_html('', 'fa fa-toggle-off'), 'ko' ];
+	// ping
 	this.cells_data[col++] =
 	    this.control_ping == 'on' ? [ span_html('', 'fa fa-link'), 'ok' ]
 	    : [ span_html('', 'fa fa-unlink'), 'ko' ];
+	// ssh
 	this.cells_data[col++] =
 	    this.control_ssh == 'on' ? [ span_html('', 'fa fa-circle'), 'ok' ]
 	    : [ span_html('', 'fa fa-circle-o'), 'ko' ];
+	//
 	this.cells_data[col++] = this.release_cell(this.os_release);
-	this.cells_data[col++] = this.image_cell(this.image_radical)
+	this.cells_data[col++] = this.uname_cell(this.uname);
+	this.cells_data[col++] = this.image_cell(this.image_radical);
 	// optional
 	if (livetable_show_rxtx_rates) {
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan0_rx_rate);
@@ -105,7 +114,8 @@ var TableNode = function (id) {
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_rx_rate);
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_tx_rate);
 	}
-	if (livetable_debug) console.log("after update_from_news -> " + this.data);
+	if (livetable_debug)
+	    console.log("after update_from_news on id=" + node_info['id'] + " -> " + this.cells_data);
     }
 
     this.release_cell = function(os_release) {
@@ -122,6 +132,10 @@ var TableNode = function (id) {
 	    return [ other_badge + ' (ssh OK)', klass ];
 	else
 	    return [ 'N/A', klass ];
+    }
+
+    this.uname_cell = function(uname) {
+	return [ uname, 'os' ];
     }
 
     this.image_cell = function(image_radical) {
@@ -191,11 +205,12 @@ function LiveTable() {
 	    .on('click', function(){self.toggle_view_mode();})
 	;
 	header_rows.append('th').html('Node');
-	header_rows.append('th').html('Availability');
-	header_rows.append('th').html('ON/OFF');
+	header_rows.append('th').html('Avail.');
+	header_rows.append('th').html('on/off');
 	header_rows.append('th').html('Ping');
 	header_rows.append('th').html('SSH');
 	header_rows.append('th').html('Last O.S.');
+	header_rows.append('th').html('Last uname');
 	header_rows.append('th').html('Last Image');
 	if (livetable_show_rxtx_rates) {
 	    header_rows.append('th').html('w0-rx').attr('class','rxtx');
