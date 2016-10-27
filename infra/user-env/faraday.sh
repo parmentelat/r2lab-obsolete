@@ -139,20 +139,20 @@ function snap () {
 alias snapshot=snap
 alias rsnap="rhubarbe snap"
 
-function maintenance () {
+function _maintenance () {
   python3 /root/r2lab/nodes/maintenance.py "$@"
 }
 
-function information () {
+function _information () {
   python3 /root/r2lab/nodes/info.py "$@"
 }
 
-function table () {
+function _table () {
   python3 /root/r2lab/nodes/table.py "$@"
 }
 alias tables=table
 
-function publish () {
+function _publish () {
   /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
   echo 'INFO: send info to r2lab website and updating...'
   ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
@@ -174,13 +174,13 @@ function normreboot () { py normalize2 fit reboot "$@" ; }
 # -> set NODES to fit01 fit03 fit05 and display it too
 function nodes () {
   if [ $1 == "publish" ]; then
-    publish
+    _publish
   elif [ $1 == "table" ]; then
-    table "${@:2}"
+    _table "${@:2}"
   elif [ $1 == "info" ]; then
-    information "${@:2}"
+    _information "${@:2}"
   elif [ $1 == "maintenance" ]; then
-    maintenance "${@:2}"
+    _maintenance "${@:2}"
   else
     [ -n "$1" ] && export NODES=$(norm "$@")
     echo "export NODES=\"$NODES\""
