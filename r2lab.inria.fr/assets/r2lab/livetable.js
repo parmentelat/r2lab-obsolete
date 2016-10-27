@@ -10,7 +10,6 @@ var sidecar_port_number = 443;
 
 var fedora_badge = '<img src="/assets/img/fedora-logo.png">';
 var ubuntu_badge = '<img src="/assets/img/ubuntu-logo.png">';
-var gnuradio_badge = '<img src="/assets/img/gnuradio-logo.png">';
 var other_badge = '<img src="/assets/img/other-logo.png">';
 
 // ready to fly as soon as the data comes in from monitor
@@ -135,11 +134,10 @@ var TableNode = function (id) {
 	var klass = 'os';
 	if (os_release == undefined)
 	    return [ "n/a", klass ];
-	var gr_badge = (os_release.search('gnuradio') >= 0) ? gnuradio_badge : '';
 	if (os_release.startsWith('fedora'))
-	    return [ fedora_badge + ' ' + os_release + ' ' + gr_badge, klass ];
+	    return [ fedora_badge + ' ' + os_release + ' ', klass ];
 	else if (os_release.startsWith('ubuntu'))
-	    return [ ubuntu_badge + ' ' + os_release + ' ' + gr_badge, klass ];
+	    return [ ubuntu_badge + ' ' + os_release + ' ', klass ];
 	else if (os_release == 'other')
 	    return [ other_badge + ' (ssh OK)', klass ];
 	else
