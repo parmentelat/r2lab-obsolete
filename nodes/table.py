@@ -60,14 +60,14 @@ LOC_DIR_INFO = 'info_dt/'
 def main(args):
     """
     """
-    nodes_i   = args.include_node
-    nodes_r   = args.remove_node
-    nodes_e   = args.edit_node
-    a_date    = args.a_date
-    attribute = args.attribute
-    value     = args.value
-    nodes     = args.nodes
-    drop      = args.drop
+    nodes_i   = args.include_node.lower()
+    nodes_r   = args.remove_node.lower()
+    nodes_e   = args.edit_node.lower()
+    a_date    = args.a_date.lower()
+    attribute = args.attribute.lower()
+    value     = args.value.lower()
+    nodes     = args.nodes.lower()
+    drop      = args.drop.lower()
 
     if nodes_e is None and nodes_i is None and nodes_r is None and not drop:
         check_node(nodes)
