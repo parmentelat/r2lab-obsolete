@@ -44,6 +44,7 @@ var TableNode = function (id) {
 	[ span_html(id, 'custom-badge'), '' ],	// id
 	undefined,				// avail
 	undefined,				// on/off
+	undefined,				// usrp-on-off
 	undefined,				// ping
 	undefined,				// ssh
 	undefined,				// os_release
@@ -95,6 +96,8 @@ var TableNode = function (id) {
 	    this.cmc_on_off == 'fail' ? [ 'N/A', 'error' ]
 	    : this.cmc_on_off == 'on' ? [ span_html('', 'fa fa-toggle-on'), 'ok' ]
 	    : [ span_html('', 'fa fa-toggle-off'), 'ko' ];
+	// usrp
+	this.cells_data[col++] = this.usrp_cell();
 	// ping
 	this.cells_data[col++] =
 	    this.control_ping == 'on' ? [ span_html('', 'fa fa-link'), 'ok' ]
@@ -116,6 +119,13 @@ var TableNode = function (id) {
 	}
 	if (livetable_debug)
 	    console.log("after update_from_news on id=" + node_info['id'] + " -> " + this.cells_data);
+    }
+
+    this.usrp_cell = function() {
+	var text = this.usrp_type || 'none';
+	return (this.usrp_on_off == 'on') ? [text, 'ok']
+	    : (this.usrp_on_off == 'off') ? [text, 'ko']
+	    : [ text, 'error' ];
     }
 
     this.release_cell = function(os_release) {
@@ -205,13 +215,14 @@ function LiveTable() {
 	    .on('click', function(){self.toggle_view_mode();})
 	;
 	header_rows.append('th').html('Node');
-	header_rows.append('th').html('Avail.');
+	header_rows.append('th').html('avail.');
 	header_rows.append('th').html('on/off');
-	header_rows.append('th').html('Ping');
-	header_rows.append('th').html('SSH');
-	header_rows.append('th').html('Last O.S.');
-	header_rows.append('th').html('Last uname');
-	header_rows.append('th').html('Last Image');
+	header_rows.append('th').html('usrp');
+	header_rows.append('th').html('ping');
+	header_rows.append('th').html('ssh');
+	header_rows.append('th').html('last O.S.');
+	header_rows.append('th').html('last uname');
+	header_rows.append('th').html('last image');
 	if (livetable_show_rxtx_rates) {
 	    header_rows.append('th').html('w0-rx').attr('class','rxtx');
 	    header_rows.append('th').html('w0-tx').attr('class','rxtx');

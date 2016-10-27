@@ -36,6 +36,8 @@ nodes_field_possible_values = {
     'gnuradio_release' : ['3.7.10', '', None],
     'uname' : [ 'foo', '4.2.300-generic' ],
     'image_radical' : [ 'ubuntu-15.04', 'oai-scrambler', '', None ],
+    'usrp_type' : 12 * [ None ] + [ 'b210', 'n210', 'usrp1', 'usrp2'],
+    'usrp_on_off' : 3 * ['on'] + ['off'],
 #    'wlan0_rx_rate' : wlan_rates_range,
 #    'wlan0_tx_rate' : wlan_rates_range,
 #    'wlan1_rx_rate' : wlan_rates_range,
