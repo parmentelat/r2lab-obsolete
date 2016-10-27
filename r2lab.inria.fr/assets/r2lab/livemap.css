@@ -32,3 +32,8 @@ text.node-label {
     text-anchor: middle;
     alignment-baseline: middle;
 }
+
+circle.node-status:hover, circle.unavailable:hover, text.node-label:hover {
+    cursor: pointer;
+}
+

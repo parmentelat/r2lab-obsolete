@@ -373,9 +373,6 @@ function LiveMap() {
 	    .attr('cx', function(node){return node.x;})
 	    .attr('cy', function(node){return node.y;})
 	    .attr('id', function(node){return node.id;})
-	    .on('mouseover', function() {
-		circles.attr('cursor', 'pointer');
-	    })
 	    .on('click', function() {
 		// call an external function (located in info_nodes.js) to show de nodes details
 		info_nodes(this.id)
@@ -397,9 +394,6 @@ function LiveMap() {
 	    .attr('x', function(node){return node.x;})
 	    .attr('y', function(node){return node.y;})
 	    .attr('id', function(node){return node.id;})
-	    .on('mouseover', function() {
-		labels.attr('cursor', 'pointer');
-	    })
 	    .on('click', function() {
 		//call a externa function (located in info_nodes.js) to show de nodes details
 		info_nodes(this.id)
@@ -422,9 +416,6 @@ function LiveMap() {
 	    .attr('id', function(node){return node.id;})
 	    .attr('cy', function(node){return node.y;})
 	    .attr('r', function(node){return livemap_radius_unavailable;})
-	    .on('mouseover', function() {
-		unavailables.attr('cursor', 'pointer');
-	    })
 	    .on('click', function() {
 		//call a externa function (located in info_nodes.js) to show de nodes details
 		info_nodes(this.id)
