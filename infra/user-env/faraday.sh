@@ -141,46 +141,16 @@ alias rsnap="rhubarbe snap"
 
 function maintenance () {
   python3 /root/r2lab/nodes/maintenance.py "$@"
-  if [ $? -eq 0 ]; then
-    for i in "$@" ; do
-      if [[ $i == "-p" || $i == "--publish" ]] ; then
-        publish
-      fi
-    done
-  else
-    echo 'ERROR: something went wrong in detail command. Type info -h to see options.'
-  fi
-  echo 'INFO: do not forget to publish the updates. Type publish to do it!'
 }
 
 function information () {
   python3 /root/r2lab/nodes/info.py "$@"
-  if [ $? -eq 0 ]; then
-    for i in "$@" ; do
-      if [[ $i == "-p" || $i == "--publish" ]] ; then
-        publish
-      fi
-    done
-  else
-    echo 'ERROR: something went wrong in detail command. Type info -h to see options.'
-  fi
-  echo 'INFO: do not forget to publish the updates. Type publish to do it!'
 }
 
-function detail () {
-  python3 /root/r2lab/nodes/detail.py "$@"
-  if [ $? -eq 0 ]; then
-    for i in "$@" ; do
-      if [[ $i == "-p" || $i == "--publish" ]] ; then
-        publish
-      fi
-    done
-  else
-    echo 'ERROR: something went wrong in detail command. Type info -h to see options.'
-  fi
-  echo 'INFO: do not forget to publish the updates. Type publish to do it!'
+function table () {
+  python3 /root/r2lab/nodes/table.py "$@"
 }
-alias details=detail
+alias tables=table
 
 function publish () {
   /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
@@ -203,9 +173,19 @@ function normreboot () { py normalize2 fit reboot "$@" ; }
 # nodes 1 3 5
 # -> set NODES to fit01 fit03 fit05 and display it too
 function nodes () {
+  if [ $1 == "publish" ]; then
+    publish
+  elif [ $1 == "table" ]; then
+    table "${@:2}"
+  elif [ $1 == "info" ]; then
+    information "${@:2}"
+  elif [ $1 == "maintenance" ]; then
+    maintenance "${@:2}"
+  else
     [ -n "$1" ] && export NODES=$(norm "$@")
     echo "export NODES=\"$NODES\""
     echo "export NBNODES=$(nbnodes)"
+  fi
 }
 alias n=nodes
 doc-selection nodes "(alias n) show or define currently selected nodes; eg nodes 1-10,12 13 ~5"

@@ -65,7 +65,7 @@ class FilesProxy(View):
         """
         directory    = os.path.dirname(os.path.abspath(__file__))
         directory    = directory+'/nodes/'
-        the_file     = 'detail_nodes.json'
+        the_file     = 'table_nodes.json'
         try:
             with open(directory + the_file) as data_file:
                 data = json.load(data_file)
@@ -74,7 +74,7 @@ class FilesProxy(View):
         except Exception as e:
             data = {}
             print("Failure in read node detail file - {} - {} - {}".format(directory, the_file, e))
-            return self.http_response_from_struct(detail_nodes)
+            return self.http_response_from_struct(data)
 
     def get_nigthly(self):
         """

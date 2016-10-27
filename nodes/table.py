@@ -3,7 +3,7 @@
 # Author file: Mario Zancanaro <mario.zancanaro@inria.fr>
 #
 """
-The detail script used to store nodes info details.
+The table script used to store nodes info.
 """
 
 from argparse import ArgumentParser
@@ -34,8 +34,6 @@ parser.add_argument("-a", "--attribute", dest="attribute",
                     help="Single attribute to remember the maintenance action")
 parser.add_argument("-v", "--value", dest="value",
                     help="The value of the attribute")
-parser.add_argument("-p", "--publish", dest="publish", action='store_true',
-                    help="Publish the results")
 parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
                     help="Drop and initialize the file. All data is erased")
 
@@ -46,7 +44,7 @@ try:
     os.listdir(FILEDIR)
 except Exception as e:
     FILEDIR = "/Users/nano/Documents/Inria/r2lab/nodes/"
-FILENAME = "detail_nodes.json"
+FILENAME = "table_nodes.json"
 
 try:
     with open(os.path.join(FILEDIR, FILENAME)) as data_file:
@@ -69,10 +67,9 @@ def main(args):
     attribute = args.attribute
     value     = args.value
     nodes     = args.nodes
-    publish   = args.publish
     drop      = args.drop
 
-    if nodes_e is None and nodes_i is None and nodes_r is None and not drop and not publish:
+    if nodes_e is None and nodes_i is None and nodes_r is None and not drop:
         check_node(nodes)
     if nodes_i is not None:
         nd, attribute, value = nodes_i
@@ -82,8 +79,6 @@ def main(args):
     if nodes_e is not None:
         nd, old_attr, new_attr = nodes_e
         edit_node(nd, old_attr, new_attr, a_date)
-    if publish:
-        print("INFO: publish started...")
     if drop:
         reset_file()
 

@@ -32,8 +32,6 @@ parser.add_argument("-t+", dest="tabp", action='store_true',
                     help="Add node tab.")
 parser.add_argument("-t", dest="tabl",
                     help="Remove node tab.")
-parser.add_argument("-p", "--publish", dest="publish", action='store_true',
-                    help="Publish the results")
 parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
                     help="Drop and initialize the nodes information. All data is erased.")
 
@@ -66,7 +64,6 @@ def main(args):
     nodes   = args.nodes
     tabp    = args.tabp
     tabl    = args.tabl
-    publish = args.publish
 
     if nodes_i is not None:
         try:
@@ -80,8 +77,6 @@ def main(args):
         if tabl:
             tabl = int(tabl) - 1
         remove_node(nodes, tabl)
-    elif publish:
-        print("INFO: publish started...")
     elif drop:
         reset_file()
     else:

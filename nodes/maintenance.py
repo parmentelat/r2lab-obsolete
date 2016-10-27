@@ -34,8 +34,6 @@ parser.add_argument("-m", "--message", dest="message",
                     help="Single message to remember the maintenance action")
 parser.add_argument("-e", "--reset", dest="reset", choices=['yes','no'],
                     help="A flag that indicates if the statistics must be reset")
-parser.add_argument("-p", "--publish", dest="publish", action='store_true',
-                    help="Publish the results")
 parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
                     help="Drop and initialize the file. All data is erased")
 
@@ -67,16 +65,13 @@ def main(args):
     reset   = args.reset
     nodes   = args.nodes
     drop    = args.drop
-    publish = args.publish
 
-    if nodes_i is None and nodes_r is None and not drop and not publish:
+    if nodes_i is None and nodes_r is None and not drop:
         check_node(nodes)
     if nodes_i is not None:
         include_node(nodes_i, a_date, message, reset)
     if nodes_r is not None:
         remove_node(nodes_r, a_date)
-    if publish:
-        print("INFO: publish started...")
     if drop:
         reset_file()
 

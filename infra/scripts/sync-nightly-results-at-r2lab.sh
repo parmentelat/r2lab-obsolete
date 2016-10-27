@@ -6,7 +6,7 @@ rsync -a /root/r2lab/nightly/nightly_data.json root@r2lab.inria.fr:/root/r2lab/r
 #sync maintenance db
 rsync -a /root/r2lab/nodes/maintenance_nodes.json root@r2lab.inria.fr:/root/r2lab/r2lab.inria.fr/files/nodes/ > /var/log/sync-maintenance.log 2>&1;
 ##sync details db
-rsync -a /root/r2lab/nodes/detail_nodes.json root@r2lab.inria.fr:/root/r2lab/r2lab.inria.fr/files/nodes/ > /var/log/sync-detail.log 2>&1;
+rsync -a /root/r2lab/nodes/table_nodes.json root@r2lab.inria.fr:/root/r2lab/r2lab.inria.fr/files/nodes/ > /var/log/sync-table.log 2>&1;
 ##sync info db, images and md files
 rsync -a /root/r2lab/nodes/info_nodes.json root@r2lab.inria.fr:/root/r2lab/r2lab.inria.fr/files/nodes/ > /var/log/sync-info.log 2>&1;
 rsync -rtu --delete /root/r2lab/nodes/images/ root@r2lab.inria.fr:/root/r2lab/r2lab.inria.fr/files/nodes/images/ > /var/log/sync-info-images.log 2>&1;

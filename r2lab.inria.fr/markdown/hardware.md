@@ -61,8 +61,8 @@ tab: platform
     <div class="col-md-12 new_pad">
       <h3>Nodes comparative table</h3>
       <!-- DyNAMIC TABLE CREATED BY CMD line in faraday-->
-      <style type="text/css"> @import url("/assets/r2lab/detail_nodes.css"); </style>
-      <script type="text/javascript" src="/assets/r2lab/detail_nodes.js"></script>
+      <style type="text/css"> @import url("/assets/r2lab/table_nodes.css"); </style>
+      <script type="text/javascript" src="/assets/r2lab/table_nodes.js"></script>
       <table id="comparative" class="table table-condensed dt_table">
         <thead><tr><th>&nbsp;</th></tr></thead>
         <tbody><tr><td>no info available yet</td></tr></tbody>
