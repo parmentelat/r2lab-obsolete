@@ -266,11 +266,9 @@ var MapNode = function (node_spec) {
 	    return "on";
     }
 
-    ////////// attributes for the gnuradio icon
-    this.usrp_status_color = function() {
-	return (this.usrp_on_off == 'on') ? 'green' :
-	    (this.usrp_on_off == 'off') ? 'red' :
-	    d3.rgb('blue');
+    ////////// attributs of the usrp icons
+    this.usrp_display = function() {
+	return (this.usrp_type) ? "on" : "none";
     }
 
     this.usrp_status_filter = function() {
@@ -288,9 +286,31 @@ var MapNode = function (node_spec) {
 	return "url(#" + filter_name + ")";
     }
 
-    this.usrp_display = function() {
-	return (this.usrp_type) ? "on" : "none";
+    // full size
+    usrp_w = 13;
+    usrp_h = 23;
+    // how much we move from the north-east intersection
+    // with node radius circle
+    usrp_delta_x = 2;
+    usrp_delta_y = 3;
+    // off units get rendered a bit smaller
+    usrp_off_ratio = .7;
+    // 0.7 stands for sin(pi/2)
+    this.usrp_offset_x = function() {
+	return this.node_status_radius() * 0.7 + usrp_delta_x;
     }
+    this.usrp_offset_y = function() {
+	return this.node_status_radius() * 0.7 + usrp_delta_y;
+    }
+    this.usrp_x = function() {
+	return this.x + this.usrp_offset_x(); }
+    this.usrp_y = function() {
+	return this.y - (this.usrp_offset_y() + this.usrp_h()); }
+    this.usrp_w = function() {
+	return usrp_w * (this.usrp_on_off == "on" ? 1 : usrp_off_ratio); }
+    this.usrp_h = function() {
+	return usrp_h * (this.usrp_on_off == "on" ? 1 : usrp_off_ratio); }
+
 }
 
 var get_node_id = function(node) {return node.id;}
@@ -453,7 +473,8 @@ function LiveMap() {
 	    .attr('display', function(node){return node.unavailable_display();})
 	;
 
-	// squares intend to show usrp status
+	// these rectangles are placeholders for the various icons
+	// that are meant to show usrp status
 	usrp_w = 13;
 	usrp_h = 23;
 	usrp_offset_x = 17;
@@ -464,17 +485,16 @@ function LiveMap() {
 	    .append('rect')
 	    .attr('class', 'usrp-status')
 	    .attr('id', function(node){return node.id;})
-	    .attr('x', function(node){return node.x + usrp_offset_x;})
-	    .attr('y', function(node){return node.y - (usrp_offset_y + usrp_h);})
-	    .attr('width', usrp_w)
-	    .attr('height', usrp_h)
 	    .attr('display', 'none')
 	;
 	usrp_rects.transition()
 	    .duration(animation_duration)
-	    .attr('fill', function(node){return node.usrp_status_color();})
-	    .attr('filter', function(node){return node.usrp_status_filter();})
 	    .attr('display', function(node){return node.usrp_display();})
+	    .attr('filter', function(node){return node.usrp_status_filter();})
+	    .attr('x', function(node){return node.usrp_x();})
+	    .attr('y', function(node){return node.usrp_y();})
+	    .attr('width', function(node){return node.usrp_w();})
+	    .attr('height', function(node){return node.usrp_h();})
 	;
     }
 
