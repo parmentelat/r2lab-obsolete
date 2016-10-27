@@ -53,15 +53,19 @@ var port_number = 443;
 var verbose_flag = false;
 // use -l to turn on
 var local_flag = false;
+// default is to be incremental - i.e. emit only differences
+// use -c (--complete) to go back to the mode where the complete
+// news string gets emitted
+var incremental_flag = true;
 
 // always display
-function display(args){
+function display(args) {
     for (var i in arguments) {
        console.log(new Date() + " sidecar " + arguments[i]);
     }
 }
 // display only if in verbose mode
-function vdisplay(args){
+function vdisplay(args) {
     if (verbose_flag)
 	display.apply(this, arguments);
 }
@@ -77,31 +81,45 @@ io.on('connection', function(socket){
     });
 });
 
-// when receiving something on a status channel (that is, either nodes or phones), we
-// * update nodes.json (i.e, read the file, apply changes, store again)
-// * and forward the news as-is
-// NOTE that this can also be used for debugging / tuning
-// by sending JSON messages manually (e.g. using a chat app)
-//
 // this code is common to the 2 channels associated
 // to persistent data (nodes and phones)
+// when receiving something on a status channel (that is, either nodes or phones), we
+// * update nodes.json (i.e, read the file, apply changes, store again)
+// * and then, according to incremental_mode, we:
+//   * either forward the news as-is if incremental_mode is off
+//   * or forward the smallest delta that describes the changes if it is on
 function prepare_persistent_channel(socket, name) {
     var info_channel = info_channel_name(name);
     var filename = db_filename(name);
     vdisplay("arming callback for channel " + info_channel);
-    socket.on(info_channel, function(news_string){
+    socket.on(info_channel, function(news_string) {
 	vdisplay("received on channel " + info_channel + " chunk " + news_string)
-	update_complete_file_from_news(filename, news_string);
-	vdisplay("emitting on "+ info_channel + " chunk " + news_string);
-	io.emit(info_channel, news_string);
+	infos_to_emit = update_dbfile_from_news(filename, news_string, incremental_flag);
+	// avoid the noise of sending empty news
+	if (infos_to_emit.length >= 1) {
+	    string_to_emit = JSON.stringify(infos_to_emit);
+	    vdisplay("emitting on "+ info_channel + " chunk " + string_to_emit);
+	    io.emit(info_channel, string_to_emit);
+	} else {
+	    vdisplay("no news found in news_string (was "
+		     + news_string.length + " chars long)");
+	}
     });
     // this now is how complete status gets transmitted initially
     var request_channel = request_channel_name(name);
     vdisplay("arming callback for channel " + request_channel);
-    socket.on(request_channel, function(msg){
+    socket.on(request_channel, function(msg) {
 	display("Received " + msg + " on channel " + request_channel);
+	// feature : if we can find 'CLEAR' in the text, we clear our own db
+	if (msg.indexOf('CLEAR') != -1) {
+	    clean_dbfile(filename);
+	} 
 	emit_file(filename, info_channel);
     });
+}
+
+function clean_dbfile(filename) {
+    console.log("clean_dbfile : not implemented yet");
 }
 
 // non-persistent channels are simpler,
@@ -140,7 +158,7 @@ io.on('connection', function(socket){
 function sync_read_file_as_string(filename){
     try {
 	var contents = fs.readFileSync(filename, 'utf8');
-	vdisplay("sync read (1) " + filename + " -> " + contents);
+	vdisplay("sync read " + filename + " -> " + contents.length + " chars");
 	if (! contents) {
 	    display(filename + ": WARNING, could not read");
 	    // artificially return an empty list
@@ -167,9 +185,21 @@ function sync_read_file_as_infos(filename) {
     }
 }
 
+// utility to open a file and broadcast its contents on channel
+function emit_file(filename, channel){
+    var complete_string = sync_read_file_as_string(filename);
+    if (complete_string) {
+	//vdisplay("emit_file: sending on channel " + channel + ":" + complete_string);
+	vdisplay("emit_file: sending on channel " + channel + ":" + complete_string.length + " chars");
+	io.emit(channel, complete_string);
+    } else {
+	display("OOPS - not emitting - empty contents found in " + filename)
+    }
+}
+
 // convenience function to save a list of JS infos (records) into a file
 // we do everything synchroneously to avoid trouble
-function sync_save_infos_in_file(filename, infos){
+function sync_save_dbfile(filename, infos){
     try{
 	fs.writeFileSync(filename, JSON.stringify(infos), 'utf8');
 	vdisplay("sync (Over)wrote " + filename)
@@ -178,86 +208,102 @@ function sync_save_infos_in_file(filename, infos){
     }
 }
 
-// merge news info into complete infos; return new complete
-function merge_news_into_complete(complete_infos, news_infos){
-    vdisplay("ENTERING merge with complete = " + complete_infos);
-    vdisplay("ENTERING merge with news = " + news_infos);
-    for (var nav=0; nav < news_infos.length; nav++) {
-	var node_info = news_infos[nav];
-	var id = node_info.id;
-	var found = false;
-	for (var nav2=0; nav2 < complete_infos.length; nav2++) {
-	    var complete_info = complete_infos[nav2];
-	    if (complete_info['id'] == id) {
-		found = true;
-		// copy all contents from node_info into complete_infos
-		for (var prop in node_info)
-		    if (node_info[prop] != undefined)
-			complete_info[prop] = node_info[prop];
-		// we're done, skip rest of search in complete_infos
-		break;
-	    }
-	}
-	// complete gets created empty at the very beginning
-	// so, if id is not yet known, add it as-is
-	if (! found)
-	    complete_infos.push(node_info);
-    }
-    vdisplay("EXITING merge with complete = " + complete_infos);
-    return complete_infos;
-}
-
-
-// utility to open a file and broadcast its contents on channel
-function emit_file(filename, channel){
-    var complete_string = sync_read_file_as_string(filename);
-    if (complete_string) {
-	vdisplay("emit_file: sending on channel " + channel + ":" + complete_string);
-	io.emit(channel, complete_string);
-    } else {
-	display("OOPS - empty contents in " + filename)
-    }
-}
-
 // convenience function to
 // (*) open and read the complete status file - e.g. nodes.json
 // (*) merge new info into that dictionary
 // (*) save result in same file
-// (*) return the dictionaries to be sent as news
-function update_complete_file_from_news(filename, news_string){
+// (*) return object is the infos to be broadcasted
+//   (*) if incremental_mode == false (traditional mode)
+//       this is essentially (the infos for) news_string as-is
+//   (*) if incremental_mode == true,
+//       only the changes to the db are reported
+function update_dbfile_from_news(filename, news_string, incremental_mode) {
     if (news_string == "") {
-	display("OOPS - empty news feed - ignored");
-	return;
+	display("OOPS - empty news feed - ignoring");
+	return [];
     }
     try {
 	// start from the complete infos
 	var complete_infos = sync_read_file_as_infos(filename);
 	// convert string into infos
 	var news_infos = JSON.parse(news_string);
-	vdisplay("updating complete file with " + news_infos.length + " news infos");
-	// merge both
-	complete_infos = merge_news_into_complete(complete_infos, news_infos);
-//	vdisplay("merged news : " + JSON.stringify(news_infos));
-	// save result
-	sync_save_infos_in_file(filename, complete_infos);
-	return complete_infos;
+	vdisplay("updating dbfile with " + news_infos.length + " news infos");
+	// merge both and save in file
+	delta_infos = merge_news_into_complete(complete_infos, news_infos, filename);
+	// xxx
+	return incremental_mode ? delta_infos : news_infos;
     } catch(err) {
-	display(" OOPS - unexpected exception in update_complete_file_from_news",
-		"news_string is " + news_string,
+	display(" OOPS - unexpected exception in update_dbfile_from_news",
+		"news_string was " + news_string,
 		"strack trace is " + err.stack);
+	return [];
     }
 }
+
+// merge news info into complete infos
+// save complete infos if filename is provided
+// return delta_infos, the smallest set of infos
+// that describe the changes from previous db state
+function merge_news_into_complete(complete_infos, news_infos, filename) {
+    var delta_infos = [];
+    news_infos.forEach(function(news_info) {
+	var id = news_info.id;
+	var item_already_present_in_db = false;
+	complete_infos.forEach(function(complete_info) {
+	    // search for corresponding item in complete db
+	    if (complete_info['id'] == id) {
+		item_already_present_in_db = true;
+		items_has_changes = false;
+		var delta_info;
+		// copy all contents from news_info into complete_infos
+		for (var prop in news_info) {
+		    // do we have change for that node x prop
+		    if ( (news_info[prop] != undefined) &&
+			 (complete_info[prop] != news_info[prop]) ) {
+			// is this the first change detected for that node
+			if ( ! items_has_changes) {
+			    items_has_changes = true;
+			    delta_info = { 'id' : id };
+			    delta_infos.push(delta_info);
+			}
+			// check if we need to create a delta_info 
+			complete_info[prop] = news_info[prop];
+			delta_info[prop] = news_info[prop];
+		    }
+		}
+		// we're done searching for this item
+		// skip rest of search in complete_infos
+		return;
+	    }
+	})
+	// complete gets created empty at the very beginning
+	// so, if id is not yet known, add it as-is
+	if (! item_already_present_in_db) {
+	    complete_infos.push(news_info);
+	    delta_infos.push(news_info);
+	}
+    })
+    if (filename) {
+	sync_save_dbfile(filename, complete_infos);
+    }
+
+    return delta_infos;
+}
+
+////////////////////////////////////////
 function parse_args() {
     // very rough parsing of command line args - to set verbosity
     var argv = process.argv.slice(2);
     argv.forEach(function (arg, index, array) {
 	console.log("scanning arg " + arg);
 	// verbose
-	if (arg == "-v")
+	if (arg == "-v") {
 	    verbose_flag = true;
 	// local dev (use json files in .)
-	if (arg == "-l") {
+	} else if (arg == "-l") {
 	    local_flag = true;
+	} else if (arg == "-c") {
+	    incremental_flag = false;
 	}
     });
     vdisplay("complete file for nodes = " + db_filename('node'));
@@ -273,7 +319,9 @@ function run_server() {
     try {
 	http.listen(port_number, function(){
 	    display('listening on *:' + port_number);
-	    display('verbose mode is ' + verbose_flag);
+	    display('verbose flag is ' + verbose_flag);
+	    display('local flag is ' + local_flag);
+	    display('incremental mode is ' + incremental_flag);
 	});
     } catch (err) {
 	console.log("Could not run http server on port " + port_number);
