@@ -167,8 +167,8 @@ var ident = function(d) { return d; };
 var get_node_id = function(node){return node.id;}
 var get_node_data = function(node){return node.cells_data;}
 // rewriting info should happen in update_from_news
-var get_html = function(tuple) {return tuple[0];}
-var get_class = function(tuple) {return tuple[1];}
+var get_html = function(tuple) {return (tuple === undefined) ? 'n/a' : tuple[0];}
+var get_class = function(tuple) {return (tuple === undefined) ? '' : tuple[1];}
 
 //////////////////////////////
 function LiveTable() {
