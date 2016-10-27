@@ -69,23 +69,8 @@
     background-color: rgba(0, 200, 73, 0.26);
 }
 
-.custom-badge {
-  cursor: pointer;
-  border-radius: 50%;
-  font-size: .9em;
-  border: .1em solid #404042;
-  width: 22px;
-  height: 22px;
-  /*font-weight: bold;*/
-  line-height: 20px;
-  display: block;
-  text-align: center;
-  cursor: pointer;
-  color: #404042;
-  padding-left: .1em;
-  line-height: 1.9em !important;
+.pointer {
+    cursor: pointer;
+    font-weight: normal;
 }
 
-.custom-badge-on {
-  color: #5EAE10;
-}

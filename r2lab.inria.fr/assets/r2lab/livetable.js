@@ -40,8 +40,7 @@ var TableNode = function (id) {
     this.id = id;
 
     this.cells_data = [
-//	[ span_html(id, 'badge'), '' ],		// id
-	[ span_html(id, 'custom-badge'), '' ],	// id
+	[ span_html(id, 'badge pointer'), '' ],	// id
 	undefined,				// avail
 	undefined,				// on/off
 	undefined,				// usrp-on-off

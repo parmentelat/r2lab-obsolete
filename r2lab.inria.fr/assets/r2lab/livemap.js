@@ -374,7 +374,7 @@ function LiveMap() {
 		var node_info = nodes_info[i];
 		var id = node_info['id'];
 		var node = this.locate_node_by_id(id);
-    if (node != undefined)
+		if (node != undefined)
 		    node.update_from_news(node_info);
 		else
 		    console.log("livemap: could not locate node id " + id + " - ignored");
@@ -389,24 +389,23 @@ function LiveMap() {
 
     this.animate_changes = function() {
 	var svg = d3.select('div#livemap_container svg');
-	var circles = svg.selectAll('circle.op-status')
+	var circles = svg.selectAll('circle.node-status')
 	    .data(this.nodes, get_node_id);
 	circles.enter()
 	    .append('circle')
-	    .attr('class', 'op-status')
+	    .attr('class', 'node-status')
 	    .attr('cx', function(node){return node.x;})
 	    .attr('cy', function(node){return node.y;})
-      .attr('id', function(node){return node.id;})
-      .on('mouseover', function() {
-        circles.attr('cursor', 'pointer');
-      })
-      .on('click', function() {
-        //call a externa function (located in info_nodes.js) to show de nodes details
-        info_nodes(this.id)
-      })
+	    .attr('id', function(node){return node.id;})
+	    .on('mouseover', function() {
+		circles.attr('cursor', 'pointer');
+	    })
+	    .on('click', function() {
+		// call an external function (located in info_nodes.js) to show de nodes details
+		info_nodes(this.id)
+	    })
 	;
-	circles
-	    .transition()
+	circles.transition()
 	    .duration(500)
 	    .attr('r', function(node){return node.op_status_radius();})
 	    .attr('fill', function(node){return node.op_status_color();})
