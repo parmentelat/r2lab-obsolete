@@ -3,9 +3,6 @@
 // we should have a single livemap object with everything else shoved in there
 
 ////////// configurable
-// set this to true if you want to see radio traffic
-var livemap_show_rxtx_rates = false;
-
 // the space around the walls in the canvas
 var livemap_margin_x = 50, livemap_margin_y = 50;
 
@@ -100,14 +97,6 @@ var walls_radius = 30;
 // pillars - derived from the walls
 var pillar_radius = 16;
 
-// scale used for rxtx ticks
-// hard-coded for now; assuming max is around 20 Mbps
-// and visual max should be around 20 pixels
-var rxtx_scale = d3.scale.linear()
-    .domain([0, 20000000])
-    .range([0,20]);
-
-
 var livemap_debug = false;
 
 //////////////////////////////////////// nodes
@@ -179,10 +168,6 @@ var MapNode = function (node_spec) {
 		modified = true;
 	    }
 	if (! modified) return;
-	// prepare a 4-items data list for ticks
-	// the order is important
-	this.rxtx = [ this.wlan0_rx_rate, this.wlan0_tx_rate,
-		      this.wlan1_rx_rate, this.wlan1_tx_rate, ];
     }
 
     this.is_available = function() {
@@ -282,7 +267,6 @@ var MapNode = function (node_spec) {
     }
 }
 
-var rxtx_height = function(d) { return rxtx_scale(d); };
 var get_node_id = function(node) {return node.id;}
 
 //////////////////////////////
@@ -460,54 +444,6 @@ function LiveMap() {
 	    .attr('display', function(node){return node.unavailable_display();})
 	;
 
-	if (livemap_show_rxtx_rates) {
-	    var ticks_groups = svg.selectAll('g.ticks')
-		.data(this.nodes, get_node_id);
-	    ticks_groups.enter()
-		.append('g')
-		.attr("transform",
-		      function(node){ return "translate(" + node.x + "," + node.y + ")";})
-		.attr('class', 'ticks')
-	    ;
-	    ticks_groups
-		.attr('display', function(node) {
-		    return node.is_alive() ? "on" : "none";
-		})
-	    ;
-	    var ticks = ticks_groups.selectAll('rect')
-		.data(function(node){return node ? node.rxtx || 0. : 0.;});
-	    ticks.enter()
-		.append('rect')
-		.attr('class', function(d, i) {return 'rxtx' + i;})
-		.attr('width', 3)
-		.attr('height', 0)
-		.attr('x', function(node){return node ? node.x : 0;})
-		.attr('y', function(node){return node ? node.y : 0;})
-		.attr('stroke', '#bbb')
-		.attr('fill', '#fff')
-	    ;
-	    // the angle for the ticks
-	    var alpha = 70;
-	    ticks
-		.transition()
-		.duration(100)
-	    // this might be undefined, but should still work
-		.attr('height', rxtx_height)
-	    // each rxtx tick is included in a <g> already at the right position
-	    // we set a rotate angle to get the desired effect
-	    // + a translation that puts the tick off the center
-	    // compute angle
-	    // 0 : 90-alpha
-	    // 1 : 90+alpha
-	    // 2 & 3 : 0 & 1 + 180 resp.
-		.attr('transform',
-		      function(data, i){
-			  var even = i%2 ? 1 : -1;
-			  var half_rounds = Math.floor(i/2);
-			  var angle = (90+even*(90-alpha)) + half_rounds*180;
-			  return "rotate(" + angle + ")" + " translate(0, 22)";})
-	    ;
-	} /* livemap_show_rxtx_rates */
     }
 
     // filters nice_float(for background)s
