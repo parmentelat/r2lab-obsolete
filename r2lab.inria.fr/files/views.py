@@ -123,7 +123,7 @@ class FilesProxy(View):
                 file  = d['value']
                 ftype = os.path.splitext(file)[1]
 
-                if ftype in content:
+                if ftype.lower() in content:
                     try:
                         with open(directory + file) as f:
                             lines = f.readlines()
@@ -133,7 +133,7 @@ class FilesProxy(View):
                         d['value'] = '<div class="in_md">{}</div>'.format(d['value'])
                     except Exception as e:
                         pass
-                elif ftype in images:
+                elif ftype.lower() in images:
                     img_tag     = '<img src="files/nodes/{}" alt="" style="cursor: pointer;" alt="click to enlarge" width="60" onclick=show_image("files/nodes/{}");>'.format(file, file)
                     d['value']  = img_tag
         return new_data

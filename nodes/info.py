@@ -304,21 +304,21 @@ def touch_file(files):
 
     for file in files:
         ftype  = os.path.splitext(file)[1]
-        if not ftype in allow:
+        if not ftype.lower() in allow:
             print('ERROR: file {} not allowed.'.format(file))
             exit()
 
     if len(files)  > 1:
         for file in files:
             ftype  = os.path.splitext(file)[1]
-            if not ftype in images:
+            if not ftype.lower() in images:
                 print('ERROR: multiple files supported only for images. Check the file {}.'.format(file))
                 exit()
     if len(files) == 1:
         ftype  = os.path.splitext(files[0])[1]
-        if ftype in content:
+        if ftype.lower() in content:
             files = files[0]
-        if ftype not in images and ftype not in content:
+        if ftype.lower() not in images and ftype.lower() not in content:
             print('ERROR: file {} not allowed.'.format(files[0]))
             exit()
     if len(files) == 0:

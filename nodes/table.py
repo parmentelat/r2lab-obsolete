@@ -60,14 +60,14 @@ LOC_DIR_INFO = 'info_dt/'
 def main(args):
     """
     """
-    nodes_i   = args.include_node.lower()
-    nodes_r   = args.remove_node.lower()
-    nodes_e   = args.edit_node.lower()
-    a_date    = args.a_date.lower()
-    attribute = args.attribute.lower()
-    value     = args.value.lower()
-    nodes     = args.nodes.lower()
-    drop      = args.drop.lower()
+    nodes_i   = args.include_node
+    nodes_r   = args.remove_node
+    nodes_e   = args.edit_node
+    a_date    = args.a_date
+    attribute = args.attribute
+    value     = args.value
+    nodes     = args.nodes
+    drop      = args.drop
 
     if nodes_e is None and nodes_i is None and nodes_r is None and not drop:
         check_node(nodes)
@@ -309,10 +309,10 @@ def touch_file(file):
     allow   = images + content
     ftype   = os.path.splitext(file)[1]
 
-    if ftype in content:
+    if ftype.lower() in content:
         sync_files(file, LOC_DIR_INFO)
         file = change_path(file, LOC_DIR_INFO)
-    elif ftype in images:
+    elif ftype.lower() in images:
         sync_files(file, LOC_DIR_IMGS)
         file = change_path(file, LOC_DIR_IMGS)
     return file
