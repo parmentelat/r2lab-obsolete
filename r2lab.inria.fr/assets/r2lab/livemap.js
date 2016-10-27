@@ -307,15 +307,6 @@ function LiveMap() {
 	    .attr('height', 2*pillar_radius)
 	    .attr('fill', '#101030')
 	    .call(walls_style)
-	// convenience for debugging
-	    .on('click',
-                // a closure to avoid being linked to the same 'spec' value in both cases
-		function(spec){
-		    return function() {
-			console.log("Clicked on pillar " + spec.id + " - tmp for dbg, this does a manual refresh");
-			the_livemap.request_complete_from_sidecar();
-		    }
-		}(spec))
 	;
     }
 
@@ -340,7 +331,7 @@ function LiveMap() {
 /*	console.log("ERROR: livemap: locate_node_by_id: id=" + id + " was not found"); */
     }
 
-    this.handle_json_status = function(json) {
+    this.handle_nodes_json = function(json) {
 	// xxx somehow we get noise in the mix
 	if (json == "" || json == null) {
 	    console.log("Bloops..");
@@ -375,6 +366,7 @@ function LiveMap() {
 	var svg = d3.select('div#livemap_container svg');
 	var circles = svg.selectAll('circle.node-status')
 	    .data(this.nodes, get_node_id);
+	// circles show the overall status of the node
 	circles.enter()
 	    .append('circle')
 	    .attr('class', 'node-status')
@@ -395,6 +387,7 @@ function LiveMap() {
 	    .attr('fill', function(node){return node.op_status_color();})
 	    .attr('filter', function(node){return node.op_status_filter();})
 	;
+	// labels show the nodes numbers
 	var labels = svg.selectAll('text')
 	    .data(this.nodes, get_node_id);
 	labels.enter()
@@ -403,17 +396,16 @@ function LiveMap() {
 	    .text(get_node_id)
 	    .attr('x', function(node){return node.x;})
 	    .attr('y', function(node){return node.y;})
-      .attr('id', function(node){return node.id;})
-      .on('mouseover', function() {
-        labels.attr('cursor', 'pointer');
-      })
-      .on('click', function() {
-        //call a externa function (located in info_nodes.js) to show de nodes details
-        info_nodes(this.id)
-      })
+	    .attr('id', function(node){return node.id;})
+	    .on('mouseover', function() {
+		labels.attr('cursor', 'pointer');
+	    })
+	    .on('click', function() {
+		//call a externa function (located in info_nodes.js) to show de nodes details
+		info_nodes(this.id)
+	    })
 	;
-	labels
-	    .transition()
+	labels.transition()
 	    .duration(1000)
 	    .attr('fill', function(node){return node.text_color();})
 	    .attr('x', function(node){return node.text_x();})
@@ -427,16 +419,16 @@ function LiveMap() {
 	    .append('circle')
 	    .attr('class', 'unavailable')
 	    .attr('cx', function(node){return node.x;})
-      .attr('id', function(node){return node.id;})
+	    .attr('id', function(node){return node.id;})
 	    .attr('cy', function(node){return node.y;})
 	    .attr('r', function(node){return livemap_radius_unavailable;})
-      .on('mouseover', function() {
-        unavailables.attr('cursor', 'pointer');
-      })
-      .on('click', function() {
-        //call a externa function (located in info_nodes.js) to show de nodes details
-        info_nodes(this.id)
-      })
+	    .on('mouseover', function() {
+		unavailables.attr('cursor', 'pointer');
+	    })
+	    .on('click', function() {
+		//call a externa function (located in info_nodes.js) to show de nodes details
+		info_nodes(this.id)
+	    })
 	;
 	unavailables
 	    .transition()
@@ -473,26 +465,23 @@ function LiveMap() {
     this.init_sidecar_socket_io = function() {
 	// try to figure hostname to get in touch with
 	var sidecar_hostname = ""
-  sidecar_hostname = new URL(window.location.href).hostname;
-  if ( ! sidecar_hostname)
-    sidecar_hostname = 'localhost';
+	sidecar_hostname = new URL(window.location.href).hostname;
+	if ( ! sidecar_hostname)
+	    sidecar_hostname = 'localhost';
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
-	if (livemap_debug) console.log("livemap is connecting to sidecar server at " + url);
+	if (livemap_debug)
+	    console.log("livemap is connecting to sidecar server at " + url);
 	this.sidecar_socket = io(url);
 	// what to do when receiving news from sidecar
 	var lab = this;
-	if (livemap_debug) console.log("arming callback on channel " + chan_nodes);
+	if (livemap_debug)
+	    console.log("arming callback on channel " + chan_nodes);
 	this.sidecar_socket.on(chan_nodes, function(json){
-            lab.handle_json_status(json);
+            lab.handle_nodes_json(json);
 	});
-	this.request_complete_from_sidecar();
-    }
-
-    // request sidecar for initial status on chan_nodes_request
-    // content is not actually used by sidecar server
-    // could maybe send some client id instead
-    this.request_complete_from_sidecar = function() {
-	if (livemap_debug) console.log("requesting complete status on channel " + chan_nodes_request);
+	// request the first complete copy of the sidecar db
+	if (livemap_debug)
+	    console.log("requesting complete status on channel " + chan_nodes_request);
 	this.sidecar_socket.emit(chan_nodes_request, 'INIT');
     }
 
