@@ -286,30 +286,42 @@ var MapNode = function (node_spec) {
 	return "url(#" + filter_name + ")";
     }
 
-    // full size
+    // full size for the usrp-icon
+    // this is arbitrary but has the right width/height ratio
     usrp_w = 13;
     usrp_h = 23;
+    // on and off units get rendered each at their size
+    usrp_on_ratio = .75;
+    usrp_off_ratio = .55;
+    // the radius of the circle that we need to leave free
+    this.overall_radius = function() {
+	var r = this.node_status_radius();
+	if (! this.is_available())
+	    return r;
+	// node is off, we need to keep space for the label
+	if (r == 0)
+	    return 10;
+	return r;
+    }
     // how much we move from the north-east intersection
     // with node radius circle
     usrp_delta_x = 2;
     usrp_delta_y = 3;
-    // off units get rendered a bit smaller
-    usrp_off_ratio = .7;
     // 0.7 stands for sin(pi/2)
     this.usrp_offset_x = function() {
-	return this.node_status_radius() * 0.7 + usrp_delta_x;
+	return this.overall_radius() * 0.7 + usrp_delta_x;
     }
     this.usrp_offset_y = function() {
-	return this.node_status_radius() * 0.7 + usrp_delta_y;
+	return this.overall_radius() * 0.7 + usrp_delta_y;
     }
     this.usrp_x = function() {
 	return this.x + this.usrp_offset_x(); }
     this.usrp_y = function() {
 	return this.y - (this.usrp_offset_y() + this.usrp_h()); }
     this.usrp_w = function() {
-	return usrp_w * (this.usrp_on_off == "on" ? 1 : usrp_off_ratio); }
+	return usrp_w * (this.usrp_on_off == "on" ? usrp_on_ratio : usrp_off_ratio); }
     this.usrp_h = function() {
-	return usrp_h * (this.usrp_on_off == "on" ? 1 : usrp_off_ratio); }
+	return usrp_h * (this.usrp_on_off == "on" ? usrp_on_ratio : usrp_off_ratio); }
 
 }
 
