@@ -17,7 +17,7 @@ var refresh             = true;
 var currentTimezone     = 'local';
 var nigthly_slice_name  = 'inria.r2lab.nightly'
 
-var liveleases_debug = true;
+var liveleases_debug = false;
 
 function setSlice(element){
   var element_color = element.css("background-color");

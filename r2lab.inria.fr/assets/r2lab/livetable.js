@@ -29,7 +29,6 @@ function span_html(text, klass) {
 }
 
 var livetable_debug = false;
- livetable_debug = true;
 
 //////////////////////////////
 var nb_nodes = 37;
@@ -74,7 +73,8 @@ var TableNode = function (id) {
     this.update_from_news = function(node_info) {
 	var modified = false;
 	for (var prop in node_info) {
-	    console.log("node_info['" + prop + "'] = " + node_info[prop]);
+	    if (livetable_debug) 
+		console.log("node_info['" + prop + "'] = " + node_info[prop]);
 	    if (node_info[prop] != this[prop]) {
 		this[prop] = node_info[prop];
 		modified = true;
