@@ -81,7 +81,7 @@ $(document).ready(function() {
     thead = $.unique(thead.sort());
 
     head =  '<tr class="dt_head">';
-    head += '<th>Node</th>';
+    head += '<th>node</th>';
     $.each(thead, function (id, val) {
       head += '<th>'+ val +'</th>'
     });
