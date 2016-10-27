@@ -266,6 +266,7 @@ var MapNode = function (node_spec) {
 	    return "on";
     }
 
+    ////////// attributes for the gnuradio icon
     this.usrp_status_color = function() {
 	return (this.usrp_on_off == 'on') ? 'green' :
 	    (this.usrp_on_off == 'off') ? 'red' :
