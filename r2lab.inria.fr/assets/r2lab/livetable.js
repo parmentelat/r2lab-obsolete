@@ -214,7 +214,7 @@ function LiveTable() {
 	    .attr('class', 'all')
 	    .on('click', function(){self.toggle_view_mode();})
 	;
-	header_rows.append('th').html('Node');
+	header_rows.append('th').html('node');
 	header_rows.append('th').html('avail.');
 	header_rows.append('th').html('on/off');
 	header_rows.append('th').html('usrp');
