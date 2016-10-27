@@ -159,7 +159,7 @@ var MapNode = function (node_spec) {
 
     // node_info is a dict coming through socket.io in JSON
     // simply copy the fieds present in this dict in the local object
-    // for further usage in animate_changes
+    // for further usage in animate_nodes_changes
     this.update_from_news = function(node_info) {
 	var modified = false;
 	for (var prop in node_info)
@@ -188,13 +188,13 @@ var MapNode = function (node_spec) {
     }
     this.text_x = function() {
 	if ( ! this.is_available()) return this.x;
-	var radius = this.op_status_radius();
+	var radius = this.node_status_radius();
 	var delta = this.text_offset(radius);
 	return this.x + ((radius == 0) ? 0 : (radius + delta));
     }
     this.text_y = function() {
 	if ( ! this.is_available()) return this.y;
-	var radius = this.op_status_radius();
+	var radius = this.node_status_radius();
 	var delta = this.text_offset(radius);
 	return this.y + ((radius == 0) ? 0 : (radius + delta));
     }
@@ -207,7 +207,7 @@ var MapNode = function (node_spec) {
     // when answers ping, still larger
     // when ssh : full size with OS badge
     // but animate.py does show that
-    this.op_status_radius = function() {
+    this.node_status_radius = function() {
 	// completely off
 	if (this.cmc_on_off != 'on')
 	    return livemap_radius_ko;
@@ -229,8 +229,8 @@ var MapNode = function (node_spec) {
     }
 
     // luckily this is not rendered when a filter is at work
-    this.op_status_color = function() {
-	var radius = this.op_status_radius();
+    this.node_status_color = function() {
+	var radius = this.node_status_radius();
 	return (radius == livemap_radius_pinging) ? d3.rgb('#71edb0').darker() :
 	    (radius == livemap_radius_warming) ? d3.rgb('#f7d8dd').darker() :
 	    '#bbb';
@@ -238,7 +238,7 @@ var MapNode = function (node_spec) {
 
     // showing an image (or not, if filter is undefined)
     // depending on the OS
-    this.op_status_filter = function() {
+    this.node_status_filter = function() {
 	var filter_name;
 	// only set a filter with full-fledged nodes
 	if (! this.is_alive())
@@ -264,6 +264,31 @@ var MapNode = function (node_spec) {
 	    return "none";
 	else
 	    return "on";
+    }
+
+    this.usrp_status_color = function() {
+	return (this.usrp_on_off == 'on') ? 'green' :
+	    (this.usrp_on_off == 'off') ? 'red' :
+	    d3.rgb('blue');
+    }
+
+    this.usrp_status_filter = function() {
+	if (livemap_debug)
+	    console.log("usrp_type = " + this.usrp_type);
+	var filter_name;
+	if ( ! this.usrp_type )
+	    return undefined;
+	else if (this.usrp_on_off == 'on')
+	    filter_name = 'gnuradio-logo-green';
+	else if (this.usrp_on_off == 'off')
+	    filter_name = 'gnuradio-logo-red';
+	else
+	    return undefined;
+	return "url(#" + filter_name + ")";
+    }
+
+    this.usrp_display = function() {
+	return (this.usrp_type) ? "on" : "none";
     }
 }
 
@@ -354,7 +379,7 @@ function LiveMap() {
 		else
 		    console.log("livemap: could not locate node id " + id + " - ignored");
 	    }
-	    this.animate_changes();
+	    this.animate_nodes_changes();
 	} catch(err) {
 	    console.log("*** Could not apply news - ignored  - JSON has " + json.length + " chars");
 	    console.log(err.stack);
@@ -362,8 +387,9 @@ function LiveMap() {
 	}
     }
 
-    this.animate_changes = function() {
+    this.animate_nodes_changes = function() {
 	var svg = d3.select('div#livemap_container svg');
+	var animation_duration = 850;
 	var circles = svg.selectAll('circle.node-status')
 	    .data(this.nodes, get_node_id);
 	// circles show the overall status of the node
@@ -379,10 +405,10 @@ function LiveMap() {
 	    })
 	;
 	circles.transition()
-	    .duration(500)
-	    .attr('r', function(node){return node.op_status_radius();})
-	    .attr('fill', function(node){return node.op_status_color();})
-	    .attr('filter', function(node){return node.op_status_filter();})
+	    .duration(animation_duration)
+	    .attr('r', function(node){return node.node_status_radius();})
+	    .attr('fill', function(node){return node.node_status_color();})
+	    .attr('filter', function(node){return node.node_status_filter();})
 	;
 	// labels show the nodes numbers
 	var labels = svg.selectAll('text')
@@ -400,7 +426,7 @@ function LiveMap() {
 	    })
 	;
 	labels.transition()
-	    .duration(1000)
+	    .duration(animation_duration)
 	    .attr('fill', function(node){return node.text_color();})
 	    .attr('x', function(node){return node.text_x();})
 	    .attr('y', function(node){return node.text_y();})
@@ -421,12 +447,34 @@ function LiveMap() {
 		info_nodes(this.id)
 	    })
 	;
-	unavailables
-	    .transition()
-	    .duration(1000)
+	unavailables.transition()
+	    .duration(animation_duration)
 	    .attr('display', function(node){return node.unavailable_display();})
 	;
 
+	// squares intend to show usrp status
+	usrp_w = 13;
+	usrp_h = 23;
+	usrp_offset_x = 17;
+	usrp_offset_y = 10;
+	var usrp_rects = svg.selectAll('rect.usrp-status')
+	    .data(this.nodes, get_node_id);
+	usrp_rects.enter()
+	    .append('rect')
+	    .attr('class', 'usrp-status')
+	    .attr('id', function(node){return node.id;})
+	    .attr('x', function(node){return node.x + usrp_offset_x;})
+	    .attr('y', function(node){return node.y - (usrp_offset_y + usrp_h);})
+	    .attr('width', usrp_w)
+	    .attr('height', usrp_h)
+	    .attr('display', 'none')
+	;
+	usrp_rects.transition()
+	    .duration(animation_duration)
+	    .attr('fill', function(node){return node.usrp_status_color();})
+	    .attr('filter', function(node){return node.usrp_status_filter();})
+	    .attr('display', function(node){return node.usrp_display();})
+	;
     }
 
     // filters nice_float(for background)s
@@ -451,6 +499,9 @@ function LiveMap() {
     this.declare_image_filter('fedora-logo');
     this.declare_image_filter('ubuntu-logo');
     this.declare_image_filter('other-logo');
+    this.declare_image_filter('gnuradio-logo');
+    this.declare_image_filter('gnuradio-logo-green');
+    this.declare_image_filter('gnuradio-logo-red');
 
     ////////// socket.io business
     this.init_sidecar_socket_io = function() {
