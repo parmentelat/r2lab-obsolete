@@ -119,7 +119,7 @@ function prepare_persistent_channel(socket, name) {
 }
 
 function clean_dbfile(filename) {
-    console.log("clean_dbfile : not implemented yet");
+    sync_save_dbfile(filename, []);
 }
 
 // non-persistent channels are simpler,
@@ -200,11 +200,12 @@ function emit_file(filename, channel){
 // convenience function to save a list of JS infos (records) into a file
 // we do everything synchroneously to avoid trouble
 function sync_save_dbfile(filename, infos){
-    try{
-	fs.writeFileSync(filename, JSON.stringify(infos), 'utf8');
-	vdisplay("sync (Over)wrote " + filename)
+    try {
+	var contents = JSON.stringify(infos);
+	fs.writeFileSync(filename, contents, 'utf8');
+	vdisplay("sync (over)wrote " + contents.length + " on " + filename)
     } catch(err) {
-	display(filename + ": could not sync write - " + err);
+	display(filename + ": could not sync write " + filename + " - " + err);
     }
 }
 
