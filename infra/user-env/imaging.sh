@@ -76,6 +76,35 @@ http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-image-4.8.0-21-lowla
 
 }
 
+# this is to tweak the grub config so it boots off a newly-installed kernel
+# it might turn out a little fragile over time, in the sense that "1>2" is
+# incidentally the formula to use on a node that had a single kernel installed
+# and then another one is installed on top
+# 1>2 means second menu entry (a submenu), and third entry in there
+# you can do a visual inspection as follows
+# using a menu_specification of 0 would mean the first 'Ubuntu' option
+# 1 refers to the 'submenu' below
+# in which 2 refers to the third entry, i.e. 3.19.0-031900-lowlatency non-recovery
+###
+### root@localhost:/boot/grub# grep menuentry grub.cfg
+### <snip>
+### menuentry 'Ubuntu' --class ubuntu --class gnu-linux --class gnu --class os <blabla>
+### submenu 'Advanced options for Ubuntu' $menuentry_id_option <blabla>
+### 	menuentry 'Ubuntu, with Linux 4.2.0-27-generic' --class ubuntu --class gnu-linux --class gnu --class os <blabla>
+### 	menuentry 'Ubuntu, with Linux 4.2.0-27-generic (recovery mode)' --class ubuntu --class gnu-linux --class gnu --class os <blabla>
+### 	menuentry 'Ubuntu, with Linux 3.19.0-031900-lowlatency' --class ubuntu --class gnu-linux --class gnu --class os <blabla>
+### 	menuentry 'Ubuntu, with Linux 3.19.0-031900-lowlatency (recovery mode)' --class ubuntu --class gnu-linux --class gnu --class os <blabla>
+### menuentry 'Memory test (memtest86+)' {
+### menuentry 'Memory test (memtest86+, serial console 115200)' {
+### 
+function ubuntu-grub-update() {
+    menu_specification="$1"; shift
+    [ -z "$menu_specification" ] && menu_specification="1>2"
+    cd /etc/default
+    sed -i -e "s|GRUB_DEFAULT=.*|GRUB_DEFAULT=\"$menu_specification\"|" grub
+    update-grub
+}
+
 # enb insists on running on 3.19
 function ubuntu-k319-lowlatency() {
 
@@ -94,7 +123,7 @@ http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-image-3.19.0-031
 "
 
     -dpkg-from-urls $urls
-
+    ubuntu-grub-update
 }
 
 doc-imaging ubuntu-setup-ntp "installs ntp"
