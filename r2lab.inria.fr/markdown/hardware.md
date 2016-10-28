@@ -58,38 +58,6 @@ tab: platform
 
 <div class="container">
   <div class="row" markdown="1">
-    <div class="col-md-12 new_pad">
-      <h3>Nodes comparative table</h3>
-      <!-- DyNAMIC TABLE CREATED BY CMD line in faraday-->
-      <style type="text/css"> @import url("/assets/r2lab/table_nodes.css"); </style>
-      <script type="text/javascript" src="/assets/r2lab/table_nodes.js"></script>
-      <table id="comparative" class="table table-condensed dt_table">
-        <thead><tr><th>&nbsp;</th></tr></thead>
-        <tbody><tr><td>no info available yet</td></tr></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- Latest compiled and minified JavaScript -->
-<div class="modal fade" id="big_photo" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
-  <div class="modal-dialog modal-dialog-custom modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-	      </button>
-      <h6 class="modal-title" id="big_image_title">&nbsp;</h6>
-      </div>
-      <div class="modal-body" id="big_image_content">
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<div class="container">
-  <div class="row" markdown="1">
     <div class="col-md-8 new_pad">
       <h3>All nodes</h3>
       All 37 nodes are based on <a href="http://nitlab.inf.uth.gr/NITlab/" target="_blank">Nitos X50</a> and feature
@@ -148,8 +116,8 @@ tab: platform
 <div class="container">
   <div class="row" markdown="1">
     <div class="col-md-8 new_pad">
-      <h3>Nexus Phone</h3>
-      A nexus phone is available right inside the chamber:
+      <h3>Commercial 4G Phone</h3>
+      A Nexus 5 phone is available right inside the chamber:
       <ul>
         <li>It is reachable through a Mac (that also sits in the room)
         that has its wireless card physically disabled, and that has a USB cable to the phone
@@ -169,6 +137,37 @@ tab: platform
   </div>
 </div>
 
+
+<div class="container">
+  <div class="row" markdown="1">
+    <div class="col-md-12 new_pad">
+      <h3>Nodes comparative table</h3>
+      <!-- DyNAMIC TABLE CREATED BY CMD line in faraday-->
+      <style type="text/css"> @import url("/assets/r2lab/table_nodes.css"); </style>
+      <script type="text/javascript" src="/assets/r2lab/table_nodes.js"></script>
+      <table id="comparative" class="table table-condensed dt_table">
+        <thead><tr><th>&nbsp;</th></tr></thead>
+        <tbody><tr><td>no info available yet</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Latest compiled and minified JavaScript -->
+<div class="modal fade" id="big_photo" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
+  <div class="modal-dialog modal-dialog-custom modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+	      </button>
+      <h6 class="modal-title" id="big_image_title">&nbsp;</h6>
+      </div>
+      <div class="modal-body" id="big_image_content">
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="container">
   <div class="row" markdown="1">
