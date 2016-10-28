@@ -7,6 +7,20 @@ From faraday's `/etc/hosts` through `ssh` (usual credentials)
 * `ssh switch-reboot` (55xx)
 * `ssh switch-c007` (????)
 
+# virtual terminal
+
+As of Oct. 2016, I used the following setup
+
+* host wlab49 - aka arduino under ubuntu
+* together with the COM to USB adapter (in the chamber)
+* `apt-get install -y minicom`
+* need to turn off hardware flow-control (was hard to spot)
+* run `minicom -s`, select `/dev/ttyUSB0` and speed `9600 8N1` as detailed below, saved as standard config
+* it does not matter which USB port is used (see `dmesg -w` when plugging the adapter to make sure)
+* all this is OK on wlab49 as of Oct. 28 2016, it's easy to redo on a fresh ubuntu install
+* run `minicom`, you should be good
+
+
 # Stacking & general
 
 * look at the current config
@@ -44,14 +58,14 @@ From faraday's `/etc/hosts` through `ssh` (usual credentials)
     
 # Workflow
 * All 4 config files are managed under git in the `switches/` subdir
-* running make install pushes this onto the tftp server on faraday
+* running `make push-dell` pushes this onto the tftp server on faraday
 * then use one of these commands to fetch that config from the switch
 
 ###
-    copy tftp://192.168.3.100/switch-data.conf startup-config
-    copy tftp://192.168.3.100/switch-control.conf startup-config
-    copy tftp://192.168.3.100/switch-reboot.conf startup-config
-    copy tftp://192.168.3.100/switch-c007.conf startup-config
+    copy tftp://192.168.4.100/switch-data.conf startup-config
+    copy tftp://192.168.4.100/switch-control.conf startup-config
+    copy tftp://192.168.4.100/switch-reboot.conf startup-config
+    copy tftp://192.168.4.100/switch-c007.conf startup-config
     
 * and then 
 
