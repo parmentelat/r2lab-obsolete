@@ -56,6 +56,8 @@ tab: platform
   </div>
 </div>
 
+<br>
+
 <div class="container">
   <div class="row" markdown="1">
     <div class="col-md-8 new_pad">

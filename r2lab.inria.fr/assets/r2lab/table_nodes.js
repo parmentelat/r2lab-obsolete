@@ -61,6 +61,13 @@ $(document).ready(function() {
   }
 
 
+  function ids(text){
+    new_id = ''
+    new_id = text.replace(" ", "_");
+    return new_id
+  }
+
+
   function show(infos) {
     var thead = []
     var order = sortObject(infos);
@@ -80,17 +87,18 @@ $(document).ready(function() {
     });
     thead = $.unique(thead.sort());
 
-    head =  '<tr class="dt_head">';
+    head =  '<tr class="dt_head" onclick="reset_node();">';
     head += '<th>node</th>';
     $.each(thead, function (id, val) {
-      head += '<th>'+ val +'</th>'
+      head += '<th><span style="display: none;">'+ids(val)+'</span><span onclick=filter_title("'+ids(val)+'");>'+ val +'</span></th>'
     });
-    head += '<th><span style="cursor: pointer; color: #525252;" alt="reset nodes" onclick="reset_node();"><span class="glyphicon glyphicon-refresh text-success" aria-hidden="true"></span></span></th>';
+    // head += '<th><span style="cursor: pointer; color: #525252;" alt="reset nodes" onclick="reset_node();"><span class="glyphicon glyphicon-refresh text-success" aria-hidden="true"></span></span></th>';
     head += '</tr>';
 
     $.each(order, function (id, node) {
-      body += '<tr id="line_'+node+'" class="">';
-      body += '<td style="font:15px helveticaneue, Arial, Tahoma, Sans-serif;"><span class="custom-badge" onclick="info_nodes('+pad(node)+');">'+node+'</span></td>'
+      body += '<tr id="line_'+parseInt(node)+'" class="">';
+      // body += '<td style="font:15px helveticaneue, Arial, Tahoma, Sans-serif;"><span class="custom-badge" onclick="info_nodes('+pad(node)+');">'+node+'</span></td>'
+      body += '<td><span class="badge" onclick="remove_node('+node+');">'+parseInt(node)+'</span></td>';
 
       // body += '<td class="dt_left"><span class="badge" onclick="info_nodes('+node+');">'+ node +'</span></td>';
       $.each(thead, function (i, attr) {
@@ -98,20 +106,20 @@ $(document).ready(function() {
         res = has_attr(infos, node, attr);
         if(res[0]) {
           if($.inArray(ext(res[1]), ['jpg', 'png', 'jpeg']) !== -1) {
-            body += '<td class="dt_value">'+ res[1] +'</td>';
+            body += '<td id="_'+attr+'" class="dt_value">'+ res[1] +'</td>';
             //body += '<td class="dt_value"><a href="#">'+ res[1] +'</a></td>';
           }
           else if(res[1].substr(0,1) == "|" && res[1].substr(res[1].length-1) == "|") {
-            body += '<td class="dt_value"><a href="javascript:void(0);" onclick="info_nodes('+node+');">'+ res[1].substr(1, res[1].length-2) +'</a></td>';
+            body += '<td id="_'+attr+'" class="dt_value"><a href="javascript:void(0);" onclick="info_nodes('+node+');">'+ res[1].substr(1, res[1].length-2) +'</a></td>';
           }
           else{
-            body += '<td class="dt_value">'+ res[1] +'</td>';
+            body += '<td id="_'+attr+'" class="dt_value">'+ res[1] +'</td>';
           }
         } else {
-          body += '<td>-</td>';
+          body += '<td id="_'+attr+'">-</td>';
         }
       });
-      body += '<td class="dt_value"><span style="cursor: pointer; color: #525252;" alt="remove node" onclick="remove_node('+node+');"><span class="glyphicon glyphicon-remove grey" aria-hidden="true"></span></span></td>';
+      // body += '<td class="dt_value"><span style="cursor: pointer; color: #525252;" alt="remove node" onclick="remove_node('+node+');"><span class="glyphicon glyphicon-remove grey" aria-hidden="true"></span></span></td>';
       body += '</tr>';
     });
 
@@ -135,11 +143,40 @@ function show_image(img) {
 }
 
 function remove_node(node) {
-  $('#line_'+pad(node)).removeClass('show-line');
-  $('#line_'+pad(node)).addClass('hide-line');
+  $('#line_'+node).removeClass('show-line');
+  $('#line_'+node).addClass('hide-line');
+  $('#line_'+node).css("display", "none");
+  console.log('remove -'+node);
 }
 
 function reset_node() {
   $('[id^=line_]').removeClass('hide-line');
   $('[id^=line_]').addClass('show-line');
+}
+
+var last = '';
+function filter_title(title){
+  $('td', 'tr', 'table').css('color', '#404042');
+  columnTh = $("table th:contains('"+title+"')");
+  columnIndex = columnTh.index();
+  columnIndexC = columnIndex + 1;
+
+  if (last == columnIndex){
+    var $rowsNo = $('table tbody tr').filter(function () {
+      return $.trim($(this).find('td').eq(2).text()) != ""
+    }).show();
+    $('table tr td:nth-child(' + columnIndexC + ')').css("color", "#404042");
+    last = 0;
+    return false;
+  }
+
+  $('table tr td:nth-child(' + columnIndexC + ')').css("color", "red");
+  var $rowsNo = $('table tbody tr').filter(function () {
+    return $.trim($(this).find('td').eq(0).text()) != ""
+  }).show();
+
+  var $rowsNo = $('table tbody tr').filter(function () {
+    return $.trim($(this).find('td').eq(columnIndex).text()) === "-"
+  }).hide();
+  last = columnTh.index();
 }

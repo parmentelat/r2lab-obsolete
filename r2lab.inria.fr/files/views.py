@@ -135,7 +135,7 @@ class FilesProxy(View):
                         pass
                 elif ftype.lower() in images:
                     # img_tag     = '<img src="files/nodes/{}" alt="" style="cursor: pointer;" alt="click to enlarge" width="60" onclick=show_image("files/nodes/{}");>'.format(file, file)
-                    img_tag     = '<a href="javascript: return();" alt="click to enlarge" onclick=show_image("files/nodes/{}");><span class="glyphicon glyphicon-camera" style="font-size: 1.7em;"  aria-hidden="true"></span></a>'.format(file, file)
+                    img_tag     = '<a href="javascript: return();" alt="click to enlarge" onclick=show_image("files/nodes/{}");><span class="glyphicon glyphicon-camera" style="font-size: 1.3em;"  aria-hidden="true"></span></a>'.format(file, file)
                     d['value']  = img_tag
         return new_data
 

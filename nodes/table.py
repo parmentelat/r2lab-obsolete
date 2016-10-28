@@ -22,7 +22,7 @@ from collections import OrderedDict
 parser = ArgumentParser()
 parser.add_argument("-n", "--nodes", dest="nodes", default="all",
                     help="Comma separated list OR range of nodes")
-parser.add_argument("-i", "--include", dest="include_node", nargs=3,
+parser.add_argument("-i", "--include", dest="include_node", nargs=3, usage='%(prog)s [options]',
                     help="Comma separated list OR range of nodes to include")
 parser.add_argument("-r", "--remove", dest="remove_node",
                     help="Comma separated list OR range of nodes to remove")
