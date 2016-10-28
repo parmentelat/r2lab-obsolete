@@ -342,7 +342,6 @@ doc-nodes stop-tcpdump-data "Stop recording pcap data about SCTP traffic"
 function stop-tcpdump-data() { -stop-tcpdump data "$@"; }
 
 ####################
-
 doc-nodes demo "set ups nodes for the skype demo - based on their id"
 function demo() {
     case $(r2lab-id) in
@@ -354,26 +353,22 @@ function demo() {
 	    oai-as-epc
 	    define-peer 38
 	    ;;
-	04)
-	    oai-as-enb
-	    define-peer 39
-	    ;;
 
-	23)
+	37)
 	    oai-as-hss
-	    define-peer 16
+	    define-peer 36
 	    ;;
-	16)
+	36)
 	    oai-as-epc
-	    define-peer 23
-	    ;;
-	11)
-	    oai-as-enb
-	    define-peer 16
+	    define-peer 37
 	    ;;
 	19)
 	    oai-as-enb
-	    define-peer 16
+	    define-peer 36
+	    ;;
+	11)
+	    oai-as-enb
+	    define-peer 36
 	    ;;
     esac
     echo "========== Demo setup on node $(r2lab-id)"
