@@ -688,11 +688,10 @@ ADMIN=onelab.inria.r2lab.admin
 alias admin-account="su - $ADMIN"
 doc-admin admin-account alias
 
+alias jour-monitor="journalctl -b -f --unit=monitor.service"
+doc-admin jour-monitor alias
 alias logs-monitor="tail -f /var/log/monitor.log"
 doc-admin logs-monitor alias
-
-alias sidecar-log="tail -f /var/log/sidecar.log"
-doc-admin sidecar-log alias
 
 alias rhubarbe-update='pip3 install --upgrade rhubarbe; rhubarbe version'
 doc-admin rhubarbe-update alias
