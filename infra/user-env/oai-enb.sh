@@ -37,9 +37,10 @@ function dumpvars() {
 ####################
 doc-nodes image "the entry point for nightly image builds"
 function image() {
+    deps_arg="$1"; shift
     dumpvars
     base
-    deps
+    deps "$deps_arg"
     build
 }
 
@@ -79,18 +80,26 @@ function base() {
 
     # xxx turning off hyperthreading : adding noht to the line below does not seem to work
     sed -i -e 's|GRUB_CMDLINE_LINUX_DEFAULT.*|GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_pstate=disable processor.max_cstate=1 intel_idle.max_cstate=0 idle=poll"|' /etc/default/grub
-    grub-update
+    update-grub
 
 }
 
 doc-nodes deps "builds uhd for an oai image"
 function deps() {
-
+    # arg1 should be uhd-ettus or uhd-oai
+    
     gitup
-    cd
-    echo Building UHD with OAI recipe
-    build-uhd-oai 
-
+    case $1 in
+	uhd-ettus)
+	    echo Building UHD with ETTUS recipe
+	    build-uhd-ettus ;;
+	uhd-oai)
+	    echo Building UHD with OAI recipe
+	    build-uhd-oai ;;
+	*)
+	    echo unkwown argument to deps
+	    exit 1 ;;
+    esac
 }
 
 # xxx Rohit says this is WRONG - use oai recipe instead
