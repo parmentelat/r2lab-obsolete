@@ -15,6 +15,7 @@ git reset --hard HEAD >> $LOG 2>&1
 case $(hostname) in
     faraday*)
 	systemctl restart monitor
+	systemctl restart monitorphones
 	;;
     r2lab*)
 	systemctl restart sidecar
