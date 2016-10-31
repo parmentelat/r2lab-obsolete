@@ -597,8 +597,9 @@ function LiveMap() {
 	var svg = d3.select('div#livemap_container svg');
 	var animation_duration = 850;
 
-	var w = 16;
-	var h = 16;
+	var w = 20;
+	var h = 20;
+	var r = 2;
 	var squares = svg.selectAll('rect.phone-status')
 	    .data(this.phones, get_obj_id);
 	// simple square repr. for now, with an airplane in the middle
@@ -608,6 +609,8 @@ function LiveMap() {
 	    .attr('id', function(phone){return phone.id;})
 	    .attr('x', function(phone){return phone.x - w/2;})
 	    .attr('y', function(phone){return phone.y - h/2;})
+	    .attr('rx', r)
+	    .attr('ry', r)
 	    .attr('width', w)
 	    .attr('height', h)
 	// in .css at some point
@@ -624,11 +627,10 @@ function LiveMap() {
 	    .attr('class', 'phone-status')
 	    .attr('x', function(phone){return phone.x;})
 	    .attr('y', function(phone){return phone.y;})
-	    .attr('dx', -w/2)
-	    .attr('dy', h/2)
+	    .attr('dy', h*.1)
 	    .attr('font-family', 'FontAwesome')
-	    .attr('font-size', h*1.1)
-	    .attr('textLength', w*.9)
+	    .attr('font-size', h*1)
+	    .attr('textLength', w*.8)
 	    .attr('lengthAdjust', 'spacingAndGlyphs')
 	;
 	texts.transition()

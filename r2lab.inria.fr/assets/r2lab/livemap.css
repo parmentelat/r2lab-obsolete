@@ -16,24 +16,35 @@
 
 // this is working
 circle.node-status {
-    stroke: 0;
-    opacity: .5;
+    stroke-width: 0;
+    opacity:      .5;
 }
 
 circle.unavailable {
-    opacity: .5;
-    fill: #f00;
-    stroke: 0;
+    fill:	  #f00;
+    opacity:	  .5;
+    stroke-width: 0;
 }
 
 text.node-label {
-    font-family: consolas, monaco, times-new-roman;
-    font-size: 16;
-    text-anchor: middle;
-    alignment-baseline: middle;
+    font-family:	consolas, monaco, times-new-roman;
+    font-size:		16;
+    text-anchor:	middle;
+    alignment-baseline:	middle;
 }
 
 circle.node-status:hover, circle.unavailable:hover, text.node-label:hover {
-    cursor: pointer;
+    cursor:	pointer;
+}
+//////////
+rect.phone-status {
+    stroke:	red;
+    fill:	none;
 }
 
+text.phone-status {
+    text-anchor:	middle;
+    alignment-baseline:	middle;
+    stroke:		blue;
+    stroke-width:	1px;
+}
