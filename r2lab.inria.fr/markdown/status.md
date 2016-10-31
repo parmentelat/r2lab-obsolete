@@ -28,6 +28,7 @@ For more details about each node, please click in the node number or badge.
 
 #### Legend
 
+##### Nodes
 * A round shape with a O.S. icon (fedora or ubuntu) informs that the node is turned on, running the
   referenced O.S. and reachable through ssh.
 * If only a number appears, this node is turned off.
@@ -39,6 +40,12 @@ For more details about each node, please click in the node number or badge.
   loaded).
 * Finally, if a node is hidden behind a large red circle, it means it
   is out of order, and altogether unavailable.
+
+##### Phone
+* Phones in the testbed appear as either
+  * <span class='fa fa-plane'></span> (meaning the phone is in airplane mode) 
+  * <span class='fa fa-phone'></span> (meaning it's not in airplane mode) 
+* At this time we have a single Nexus 5 phone deployed in the testbed
 
 ***
 
