@@ -18,12 +18,20 @@ livemap_radius_pinging = 12;
 livemap_radius_warming = 6;
 livemap_radius_ko = 0;
 
+// see http://stackoverflow.com/questions/14984007/how-do-i-include-a-font-awesome-icon-in-my-svg
+// and http://stackoverflow.com/questions/12882885/how-to-add-nbsp-using-d3-js-selection-text-method/12883617#12883617
+// parmentelat ~/git/Font-Awesome/less $ grep 'fa-var-plane' variables.less
+// @fa-var-plane: "\f072";
+var livemap_icon_plane_content = "\uf072";
+var livemap_icon_phone_content = "\uf095";
+var livemap_icon_question_content = "\uf128";
+
 ////////// must be in sync with sidecar.js
-// the socket.io channels that are used
-// (1) this is where actual JSON status is sent
+// the socket.io channels that are used -- see sidecar/AA-overview.md
 var chan_nodes = 'info:nodes';
-// (2) this one is used for requesting a broadcast of the complete status
 var chan_nodes_request = 'request:nodes';
+var chan_phones = 'info:phones';
+var chan_phones_request = 'request:phones';
 
 // port number
 var sidecar_port_number = 443;
@@ -81,6 +89,10 @@ mapnode_specs = [
 var pillar_specs = [
 { id: 'left', i:3, j:3 },
 { id: 'right', i:5, j:3 },
+];
+
+var mapphone_specs = [
+    {id : 1, i : 0.5, j : 4.2 },
 ];
 
 //global - mostly for debugging and convenience
@@ -142,6 +154,47 @@ function walls_style(selection) {
     ;
 }
 
+// obj_info is a dict coming through socket.io in JSON
+// simply copy the fieds present in this dict in the local object
+// for further usage in animate_nodes_changes
+function update_obj_from_info(obj, obj_info){
+    var modified = false;
+    for (var prop in obj_info)
+	if (obj_info[prop] != obj[prop]) {
+	    obj[prop] = obj_info[prop];
+	    modified = true;
+	}
+    return modified;
+}
+
+// locating a record by id in a list
+function locate_by_id(list_objs, id) {
+    for (var i=0; i< list_objs.length; i++)
+	if (list_objs[i].id == id)
+	    return list_objs[i];
+    console.log("ERROR: livemap: locate_by_id: id=" + id + " was not found");
+}
+
+//////////////////////////////
+var MapPhone = function(phone_spec) {
+    this.id = phone_spec['id'];
+    this.i = phone_spec['i'];
+    this.j = phone_spec['j'];
+    var coords = grid_to_canvas(this.i, this.j);
+    this.x = coords[0];
+    this.y = coords[1];
+
+    this.text = function(){
+	if (this.airplane_mode == 'on')
+	    return livemap_icon_plane_content;
+	else if (this.airplane_mode == 'off')
+	    return livemap_icon_phone_content;
+	else
+	    return livemap_icon_question_content;
+    }
+
+}
+
 //////////////////////////////
 // nodes are dynamic
 // their visual rep. get created through d3 enter mechanism
@@ -156,19 +209,6 @@ var MapNode = function (node_spec) {
     this.y = coords[1];
 
     // status details are filled upon reception of news
-
-    // node_info is a dict coming through socket.io in JSON
-    // simply copy the fieds present in this dict in the local object
-    // for further usage in animate_nodes_changes
-    this.update_from_news = function(node_info) {
-	var modified = false;
-	for (var prop in node_info)
-	    if (node_info[prop] != this[prop]) {
-		this[prop] = node_info[prop];
-		modified = true;
-	    }
-	if (! modified) return;
-    }
 
     this.is_available = function() {
 	return this.available != 'ko';
@@ -272,8 +312,6 @@ var MapNode = function (node_spec) {
     }
 
     this.usrp_status_filter = function() {
-	if (livemap_debug)
-	    console.log("usrp_type = " + this.usrp_type);
 	var filter_name;
 	if ( ! this.usrp_type )
 	    return undefined;
@@ -325,7 +363,7 @@ var MapNode = function (node_spec) {
 
 }
 
-var get_node_id = function(node) {return node.id;}
+var get_obj_id = function(node) {return node.id;}
 
 //////////////////////////////
 function LiveMap() {
@@ -352,9 +390,8 @@ function LiveMap() {
 	.call(walls_style)
     ;
 
-    for (var i=0; i < pillar_specs.length; i++) {
-	// id, i, j
-	var spec = pillar_specs[i];
+    console.log('inside pillar_specs =', pillar_specs);
+    pillar_specs.forEach(function(spec) {
 	var coords = grid_to_canvas(spec.i, spec.j);
 	svg.append('rect')
 	    .attr('id', 'pillar-' + spec.id)
@@ -366,72 +403,90 @@ function LiveMap() {
 	    .attr('fill', '#101030')
 	    .call(walls_style)
 	;
-    }
-
-    this.nodes = [];
+    });
 
     this.init = function() {
 	this.init_nodes();
+	this.init_phones();
 	this.init_sidecar_socket_io();
     }
 
+    //////////////////// nodes
     this.init_nodes = function () {
+	this.nodes = [];
 	for (var i=0; i < mapnode_specs.length; i++) {
 	    this.nodes[i] = new MapNode(mapnode_specs[i]);
 	}
     }
 
-
-    this.locate_node_by_id = function(id) {
-	for (var i=0; i< this.nodes.length; i++)
-	    if (this.nodes[i].id == id)
-		return this.nodes[i];
-/*	console.log("ERROR: livemap: locate_node_by_id: id=" + id + " was not found"); */
+    //////////////////// phones
+    this.init_phones = function () {
+	this.phones = [];
+	for (var i=0; i < mapphone_specs.length; i++) {
+	    this.phones[i] = new MapPhone(mapphone_specs[i]);
+	}
     }
 
+    //////////////////// nodes
     this.handle_nodes_json = function(json) {
+	var livemap = this;
+	return this.handle_incoming_json("node", this.nodes, json,
+					 function() { livemap.animate_nodes_changes();});
+    }
+
+    this.handle_phones_json = function(json) {
+	var livemap = this;
+	return this.handle_incoming_json("phone", this.phones, json,
+					 function() { livemap.animate_phones_changes();});
+    }
+
+    //////////////////// generic way to handle incoming json
+    // apply changes to internal data and then apply callback
+    // that will reflect the changes visually
+    this.handle_incoming_json = function(type, list_objs, json, callback) {
 	// xxx somehow we get noise in the mix
 	if (json == "" || json == null) {
-	    console.log("Bloops..");
+	    console.log("node json fragment is empty..");
 	    return;
 	}
 	try {
-	    var nodes_info = JSON.parse(json);
+	    var infos = JSON.parse(json);
 	    if (livemap_debug) {
-		console.log("*** " + new Date() + " DBG Received info about " + nodes_info.length + " nodes");
-		console.log(nodes_info);
+		console.log("*** " + new Date() + " DBG Received info about " + infos.length + " " + type + "(s)");
+		console.log(infos);
 		console.log("*** DBG end");
 	    }
 	    // first we write this data into the MapNode structures
-	    for (var i=0; i < nodes_info.length; i++) {
-		var node_info = nodes_info[i];
-		var id = node_info['id'];
-		var node = this.locate_node_by_id(id);
-		if (node != undefined)
-		    node.update_from_news(node_info);
+	    var livemap = this;
+	    infos.forEach(function(info) {
+		var id = info['id'];
+		var obj = locate_by_id(list_objs, id);
+		if (obj != undefined)
+		    update_obj_from_info(obj, info);
 		else
-		    console.log("livemap: could not locate node id " + id + " - ignored");
-	    }
-	    this.animate_nodes_changes();
+		    console.log("livemap: could not locate " + type + " id " + id + " - ignored");
+	    });
+	    callback();
 	} catch(err) {
-	    console.log("*** Could not apply news - ignored  - JSON has " + json.length + " chars");
+	    console.log("*** Could not handle news for " + type + " - ignored JSON has " + json.length + " chars");
 	    console.log(err.stack);
 	    console.log("***");
 	}
     }
 
+    //////////////////// the nodes graphical layout
     this.animate_nodes_changes = function() {
 	var svg = d3.select('div#livemap_container svg');
 	var animation_duration = 850;
 	var circles = svg.selectAll('circle.node-status')
-	    .data(this.nodes, get_node_id);
+	    .data(this.nodes, get_obj_id);
 	// circles show the overall status of the node
 	circles.enter()
 	    .append('circle')
 	    .attr('class', 'node-status')
+	    .attr('id', function(node){return node.id;})
 	    .attr('cx', function(node){return node.x;})
 	    .attr('cy', function(node){return node.y;})
-	    .attr('id', function(node){return node.id;})
 	    .on('click', function() {
 		// call an external function (located in info_nodes.js) to show de nodes details
 		info_nodes(this.id)
@@ -445,11 +500,11 @@ function LiveMap() {
 	;
 	// labels show the nodes numbers
 	var labels = svg.selectAll('text')
-	    .data(this.nodes, get_node_id);
+	    .data(this.nodes, get_obj_id);
 	labels.enter()
 	    .append('text')
 	    .attr('class', 'node-label')
-	    .text(get_node_id)
+	    .text(get_obj_id)
 	    .attr('x', function(node){return node.x;})
 	    .attr('y', function(node){return node.y;})
 	    .attr('id', function(node){return node.id;})
@@ -467,7 +522,7 @@ function LiveMap() {
 
 	// how to display unavailable nodes
 	var unavailables = svg.selectAll('circle.unavailable')
-	    .data(this.nodes, get_node_id);
+	    .data(this.nodes, get_obj_id);
 	unavailables.enter()
 	    .append('circle')
 	    .attr('class', 'unavailable')
@@ -492,7 +547,7 @@ function LiveMap() {
 	usrp_offset_x = 17;
 	usrp_offset_y = 10;
 	var usrp_rects = svg.selectAll('rect.usrp-status')
-	    .data(this.nodes, get_node_id);
+	    .data(this.nodes, get_obj_id);
 	usrp_rects.enter()
 	    .append('rect')
 	    .attr('class', 'usrp-status')
@@ -510,6 +565,7 @@ function LiveMap() {
 	;
     }
 
+    //////////////////// convenience / helpers
     // filters nice_float(for background)s
     this.declare_image_filter = function (id_filename) {
 	// create defs element if not yet present
@@ -536,7 +592,52 @@ function LiveMap() {
     this.declare_image_filter('gnuradio-logo-green');
     this.declare_image_filter('gnuradio-logo-red');
 
-    ////////// socket.io business
+    //////////////////// phones graphical layout
+    this.animate_phones_changes = function() {
+	var svg = d3.select('div#livemap_container svg');
+	var animation_duration = 850;
+
+	var w = 16;
+	var h = 16;
+	var squares = svg.selectAll('rect.phone-status')
+	    .data(this.phones, get_obj_id);
+	// simple square repr. for now, with an airplane in the middle
+	squares.enter()
+	    .append('rect')
+	    .attr('class', 'phone-status')
+	    .attr('id', function(phone){return phone.id;})
+	    .attr('x', function(phone){return phone.x - w/2;})
+	    .attr('y', function(phone){return phone.y - h/2;})
+	    .attr('width', w)
+	    .attr('height', h)
+	// in .css at some point
+	    .attr('stroke-width', 1)
+	    .attr('stroke', 'black')
+	    .attr('fill', 'none')
+	;
+
+	var texts = svg.selectAll('text.phone-status')
+	    .data(this.phones, get_obj_id);
+
+	texts.enter()
+	    .append('text')
+	    .attr('class', 'phone-status')
+	    .attr('x', function(phone){return phone.x;})
+	    .attr('y', function(phone){return phone.y;})
+	    .attr('dx', -w/2)
+	    .attr('dy', h/2)
+	    .attr('font-family', 'FontAwesome')
+	    .attr('font-size', h*1.1)
+	    .attr('textLength', w*.9)
+	    .attr('lengthAdjust', 'spacingAndGlyphs')
+	;
+	texts.transition()
+	    .text(function(phone){ return phone.text();})
+	;
+
+    }
+
+    //////////////////// socket.io business
     this.init_sidecar_socket_io = function() {
 	// try to figure hostname to get in touch with
 	var sidecar_hostname = ""
@@ -549,6 +650,7 @@ function LiveMap() {
 	this.sidecar_socket = io(url);
 	// what to do when receiving news from sidecar
 	var lab = this;
+	////////// nodes
 	if (livemap_debug)
 	    console.log("arming callback on channel " + chan_nodes);
 	this.sidecar_socket.on(chan_nodes, function(json){
@@ -558,6 +660,16 @@ function LiveMap() {
 	if (livemap_debug)
 	    console.log("requesting complete status on channel " + chan_nodes_request);
 	this.sidecar_socket.emit(chan_nodes_request, 'INIT');
+	////////// phones
+	if (livemap_debug)
+	    console.log("arming callback on channel " + chan_phones);
+	this.sidecar_socket.on(chan_phones, function(json){
+            lab.handle_phones_json(json);
+	});
+	// request the first complete copy of the sidecar db
+	if (livemap_debug)
+	    console.log("requesting complete status on channel " + chan_phones_request);
+	this.sidecar_socket.emit(chan_phones_request, 'INIT');
     }
 
 }

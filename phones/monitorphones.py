@@ -65,7 +65,7 @@ class MonitorPhone:
             retcod = await self.gateway.run("{} shell \"settings get global airplane_mode_on\""
                                             .format(self.adb_bin))
             result = self.gateway.formatter.get_capture().strip()
-            airplane_mode = 'on' if result == '1' else ' off'
+            airplane_mode = 'on' if result == '1' else 'off'
             info = { 'id' : self.id, 'airplane_mode' : airplane_mode}
             if verbose:
                 print("probed phone {} : retcod={} result={} -> emitting {}"
