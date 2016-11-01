@@ -110,6 +110,7 @@ var walls_radius = 30;
 var pillar_radius = 16;
 
 var livemap_debug = false;
+    livemap_debug = true;
 
 //////////////////////////////////////// nodes
 // the overall room size
@@ -306,8 +307,8 @@ var MapNode = function (node_spec) {
 	    return "on";
     }
 
-    ////////// attributs of the usrp icons
-    this.usrp_display = function() {
+    ////////// show an icon only if usrp_type is defined
+    this.usrp_status_display = function() {
 	return (this.usrp_type) ? "on" : "none";
     }
 
@@ -316,9 +317,9 @@ var MapNode = function (node_spec) {
 	if ( ! this.usrp_type )
 	    return undefined;
 	else if (this.usrp_on_off == 'on')
-	    filter_name = 'gnuradio-logo-green';
+	    filter_name = 'gnuradio-logo-icon-green';
 	else if (this.usrp_on_off == 'off')
-	    filter_name = 'gnuradio-logo-red';
+	    filter_name = 'gnuradio-logo-icon-red';
 	else
 	    return undefined;
 	return "url(#" + filter_name + ")";
@@ -329,8 +330,8 @@ var MapNode = function (node_spec) {
     usrp_w = 13;
     usrp_h = 23;
     // on and off units get rendered each at their size
-    usrp_on_ratio = .75;
-    usrp_off_ratio = .55;
+    usrp_on_ratio = .90;
+    usrp_off_ratio = .70;
     // the radius of the circle that we need to leave free
     this.overall_radius = function() {
 	var r = this.node_status_radius();
@@ -552,11 +553,11 @@ function LiveMap() {
 	    .append('rect')
 	    .attr('class', 'usrp-status')
 	    .attr('id', function(node){return node.id;})
-	    .attr('display', 'none')
+	    .attr('stroke-width', '1px')
 	;
 	usrp_rects.transition()
 	    .duration(animation_duration)
-	    .attr('display', function(node){return node.usrp_display();})
+	    .attr('display', function(node){return node.usrp_status_display();})
 	    .attr('filter', function(node){return node.usrp_status_filter();})
 	    .attr('x', function(node){return node.usrp_x();})
 	    .attr('y', function(node){return node.usrp_y();})
@@ -567,7 +568,7 @@ function LiveMap() {
 
     //////////////////// convenience / helpers
     // filters nice_float(for background)s
-    this.declare_image_filter = function (id_filename) {
+    this.declare_image_filter = function (id_filename, suffix) {
 	// create defs element if not yet present
 	if ( ! $('#livemap_container svg defs').length) {
 	    d3.select('#livemap_container svg').append('defs');
@@ -582,15 +583,15 @@ function LiveMap() {
 	    .attr("height", "100%")
 	;
         filter.append("feImage")
-	    .attr("xlink:href", "../assets/img/" + id_filename + ".png");
+	    .attr("xlink:href", "../assets/img/" + id_filename
+		  + "." + suffix);
     }
 
-    this.declare_image_filter('fedora-logo');
-    this.declare_image_filter('ubuntu-logo');
-    this.declare_image_filter('other-logo');
-    this.declare_image_filter('gnuradio-logo');
-    this.declare_image_filter('gnuradio-logo-green');
-    this.declare_image_filter('gnuradio-logo-red');
+    this.declare_image_filter('fedora-logo', 'png');
+    this.declare_image_filter('ubuntu-logo', 'png');
+    this.declare_image_filter('other-logo', 'png');
+    this.declare_image_filter('gnuradio-logo-icon-green', 'svg');
+    this.declare_image_filter('gnuradio-logo-icon-red', 'svg');
 
     //////////////////// phones graphical layout
     this.animate_phones_changes = function() {
@@ -646,6 +647,7 @@ function LiveMap() {
 	sidecar_hostname = new URL(window.location.href).hostname;
 	if ( ! sidecar_hostname)
 	    sidecar_hostname = 'localhost';
+	sidecar_hostname = 'r2lab.inria.fr'
 	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
 	if (livemap_debug)
 	    console.log("livemap is connecting to sidecar server at " + url);
