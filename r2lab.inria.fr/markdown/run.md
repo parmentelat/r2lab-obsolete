@@ -44,7 +44,7 @@ require_login: true
       <div id="current-slice" data-current-slice-color="#000"></div>
     </div>
     <div class="col-md-7">
-    <div id="livemap_container">For more details about each node, please click in the node number or badge.</div>
+    <div id="livemap_container">Click a node for more details; see also <a href="status.md#livemap:legend">this page for a legend</a></div>
     <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
     <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
     <script>
@@ -64,6 +64,9 @@ require_login: true
     <div id="actions"></div>
     </div>
   </div>
+
+  See also <a href="status.md#livetable:legend">this page for a legend</a>
+
   <div class="row">
     <div class="col-md-12">
       <br/>

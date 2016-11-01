@@ -25,6 +25,7 @@ For more details about each node, please click in the node number or badge.
   </div>
 </div>
 
+<a name="livemap:legend"></a>
 
 #### Legend
 
@@ -40,6 +41,11 @@ For more details about each node, please click in the node number or badge.
   loaded).
 * Finally, if a node is hidden behind a large red circle, it means it
   is out of order, and altogether unavailable.
+
+In addition, you will find the following symbols close to some nodes
+
+* <img src="/assets/img/gnuradio-logo-icon-red.svg" height=20px> when the node has a USRP device, that is turned OFF
+* <img src="/assets/img/gnuradio-logo-icon-green.svg" height=20px> when the node has a USRP device, that is turned ON
 
 ##### Phone
 * Phones in the testbed appear as either
@@ -66,18 +72,21 @@ For more details about each node, please click in the node number or badge.
   </div>
 </div>
 
+<a name="livetable:legend"></a>
+
 #### Legend
 
-* The ***availability*** column:
+* The ***availability*** column
   tells you whether the node is usable or not. If not, this means you should not try to use that node for your experiment, as it may be physically powered off, or otherwise behave erratically.
-* The ***on/off*** column:
+* The ***on/off*** column
   reports if the node is currently turned on or off.
-* The ***ping*** column:
-  says whether the node answers a single ping at the wired network interface or not.
-* The ***Last O.S*** column:
-  the nature of the O.S. that was **last seen** on that node (i.e. even if the node is currently off).
-* The ***Last Image*** column:
-  likewise, the name of the image that was **last seen** on that node (i.e. even if the node is currently off).
+* The ***usrp** column shows both
+  * the type of the USRP companion (or `none`),
+  * and the status of the corresponding software switch.
+* The ***ping*** column
+  says whether the node currently answers a single ping at the wired network interface or not.
+* The ***ssh*** column says whether the node can currently be reached through ssh on its wired interface.
+* The ***last O.S***, ***last uname*** and ***last image*** columns shows information about the node ***the last time it was reachable***, i.e. even if the node is currently off.
 
 Also please note that
 
