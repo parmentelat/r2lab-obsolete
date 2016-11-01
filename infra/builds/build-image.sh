@@ -38,7 +38,7 @@ function run-build-image-scripts() {
     echo Extracting $tarfile in $(pwd)
     tar -xvf $tarfile
 
-    ########## Running then
+    ########## Running them
     cd $to_image
     # data ggathering is best-effort, no worries if parts are failing
     set +e
@@ -50,8 +50,9 @@ function run-build-image-scripts() {
 	args_file=args/$basename
 	arguments=$(cat $args_file)
 	# store nodename in logs for easier forensics
-	{ echo "******** on $node in $(pwd): running $shell $arguments"; \
-	  bash -x $shell $arguments 2>&1; } | tee logs/$basename.log
+	{ echo "======== $COMMAND on $node in $(pwd): running $shell $arguments"; \
+	  bash $shell $arguments 2>&1; \
+	  echo "$COMMAND DONE"; } | tee logs/$basename.log
     done
 }
 

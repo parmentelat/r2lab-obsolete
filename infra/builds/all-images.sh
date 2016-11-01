@@ -42,6 +42,8 @@ gw_options="
     -l /root/openair-cn/SCRIPTS/build-hss-deps.log
     -l /root/openair-cn/SCRIPTS/build-mme-deps.log	
     -l /root/openair-cn/SCRIPTS/build-spgw-deps.log
+    -b /root/openair-cn/BUILD/MME/BUILD/mme
+    -b /root/openair-cn/BUILD/SPGW/BUILD/spgw
 "
 
 enb_options="
@@ -51,6 +53,8 @@ enb_options="
     -l /root/openairinterface5g/cmake_targets/build-oai-1.log
     -l /root/openairinterface5g/cmake_targets/build-oai-2.log
     -l /root/openairinterface5g/cmake_targets/build-oai-3.log
+    -b uhd_find_devices
+    -b /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-softmodem
 "
 
 function u16-48() {
@@ -77,8 +81,8 @@ function u14-48(){
 function u14-319(){
     #bim 1 ubuntu-14.04-v5-ntp u14-lowlat319 "imaging.sh ubuntu-k319-lowlatency"
     ###bim $gw_options  2 u14-lowlat48 u14.48-oai-gw "oai-gw.sh image"
-    bim $enb_options 3 u14-lowlat319 u14.319-oai-enb-uhdettus "oai-enb.sh image uhd-ettus" 
-    #bim $enb_options 4 u14-lowlat319 u14.319-oai-enb-uhdoai "oai-enb.sh image uhd-oai" 
+    bim $enb_options 37 u14-lowlat319 u14.319-oai-enb-uhdoai "oai-enb.sh image uhd-oai" 
+    #bim $enb_options 36 u14-lowlat319 u14.319-oai-enb-uhdettus "oai-enb.sh image uhd-ettus" 
 }
 
 #ssh root@faraday.inria.fr rhubarbe off 1-10

@@ -21,7 +21,18 @@ async def aprint(*args, **kwds):
 #
 class ImageBuilder:
 
-    def __init__(self, gateway, node, from_image, to_image, scripts, includes, extra_logs, path):
+    def __init__(self, gateway, node, from_image, to_image,
+                 # the scripts to run - for SshJobScript
+                 scripts,
+                 # the includes that the scripts need
+                 includes,
+                 # the path where to search for scripts and includes
+                 path,
+                 # the logs to retrieve
+                 extra_logs,
+                 # for checking that the build worked fine
+                 expected_binaries,
+    ):
         """
         scripts is expected to be a list of strings
         each may contain spaces if arguments are passed
@@ -33,10 +44,11 @@ class ImageBuilder:
         # normalize this one as a list of lists
         self.scripts = [ s.split() for s in scripts ]
         self.includes = includes
-        self.extra_logs = [] if extra_logs is None else extra_logs
         # : separated list of paths to search - like $PATH
         # we add automatically so as to locate build-image.sh
         self.paths = path.split(":") + [ '.' ]
+        self.extra_logs = extra_logs
+        self.expected_binaries = expected_binaries
         
     def user_host(self, input):
         # callers can mention localhost as the gateway to avoid
@@ -158,7 +170,8 @@ class ImageBuilder:
             debug = debug,
         )
 
-        banner = 20*'*'
+        banner = 20*'=' + " banner.py"
+        
         #################### the little pieces
         sequence = Sequence(
             Job(aprint(banner, "loading image {}".format(self.from_image)
@@ -187,11 +200,13 @@ class ImageBuilder:
                 remotepath = "/etc/rhubarbe-history",
                 label = "push scripts tarfile",
             ),
+            Job(aprint(banner, "Triggering scripts")),
             SshJobScript(
                 node = node_proxy,
                 command = [ self.companion, nodename, self.from_image, self.to_image ],
                 label = "run scripts",
             ),
+            Job(aprint(banner, "Collecting builtin logs")),
             SshJobCollector(
                 node = node_proxy,
                 remotepaths = "/etc/rhubarbe-history/{}/logs/".format(self.to_image),
@@ -201,18 +216,36 @@ class ImageBuilder:
             ),
         )
 
-        # retrieve extr logs before saving
+        # retrieve extra logs before saving
         for extra_log in self.extra_logs:
             sequence.append(
-                SshJobCollector(
-                    node = node_proxy,
-                    remotepaths = extra_log,
-                    localpath = "{}/logs/".format(self.to_image),
-                    label = "retrieve extra log {}".format(extra_log),
-                    # best effort to retrieve logs : don't cancel
-                    # if not found on the remote node
-                    critical = False,
-                    recurse = True,
+                Sequence(
+                    Job(aprint("Retrieving extra log {}".format(extra_log))),
+                    SshJobCollector(
+                        node = node_proxy,
+                        remotepaths = extra_log,
+                        localpath = "{}/logs/".format(self.to_image),
+                        label = "retrieve extra log {}".format(extra_log),
+                        # best effort to retrieve logs : don't cancel
+                        # if not found on the remote node
+                        critical = False,
+                        recurse = True,
+                    ),
+                )
+            )
+
+        # creating these as critical = True means the whole
+        # scenario will fail if these are not found
+        for binary in self.expected_binaries:
+            check_with = "ls" if os.path.isabs(binary) else ("type -p")
+            sequence.append(
+                Sequence(
+                    Job(aprint("Checking for expected binaries")),
+                    SshJob(
+                        node = node_proxy,
+                        command = [ check_with, binary ],
+                        label = "Checking for {}".format(binary)
+                    )
                 )
             )
 
@@ -295,6 +328,8 @@ together with their arguments and stuff
     parser.add_argument("-i", "--includes", action='append', default=[])
     parser.add_argument("-l", "--logs", dest='extra_logs', action='append', default=[],
                         help="additional logs to be collected")
+    parser.add_argument("-b", "--expected-binaries", dest='expected_binaries', action='append', default=[],
+                        help="files to check for once build is done")
     parser.add_argument("-p", "--path", action='append', dest='paths', default=[],
                         help="colon-separated list of dirs to search")
     parser.add_argument("-s", "--silent", action='store_true', default=False,
@@ -336,12 +371,14 @@ together with their arguments and stuff
     if args.silent:
         import sys
         sys.stdout = sys.stderr = open("{}.log".format(to_image), 'w')
-    builder = ImageBuilder(gateway=args.gateway, node=node,
-                           from_image=args.from_image, to_image=to_image,
-                           scripts=args.scripts, includes=args.includes,
-                           extra_logs=args.extra_logs, path=path)
-    run_code = builder.run(verbose=args.verbose, debug=args.debug,
-                           no_load=no_load, no_save=no_save)
+    builder = ImageBuilder(gateway = args.gateway, node = node,
+                           from_image = args.from_image, to_image = to_image,
+                           scripts = args.scripts,
+                           includes = args.includes, path = path,
+                           extra_logs = args.extra_logs,
+                           expected_binaries = args.expected_binaries)
+    run_code = builder.run(verbose = args.verbose, debug = args.debug,
+                           no_load = no_load, no_save = no_save)
     return 0 if run_code else 1
 
 if __name__ == '__main__':
