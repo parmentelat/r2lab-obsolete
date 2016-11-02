@@ -27,7 +27,8 @@ function phone-start-app() {
     package_name=$1; shift
     # default : speedtest
     [ -z "$package_name" ] && package_name="org.zwanoo.android.speedtest"
-    adb shell monkey -p $package_name -c android.intent.category.LAUNCHER 1
+    echo "Starting app $package_name"
+    $adb shell monkey -p $package_name -c android.intent.category.LAUNCHER 1
 }
 
 doc-phone phone-wifi-on "turn on wifi (tested on nexus 5)"
