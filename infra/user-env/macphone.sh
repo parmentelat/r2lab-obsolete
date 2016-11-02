@@ -14,6 +14,20 @@ fi
 create-doc-category phone "tools for managing R2lab phone from macphone"
 augment-help-with phone
 
+doc-phone phone-wifi-on "turn on wifi (tested on nexus 5)"
+function phone-wifi-on() {
+    echo "Turning WiFi ON"
+    $adb shell am start -a android.intent.action.MAIN -n com.android.settings/.wifi.WifiSettings
+    $adb shell input keyevent 19
+}
+   
+doc-phone phone-wifi-off "turn off wifi (tested on nexus 5)"
+function phone-wifi-off() {
+    echo "Turning WiFi OFF"
+    $adb shell am start -a android.intent.action.MAIN -n com.android.settings/.wifi.WifiSettings
+    $adb shell input keyevent 23
+}
+   
 doc-phone phone-on "turn off airplane mode"
 function phone-on() {
     echo "Turning ON phone : turning off airplane mode"
@@ -23,8 +37,7 @@ function phone-on() {
 doc-phone phone-off "turn off airplane mode"
 function phone-off() {
     # also turn off wifi while we're at it
-    echo "Turning OFF phone : disabling wifi"
-    $adb shell "svc wifi disable"
+    phone-wifi-off
     echo "Turning OFF phone : turning on airplane mode"
     $adb shell "settings put global airplane_mode_on 1; am broadcast -a android.intent.action.AIRPLANE_MODE --ez state true"
 }
