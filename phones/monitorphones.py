@@ -53,8 +53,14 @@ class MonitorPhone:
         self.adb_bin = adb_bin
         self.adb_id = adb_id
         self.reconnectable = reconnectable
+        self.info = { 'id' : self.id }
+
+    def emit(self):
+        self.reconnectable.emit_info(sidecar_channel, self.info)
 
     async def probe(self, verbose):
+
+        # connect or reconnect if needed
         # xxx could use a 'is_connected' method here
         if not self.gateway.conn:
             try:
@@ -63,28 +69,33 @@ class MonitorPhone:
                     print("Connected -> {}".format(self.gateway))
             except:
                 print("Could not connect -> {}".format(self.gateway))
+                self.info['airplane_mode'] = 'fail'
+                self.emit()
+                return
+
         try:
             self.gateway.formatter.start_capture()
             retcod = await self.gateway.run("{} shell \"settings get global airplane_mode_on\""
                                             .format(self.adb_bin))
             result = self.gateway.formatter.get_capture().strip()
             airplane_mode = 'fail' if retcod != 0 else 'on' if result == '1' else 'off'
-            info = { 'id' : self.id, 'airplane_mode' : airplane_mode}
             if verbose:
-                print("probed phone {} : retcod={} result={} -> emitting {}"
-                  .format(self.adb_id, retcod, result, info))
-            self.reconnectable.emit_info(sidecar_channel, info)
+                print("probed phone {} : retcod={} result={} -> airplane_mode = {}"
+                      .format(self.adb_id, retcod, result, airplane_mode))
+            self.info['airplane_mode'] = airplane_mode
                                          
         except Exception as e:
             print("Could not probe {} -> {}".format(self.adb_id, e))
+            self.info['airplane_mode'] = 'fail'
             # force ssh reconnect
             self.gateway.conn = None
-        await asyncio.sleep(2)
+        self.emit()
 
     async def probe_forever(self, verbose):
         while True:
             await self.probe(verbose)
-
+            
+            await asyncio.sleep(2)
 
 class Monitor:
     def __init__(self, phone_specs):
@@ -94,7 +105,8 @@ class Monitor:
 
     def main(self):
         parser = ArgumentParser()
-        parser.add_argument("-v", "--verbose", default=False, action='store_true')
+        parser.add_argument("-s", "--silent", dest='verbose', default=True, action='store_false')
+        parser.add_argument("-v", "--verbose", action='store_true')
         args = parser.parse_args()
         results = asyncio.gather(*[phone.probe_forever(args.verbose) for phone in self.phones])
         loop = asyncio.get_event_loop()
