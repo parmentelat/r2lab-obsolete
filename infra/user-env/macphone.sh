@@ -14,6 +14,22 @@ fi
 create-doc-category phone "tools for managing R2lab phone from macphone"
 augment-help-with phone
 
+
+doc-phone refresh "retrieve latest git repo, and source it in this shell"
+function refresh() {
+    cd ~/r2lab
+    git pull
+    source ~/.bash_profile
+}
+
+doc-phone phone-start-app "start an app from its package name"
+function phone-start-app() {
+    package_name=$1; shift
+    # default : speedtest
+    [ -z "$package_name" ] && package_name="org.zwanoo.android.speedtest"
+    adb shell monkey -p $package_name -c android.intent.category.LAUNCHER 1
+}
+
 doc-phone phone-wifi-on "turn on wifi (tested on nexus 5)"
 function phone-wifi-on() {
     echo "Turning WiFi ON"
@@ -58,13 +74,6 @@ function phone-reboot() {
     echo "REBOOTING phone ..."
     #    $adb shell am broadcast -a android.intent.action.BOOT_COMPLETED
     $adb reboot
-}
-
-doc-phone refresh "retrieve latest git repo, and source it in this shell"
-function refresh() {
-    cd ~/r2lab
-    git pull
-    source ~/.bash_profile
 }
 
 # to set LTE only - except that sqlite3 is not known
