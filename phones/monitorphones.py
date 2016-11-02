@@ -57,15 +57,18 @@ class MonitorPhone:
     async def probe(self, verbose):
         # xxx could use a 'is_connected' method here
         if not self.gateway.conn:
-            await self.gateway.connect_lazy()
-            if verbose:
-                print("Connected -> {}".format(self.gateway))
+            try:
+                await self.gateway.connect_lazy()
+                if verbose:
+                    print("Connected -> {}".format(self.gateway))
+            except:
+                print("Could not connect -> {}".format(self.gateway))
         try:
             self.gateway.formatter.start_capture()
             retcod = await self.gateway.run("{} shell \"settings get global airplane_mode_on\""
                                             .format(self.adb_bin))
             result = self.gateway.formatter.get_capture().strip()
-            airplane_mode = 'on' if result == '1' else 'off'
+            airplane_mode = 'fail' if retcod != 0 else 'on' if result == '1' else 'off'
             info = { 'id' : self.id, 'airplane_mode' : airplane_mode}
             if verbose:
                 print("probed phone {} : retcod={} result={} -> emitting {}"
