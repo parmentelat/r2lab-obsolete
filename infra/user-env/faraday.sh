@@ -723,6 +723,13 @@ function publish () {
   echo 'INFO: updated in r2lab!'
 }
 
+# refresh is all about /home/faraday/r2lab (that is readable by all)
+# when using the nodes/ utilities we need to git pull in /root/r2lab
+doc-admin refresh-root "git pull in /root/r2lab"
+function refresh-root() {
+    (cd /root/r2lab; git pull)
+}
+
 ########################################
 define-main "$0" "$BASH_SOURCE"
 main "$@"
