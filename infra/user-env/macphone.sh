@@ -35,14 +35,14 @@ doc-phone phone-wifi-on "turn on wifi (tested on nexus 5)"
 function phone-wifi-on() {
     echo "Turning WiFi ON"
     $adb shell am start -a android.intent.action.MAIN -n com.android.settings/.wifi.WifiSettings
-    $adb shell input keyevent 19
+    $adb shell input keyevent 23
 }
    
 doc-phone phone-wifi-off "turn off wifi (tested on nexus 5)"
 function phone-wifi-off() {
     echo "Turning WiFi OFF"
     $adb shell am start -a android.intent.action.MAIN -n com.android.settings/.wifi.WifiSettings
-    $adb shell input keyevent 23
+    $adb shell input keyevent 19
 }
    
 doc-phone phone-on "turn off airplane mode"
