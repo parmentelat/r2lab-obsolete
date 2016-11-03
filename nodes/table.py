@@ -22,13 +22,13 @@ from collections import OrderedDict
 parser = ArgumentParser()
 parser.add_argument("-n", "--nodes", dest="nodes", default="all",
                     help="Comma separated list OR range of nodes")
-parser.add_argument("-i", "--include", dest="include_node", nargs=3, 
-                    help="Comma separated list OR range of nodes to include")
-parser.add_argument("-r", "--remove", dest="remove_node",
-                    help="Comma separated list OR range of nodes to remove")
-parser.add_argument("-e", "--edit", dest="edit_node", nargs=3,
-                    help="Comma separated list OR range of nodes to edit")
-parser.add_argument("-d", "--date", dest="a_date",
+parser.add_argument("-s", "--set", dest="set_triples", metavar='node:attribute=value',
+                    action='append', default=[],
+                    help="set value=attribute on given node - additive")
+parser.add_argument("-r", "--remove", dest="remove_couples", metavar='node:attribute',
+                    action='append', default=[],
+                    help="remove node's attribute -- additive")
+parser.add_argument("-d", "--date", dest="a_date", default=None,
                     help="include/remove an specific date (format yyyy-mm-dd)")
 parser.add_argument("-a", "--attribute", dest="attribute",
                     help="Single attribute to remember the maintenance action")
@@ -60,27 +60,30 @@ LOC_DIR_INFO = 'info_dt/'
 def main(args):
     """
     """
-    nodes_i   = args.include_node
-    nodes_r   = args.remove_node
-    nodes_e   = args.edit_node
+    set_triples = args.set_triples
+    remove_couples = args.remove_couples
     a_date    = args.a_date
     attribute = args.attribute
     value     = args.value
     nodes     = args.nodes
     drop      = args.drop
 
-    if nodes_e is None and nodes_i is None and nodes_r is None and not drop:
-        check_node(nodes)
-    if nodes_i is not None:
-        nd, attribute, value = nodes_i
-        include_node(nd, attribute, value, a_date)
-    if nodes_r is not None:
-        remove_node(nodes_r, attribute)
-    if nodes_e is not None:
-        nd, old_attr, new_attr = nodes_e
-        edit_node(nd, old_attr, new_attr, a_date)
-    if drop:
+    if not a_date:
+        a_date = time.strftime("%Y-%m-%d")
+
+    if set_triples:
+        for set_triple in set_triples:
+            nd, rest = set_triple.split(':')
+            attribute, value = rest.split('=')
+            set_in_node(nd, attribute, value, a_date)
+    elif remove_couples:
+        for remove_couple in remove_couples:
+            nd, attribute = remove_couple.split(':')
+            remove_from_node(nd, attribute)
+    elif drop:
         reset_file()
+    else:
+        list_nodes(nodes)
 
 
 
@@ -130,7 +133,10 @@ def run(command, std=True):
 
 
 
-def check_node(nodes):
+def pretty_record(avd_record):
+    return "{date}: {attribute} = {value}".format(**dict(avd_record))
+
+def list_nodes(nodes):
     """ list nodes in the list
     """
     dir         = FILEDIR
@@ -147,24 +153,19 @@ def check_node(nodes):
         print("INFO: empty file")
     for node in nodes:
         try:
-            ans = json.dumps(content[node], sort_keys=True, indent=2)
             print('---NODE {}'.format(node))
-            print(beautify(ans))
+            for record in content[node]:
+                print(pretty_record(record))
         except Exception as e:
-            if param is not 'all':
-                print('---NODE {}'.format(node))
-                print('WARNING: node #{} not found.'.format(node))
-                print('')
+            print('WARNING: node #{} not found.'.format(node), file=sys.sdterr)
 
-
-
-def include_node(nodes, attribute, value, date):
+def set_in_node(node, attribute, value, date):
     """ include nodes in the list
     """
     dir       = FILEDIR
     file_name = FILENAME
     date      = format_date(date)
-    nodes     = format_nodes(nodes)
+    nodes     = format_nodes(node)
     if attribute is None:
         attribute = ""
     if value is None:
@@ -178,17 +179,18 @@ def include_node(nodes, attribute, value, date):
         except Exception as e:
             content = {}
     for node in nodes:
-        try:
+        content.setdefault(node, [])
+        existing = [d for d in content[node] if d['attribute'] == attribute]
+        if existing:
+            # replacing
+            existing[0]['value'] = value
+        else:
             content[node].append({"date":date, "attribute":attribute, "value":value})
-        except Exception as e:
-            content.update({node : [{"date":date, "attribute":attribute, "value":value}]})
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
     print('INFO: node(s) * {} * included.'.format(", ".join(nodes)))
 
-
-
-def remove_node(nodes, attribute):
+def remove_from_node(nodes, attribute):
     """ remove nodes in the list
     """
     dir       = FILEDIR
@@ -224,36 +226,6 @@ def remove_node(nodes, attribute):
                 print('WARNING: node or attribute not found.'.format(node))
     with open(os.path.join(dir, file_name), "w") as js:
         js.write(json.dumps(content)+"\n")
-
-
-
-def edit_node(nodes, old_attr, new_attr, date):
-    """ edit nodes in the list
-    """
-    dir       = FILEDIR
-    file_name = FILENAME
-    date      = format_date(date)
-    nodes     = format_nodes(nodes)
-    if old_attr is None:
-        old_attr = "None"
-    if new_attr is None:
-        new_attr = "None"
-
-    with open(os.path.join(dir, file_name)) as data_file:
-        try:
-            content = json.load(data_file)
-        except Exception as e:
-            content = {}
-    for node in nodes:
-        try:
-            for att in content[node]:
-                if att['attribute'] == old_attr:
-                    att['attribute'] = new_attr
-        except Exception as e:
-            print('WARNING: attribute {} not found for node {}.'.format(old_attr, node))
-    with open(os.path.join(dir, file_name), "w") as js:
-        js.write(json.dumps(content)+"\n")
-    print('INFO: attribute {} updated to {}.'.format(old_attr, new_attr))
 
 
 
@@ -354,13 +326,8 @@ def new_list_nodes(nodes):
         else:
             nodes = [nodes]
 
-    new_list_nodes = list(map(str, nodes))
-    for k, v in enumerate(new_list_nodes):
-        if int(v) < 10:
-            new_list_nodes[k] = v.rjust(2, '0')
-    return new_list_nodes
-
-
+    print(list(nodes))
+    return ["{:02}".format(int(node)) for node in nodes]
 
 def format_nodes(nodes, avoid=None):
     """ correct format when inserted 'all' in -i / -r nodes parameter
@@ -385,19 +352,6 @@ def now(bkp=None):
         return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     else:
         return datetime.now().strftime('%Y%m%d%H%M%S')
-
-
-
-def beautify(text):
-    """ json print more readable
-    """
-    new_text = text.replace('\n', '').replace('\"', '')
-    new_text = new_text.replace('date:', '\r      date:')
-    new_text = new_text.replace('attribute:', '\r attribute:')
-    new_text = new_text.replace('value:', '\r     value:')
-    new_text = new_text.replace("{", '').replace("}", '\n').replace("[", '').replace("]", '').replace(",", '\n')
-    new_text = new_text.replace("]", '')
-    return new_text
 
 
 

@@ -80,7 +80,7 @@ def main(args):
     elif drop:
         reset_file()
     else:
-        check_node(format_nodes(nodes))
+        list_nodes(format_nodes(nodes))
 
 
 
@@ -132,7 +132,7 @@ def sync_files(files):
 
 
 
-def check_node(nodes):
+def list_nodes(nodes):
     """ list nodes in the list
     """
     dir         = FILEDIR
@@ -146,37 +146,20 @@ def check_node(nodes):
             content = {}
     if len(content) == 0:
         print("INFO: empty file")
-
+        return
+    
     for node in nodes:
-        try:
-            print('---NODE {}'.format(node))
-            tabs = content[node]
-            for tb, tab in enumerate(tabs):
-                file = content[node][tb]['file']
-
-                if type(file) is list:
-                    try:
-                        tab  = content[node][tb]['tab']
-                        file = content[node][tb]['file']
-                        print("     tab: {}".format(tab))
-                        print(" file(s): {}".format((', ').join(file)))
-                        print('')
-                    except Exception as e:
-                        pass
-                else:
-                    try:
-                        tab  = content[node][tb]['tab']
-                        file = content[node][tb]['file']
-                        print("     tab: {}".format(tab))
-                        print("    file: {}".format(file))
-                        print('')
-                    except Exception as e:
-                        pass
-        except Exception as e:
-            print('WARNING: node #{} info not found.'.format(node))
-            print('')
-
-
+        if node not in content:
+            print('WARNING: node #{} info not found.'.format(node), file=sys.stderr)
+            continue
+        print('---NODE {}'.format(node))
+        tabs = content[node]
+        for tb, tab in enumerate(tabs):
+            if not 'file' in tab:
+                print("no file")
+            else:
+                file = tab['file']
+                print("files:", file)
 
 def include_node(nodes, tab, files, append):
     """ include nodes in the list
