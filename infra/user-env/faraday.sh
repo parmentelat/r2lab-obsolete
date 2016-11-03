@@ -133,31 +133,11 @@ main()
 EOF
 }
 
+doc-admin snap "to be completed"
 function snap () {
   python3 /root/r2lab/nodes/snap.py "$@"
 }
-alias snapshot=snap
-alias rsnap="rhubarbe snap"
 
-function _maintenance () {
-  python3 /root/r2lab/nodes/maintenance.py "$@"
-}
-
-function _information () {
-  python3 /root/r2lab/nodes/info.py "$@"
-}
-
-function _table () {
-  python3 /root/r2lab/nodes/table.py "$@"
-}
-alias tables=table
-
-function _publish () {
-  /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
-  echo 'INFO: send info to r2lab website and updating...'
-  ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
-  echo 'INFO: updated in r2lab!'
-}
 # normalization
 # the intention is you can provide any type of inputs, and get the expected format
 # norm 1 03 fit04 5-8 ~7 -> fit01 fit03 fit04 fit05 fit06 fit08
@@ -173,19 +153,9 @@ function normreboot () { py normalize2 fit reboot "$@" ; }
 # nodes 1 3 5
 # -> set NODES to fit01 fit03 fit05 and display it too
 function nodes () {
-  if [ $1 == "publish" ]; then
-    _publish
-  elif [ $1 == "table" ]; then
-    _table "${@:2}"
-  elif [ $1 == "info" ]; then
-    _information "${@:2}"
-  elif [ $1 == "maintenance" ]; then
-    _maintenance "${@:2}"
-  else
     [ -n "$1" ] && export NODES=$(norm "$@")
     echo "export NODES=\"$NODES\""
     echo "export NBNODES=$(nbnodes)"
-  fi
 }
 alias n=nodes
 doc-selection nodes "(alias n) show or define currently selected nodes; eg nodes 1-10,12 13 ~5"
@@ -727,6 +697,31 @@ function macphone() {
 }
 
 doc-selection-sep "See also help-alt for other commands"
+
+########################################
+doc-admin maintenance "to be completed"
+function maintenance () {
+  python3 /root/r2lab/nodes/maintenance.py "$@"
+}
+
+# info is already used for the CMC verb
+doc-admin information "to be completed"
+function information () {
+  python3 /root/r2lab/nodes/information.py "$@"
+}
+
+doc-admin table "to be completed"
+function table () {
+  python3 /root/r2lab/nodes/table.py "$@"
+}
+
+doc-admin publish "to be completed"
+function publish () {
+  /root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh
+  echo 'INFO: send info to r2lab website and updating...'
+  ssh root@r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
+  echo 'INFO: updated in r2lab!'
+}
 
 ########################################
 define-main "$0" "$BASH_SOURCE"
