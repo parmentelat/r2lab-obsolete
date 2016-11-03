@@ -32,7 +32,7 @@ parser.add_argument("-t+", dest="tabp", action='store_true',
                     help="Add node tab.")
 parser.add_argument("-t", dest="tabl",
                     help="Remove node tab.")
-parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
+parser.add_argument("--drop", dest="drop", action='store_true',
                     help="Drop and initialize the nodes information. All data is erased.")
 
 args = parser.parse_args()

@@ -34,7 +34,7 @@ parser.add_argument("-m", "--message", dest="message",
                     help="Single message to remember the maintenance action")
 parser.add_argument("-e", "--reset", dest="reset", choices=['yes','no'],
                     help="A flag that indicates if the statistics must be reset")
-parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
+parser.add_argument("--drop", dest="drop", action='store_true',
                     help="Drop and initialize the file. All data is erased")
 
 args = parser.parse_args()

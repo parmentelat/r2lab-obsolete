@@ -34,7 +34,7 @@ parser.add_argument("-a", "--attribute", dest="attribute",
                     help="Single attribute to remember the maintenance action")
 parser.add_argument("-v", "--value", dest="value",
                     help="The value of the attribute")
-parser.add_argument("-dr", "--drop", dest="drop", action='store_true',
+parser.add_argument("--drop", dest="drop", action='store_true', default=False,
                     help="Drop and initialize the file. All data is erased")
 
 args = parser.parse_args()
