@@ -153,7 +153,7 @@ function normreboot () { py normalize2 fit reboot "$@" ; }
 # nodes 1 3 5
 # -> set NODES to fit01 fit03 fit05 and display it too
 function nodes () {
-    [ -n "$1" ] && export NODES=$(norm "$@")
+    [ -n "$1" ] && export NODES=$(rhubarbe nodes "$@")
     echo "export NODES=\"$NODES\""
     echo "export NBNODES=$(nbnodes)"
 }
