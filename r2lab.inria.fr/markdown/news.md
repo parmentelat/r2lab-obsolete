@@ -7,7 +7,7 @@ Most recent first&nbsp;:
 
 ### November 9 2016
 
-* [Inauguration ceremony. See detailed program here.](https://www.inria.fr/centre/sophia/agenda/inauguration-de-l-equipex-fit-r2lab)
+* [Inauguration ceremony. See detailed program here.](https://www.inria.fr/en/centre/sophia/calendar/r2lab-anechoic-chamber-a-heterogeneous-wireless-testbed)
 
 ### October 24
 
