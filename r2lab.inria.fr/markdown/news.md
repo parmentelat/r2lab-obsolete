@@ -9,6 +9,16 @@ Most recent first&nbsp;:
 
 * Inauguration ceremony. Program to be announced shortly.
 
+### October 24
+
+* OpenAirInterface images for deploying infrastructures and eNodeB's are available under the names
+  * `u14.319-oai-enb` for eNodeB's and scramblers and such
+  * `u14.48-oai-gw` for infrastructure services like Home Subscriber Server (HSS) and Evolved Packet Core (EPC)
+
+### October 15
+
+* We have now 6 nodes equipped with USRP's
+
 ### October 1
 
 * We now use [an automated tool](https://github.com/parmentelat/r2lab/blob/master/infra/builds/build-image.py) for building images [on a nightly basis](https://github.com/parmentelat/r2lab/blob/master/infra/builds/all-images.sh)

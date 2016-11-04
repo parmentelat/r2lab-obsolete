@@ -22,35 +22,30 @@ tab: platform
 
 </hr>
 
-<div class="container">
+<div class="container" markdown="1">
   <div class="row">
     <div class="col-md-4">
-      <span>
-        <h3>The node is yours</h3>
-      </span>
+      <span> <h3>The testbed is yours</h3> </span>
       <p>
-        This implies that you can run, reboot, load, and reload disparate
-        operating system in each node. A full access to the node is handled by
-        a remote access and a root user is available during your
-        experimentation.
+	The testbed is reservable as a whole.
+	Once they have booked the testbed, registered users can ssh into `faraday.inria.fr`,
+	and from there control all the resources in the testbed.
+	You are thus in full control of all the radio traffic in the chamber. 
         </p>
     </div>
     <div class="col-md-4">
-      <span>
-        <h3>Node details</h3>
-      </span>
+      <span> <h3>The nodes are yours</h3> </span>
       <p>
-        Our anechoic chamber is equipped with powerful nodes that can run high-level OS Linux.
-        They can run many applications and advanced experimentations.
-      </p>
+        Also you can load your operating system of choice on any node.
+	From that point you can ssh-access all nodes with administration privileges, and configure
+	the available resources - nodes, USRPs and phones - to create a rich experimental environment.
+       </p>
     </div>
     <div class="col-md-4">
-      <span>
-        <h3>Gateway connection</h3>
-      </span>
+      <span> <h3>Methodology</h3> </span>
       <p>
-        R2lab offers a connection to the testbed infrastructure through a gateway access
-        which allows the researchers to control each reserved node.
+      Experimental scenarios can be created using standard tools. We also provide [tutorials, and python libraries](tutorial.md)
+      that can optionnally help you efficiently orchestrate the complete experimental workflow, from deployment to data collection.
       </p>
     </div>
   </div>
