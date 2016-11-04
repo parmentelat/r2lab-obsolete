@@ -29,7 +29,7 @@ function connect_sidecar(hostname) {
 var set_hostname = function(e) {
     var hostname = $('input#hostname').val();
     if (hostname == "") {
-	hostname = "localhost";
+	hostname = "r2lab.inria.fr";
 	$('input#hostname').val(hostname);
     }
     connect_sidecar(hostname);
