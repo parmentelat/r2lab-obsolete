@@ -7,7 +7,7 @@ Most recent first&nbsp;:
 
 ### November 9 2016
 
-* Inauguration ceremony. Program to be announced shortly.
+* [Inauguration ceremony. See detailed program here.](https://www.inria.fr/centre/sophia/agenda/inauguration-de-l-equipex-fit-r2lab)
 
 ### October 24
 
