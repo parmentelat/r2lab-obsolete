@@ -531,11 +531,15 @@ function -do-first () {
     echo "Running $command $node"
     $command -l root $node
 }
-alias ss="-do-first ssh"
-alias tn="-do-first telnet"
 
-doc-selection ss "Enter first selected node using ssh\n\t\targ if present is taken as a node, not a command"
+doc-selection ss "Enter first selected node using ssh\n\t\tWARNING: arg if present is taken as a node, not a command"
+alias ss="-do-first ssh"
+
+doc-selection ssx "Same as ss but with ssh -X"
+alias ssx="-do-first 'ssh -X'"
+
 doc-admin tn "Enter first selected node using telnet - ditto"
+alias tn="-do-first telnet"
 
 #################### manually run a old or new frisbee server
 function serve_ubuntu_old () {
