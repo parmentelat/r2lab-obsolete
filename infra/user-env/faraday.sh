@@ -735,5 +735,13 @@ function refresh-root() {
 }
 
 ########################################
+doc-alt all-off "Switch off everything"
+function all-off() {
+    rhubarbe off -a
+    rhubarbe usrpoff -a
+    macphone phone-off
+}
+
+########################################
 define-main "$0" "$BASH_SOURCE"
 main "$@"

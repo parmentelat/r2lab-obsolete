@@ -66,7 +66,7 @@ function phone-status() {
     case $airplane_mode_on in
 	0*) echo phone is turned ON ;;
 	1*) echo phone is turned OFF ;;
-	*) echo "??? : got X${airplane_mode_on}X" ;;
+	*) echo "Could not figure phone status" ;;
     esac
 }
 
