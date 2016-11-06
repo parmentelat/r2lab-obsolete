@@ -431,12 +431,12 @@ function scramble() {
 
 doc-nodes watch-uplink "Run uhd_fft on band7 uplink"
 function watch-uplink() {
-    uhd_fft -f2680M -s 25M
+    uhd_fft -f2560M -s 25M
 }
 
 doc-nodes watch-downlink "Run uhd_fft on band7 downlink"
 function watch-downlink() {
-    uhd_fft -f2560M -s 25M
+    uhd_fft -f2680M -s 25M
 }
 ########################################
 define-main "$0" "$BASH_SOURCE"
