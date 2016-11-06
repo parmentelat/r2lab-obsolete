@@ -342,7 +342,8 @@ doc-nodes stop-tcpdump-data "Stop recording pcap data about SCTP traffic"
 function stop-tcpdump-data() { -stop-tcpdump data "$@"; }
 
 ####################
-doc-nodes demo "set ups nodes for the skype demo - based on their id"
+# keep it in here just in case but this hack is no longer needed
+#doc-nodes demo "set ups nodes for the skype demo - based on their id"
 function demo() {
     case $(r2lab-id) in
 	38)
