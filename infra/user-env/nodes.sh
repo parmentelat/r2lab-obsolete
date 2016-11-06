@@ -401,6 +401,43 @@ function enable-nat-data() {
     ip rule add from 192.168.2.2/24 table 200 priority 200
 }
 
+####################
+doc-nodes usrp_reset "Reset the URSP attached to this node"
+function usrp_reset() {
+    id=$(r2lab-id)
+    # WARNING this might not work on a node that
+    # is not in its nominal location,
+    # like if node 42 sits in slot 4
+    cmc="192.168.1.$id"
+    echo "Turning off USRP # $id"
+    curl http://$cmc/usrpoff
+    sleep 1
+    echo "Turning on USRP # $id"
+    curl http://$cmc/usrpon
+}
+
+doc-nodes scramble "shortcuts for scrambling the skype demo; use -blast to use max. gain"
+function scramble() {
+    mode=$1; shift
+    command="uhd_siggen --freq=2.53G --gaussian --amplitude=0.9"
+    case "$mode" in
+	"")        command="$command -g 73" ; message="perturbating" ;;
+	"-blast")  command="$command -g 90" ; message="blasting" ;;
+	*)         echo unknown option "$mode"; return ;;
+    esac
+    echo "Running $command in foreground - press Enter at the prompt to exit"
+    $command
+}
+
+doc-nodes watch-uplink "Run uhd_fft on band7 uplink"
+function watch-uplink() {
+    uhd_fft -f2680M -s 25M
+}
+
+doc-nodes watch-downlink "Run uhd_fft on band7 downlink"
+function watch-downlink() {
+    uhd_fft -f2560M -s 25M
+}
 ########################################
 define-main "$0" "$BASH_SOURCE"
 main "$@"

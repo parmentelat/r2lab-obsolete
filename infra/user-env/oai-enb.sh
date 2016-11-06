@@ -199,7 +199,7 @@ function run-enb() {
     if [ "$reset_usrp" == "False" ]; then
 	echo "SKIPPING USRP reset"
     else
-	reset_usrp
+	usrp_reset
     fi
     start-tcpdump-data ${oai_role}
     start
@@ -293,34 +293,6 @@ doc-nodes stop "stops the softmodem-related processes"
 function -list-processes() {
     pids="$(pgrep lte-softmodem)"
     echo $pids
-}
-
-####################
-doc-nodes reset_usrp "Reset the URSP attached to this node"
-function reset_usrp() {
-    id=$(r2lab-id)
-    # WARNING this might not work on a node that
-    # is not in its nominal location, like node 42 that
-    # sits in slot 4
-    cmc="192.168.1.$id"
-    echo "Turning off USRP # $id"
-    curl http://$cmc/usrpoff
-    sleep 1
-    echo "Turning on USRP # $id"
-    curl http://$cmc/usrpon
-}
-
-doc-nodes scramble "shortcuts for scrambling the r2lab demo; use -blast to use max. gain"
-function scramble() {
-    mode=$1; shift
-    command="uhd_siggen --freq=2.53G --gaussian --amplitude=0.9"
-    case "$mode" in
-	"")        command="$command -g 73" ; message="perturbating" ;;
-	"-blast")  command="$command -g 90" ; message="blasting" ;;
-	*)         echo unknown option "$mode"; return ;;
-    esac
-    echo "Running $command in foreground - press Enter at the prompt to exit"
-    $command
 }
 
 ########################################
