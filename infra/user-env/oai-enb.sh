@@ -189,7 +189,7 @@ EOF
 doc-nodes run-enb "run-enb 12: does init/configure/start with epc running on node 12"
 function run-enb() {
     peer=$1; shift
-    # pass exactly 'False' to skip usrp_reset
+    # pass exactly 'False' to skip usrp-reset
     reset_usrp=$1; shift
     oai_role=enb
     stop
@@ -199,7 +199,7 @@ function run-enb() {
     if [ "$reset_usrp" == "False" ]; then
 	echo "SKIPPING USRP reset"
     else
-	usrp_reset
+	usrp-reset
     fi
     start-tcpdump-data ${oai_role}
     start

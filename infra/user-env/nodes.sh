@@ -402,8 +402,8 @@ function enable-nat-data() {
 }
 
 ####################
-doc-nodes usrp_reset "Reset the URSP attached to this node"
-function usrp_reset() {
+doc-nodes usrp-reset "Reset the URSP attached to this node"
+function usrp-reset() {
     id=$(r2lab-id)
     # WARNING this might not work on a node that
     # is not in its nominal location,
