@@ -109,6 +109,25 @@ function restart() {
 }
 
 ##########
+doc-nodes wait-usrp "Wait until a USRP is ready - optional timeout in seconds"
+function wait-usrp() {
+    timeout="$1"; shift
+    [ -z "$timeout" ] && timeout=
+    counter=1
+    while true; do
+	if uhd_find_devices >& /dev/null; then
+	    uhd_usrp_probe >& /dev/null && return 0
+	fi
+	counter=$(($counter + 1))
+	[ -z "$timeout" ] && continue
+	if [ "$counter" -ge $timeout ] ; then
+	    echo "Could not find a UHD device after $timeout seconds"
+	    return 1
+	fi
+    done
+}
+
+##########
 doc-nodes-sep
 
 ########################################
