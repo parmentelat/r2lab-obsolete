@@ -4,12 +4,13 @@ widget_login_template: r2lab/widget_login.html
 ---
 
 <h2 class="text-center" style="color:green;" >
+  <br/>
   <a href="/tour.md" style="color:green; text-decoration: none;">
-  check out our platform in a virtual tour<br>
-  <span class="text-muted lead">quickly and easily to visit R2lab</span><br></a>
+  check out our platform in a virtual tour<br/>
+  <span class="text-muted lead">for a quick and easy visit of R2lab</span><br/></a>
 </h2>
 
-<br>
+<br/>
 
 <div class="container text-center">
   <div class="row">
@@ -35,11 +36,11 @@ widget_login_template: r2lab/widget_login.html
   <hr class="featurette-divider">
 
   <h2 class="text-center" style="color:green;" >
-  start your experiment quickly and easily<br>
-  <span class="text-muted lead">run your code on our nodes in few steps</span><br>
+  start your experiment quickly and easily<br/>
+  <span class="text-muted lead">run your code on our nodes in few steps</span><br/>
   </h2>
 
-  <br>
+  <br/>
 
   <div class="row">
   <div class="col-md-3">

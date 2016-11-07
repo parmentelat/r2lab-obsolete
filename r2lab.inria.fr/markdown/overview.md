@@ -6,28 +6,28 @@ widget_login_template: r2lab/widget_login.html
 ### What is R2Lab ?
 <div class="row" markdown="1">
   <div class="col-md-6">  
-  R2Lab is a Wi-fi mesh testbed infrastructure suitable for testing wireless devices and heterogeneous wireless communication.
-  <br>
-  <br>
-	As part of a federation of independent experimental testbeds, provides a diverse and higher-performance platform for advanced Wi-fi experiments. The project priorizes scale and realism for supporting future wireless research.
-	<br>
-	<br>
-	Through R2Lab testbed, located at INRIA Institute in Sophia-Antipolis - France, we offer a infrastructure with thirty-seven wireless nodes, offering highly flexible experimentation in a array of wireless network, allowing experimenters test in many ways the optimizations in radio frequencies for wireless applications.
-	<br>
-	<br>
-	R2Lab as part of a Europe testbed project is partner of [OneLAb](http://www.onelab.eu/) based at UPMC in Paris and [PlanetLab Europe](http://www.planet-lab.eu/) federation which has servers connected to the core internet.
+R2lab is an open tested located in an anechoic chamber for reproducible research in wireless WiFi and 4G/5G networks.
+  <br/>
+  <br/>
+R2lab is [part of the FIT federation](https://www.fit-equipex.fr/testbeds), an open large-scale testing infrastructure for systems and applications on wireless and sensor communications.
+  <br/>
+  <br/>
+Located at INRIA Sophia-Antipolis, R2lab proposes thirty seven customisable commercial off-the-shelf wireless devices, together with USRP nodes and commercial LTE phones, fit to create rich experimental setups. The testbed also features advanced software like leverage GnuRadio and OpenAirterface, as well as efficient software tools, to support easy experimentation.
+  <br/>
+  <br/>
+These tools allow to book the whole testbed, to remotely control the wireless devices, to easily deploy various scenarios and to collect results.
   </div>
-
   <div class="col-md-6">
-  	<br>
+  	<br/>
   	<img src="/assets/img/nodes_range.jpg">
   </div>
 </div>
 
 <h2 class="text-center" style="color:green;" >
+    <br/>
   <a href="/tour.md" style="color:green; text-decoration: none;">
-  check out our platform in a virtual tour<br>
-  <span class="text-muted lead">quickly and easily to visit R2lab</span><br></a>
+  check out our platform in a virtual tour<br/>
+  <span class="text-muted lead">for a quick and easy visit of R2lab</span><br></a>
 </h2>
 
 <br>
