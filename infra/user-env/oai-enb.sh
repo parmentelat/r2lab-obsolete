@@ -213,6 +213,8 @@ add-to-datas "/root/data-${oai_role}.pcap"
 ####################
 doc-nodes init "initializes clock after NTP, and tweaks MTU's"
 function init() {
+
+    gitup
     # clock
     init-clock
     # data interface if relevant
