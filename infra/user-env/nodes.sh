@@ -420,9 +420,9 @@ function usrp-reset() {
 doc-nodes scramble "shortcuts for scrambling the skype demo; use -blast to use max. gain"
 function scramble() {
     mode=$1; shift
-    command="uhd_siggen --freq=2.56G --gaussian --amplitude=2"
+    command="uhd_siggen --freq=2.56G --gaussian"
     case "$mode" in
-	"")        command="$command -g 67" ; message="perturbating" ;;
+	"")        command="$command -g 78" ; message="perturbating" ;;
 	"-blast")  command="$command -g 90" ; message="blasting" ;;
 	*)         echo unknown option "$mode"; return ;;
     esac
