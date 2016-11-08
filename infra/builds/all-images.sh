@@ -85,11 +85,16 @@ function u14-319(){
     #bim $enb_options 36 u14-lowlat319 u14.319-oai-enb-uhdettus "oai-enb.sh image uhd-ettus" 
 }
 
+function gnuradio(){
+    bim 1 ubuntu-16.04-gnuradio-3.7.10.1-update3 ubuntu-16.04-gnuradio-3.7.10.1-update4 "nodes.sh gitup"
+}
+
 #ssh root@faraday.inria.fr rhubarbe off 1-10
 #u14-48 &
 #u16-48 &
 #u16-47 &
-u14-319
+#u14-319
+gnuradio
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work
