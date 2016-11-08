@@ -17,3 +17,8 @@ alias jour-sidecar="journalctl -b -f --unit=sidecar"
 doc-admin logs-sidecar alias
 doc-admin jour-sidecar alias
 
+doc-admin gitup "runs git pull in /root/r2lab"
+function gitup() {
+    cd /root/r2lab
+    git pull
+}
