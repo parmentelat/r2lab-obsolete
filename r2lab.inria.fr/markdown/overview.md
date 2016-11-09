@@ -71,7 +71,11 @@ As such, it is part of the [OneLab federation of testbeds](http://onelab.eu) - a
   </div>
   <div class="col-md-3">
     <br>
+    <img src="/assets/img/fit-logo.png" style="height:55px;">
+    <br>
+    <br>
     <img src="/assets/img/onelab-logo.png" style="height:55px;">
+    <br>
   </div>
 
 </div>
