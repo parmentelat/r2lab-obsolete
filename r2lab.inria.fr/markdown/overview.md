@@ -38,7 +38,10 @@ These tools allow to book the whole testbed, to remotely control the wireless de
     <img src="/assets/img/node_interface.jpg">
   </div>
 
-  <div class="col-md-7">
+  <div class="col-md-1">
+  </div>
+
+  <div class="col-md-8">
   <br>
   R2lab platform consists in a set of thirty-seven nodes in an anechoic chamber of **≈ 90m<sup>2</sup>** distributed in mesh layout to offer an advanced simulation wi-fi site.
   <br>
@@ -51,14 +54,12 @@ These tools allow to book the whole testbed, to remotely control the wireless de
   <br>
   </div>
 
-  <div class="col-md-2">
-  </div>
 </div>
 
 <br>
 ### The OneLab platform
 <div class="row" markdown="1">
-  <div class="col-md-7">
+  <div class="col-md-8">
   <br>
   R2Lab is also part of the OneLab project - a consortium of higher education and research institutions.
   <br>
@@ -68,11 +69,11 @@ These tools allow to book the whole testbed, to remotely control the wireless de
   Learn more about [OneLab](http://onelab.eu) project.
   </div>
 
+  <div class="col-md-1">
+  </div>
   <div class="col-md-3">
     <br>
     <img src="/assets/img/onelab-logo.png" style="height:55px;">
   </div>
 
-  <div class="col-md-2">
-  </div>
 </div>
