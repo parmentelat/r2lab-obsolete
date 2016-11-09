@@ -31,7 +31,7 @@ These tools allow to book the whole testbed, to remotely control the wireless de
 </h2>
 
 <br>
-### The nodes
+### Offering in terms of hardware
 <div class="row" markdown="1">
   <div class="col-md-3">
     <br>
@@ -43,30 +43,28 @@ These tools allow to book the whole testbed, to remotely control the wireless de
 
   <div class="col-md-8">
   <br>
-  R2lab platform consists in a set of thirty-seven nodes in an anechoic chamber of **≈ 90m<sup>2</sup>** distributed in mesh layout to offer an advanced simulation wi-fi site.
+  The R2lab platform sits in an insulated anechoic chamber of ≈ 90m<sup>2</sup>. It hosts thirty-seven nodes scattered on a fixed grid; about one third of these nodes feature a USRP board, of various kinds. In addition, commercial phones are available for connecting to a simulated 4G network.
   <br>
   <br>
-  A full control of network nodes is provided with direct access to the gateway nodes. A full stack monitoring capability allow monitoring feedback from all network metrics like energy consumption, delay, throughput, overhead and etc.
+  All these resources can be controlled remotely through a unique ssh gateway at `faraday.inria.fr`. Users have full control, and can run their OS of choice with any experimental software they need for achieving their goals.
   <br>
   <br>
-  Besides, NEPI tool ([see more](tools.md)) offers a quick experiments deployment and easy evaluation of results. NEPI offers the possibility of implement different simulation types, topologies and covering of a wide range of network real use cases.
   <br>
-  <br>
+  Experiments can thus be orchestrated with standard tools. For convenience, we also provide software tools as python libraries ([see more details and tutorials here](tools.md)), that allow to quickly script efficient experiment deployment capabilities, complete from nodes provisioning to data collection. quick and efficient deployment of  offers a quick experiments deployment and easy evaluation of results. Check out our YouTube videos for more information.
   </div>
 
 </div>
 
 <br>
-### The OneLab platform
+### A federated testbed
 <div class="row" markdown="1">
   <div class="col-md-8">
   <br>
-  R2Lab is also part of the OneLab project - a consortium of higher education and research institutions.
+  R2Lab is also part of the [FIT Equipex Project, funded by ANR](https://www.fit-equipex.fr/), that offers a range of testbeds oriented towards research in networking.
   <br>
-  OneLab offers a variety of network communications environments and testbeds. OneLab provide a range of services: internet-overlaid testbeds; wireless, sensing and mobility testbeds; broadband access; core testbeds and network emulation environments.
+As such, it is part of the [OneLab federation of testbeds](http://onelab.eu) - a consortium of higher education and research institutions.
   <br>
-  <br>
-  Learn more about [OneLab](http://onelab.eu) project.
+  This ecosystem offers a variety of networking and communication environments and testbeds, that offer a wide spectrum of services: internet-overlaid testbeds; wireless, sensing and mobility testbeds; broadband access; core testbeds and network emulation environments.
   </div>
 
   <div class="col-md-1">
