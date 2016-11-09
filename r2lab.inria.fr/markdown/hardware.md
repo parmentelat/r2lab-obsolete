@@ -141,7 +141,7 @@ tab: platform
 <div class="container">
   <div class="row" markdown="1">
     <div class="col-md-12 new_pad">
-      <h3>Nodes comparative table</h3>
+      <h3>Nodes detailed information</h3>
       <!-- DyNAMIC TABLE CREATED BY CMD line in faraday-->
       <style type="text/css"> @import url("/assets/r2lab/table_nodes.css"); </style>
       <script type="text/javascript" src="/assets/r2lab/table_nodes.js"></script>
