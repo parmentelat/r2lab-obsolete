@@ -7,7 +7,17 @@ Most recent first&nbsp;:
 
 ### November 9 2016
 
-* [Inauguration ceremony. See detailed program here.](https://www.inria.fr/en/centre/sophia/calendar/r2lab-anechoic-chamber-a-heterogeneous-wireless-testbed)
+* [Inauguration ceremony - see detailed program here.](https://www.inria.fr/en/centre/sophia/calendar/r2lab-anechoic-chamber-a-heterogeneous-wireless-testbed)
+
+* Slides available below:
+
+  * [Keynote by Max Ott](../assets/files/2016-11-opening-keynote-max-ott.pdf)
+  * [FIT Equipex, by Éric FLeury](../assets/files/2016-11-opening-fit-eric-fleury.pdf)
+  * [FIT/CortexLab, by Tanguy Risset](../assets/files/2016-11-opening-cortexlab-tanguy-risset.pdf)
+  * [FIT/R2lab, by Walid Dabbous](../assets/files/2016-11-opening-r2lab-walid-dabbous.pdf)
+  * [OpenAirInterface, by Raymond Knopp](../assets/files/2016-11-opening-openairinterface-raymond-knopp.pdf)
+  * [Demo on R2lab: setting up a 4G network in 3mn, by Thierry Parmentelat](../assets/files/2016-11-opening-r2lab-demo-thierry-parmentelat.pdf)
+ 
 
 ### October 24
 
