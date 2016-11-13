@@ -564,8 +564,6 @@ alias logs-dns="tail -f /var/log/dnsmasqfit.log"
 doc-admin logs-dns alias
 alias logs-nitos="tail -f /var/log/upstart/ntrc*.log"
 doc-admin logs-nitos alias
-alias logs-omf-sfa="tail -f /var/log/upstart/omf-sfa.log"
-doc-admin logs-omf-sfa alias
 
 alias nitos-frisbeed-calls="grep frisbeed /var/log/upstart/ntrc_frisbee.log | grep command"
 doc-admin nitos-frisbeed-calls "extract previously invoked frisbeed commands from logs"
@@ -667,11 +665,13 @@ doc-admin jour-monitor alias
 alias logs-monitor="tail -f /var/log/monitor.log"
 doc-admin logs-monitor alias
 
+alias logs-omf-sfa="tail -f /var/log/upstart/omf-sfa.log"
+doc-admin logs-omf-sfa alias
+alias jour-omf-sfa="journalctl --unit=omf-sfa"
+doc-admin jour-omf-sfa alias
+
 alias rhubarbe-update='pip3 install --upgrade rhubarbe; rhubarbe version'
 doc-admin rhubarbe-update alias
-
-alias pull-bashrc="su faraday /home/faraday/r2lab/auto-update.sh"
-doc-admin pull-bashrc alias
 
 ########## check nodes info
 doc-admin info "get info from CMC"
