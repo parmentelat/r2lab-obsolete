@@ -4,7 +4,7 @@ float_menu_template: r2lab/float-menu-tutorials.html
 
 ## Logging in the gateway
 
-Once you have [obtained a slice account on R2LAB (faraday)](tuto-01-registration.md#main), you can reach the R2lab gateway using ssh
+Once you have [obtained a slice account on R2LAB (faraday)](tuto-100-registration.md#main), you can reach the R2lab gateway using ssh
 
     $ ssh onelab.inria.mario.tutorial@faraday.inria.fr
 

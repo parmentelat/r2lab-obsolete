@@ -149,7 +149,7 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 <pre class="hljs"><code>$ ssh root@fit10</span></code></pre>
 </p>
 
-[See more](tuto-02-shell-tools.md#main) about how to manipulate the nodes.
+[See more](tuto-200-shell-tools.md#main) about how to manipulate the nodes.
 </p>
       
 <strong>3 - Troubleshooting</strong>
@@ -158,10 +158,6 @@ Note there is also a [development portal](http://dev.myslice.info) that is also 
 <p>
 <pre class="hljs"><code>$ ssh-add ~/.ssh/id_rsa</span></code></pre>
 </p>
-
-<!-- oooohhh
-Alternatively, restart the tutorial registration from the beginning.
--->
 
 </div>
 </div>
