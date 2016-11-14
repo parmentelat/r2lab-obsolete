@@ -89,12 +89,22 @@ function gnuradio(){
     bim 1 ubuntu-16.04-gnuradio-3.7.10.1-update3 ubuntu-16.04-gnuradio-3.7.10.1-update4 "nodes.sh gitup"
 }
 
+function update-root-bash() {
+    bim 1 ubuntu-16.04-v5-ntp ubuntu-16.04-v6-user-env "imaging.sh common-setup" "nodes.sh gitup" &
+    bim 2 ubuntu-14.04-v5-ntp ubuntu-14.04-v6-user-env "imaging.sh common-setup" "nodes.sh gitup" &
+    bim 3 fedora-23-v4-ntp fedora-23-v6-user-env       "imaging.sh common-setup" "nodes.sh gitup" &
+    bim 5 intelcsi-node-env intelcsi-v3-user-env       "imaging.sh common-setup" "nodes.sh gitup" &
+    bim 6 ubuntu-16.04-gnuradio-3.7.10.1-update4    \
+          ubuntu-16.04-gnuradio-3.7.10.1-v5-user-env   "imaging.sh common-setup" "nodes.sh gitup" &
+}
+
 #ssh root@faraday.inria.fr rhubarbe off 1-10
 #u14-48 &
 #u16-48 &
 #u16-47 &
 #u14-319
-gnuradio
+#gnuradio
+update-root-bash
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work

@@ -263,19 +263,26 @@ function fedora-setup-ntp() {
 ########################################
 # common
 ########################################
-doc-imaging "common-setup-user-env: set up /root/r2lab and add infra/user-env/nodes.sh to /etc/profile.d"
-function common-setup-user-env () {
+doc-imaging "common-setup-r2lab-repo: set up /root/r2lab"
+function common-setup-r2lab-repo () {
     type -p git 2> /dev/null || { echo "git not installed - cannot proceed"; return; }
     cd /root
     [ -d r2lab ] || git clone https://github.com/parmentelat/r2lab.git
     cd /root/r2lab
     git pull
-    cd /etc/profile.d
-    ln -sf /root/r2lab/infra/user-env/nodes.sh .
-    # to make sure to undo previous versions that were wrong in creating this
-    rm -f /root/r2lab/infra/r2labutils.sh
 }
 
+doc-imaging "common-setup-user-env: add infra/user-env/nodes.sh to /etc/profile.d and /root/.bash*"
+function common-setup-root-bash () {
+    cd /etc/profile.d
+    ln -sf /root/r2lab/infra/user-env/nodes.sh .
+    cd /root
+    ln -sf /etc/profile.d/nodes.sh .bash_profile
+    ln -sf /etc/profile.d/nodes.sh .bashrc
+    # to make sure to undo previous versions that were wrong in creating this
+    rm -f /root/r2lab/infra/r2labutils.sh
+    
+}
 
 doc-imaging "common-setup-node-ssh-key: install standard R2lab key as the ssh node's key"
 function common-setup-node-ssh-key () {
@@ -289,6 +296,13 @@ function common-setup-node-ssh-key () {
     done
     chmod 600 /etc/ssh/ssh_host_rsa_key
     chmod 444 /etc/ssh/ssh_host_rsa_key.pub
+}
+
+# all-in-one
+function common-setup() {
+    common-setup-r2lab-repo
+    common-setup-root-bash
+    common-setup-node-ssh-key
 }
 
 ########################################
