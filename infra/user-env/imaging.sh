@@ -242,9 +242,9 @@ EOF
 # but was not used when doing the ubuntu15.04 image in the first place
 cat > /etc/udev/rules.d/70-persistent-wireless.rules <<EOF
 # this probably is the card connected through the PCI adapter
-KERNELS=="0000:00:01.0", ACTION=="add", NAME="wlan0"
+KERNELS=="0000:00:01.0", ACTION=="add", NAME="intel"
 # and this likely is the one in the second miniPCI slot
-KERNELS=="0000:04:00.0", ACTION=="add", NAME="wlan1"
+KERNELS=="0000:04:00.0", ACTION=="add", NAME="atheros"
 EOF
 
 }
