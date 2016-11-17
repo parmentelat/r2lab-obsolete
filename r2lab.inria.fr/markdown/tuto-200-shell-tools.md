@@ -132,7 +132,7 @@ This command, like all the `rhubarbe`-related commands, has a default timeout, t
 
 Once you have loaded an image, you can enter all nodes by just doing
 
-    ssh fit25
+    ssh root@fit25
 
 or just, if you're really lazy
 
@@ -148,7 +148,7 @@ this time of course, you cannot specify another set of nodes than the selection.
 
 You have the ablility to save the image - this now of course applies only to **one node** at a time. To save node 25
 
-    rsave 25
+    rsave 25 -o my-imge-name
 
 This ends up in the common repository `/var/lib/rhubarbe-images`, under a name that holds the hostname and saving time. You can also provide an extra name to `rsave` with the `-o` option.
 

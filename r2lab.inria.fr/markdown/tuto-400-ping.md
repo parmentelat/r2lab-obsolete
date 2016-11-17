@@ -50,14 +50,15 @@ tutorial.
   In this example, we will ping a <strong>google server</strong>
   and retrieve its answer.
   <br/><br/>
-  Before you run this code, you might wish to check that you indeed have access to the gateway. Assuming your slice name is <code>onelab.inria.mario.tutorial</code>, you should be able to run the following command&nbsp;: <br/><br/>
+  Before you run this code, you might wish to check that you indeed have access to the gateway.
+  Assuming your slice name is <code>onelab.inria.mario.tutorial</code>, you should be able to run the following command&nbsp;: <br/><br/>
   <pre><code>
   ssh -i ~/.ssh/onelab.private onelab.inria.mario.tutorial@faraday.inria.fr hostname
   </code></pre>
   <p>If this command fails, then you need to check again the steps described in the previous tutorials</p>
 
   <center>
-    <img src="/assets/img/A1.png" alt="a1"> <br/>
+    <img src="/assets/img/A1.png" alt="a1" height="240px"> <br/>
     Download the <a href="/code/A1-ping.py" download target="_blank">A1 experiment</a> code
   </center>
 << codediff a1 A1-ping.py >>
@@ -83,7 +84,7 @@ tutorial.
   ping the gateway (we could not ping the outside world from a node
   anymore as they do not have this connectivity).
   <center>
-    <img src="/assets/img/A2.png" alt="a2"><br/>
+    <img src="/assets/img/A2.png" alt="a2" height="240px"><br/>
     Download the <a href="/code/A2-ping.py" download target="_blank">A2 experiment</a> code
   </center>
 << codediff a2 A1-ping.py A2-ping.py >>
@@ -100,7 +101,7 @@ tutorial.
   the <strong>experiment interface</strong> at </strong>fit02</strong>
   from <strong>fit01</strong>.
   <center>
-    <img src="/assets/img/A3.png" alt="a3"><br/>
+    <img src="/assets/img/A3.png" alt="a3" height="240px"><br/>
     Download the <a href="/code/A3-ping.py" download target="_blank">A3 experiment</a> code
   </center>
 << codediff a3 A2-ping.py A3-ping.py >>
@@ -119,7 +120,7 @@ tutorial.
   Once the interfaces are configured, we will ping fit01 and fit02 from one
   another using the <strong>wireless interface</strong>.
   <center>
-    <img src="/assets/img/A4.png" alt="a4"><br/>
+    <img src="/assets/img/A4.png" alt="a4" height="240px"><br/>
     Download the <a href="/code/A4-ping.py" download target="_blank">A4 experiment</a> code
   </center>
 << codediff a4 A3-ping.py A4-ping.py >>
@@ -141,7 +142,7 @@ tutorial.
   instead of the actual code as the <code>code</code> attribute of the application.
 
   <center>
-    <img src="/assets/img/A4.png" alt="a5"><br/>
+    <img src="/assets/img/A4.png" alt="a5" height="240px"><br/>
     Download the <a href="/code/A5-ping.py" download target="_blank">A5 experiment</a> code
   </center>
 << codediff a5 A4-ping.py A5-ping.py >>

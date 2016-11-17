@@ -1,73 +1,57 @@
 #!/usr/bin/env python3
 
-# for using print() in python3-style even in python2
-from __future__ import print_function
+from asynciojobs import Engine
 
-# import nepi library and other required packages
-from nepi.execution.ec import ExperimentController
-from nepi.execution.resource import ResourceAction, ResourceState
-from nepi.util.sshfuncs import logger
-
-# creating an ExperimentController (EC) to manage the experiment
-# the exp_id name should be unique for your experiment
-# it will be used on the various resources
-# to store results and similar functions
-ec = ExperimentController(exp_id="A3-ping")
+from apssh import SshNode, SshJob
 
 # we want to run a command right in the r2lab gateway
-# so we need to define ssh-related details for doing so
+# so we need to define ssh-related details for doing so :
+
 gateway_hostname  = 'faraday.inria.fr'
+gateway_username  = 'onelab.inria.r2lab.tutorial'
 gateway_key       = '~/.ssh/onelab.private'
-# of course: you need to change this to describe your own slice
-gateway_username  = 'onelab.inria.mario.tutorial'
 
-fit01 = ec.register_resource("linux::Node",
-                             username = 'root',
-                             hostname = 'fit01',
-                             gateway = gateway_hostname,
-                             gatewayUser = gateway_username,
-                             identity = gateway_key,
-                             cleanExperiment = True,
-                             cleanProcesses = True,
-                             autoDeploy=True)
+# we create a SshNode object that holds the details of
+# the first-leg ssh connection to the gateway
 
-fit02 = ec.register_resource("linux::Node",
-                             username = 'root',
-                             hostname = 'fit02',
-                             gateway = gateway_hostname,
-                             gatewayUser = gateway_username,
-                             identity = gateway_key,
-                             cleanExperiment = True,
-                             cleanProcesses = True,
-                             autoDeploy = True)
+# remember to make sure the right ssh key is known to your ssh agent
+faraday = SshNode(hostname = gateway_hostname, username = gateway_username)
 
-# creating an application
-# bring up (wired) data interface on fit01 node
-app_fit01 = ec.register_resource("linux::Application",
-                                 command = 'ifup data',
-                                 autoDeploy = True,
-                                 connectedTo = fit01)
-# execute this bit and wait for completion
-ec.wait_finished(app_fit01)
+fit1 = SshNode(gateway = faraday,  hostname = "fit01", username = "root")
+fit2 = SshNode(gateway = faraday,  hostname = "fit02", username = "root")
 
-# application to setup data interface on fit02 node
-app_fit02 = ec.register_resource("linux::Application",
-                                 command = 'ifup data',
-                                 autoDeploy = True,
-                                 connectedTo = fit02)
-# execute this bit and wait for completion
-ec.wait_finished(app_fit02)
+# this time we will create an Engine instance and add jobs in it as we create them
+e = Engine()
 
-# ping the wired data interface of fit02 from fit01
-# you can use hostname data02
-# FYI the actual IP here would be 192.168.2.2
-app = ec.register_resource("linux::Application",
-                           command = 'ping -c1 data02',
-                           autoDeploy = True,
-                           connectedTo = fit01)
-ec.wait_finished(app)
+# a first pair of jobs are needed to start-up the data interface on each node
+job_init_1 = SshJob(
+    node = fit1,
+    command = [ 'ifup', 'data' ],
+    label = 'Turn on data interface on node 1'
+)
+job_init_2 = SshJob(
+    node = fit2,
+    command = [ 'ifup', 'data' ],
+    label = 'Turn on data interface on node 2'
+)
+# an Engine is a set of jobs, so as for a builtin set object
+# you can use update to add a collection of nodes
+e.update( [job_init_1, job_init_2] )
 
-print ("--- INFO : experiment output:",
-       ec.trace(app, "stdout"))
+# then the actual ping is run on node 1 and targets node 2
+job_ping = SshJob(
+    node = fit1,
+    # we use 'data02' as the hostname to reach the right interface of node 2
+    # and specify -I data to be safe
+    command = [ 'ping', '-c1',  '-I', 'data', 'data02' ],
+    label = "pinging node2 from node1 on the wired interface",
+    # this says that job_ping cannot start until these 2 jobs are done
+    required = (job_init_1, job_init_2),
+)
 
-ec.shutdown()
+# or you can one single job in the engine using just add
+e.add(job_ping)
+
+# run the engine
+ok = e.orchestrate()
+

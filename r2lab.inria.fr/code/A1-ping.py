@@ -1,50 +1,43 @@
 #!/usr/bin/env python3
 
-# for using print() in python3-style even in python2
-from __future__ import print_function
+from asynciojobs import Engine
 
-# import nepi library and other required packages
-from nepi.execution.ec import ExperimentController
-from nepi.execution.resource import ResourceAction, ResourceState
-from nepi.util.sshfuncs import logger
-
-# creating an ExperimentController (EC) to manage the experiment
-# the exp_id name should be unique for your experiment
-# it will be used on the various resources
-# to store results and similar functions
-ec = ExperimentController(exp_id="A1-ping")
+from apssh import SshNode, SshJob
 
 # we want to run a command right in the r2lab gateway
-# so we need to define ssh-related details for doing so
+# so we need to define ssh-related details for doing so :
+
 gateway_hostname  = 'faraday.inria.fr'
+gateway_username  = 'onelab.inria.r2lab.tutorial'
 gateway_key       = '~/.ssh/onelab.private'
-# of course: you need to change this to describe your own slice
-gateway_username  = 'onelab.inria.mario.tutorial'
 
-# creating a node object using our credentials
-# this object will host the commands need to be run on the gateway
-node = ec.register_resource("linux::Node",
-                            username = gateway_username,
-                            hostname = gateway_hostname,
-                            identity = gateway_key,
-                            # recommended settings
-                            cleanExperiment = True,
-                            cleanProcesses = True,
-                            autoDeploy = True)
+# we create a SshNode object that holds the details of
+# the first-leg ssh connection to the gateway
 
-# creating an application
-app = ec.register_resource("linux::Application",
-                           # the command to execute
-                           command='ping -c1 google.fr',
-                           autoDeploy = True,
-                           connectedTo = node)
+# remember to make sure the right ssh key is known to your ssh agent
+faraday = SshNode(hostname = gateway_hostname, username = gateway_username)
 
-# and finally waiting for the app to finish its job
-ec.wait_finished(app)
+# the command we want to run in faraday is as simple as it gets
+ping = SshJob(
+    # on what node do we want to run this:
+    node = faraday,
+    # what to run
+    command = [ 'ping', '-c1',  'google.fr' ],
+    # you have to provide a label, it's going to be very helpful
+    # when running many things in parallel
+    label = "pinging google France"
+)
 
-# recovering the results
-print ("--- INFO : experiment output:",
-       ec.trace(app, "stdout"))
+# how to run the same directly with ssh - for troubleshooting
+print("""---
+for troubleshooting: 
+ssh {}@{} ping -c1 google.fr
+---""".format(gateway_username, gateway_hostname))
 
-# shutting down the experiment
-ec.shutdown()
+# create an orchestration engine
+# with this single job
+e = Engine(ping)
+
+# run it
+ok = e.orchestrate()
+
