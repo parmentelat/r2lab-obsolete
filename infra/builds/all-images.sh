@@ -6,17 +6,17 @@ case $(hostname) in
 	gitroot=/root/r2lab
 	;;
     *)
-	gateway=root@faraday.inria.fr
+	gateway=onelab.inria.r2lab.admin@faraday.inria.fr
 	gitroot=$HOME/git/r2lab
 	;;
 esac
 
 ###
-build=$(dirname $0)/build-image.py
+bi=$(dirname $0)/build-image.py
 
 # we don't need all these includes everywhere but it makes it easier
 function bim () {
-    command="$build $gateway -p $gitroot/infra/user-env -i oai-common.sh -i nodes.sh -i r2labutils.sh"
+    command="$bi $gateway -p $gitroot/infra/user-env -i oai-common.sh -i nodes.sh -i r2labutils.sh"
     echo $command "$@"
     $command --silent "$@"
 }
@@ -89,12 +89,34 @@ function gnuradio(){
     bim 1 ubuntu-16.04-gnuradio-3.7.10.1-update3 ubuntu-16.04-gnuradio-3.7.10.1-update4 "nodes.sh gitup"
 }
 
+function update-root-bash() {
+    bim 1 ubuntu-16.04-v5-ntp ubuntu-16.04-v6-user-env "imaging.sh common-setup" "nodes.sh gitup" &
+    bim 2 ubuntu-14.04-v5-ntp ubuntu-14.04-v6-user-env "imaging.sh common-setup" "nodes.sh gitup" &
+    bim 3 fedora-23-v4-ntp fedora-23-v6-user-env       "imaging.sh common-setup" "nodes.sh gitup" &
+    bim 5 intelcsi-node-env intelcsi-v3-user-env       "imaging.sh common-setup" "nodes.sh gitup" &
+    bim 6 ubuntu-16.04-gnuradio-3.7.10.1-update4    \
+          ubuntu-16.04-gnuradio-3.7.10.1-v5-user-env   "imaging.sh common-setup" "nodes.sh gitup" &
+}
+
+# preserving the oai images for now
+function ubuntu-udev() {
+#    bim 1  ubuntu-16.04 ubuntu-16.04-v8-wireless-names "imaging.sh ubuntu-udev" &
+#    bim 2  ubuntu-14.04 ubuntu-14.04-v8-wireless-names "imaging.sh ubuntu-udev" &
+#    bim 3  fedora-23    fedora-23-v8-wireless-names "imaging.sh ubuntu-udev" &
+    bim 5  gnuradio     ubuntu-16.04-gnuradio-3.7.10.1-v8-wireless-names "imaging.sh ubuntu-udev" &
+    bim 11 intelcsi     intelcsi-v8-wireless-names "imaging.sh ubuntu-udev" &
+}
+
 #ssh root@faraday.inria.fr rhubarbe off 1-10
 #u14-48 &
 #u16-48 &
 #u16-47 &
 #u14-319
-gnuradio
+#gnuradio
+#gnuradio
+#update-root-bash
+
+ubuntu-udev
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work

@@ -6,14 +6,11 @@ import tarfile
 import shutil
 import asyncio
 
-from asynciojobs import Engine, Sequence, Job
+from asynciojobs import Engine, Sequence, Job, PrintJob
 
 from apssh.formatters import ColonFormatter
 from apssh.keys import load_agent_keys
-from apssh.jobs.sshjobs import SshNode, SshJob, SshJobScript, SshJobPusher, SshJobCollector
-
-async def aprint(*args, **kwds):
-    print(*args, **kwds)
+from apssh import SshNode, SshJob, Command, LocalScript, StringScript, SshJobPusher, SshJobCollector
 
 #
 # Usage:
@@ -22,7 +19,7 @@ async def aprint(*args, **kwds):
 class ImageBuilder:
 
     def __init__(self, gateway, node, from_image, to_image,
-                 # the scripts to run - for SshJobScript
+                 # the scripts to run - for LocalScript
                  scripts,
                  # the includes that the scripts need
                  includes,
@@ -120,7 +117,7 @@ class ImageBuilder:
             tar.add(dirname)
         return tarname
 
-    def run(self, verbose, debug, no_load, no_save):
+    def run(self, verbose, no_load, no_save):
         """
         can skip the load or save phases
         """
@@ -139,14 +136,18 @@ class ImageBuilder:
                   .format(' & '.join(items)))
 
         self.locate_companion_shell()
-        if verbose: print("Located companion in {}".format(self.companion))
+        if verbose:
+            print("Located companion in {}".format(self.companion))
 
-        if verbose: print("Preparing tar of input shell scripts .. ", end="")
+        if verbose:
+            print("Preparing tar of input shell scripts .. ", end="")
         tarfile = self.prepare_tar(self.to_image)
-        if verbose: print("Done in {}".format(tarfile))
+        if verbose:
+            print("Done in {}".format(tarfile))
 
         keys = load_agent_keys()
-        if verbose: print("We have found {} keys in the ssh agent".format(len(keys)))
+        if verbose:
+            print("We have found {} keys in the ssh agent".format(len(keys)))
 
         #################### the 2 nodes we need to talk to
         gateway_proxy = None
@@ -156,7 +157,6 @@ class ImageBuilder:
             username = gwuser,
             keys = keys,
             formatter = ColonFormatter(verbose=verbose),
-            debug = debug,
         )
 
         # really not sure it makes sense to use username other than root
@@ -167,30 +167,36 @@ class ImageBuilder:
             username = username,
             keys = keys,
             formatter = ColonFormatter(verbose=verbose),
-            debug = debug,
         )
 
-        banner = 20*'=' + " banner.py"
+        banner = 20*'='
         
         #################### the little pieces
         sequence = Sequence(
-            Job(aprint(banner, "loading image {}".format(self.from_image)
-                       if not no_load 
-                       else "fast-track: skipping image load"
-                   )),
+            PrintJob("Checking for a valid lease"),
+            # bail out if we don't have a valid lease
+            SshJob(node = gateway_proxy,
+                   command = "rhubarbe leases --check",
+                   critical = True),
+            PrintJob("loading image {}".format(self.from_image)
+                     if not no_load else "fast-track: skipping image load",
+                     banner = banner,
+#                     label = "welcome message",
+                 ),
             SshJob(
                 node = gateway_proxy,
                 commands = [
-                    [ "rhubarbe", "load", "-i", self.from_image, nodename ] if not no_load else None,
-                    [ "rhubarbe", "wait", "-v", "-t", "240", nodename ],
+                    Command("rhubarbe", "load", "-i", self.from_image, nodename) \
+                       if not no_load else None,
+                    Command("rhubarbe", "wait", "-v", "-t", "240", nodename),
                 ],
-                label = "load and wait image {}".format(self.from_image),
+#                label = "load and wait image {}".format(self.from_image),
             ),
             SshJob(
                 node = node_proxy,
                 commands = [
-                    [ "rm", "-rf", "/etc/rhubarbe-history/{}".format(self.to_image) ],
-                    [ "mkdir", "-p", "/etc/rhubarbe-history", ],
+                    Command("rm", "-rf", "/etc/rhubarbe-history/{}".format(self.to_image)),
+                    Command("mkdir", "-p", "/etc/rhubarbe-history"),
                     ],
                 label = "clean up /etc/rhubarbe-history/{}".format(self.to_image),
             ),
@@ -200,13 +206,13 @@ class ImageBuilder:
                 remotepath = "/etc/rhubarbe-history",
                 label = "push scripts tarfile",
             ),
-            Job(aprint(banner, "Triggering scripts")),
-            SshJobScript(
+            PrintJob("Triggering scripts", banner=banner),
+            SshJob(
                 node = node_proxy,
-                command = [ self.companion, nodename, self.from_image, self.to_image ],
+                command = LocalScript(self.companion, nodename, self.from_image, self.to_image),
                 label = "run scripts",
             ),
-            Job(aprint(banner, "Collecting builtin logs")),
+            PrintJob("Collecting builtin logs", banner=banner),
             SshJobCollector(
                 node = node_proxy,
                 remotepaths = "/etc/rhubarbe-history/{}/logs/".format(self.to_image),
@@ -220,12 +226,12 @@ class ImageBuilder:
         for extra_log in self.extra_logs:
             sequence.append(
                 Sequence(
-                    Job(aprint("Retrieving extra log {}".format(extra_log))),
+                    PrintJob("Retrieving extra log {}".format(extra_log)),
                     SshJobCollector(
                         node = node_proxy,
                         remotepaths = extra_log,
                         localpath = "{}/logs/".format(self.to_image),
-                        label = "retrieve extra log {}".format(extra_log),
+#                        label = "retrieve extra log {}".format(extra_log),
                         # best effort to retrieve logs : don't cancel
                         # if not found on the remote node
                         critical = False,
@@ -240,11 +246,13 @@ class ImageBuilder:
             check_with = "ls" if os.path.isabs(binary) else ("type -p")
             sequence.append(
                 Sequence(
-                    Job(aprint("Checking for expected binaries")),
+                    PrintJob("Checking for expected binaries",
+#                             label = "message about checking"
+                         ),
                     SshJob(
                         node = node_proxy,
                         command = [ check_with, binary ],
-                        label = "Checking for {}".format(binary)
+#                        label = "Checking for {}".format(binary)
                     )
                 )
             )
@@ -252,54 +260,54 @@ class ImageBuilder:
         # xxx some flag
         if no_save:
             sequence.append(
-                Job(aprint(banner, "fast-track: skipping image save")))
+                PrintJob("fast-track: skipping image save", banner=banner))
         else:
             sequence.append(
                 Sequence(
-                    Job(aprint(banner, "saving image {} ..."
-                               .format(self.to_image))),
+                    PrintJob("saving image {} ...".format(self.to_image),
+                             banner=banner),
                     # make sure we capture all the logs and all that
+                    # mostly to test StringScript
                     SshJob(
                         node = node_proxy,
-                        commands = [
-                            ["sync"],
-                            ["sleep", "1"],
-                            ["sync"],
-                            ["sleep", "1"],
-                        ],
-                        label = 'sync',
+                        command = StringScript("sync ; sleep $1; sync; sleep $1", 1),
+#                        label = 'sync',
                     ),
                     SshJob(
                         node = gateway_proxy,
-                        command = [ "rhubarbe", "save", "-o", self.to_image, nodename ],
-                        label = "save image {}".format(self.to_image),
+                        command = Command("rhubarbe", "save", "-o", self.to_image, nodename),
+#                        label = "save image {}".format(self.to_image),
                     ),
                     SshJob(
                         node = gateway_proxy,
-                        command = [ "rhubarbe", "images", "-d" ],
-                        label = "list current images",
+                        command = "rhubarbe images -d",
+#                        label = "list current images",
                     ),
                 )
             )
 
         e = Engine(sequence,
                    verbose = verbose,
-                   debug = debug,
-                   critical = True,
                )
         # sanitizing for the cases where some pieces are left out
         e.sanitize()
 
+        print(20*'+', "before run")
+        e.list(details=verbose)
+        print(20*'x')
+        exit()
         if e.orchestrate():
             if verbose:
-                e.debrief(sep = 40*'*' + ' debrief OK')
-                e.list(40*'*' + ' list()')
+                print(20*'+', "after run")
+                e.list()
+                print(20*'x')                
             print("image {} OK".format(self.to_image))
             return True
         else:
             print("Something went wrong with image {}".format(self.to_image))
-            if debug:
-                e.debrief(40*'*' + ' debrief KO')
+            print(20*'+', "after run - KO")
+            e.debrief()
+            print(20*'x')
             return False
 
 from argparse import ArgumentParser
@@ -324,7 +332,6 @@ together with their arguments and stuff
     parser.add_argument("-c", "--chain", action='store_true', default=False,
                         help="avoid loading given image, useful when chaining builds")
     parser.add_argument("-v", "--verbose", action='store_true', default=False)
-    parser.add_argument("-d", "--debug", action='store_true', default=False)
     parser.add_argument("-i", "--includes", action='append', default=[])
     parser.add_argument("-l", "--logs", dest='extra_logs', action='append', default=[],
                         help="additional logs to be collected")
@@ -377,7 +384,7 @@ together with their arguments and stuff
                            includes = args.includes, path = path,
                            extra_logs = args.extra_logs,
                            expected_binaries = args.expected_binaries)
-    run_code = builder.run(verbose = args.verbose, debug = args.debug,
+    run_code = builder.run(verbose = args.verbose, 
                            no_load = no_load, no_save = no_save)
     return 0 if run_code else 1
 
