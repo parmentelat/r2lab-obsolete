@@ -295,7 +295,6 @@ class ImageBuilder:
         print(20*'+', "before run")
         e.list(details=verbose)
         print(20*'x')
-        exit()
         if e.orchestrate():
             if verbose:
                 print(20*'+', "after run")
