@@ -149,6 +149,13 @@ function find-interface-by-driver () {
 doc-nodes wait-for-interface-on-driver "locates and waits for device bound to provided driver, returns its name"
 function wait-for-interface-on-driver() {
     driver=$1; shift
+
+    # artificially pause for one second
+    # this is because when used right after a modprobe, we have seen situations
+    # where we catch a name before udev has had the time to trigger and rename the interface
+    # should not be a big deal hopefully
+    sleep 1
+    
     while true; do
 	# use the first device that runs on iwlwifi
 	_found=$(find-interface-by-driver $driver)
