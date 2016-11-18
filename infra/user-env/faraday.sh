@@ -221,10 +221,14 @@ function show-nodes-on () {
     rhubarbe status $nodes | grep 'on' | cut -d: -f1 | sed -e s,reboot,fit,
 }
 doc-selection show-nodes-on "display only selected nodes that are ON - does not change selection"
+
 function focus-nodes-on () {
     nodes $(show-nodes-on "$@")
 }
 doc-selection focus-nodes-on "restrict current selection to nodes that are ON"
+
+alias fa="focus-nodes-on -a"
+doc-selection "fa" "Select all nodes currently ON - i.e. focus-nodes-on -a"
 
 ### first things first
 alias rleases="rhubarbe leases"
