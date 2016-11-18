@@ -107,6 +107,28 @@ function ubuntu-udev() {
     bim 11 intelcsi     intelcsi-v8-wireless-names "imaging.sh ubuntu-udev" &
 }
 
+########## template
+function template() {
+    bim 1 ubuntu-16.04	ubuntu-16.04-vx-some-name			"imaging.sh some-function" &
+    bim 2 ubuntu-14.04  ubuntu-14.04-vx-some-name			"imaging.sh some-function" &
+    bim 3 fedora-23	fedora-23-vx-some-name				"imaging.sh some-function" &
+    bim 5 gnuradio	ubuntu-16.04-gnuradio-3.7.10.1-vx-some-name	"imaging.sh some-function" &
+    # these ones have a USRP
+    bim 11 intelcsi	intelcsi-vx-some-name				"imaging.sh some-function" &
+    # leave the OAI images for now, as we should redo them based on one of the above
+}
+
+function node-keys() {
+    bim 1 ubuntu-16.04	ubuntu-16.04-v9-node-keys			"imaging.sh common-setup-node-ssh-key" &
+    bim 2 ubuntu-14.04  ubuntu-14.04-v9-node-keys			"imaging.sh common-setup-node-ssh-key" &
+    bim 3 fedora-23	fedora-23-v9-node-keys				"imaging.sh common-setup-node-ssh-key" &
+    bim 5 gnuradio	ubuntu-16.04-gnuradio-3.7.10.1-v9-node-keys	"imaging.sh common-setup-node-ssh-key" &
+    # these ones have a USRP
+    bim 11 intelcsi	intelcsi-v9-node-keys				"imaging.sh common-setup-node-ssh-key" &
+    # leave the OAI images for now, as we should redo them based on one of the above
+}
+
+
 #ssh root@faraday.inria.fr rhubarbe off 1-10
 #u14-48 &
 #u16-48 &
@@ -115,8 +137,7 @@ function ubuntu-udev() {
 #gnuradio
 #update-root-bash
 
-ubuntu-udev
-
+node-keys
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work

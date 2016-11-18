@@ -293,8 +293,9 @@ function common-setup-node-ssh-key () {
 	echo "Cannot find standard R2lab node keys - cannot proceed"; return;
     }
     rsync -av /root/r2lab/rhubarbe-images/keys/ /etc/ssh/
-    # permissions should be managed in the git repo directly
     chown -R root:root /etc/ssh/*key*
+    chmod 600 /etc/ssh/*key
+    chmod 644 /etc/ssh/*key.pub
 }
 
 # all-in-one
