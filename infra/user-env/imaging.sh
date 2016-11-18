@@ -211,7 +211,7 @@ EOF
 
 
 doc-imaging "ubuntu-dev: add udev rules for canonical interface names"
-function ubuntu-udev () {
+function network-names-udev () {
 ####################
 # udev
 #
@@ -240,11 +240,15 @@ EOF
 # extra rules for fedora and wireless devices
 # might work on ubuntu as well
 # but was not used when doing the ubuntu15.04 image in the first place
+# Nov. 18 2016
+# I add ATTR{type}=="1" to distinguish between the real interface
+# and mon0, like in 'iw dev intel interface add mon0 type monitor'
+# which otherwise ends up in rename<xx> and everything is screwed up
 cat > /etc/udev/rules.d/70-persistent-wireless.rules <<EOF
-# this probably is the card connected through the PCI adapter
-KERNELS=="0000:00:01.0", ACTION=="add", NAME="intel"
-# and this likely is the one in the second miniPCI slot
-KERNELS=="0000:04:00.0", ACTION=="add", NAME="atheros"
+# this is the card connected through the PCI adapter
+KERNELS=="0000:00:01.0", ATTR{type}=="1", ACTION=="add", NAME="intel"
+# and this is the one in the second miniPCI slot
+KERNELS=="0000:04:00.0", ATTR{type}=="1", ACTION=="add", NAME="atheros"
 EOF
 
 }

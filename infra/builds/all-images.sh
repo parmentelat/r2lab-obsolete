@@ -99,12 +99,12 @@ function update-root-bash() {
 }
 
 # preserving the oai images for now
-function ubuntu-udev() {
-#    bim 1  ubuntu-16.04 ubuntu-16.04-v8-wireless-names "imaging.sh ubuntu-udev" &
-#    bim 2  ubuntu-14.04 ubuntu-14.04-v8-wireless-names "imaging.sh ubuntu-udev" &
-#    bim 3  fedora-23    fedora-23-v8-wireless-names "imaging.sh ubuntu-udev" &
-    bim 5  gnuradio     ubuntu-16.04-gnuradio-3.7.10.1-v8-wireless-names "imaging.sh ubuntu-udev" &
-    bim 11 intelcsi     intelcsi-v8-wireless-names "imaging.sh ubuntu-udev" &
+function redo-netnames() {
+    bim 1  ubuntu-16.04 ubuntu-16.04-v10-wireless-names "imaging.sh network-names-udev" &
+    bim 2  ubuntu-14.04 ubuntu-14.04-v10-wireless-names "imaging.sh network-names-udev" &
+    bim 3  fedora-23    fedora-23-v10-wireless-names "imaging.sh network-names-udev" &
+    bim 5  gnuradio     ubuntu-16.04-gnuradio-3.7.10.1-v10-wireless-names "imaging.sh network-names-udev" &
+    bim 11 intelcsi     intelcsi-v10-wireless-names "imaging.sh network-names-udev" &
 }
 
 ########## template
@@ -134,10 +134,8 @@ function node-keys() {
 #u16-48 &
 #u16-47 &
 #u14-319
-#gnuradio
-#update-root-bash
 
-node-keys
+redo-netnames
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work
