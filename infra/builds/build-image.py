@@ -10,7 +10,8 @@ from asynciojobs import Engine, Sequence, Job, PrintJob
 
 from apssh.formatters import ColonFormatter
 from apssh.keys import load_agent_keys
-from apssh import SshNode, SshJob, Command, LocalScript, StringScript, SshJobPusher, SshJobCollector
+from apssh import SshNode, SshJob, Run, RunScript, RunString, Push, Pull
+### , RunScript, RunString, SshJobPusher, SshJobCollector
 
 #
 # Usage:
@@ -19,7 +20,7 @@ from apssh import SshNode, SshJob, Command, LocalScript, StringScript, SshJobPus
 class ImageBuilder:
 
     def __init__(self, gateway, node, from_image, to_image,
-                 # the scripts to run - for LocalScript
+                 # the scripts to run - for RunScript
                  scripts,
                  # the includes that the scripts need
                  includes,
@@ -186,59 +187,36 @@ class ImageBuilder:
             SshJob(
                 node = gateway_proxy,
                 commands = [
-                    Command("rhubarbe", "load", "-i", self.from_image, nodename) \
+                    Run("rhubarbe", "load", "-i", self.from_image, nodename) \
                        if not no_load else None,
-                    Command("rhubarbe", "wait", "-v", "-t", "240", nodename),
+                    Run("rhubarbe", "wait", "-v", "-t", "240", nodename),
                 ],
 #                label = "load and wait image {}".format(self.from_image),
             ),
             SshJob(
                 node = node_proxy,
                 commands = [
-                    Command("rm", "-rf", "/etc/rhubarbe-history/{}".format(self.to_image)),
-                    Command("mkdir", "-p", "/etc/rhubarbe-history"),
-                    ],
-                label = "clean up /etc/rhubarbe-history/{}".format(self.to_image),
-            ),
-            SshJobPusher(
-                node = node_proxy,
-                localpaths = tarfile,
-                remotepath = "/etc/rhubarbe-history",
-                label = "push scripts tarfile",
-            ),
-            PrintJob("Triggering scripts", banner=banner),
+                    Run("rm", "-rf", "/etc/rhubarbe-history/{}".format(self.to_image)),
+                    Run("mkdir", "-p", "/etc/rhubarbe-history"),
+                    Push(localpaths = tarfile,
+                         remotepath = "/etc/rhubarbe-history"),
+                    RunScript(self.companion, nodename, self.from_image, self.to_image),
+                    Pull(localpath = "{}/logs/".format(self.to_image),
+                         remotepaths = "/etc/rhubarbe-history/{}/logs/".format(self.to_image),
+                         recurse = True),
+                ],
+                label = "set up and run scripts in /etc/rhubarbe-history/{}".format(self.to_image)),
             SshJob(
                 node = node_proxy,
-                command = LocalScript(self.companion, nodename, self.from_image, self.to_image),
-                label = "run scripts",
-            ),
-            PrintJob("Collecting builtin logs", banner=banner),
-            SshJobCollector(
-                node = node_proxy,
-                remotepaths = "/etc/rhubarbe-history/{}/logs/".format(self.to_image),
-                localpath = "{}/logs/".format(self.to_image),
-                label = "retrieve logs",
-                recurse = True,
-            ),
-        )
-
-        # retrieve extra logs before saving
-        for extra_log in self.extra_logs:
-            sequence.append(
-                Sequence(
-                    PrintJob("Retrieving extra log {}".format(extra_log)),
-                    SshJobCollector(
-                        node = node_proxy,
-                        remotepaths = extra_log,
-                        localpath = "{}/logs/".format(self.to_image),
-#                        label = "retrieve extra log {}".format(extra_log),
-                        # best effort to retrieve logs : don't cancel
-                        # if not found on the remote node
-                        critical = False,
-                        recurse = True,
-                    ),
-                )
+                label = "collecting extra logs",
+                critical = False,
+                commands = [
+                    Pull(localpath = "{}/logs/".format(self.to_image),
+                         remotepaths = extra_log,
+                         recurse = True)
+                    for extra_log in self.extra_logs ],
             )
+        )
 
         # creating these as critical = True means the whole
         # scenario will fail if these are not found
@@ -267,15 +245,15 @@ class ImageBuilder:
                     PrintJob("saving image {} ...".format(self.to_image),
                              banner=banner),
                     # make sure we capture all the logs and all that
-                    # mostly to test StringScript
+                    # mostly to test RunString
                     SshJob(
                         node = node_proxy,
-                        command = StringScript("sync ; sleep $1; sync; sleep $1", 1),
+                        command = RunString("sync ; sleep $1; sync; sleep $1", 1),
 #                        label = 'sync',
                     ),
                     SshJob(
                         node = gateway_proxy,
-                        command = Command("rhubarbe", "save", "-o", self.to_image, nodename),
+                        command = Run("rhubarbe", "save", "-o", self.to_image, nodename),
 #                        label = "save image {}".format(self.to_image),
                     ),
                     SshJob(
