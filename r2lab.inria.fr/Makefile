@@ -29,3 +29,9 @@ infra:
 	apssh -u root -t faraday.inria.fr -t r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
 
 .PHONY: infra
+
+##########
+tags:
+	git ls-files | egrep -v '\.(pdf|png|jpg)' | xargs etags
+
+.PHONY: tags

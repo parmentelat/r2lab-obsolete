@@ -113,10 +113,10 @@ function ubuntu-udev() {
 #u16-47 &
 #u14-319
 #gnuradio
-#gnuradio
 #update-root-bash
 
 ubuntu-udev
+
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work
