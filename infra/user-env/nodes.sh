@@ -40,6 +40,10 @@ function bashrc() { echo "Reloading ~/.bashrc"; source ~/.bashrc; }
 doc-nodes refresh "gitup + bashrc"
 function refresh() { gitup /root/r2lab; bashrc; }
 
+doc-nodes rimage "Shows info on current image from last line in /etc/rhubarbe-image"
+function rimage() { tail -1 /etc/rhubarbe-image | sed -e 's, node , built-on ,' -e 's, image , from-image ,' ; }
+
+##########
 doc-nodes init-clock "Sets date from ntp"
 function init-clock() {
     if type ntpdate >& /dev/null; then
