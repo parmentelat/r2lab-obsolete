@@ -286,16 +286,15 @@ function common-setup-root-bash () {
 
 doc-imaging "common-setup-node-ssh-key: install standard R2lab key as the ssh node's key"
 function common-setup-node-ssh-key () {
-    [ -f /root/r2lab/rhubarbe-images/r2lab-nodes-key -a \
-	 -f /root/r2lab/rhubarbe-images/r2lab-nodes-key.pub ] || {
-	echo "Cannot find standard R2lab node key - cannot proceed"; return;
+    [ -d /root/r2lab ] || { echo /root/r2lab/ not found - exiting; return; }
+    cd /root/r2lab
+    git pull
+    [ -d /root/r2lab/rhubarbe-images/keys ] || {
+	echo "Cannot find standard R2lab node keys - cannot proceed"; return;
     }
-    for ext in "" ".pub"; do
-	cp -v /root/r2lab/rhubarbe-images/r2lab-nodes-key${ext} /etc/ssh/ssh_host_rsa_key${ext}
-	chown root:root /etc/ssh/ssh_host_rsa_key${ext}
-    done
-    chmod 600 /etc/ssh/ssh_host_rsa_key
-    chmod 444 /etc/ssh/ssh_host_rsa_key.pub
+    rsync -av /root/r2lab/rhubarbe-images/keys/ /etc/ssh/
+    # permissions should be managed in the git repo directly
+    chown -R root:root /etc/ssh/*key*
 }
 
 # all-in-one
