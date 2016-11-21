@@ -6,7 +6,7 @@ import tarfile
 import shutil
 import asyncio
 
-from asynciojobs import Engine, Sequence, Job, PrintJob
+from asynciojobs import Scheduler, Sequence, Job, PrintJob
 
 from apssh.formatters import ColonFormatter
 from apssh.keys import load_agent_keys
@@ -264,26 +264,24 @@ class ImageBuilder:
                 )
             )
 
-        e = Engine(sequence,
-                   verbose = verbose,
-               )
+        sched = Scheduler(sequence, verbose = verbose)
         # sanitizing for the cases where some pieces are left out
-        e.sanitize()
+        sched.sanitize()
 
         print(20*'+', "before run")
-        e.list(details=verbose)
+        sched.list(details=verbose)
         print(20*'x')
-        if e.orchestrate():
+        if sched.orchestrate():
             if verbose:
                 print(20*'+', "after run")
-                e.list()
+                sched.list()
                 print(20*'x')                
             print("image {} OK".format(self.to_image))
             return True
         else:
             print("Something went wrong with image {}".format(self.to_image))
             print(20*'+', "after run - KO")
-            e.debrief()
+            sched.debrief()
             print(20*'x')
             return False
 
