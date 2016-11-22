@@ -6,12 +6,13 @@
         var $float_speed            = 1000;
         var $float_easing           = "easeOutQuint";
         var $menu_fade_speed        = 500;
-        var $closed_menu_opacity    = 0.75;
+        var $closed_menu_opacity    = 0.60;
          
         // Cache vars
         var $float_menu        = $("#float_menu");
         var $float_menu_menu   = $("#float_menu .menu");
         var $float_menu_label  = $("#float_menu .label");
+	var menuPosition = undefined;
 
         // Called in page load
         $(window).load( function() {
@@ -23,6 +24,9 @@
         });
          
 	var adjust_menu = function() {
+
+	    // this always happens once at load-time, so remove errors in the console
+	    if (menuPosition === undefined) return;
 	    
             var scrollAmount = $(document).scrollTop();
             var newPosition  = menuPosition + scrollAmount;
@@ -35,7 +39,10 @@
 	}
 
         // Called when page is scrolled
-        $(window).scroll( function () {
+        $(window).scroll(function () {
+            adjust_menu();
+        });
+        $(window).resize(function () {
             adjust_menu();
         });
     }

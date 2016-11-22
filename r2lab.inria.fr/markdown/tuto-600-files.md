@@ -1,11 +1,23 @@
-title: NEPI - File Exchange
+title: nepi-ng - managing files
 tab: tutorial
 float_menu_template: r2lab/float-menu-tutorials.html
----
 
+<script src="/assets/r2lab/open_tab.js"></script>
 <script src="/assets/js/diff.js"></script>
 <script src="/assets/r2lab/r2lab-diff.js"></script>
 <style>@import url("/assets/r2lab/r2lab-diff.css")</style>
+
+<ul class="nav nav-tabs">
+  <li class="active"> <a href="#INTRO">INTRO</a> </li>
+  <li> <a href="#C1">C1</a></li>
+  <li> <a href="#C2">C2</a></li>
+</ul>
+
+<div id="contents" class="tab-content" markdown="1">
+
+<!------------ INTRO ------------>
+<div id="INTRO" class="tab-pane fade in active" markdown="1">
+<br/>
 
 Below are a couple of experiments as a second level of learning
 [NEPI](http://nepi.inria.fr/Install/WebHome) network tool and R2lab
@@ -33,19 +45,10 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
 
 <br/>
 
-<ul id="myTabs" class="nav nav-tabs" role="tablist">
-  <li role="presentation" class="active">
-    <a href="#B1" id="B1-tab" role="tab" data-toggle="tab" aria-controls="B1" aria-expanded="true">B1</a>
-  </li>
-  <li role="presentation" class="">
-    <a href="#B2" role="tab" id="B2-tab" data-toggle="tab" aria-controls="B2" aria-expanded="false">B2</a>
-  </li>
-</ul>
+</div>
 
-<div id="contents" class="tab-content">
-
-<!------------ B1  ------------>
-<div role="tabpanel" class="tab-pane fade active in" id="B1" aria-labelledby="home-tab">
+<!------------ C1 ------------>
+<div id="C1" class="tab-pane fade" markdown="1">
   <br/>
   The experiment below uses four nodes. From your computer you will
   create and deploy <strong>local</strong>, <strong>gateway</strong>,
@@ -80,8 +83,8 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
 << codediff b1s B1-send-file.py >>
 </div>
 
-<!------------ B2 ------------>
-<div role="tabpanel" class="tab-pane fade" id="B2" aria-labelledby="profile-tab">
+<!------------ C2 ------------>
+<div id="C2" class="tab-pane fade" markdown="1">
   <br/>
 
   The experiment below are the same as the previous (B1), however here,
@@ -98,3 +101,4 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
 </div>
 
 </div> <!-- end div contents -->
+

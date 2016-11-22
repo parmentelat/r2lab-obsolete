@@ -1,100 +1,62 @@
 #!/usr/bin/env python3
 
-from asynciojobs import Engine
+from argparse import ArgumentParser
 
-from apssh import SshNode, SshJob
+from asynciojobs import Scheduler
 
-# we want to run a command right in the r2lab gateway
-# so we need to define ssh-related details for doing so :
+# also import the Run class
+from apssh import SshNode, SshJob, Run
 
 gateway_hostname  = 'faraday.inria.fr'
 gateway_username  = 'onelab.inria.r2lab.tutorial'
 gateway_key       = '~/.ssh/onelab.private'
 
+# this time we want to be able to specify the slice on the command line
+parser = ArgumentParser()
+parser.add_argument("-s", "--slice", default=gateway_username,
+                    help="specify an alternate slicename, default={}"
+                         .format(gateway_username))
+args = parser.parse_args()
+
 # we create a SshNode object that holds the details of
 # the first-leg ssh connection to the gateway
 
 # remember to make sure the right ssh key is known to your ssh agent
-faraday = SshNode(hostname = gateway_hostname, username = gateway_username)
+faraday = SshNode(hostname = gateway_hostname, username = args.slice)
 
-fit1 = SshNode(gateway = faraday,  hostname = "fit01", username = "root")
-fit2 = SshNode(gateway = faraday,  hostname = "fit02", username = "root")
+node1 = SshNode(gateway = faraday, hostname = "fit01", username = "root")
 
-# this time we will create an Engine instance and add jobs in it as we create them
-e = Engine(verbose=True)
-
-# the names used for configuring the wireless network
-wifi_interface = 'wlan1'
-wifi_freq      = 2432
-wifi_name      = 'my-net'
-
-# this time we cannot use DHCP, so we provide all the details
-# of the IP subnet manually
-wifi_netmask   = '24'
-wifi_ip_fit01  = '172.16.1.1'
-wifi_ip_fit02  = '172.16.1.2'
-
-# Note that an SshJob can be created with a command (singular)
-# but also commands (plural) arguments,
-# in which case they are run in sequence
-cmds1 = []
-cmds1.append( ["echo", "configuring", wifi_interface] )
-# make sure to wipe down everything first so we can run again and again
-cmds1.append( ["ip", "address", "flush", "dev", wifi_interface] )
-cmds1.append( ["ip", "link", "set", wifi_interface, "down"] )
-# configure wireless
-cmds1.append( ["iw", "dev", wifi_interface, "set", "type", "ibss"] )
-cmds1.append( ["ip", "link", "set", wifi_interface, "up"] )
-cmds1.append( ["iw", "dev", wifi_interface, "ibss", "join", wifi_name, wifi_freq] )
-cmds1.append( ["ip", "address", "add", "{}/{}".format(wifi_ip_fit01, wifi_netmask),
-               "dev", wifi_interface] )
-# show wireless
-import sys
-sleep = 5
-cmds1.append( ["echo sleeping", sleep, "; sleep", sleep] )
-cmds1.append( ["iw dev", wifi_interface, "info"] )
-cmds1.append( ["iw dev", wifi_interface, "link"] )
-# assign ip address and netmask
-
-# this first version is a little tedious of course
-# so here instead of duplicating the commands for node2, we just 'patch'
-# the ones we have for node1, and replace wifi_ip_fit01 with wifi_ip_fit02
-# note that we'll see how to do this better in furter releases
-cmds2 = [ [x.replace(wifi_ip_fit01, wifi_ip_fit02) if isinstance(x, str) else x
-           for x in command] for command in cmds1]
-    
-
-# a first pair of jobs are needed to start-up the wireless interface on each node
-job_init_1 = SshJob(
-    node = fit1,
-    commands = cmds1,
-    label = 'Turn on wireless interface on node 1'
-)
-job_init_2 = SshJob(
-    node = fit2,
-    commands = cmds2,
-    label = 'Turn on wireless interface on node 2'
-)
-# an Engine is a set of jobs, so as for a builtin set object
-# you can use update to add a collection of nodes
-e.update( [job_init_1, job_init_2] )
-
-# then the actual ping is run on node 1 and targets node 2
-job_ping = SshJob(
-    node = fit1,
-    commands = [
-        ['ping', '-c1',  '-I', wifi_interface, wifi_ip_fit02 ],
-        ['true'],
-    ],
-    label = "pinging node2 from node1 on the wireless interface",
-    # this says that job_ping cannot start until these 2 jobs are done
-    required = (job_init_1, job_init_2),
+check_lease = SshJob(
+    # checking the lease is done on the gateway
+    node = faraday,
+    # this means that a failure in any of the commands
+    # will cause the scheduler to bail out immediately
+    critical = True,
+    command = Run("rhubarbe leases --check"),
 )
 
-# or you can one single job in the engine using just add
-e.add(job_ping)
+# the command we want to run in faraday is as simple as it gets
+ping = SshJob(
+    node = node1,
+    # let's be more specific about what to run
+    # we will soon see other things we can do on an ssh connection
+    command = Run('ping', '-c1',  'google.fr'),
+    # this says that we wait for check_lease to finish before we start ping
+    required = check_lease,
+)
 
-print("---------- orchestrating")    
+# how to run the same directly with ssh - for troubleshooting
+print("""---
+for troubleshooting: 
+ssh {}@{} ssh root@fit01 ping -c1 google.fr
+---""".format(gateway_username, gateway_hostname))
 
-# run the engine
-ok = e.orchestrate()
+# create an orchestration scheduler with the 2 jobs
+# the order here does not matter, only the 'requires' dependencies do
+sched = Scheduler(check_lease, ping)
+
+# run the scheduler
+ok = sched.orchestrate()
+
+# return something useful to your OS
+exit(0 if ok else 1)

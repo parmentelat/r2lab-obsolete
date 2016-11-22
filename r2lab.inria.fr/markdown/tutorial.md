@@ -17,28 +17,36 @@ skip_news: yes
 
 ### Examples of experimentations scenarios
 
-* [NEPI: ping examples](tuto-400-ping.md)
+* [`nepi-ng`: ping examples](tuto-400-ping.md)
 
-  A couple of examples to get started with the [NEPI network tool](tools.md)
+  A couple of examples to get started with the [`nepi-ng` network tool](tools.md)
 
-* [NEPI: file exchange](tuto-500-files.md)
+* [`nepi-ng` : wireless](tuto-500-wireless.md)
 
-  A file exchange between two nodes using [NEPI](tools.md) using wired and wireless interfaces.
+  A few more to see how one can initialize and configure wireless links
 
-* [NEPI: load image](tuto-600-load-image.md)
+* [`nepi-ng` : file exchange](tuto-600-files.md)
 
-  An experiment to load fresh distros to the nodes using [NEPI](tools.md)
+  A file exchange between two nodes with `nepi-ng` using wired and wireless interfaces.
+
+* [`nepi-ng`: load images](tuto-700-load-image.md)
+
+  An experiment to load fresh distros to the nodes (tools.md)
+
+* [`nepi-ng`: managing synchronicity](tuto-800-synchro.md)
+
+  An experiment that runs a sender and a receiver  load fresh distros to the nodes (tools.md)
 
 <br />
 
-### Video tutorials
+### Video tutorials on YouTube
 
-  * [End-to-End Experiment](tuto-700-youtube.md)
+  * [End-to-End Experiment](tuto-900-youtube.md)
 
-    Running an wireless experiment end-to-end. Check it out, [here](tuto-700-youtube.md)
+    Running an wireless experiment end-to-end. Check it out, [here](tuto-900-youtube.md)
 
-  * [OAI 5G experiment](tuto-700-youtube.md)
+  * [OAI 5G experiment](tuto-900-youtube.md)
 
     Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
 
-    Check it out, [here](tuto-700-youtube.md)
+    Check it out, [here](tuto-900-youtube.md)

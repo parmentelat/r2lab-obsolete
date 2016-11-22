@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from asynciojobs import Engine
+from asynciojobs import Scheduler
 
 from apssh import SshNode, SshJob
 
@@ -23,9 +23,6 @@ ping = SshJob(
     node = faraday,
     # what to run
     command = [ 'ping', '-c1',  'google.fr' ],
-    # you have to provide a label, it's going to be very helpful
-    # when running many things in parallel
-    label = "pinging google France"
 )
 
 # how to run the same directly with ssh - for troubleshooting
@@ -34,10 +31,10 @@ for troubleshooting:
 ssh {}@{} ping -c1 google.fr
 ---""".format(gateway_username, gateway_hostname))
 
-# create an orchestration engine
-# with this single job
-e = Engine(ping)
+# create an orchestration scheduler with this single job
+sched = Scheduler(ping)
 
-# run it
-ok = e.orchestrate()
+# run the scheduler
+ok = sched.orchestrate()
 
+print("orchestrate -", ok)
