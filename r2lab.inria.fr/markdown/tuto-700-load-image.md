@@ -21,6 +21,13 @@ float_menu_template: r2lab/float-menu-tutorials.html
 <!------------ INTRO ------------>
 <div id="INTRO" class="tab-pane fade in active" markdown="1">
 
+### This page is under construction...
+
+</div>
+
+<!------------ D1 ------------>
+<div id="D1" class="tab-pane fade" markdown="1">
+
 <br>
 
 Below we present an experiment which will conduct a load image using [NEPI](http://nepi.inria.fr/Install/WebHome) network tool at R2lab simulation testbed. 
@@ -29,12 +36,8 @@ You will be able to load and control the most common Linux distros at
 R2lab testbed as root user. We provide the most recent Ubuntus and
 Fedoras for all users.
 
-</div>
 
-<!------------ D1 ------------>
-<div id="D1" class="tab-pane fade" markdown="1">
-
-  <br/>
+<br/>
   From your computer you will create and deploy <strong>gateway</strong> and <strong>fit01</strong> nodes.
   Once in R2lab <strong>gateway</strong> node you launch the code to load a fresh distro at <strong>fit01</strong> node. 
   <br/><br/>

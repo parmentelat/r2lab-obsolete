@@ -19,7 +19,13 @@ float_menu_template: r2lab/float-menu-tutorials.html
 
 <!------------ INTRO ------------>
 <div id="INTRO" class="tab-pane fade in active" markdown="1">
-<br/>
+
+### This page is under construction...
+
+</div>
+
+<!------------ C1 ------------>
+<div id="C1" class="tab-pane fade" markdown="1">
 
 Below are a couple of experiments as a second level of learning
 [NEPI](http://nepi.inria.fr/Install/WebHome) network tool and R2lab
@@ -45,13 +51,7 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
   software dependencies, so that e.g. `netcat` gets installed before
   we can use it.
 
-<br/>
 
-</div>
-
-<!------------ C1 ------------>
-<div id="C1" class="tab-pane fade" markdown="1">
-  <br/>
   The experiment below uses four nodes. From your computer you will
   create and deploy <strong>local</strong>, <strong>gateway</strong>,
   <strong>fit01</strong> and <strong>fit02</strong> nodes.
