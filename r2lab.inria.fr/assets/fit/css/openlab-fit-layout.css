@@ -1,8 +1,8 @@
-@import url("../fonts/opensans_bold_macroman/stylesheet.css");
-@import url("../fontsn/stylesheet.css");
+@import url('https://fonts.googleapis.com/css?family=Ubuntu:regular,bold');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:regular,bold');
 
 body {
-    font-family:ubunturegular,Arial, helvetica, sans-serif;
+    font-family: 'Ubuntu', sans-serif;
     font-size:11pt;
     color:#333333;
     padding-top:60px;
@@ -195,9 +195,9 @@ div.navigation ul {
 
 div.navigation li {
     color:#0C0047;
-    font-family:open_sansbold, sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size:10pt;
-    font-weight:normal;
+    font-weight:bold;
     line-height:0.8em;
     letter-spacing:0.4pt;
     list-style:none;
