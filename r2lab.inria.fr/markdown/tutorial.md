@@ -34,9 +34,9 @@ All the items below are accessible through the floating menu on the right hand s
 
   An experiment to load fresh distros to the nodes (tools.md)
 
-* [`nepi-ng`: managing synchronicity](tuto-800-synchro.md)
+* [`nepi-ng`: R2lab and OpenAirInterface](tuto-800-oai.md)
 
-  An experiment that runs a sender and a receiver  load fresh distros to the nodes (tools.md)
+  Some indications on the features present on R2lab to deploy experiments based on OpenAirInterface.
 
 <br />
 
