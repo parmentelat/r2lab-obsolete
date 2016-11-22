@@ -1,5 +1,6 @@
 title: nepi-ng - wireless
 tab: tutorial
+skip_header: True
 float_menu_template: r2lab/float-menu-tutorials.html
 
 <script src="/assets/r2lab/open_tab.js"></script>

@@ -1,5 +1,6 @@
 title: Installing nepi-ng
 tab: tutorial
+skip_header: True
 float_menu_template: r2lab/float-menu-tutorials.html
 ---
 

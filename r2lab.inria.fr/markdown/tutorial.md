@@ -1,9 +1,10 @@
 title: The R2lab Tutorials
-subtitle: Take a tour with the R2lab tutorials to help your experiments to be run.
+subtitle: Let's get you started
 tab: tutorial
 float_menu_template: r2lab/float-menu-tutorials.html
 skip_news: yes
----
+
+All the items below are accessible through the floating menu on the right hand side of all these pages.
 
 ### Infrastructure
 * [Sign up for a OneLab account](tuto-100-registration.md)
@@ -43,10 +44,9 @@ skip_news: yes
 
   * [End-to-End Experiment](tuto-900-youtube.md)
 
-    Running an wireless experiment end-to-end. Check it out, [here](tuto-900-youtube.md)
+    Running an wireless experiment end-to-end. 
 
   * [OAI 5G experiment](tuto-900-youtube.md)
 
     Setting up an OpenAirInterface-baed 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
 
-    Check it out, [here](tuto-900-youtube.md)

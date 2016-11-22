@@ -1,5 +1,6 @@
 title: R2lab - Images
 tab: tutorial
+skip_header: True
 float_menu_template: r2lab/float-menu-tutorials.html
 
 <script src="/assets/r2lab/open_tab.js"></script>
@@ -11,7 +12,7 @@ float_menu_template: r2lab/float-menu-tutorials.html
   <li class="active"> <a href="#INTRO">INTRO</a> </li>
   <li> <a href="#D1">D1</a></li>
   <li> <a href="#D2">D2</a></li>
-
+  <li> <a href="#WRAPUP">WRAPUP</a></li>
 </ul>
 
 
@@ -48,6 +49,11 @@ Fedoras for all users.
 
 <!------------ D2 ------------>
 <div id="D2" class="tab-pane fade" markdown="1">
+
+</div>
+
+<!------------ WRAPUP ------------>
+<div id="WRAPUP" class="tab-pane fade" markdown="1">
 
 </div>
 

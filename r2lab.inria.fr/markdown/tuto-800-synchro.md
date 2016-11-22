@@ -1,5 +1,6 @@
 title: nepi-ng - synchronization
 tab: tutorial
+skip_header: True
 float_menu_template: r2lab/float-menu-tutorials.html
 
 <script src="/assets/r2lab/open_tab.js"></script>
@@ -12,9 +13,7 @@ float_menu_template: r2lab/float-menu-tutorials.html
   <li class="active"> <a href="#INTRO">INTRO</a> </li>
   <li> <a href="#E1">E1</a></li>
   <li> <a href="#E2">E2</a></li>
-  <li> <a href="#E3">E3</a></li>
-  <li> <a href="#E4">E4</a></li>
-  <li> <a href="#E5">E5</a></li>
+  <li> <a href="#WRAPUP">WRAPUP</a></li>
 </ul>
 
 
@@ -32,6 +31,11 @@ float_menu_template: r2lab/float-menu-tutorials.html
 
 <!------------ E2 ------------>
 <div id="E2" class="tab-pane fade" markdown="1">
+
+</div>
+
+<!------------ WRAPUP ------------>
+<div id="WRAPUP" class="tab-pane fade" markdown="1">
 
 </div>
 

@@ -1,5 +1,6 @@
 title: Convenience tools on the gateway
 tab: tutorial
+skip_header: True
 float_menu_template: r2lab/float-menu-tutorials.html
 
 ## Logging in the gateway

@@ -1,5 +1,6 @@
 title: nepi-ng - managing files
 tab: tutorial
+skip_header: True
 float_menu_template: r2lab/float-menu-tutorials.html
 
 <script src="/assets/r2lab/open_tab.js"></script>
@@ -11,6 +12,7 @@ float_menu_template: r2lab/float-menu-tutorials.html
   <li class="active"> <a href="#INTRO">INTRO</a> </li>
   <li> <a href="#C1">C1</a></li>
   <li> <a href="#C2">C2</a></li>
+  <li> <a href="#WRAPUP">WRAPUP</a></li>
 </ul>
 
 <div id="contents" class="tab-content" markdown="1">
@@ -98,6 +100,11 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
   </center>
 
 << codediff b2s B1-send-file.py B2-send-file.py >>
+</div>
+
+<!------------ WRAPUP ------------>
+<div id="WRAPUP" class="tab-pane fade" markdown="1">
+
 </div>
 
 </div> <!-- end div contents -->

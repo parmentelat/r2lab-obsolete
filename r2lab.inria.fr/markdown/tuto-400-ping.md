@@ -1,5 +1,6 @@
 title: nepi-ng - the basics
 tab: tutorial
+skip_header: True
 float_menu_template: r2lab/float-menu-tutorials.html
 
 <script src="/assets/r2lab/open_tab.js"></script>
@@ -469,13 +470,13 @@ Here is what deserves to be outlined in the code below
 ### Summary
 At this point, you should have a rather good understanding of the following fundamentals of R2lab:
 
-##### Interfaces
+### Interfaces
 
 Each node has 4 network interfaces, `control` being considered
 reserved for testbed administration, the other ones being reserved for
 the experimenter who is in charge of setting them up.
 
-##### `nepi-ng`
+### `nepi-ng`
 
 By leveraging the standard `asyncio` library, and by combining the
 `asynciojobs` and `apssh` libraries on top of that, it is possible to
@@ -490,7 +491,8 @@ write scripts that are
 In [the next tutoorial](tuto-500-wireless.md), we will see how to deal
 with the more complex task of setting up a wireless network.
 
+In [the tutorial after that](tuto-600-files.md), we will see address file transfers to and from `SshNode`s.
+
 </div>
 
 </div> <!-- end div contents -->
-
