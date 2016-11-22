@@ -65,7 +65,8 @@ require_login: true
     </div>
   </div>
 
-  See also <a href="status.md#livetable:legend">this page for a legend</a>
+  <hr/>
+  See also <a href="status.md#livetable:legend">this page for a legend</a>; try clicking anywhere in the header or footer to focus on nodes of interest.
 
   <div class="row">
     <div class="col-md-12">

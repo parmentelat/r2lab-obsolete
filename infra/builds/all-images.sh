@@ -128,14 +128,23 @@ function node-keys() {
     # leave the OAI images for now, as we should redo them based on one of the above
 }
 
+function ubuntu-udev() {
+#    bim 1  ubuntu-16.04 ubuntu-16.04-v8-wireless-names "imaging.sh ubuntu-udev" &
+#    bim 2  ubuntu-14.04 ubuntu-14.04-v8-wireless-names "imaging.sh ubuntu-udev" &
+#    bim 3  fedora-23    fedora-23-v8-wireless-names "imaging.sh ubuntu-udev" &
+    bim 5  gnuradio     ubuntu-16.04-gnuradio-3.7.10.1-v8-wireless-names "imaging.sh ubuntu-udev" &
+    bim 11 intelcsi     intelcsi-v8-wireless-names "imaging.sh ubuntu-udev" &
+}
 
 #ssh root@faraday.inria.fr rhubarbe off 1-10
 #u14-48 &
 #u16-48 &
 #u16-47 &
 #u14-319
-
-redo-netnames
+#gnuradio
+#ubuntu-udev
+#update-root-bash
+#redo-netnames
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work
