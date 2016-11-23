@@ -1,4 +1,4 @@
-title: shell tools on the gateway
+title: Shell tools in the gateway
 tab: tutorial
 skip_header: True
 
@@ -11,7 +11,7 @@ skip_header: True
   <li class="active"> <a href="#LOGIN">LOG IN</a> </li>
   <li> <a href="#NODES">SELECT NODES</a></li>
   <li> <a href="#IMAGES">IMAGES</a></li>
-  <li> <a href="#MISCELL">MISCELL</a></li>
+  <li> <a href="#PHONES">PHONES</a></li>
 
   << include r2lab/tutos-index.html >>
 </ul>
@@ -65,9 +65,21 @@ This is a poorman's tool, as of course [the scheduler](/book.md) will give you t
 <!------------ NODES ------------>
 <div id="NODES" class="tab-pane fade" markdown="1">
 
+### Monitor what you're doing
+
+Be aware that you can have a global view of the testbed status [right
+in the r2lab website](http://r2lab.inria.fr/status.md). This link
+works for all visitors, and if you are logged in you can [also see
+this page](http://r2lab.inria.fr/run.md) that will also show you the
+state of the reservation system.
+
 ### Selecting nodes
 
-Most of the time, you will want to manage a selected subset of nodes. There's a simple mechanism in place so you don't need to specify your nodes for each and every command, by defining the environment variable `NODES`. For this the `nodes` command is your friend
+Most of the time, you will want to manage a selected subset of
+nodes. There's a simple mechanism in place so you don't need to
+specify your nodes for each and every command, by defining the
+environment variable `NODES`. For this the `nodes` command is your
+friend
 
 To **select nodes**, use the `nodes` command. To select nodes 1 2 4 5 33 and 37 you could do this (`~` stands for negation)
 
@@ -118,6 +130,20 @@ Turning them off is of course just
 You can trigger a reset (reboot) on a node - provided it is already on, with
 
     reset
+
+To see the list of nodes that are ON
+
+    show-nodes-on
+
+You can select all the nodes currently ON with
+
+    focus-nodes-on -a 
+
+To see the linux version running in the nodes (this is less
+sophisticated than what the [livetable](/status.md#livetable) would
+provide)
+
+    releases
 
 </div>
 
@@ -185,22 +211,40 @@ Images that may be of common interest usually needto be renamed; get in touch wi
 
 </div>
 
-<!------------ MISCELL ------------>
-<div id="MISCELL" class="tab-pane fade" markdown="1">
+<!------------ PHONES ------------>
+<div id="PHONES" class="tab-pane fade" markdown="1">
 
-### Miscell
+## Phones
 
-To see the list of nodes that are ON
+We have (for now a single) commercial UE available right in the room. You can control it essentially through 2 ways
 
-    show-nodes-on
+### `macphone`
 
-You can select all the nodes currently ON with
+The phone is physically connected through USB to a MAC (also in the room) named `macphone`;
+ you can reach that MAC from faraday by doing
 
-    focus-nodes-on
+    macphone
 
-To see the linux version running in the nodes (this is less sophisticated than what the [livetable](/status.md#livetable) would provide)
+From that point you can get a list of available commands, like always
 
-    releases
+    help
+
+Among other things, you'll want to check for the folloing commands
+
+    phone-status
+    phone-off
+    phone-on
+
+
+### VNC
+
+You can also use VNC to share `macphone`'s screen with the following info
+
+    hostname : faraday.inria.fr
+    port numnber : 5900
+    macphone's user id : tester
+    password : tester++
+
 
 </div>
 

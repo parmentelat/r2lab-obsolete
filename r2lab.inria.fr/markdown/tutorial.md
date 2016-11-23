@@ -27,13 +27,12 @@ All this contents is accessible through the 'TUTORIALS INDEX' dropdown that appe
 
   All information about how to register and schedule a node
 
-* [Shell tools](tuto-200-shell-tools.md) available in the `faraday.inria.fr` gateway
+* [Shell tools](tuto-200-shell-tools.md) available in the R2lab gateway
 
   Discover how to do basic control of the nodes by logging in at the
   `faraday.inria.fr` gateway from a regular `ssh` session: how to
-  check for nodes status, leases, images, and more.
-
-<br />
+  check for control nodes status, leases, images, and phones even.
+  
 
 ### Examples of experimentations scenarios
 
@@ -55,21 +54,19 @@ All this contents is accessible through the 'TUTORIALS INDEX' dropdown that appe
 
   An experiment to load fresh distros to the nodes (tools.md)
 
-* [`nepi-ng`: R2lab and OpenAirInterface](tuto-800-oai.md)
+<br />
+
+### Other stuff
+
+* [R2lab and OpenAirInterface](tuto-800-oai.md)
 
   Some indications on the features present on R2lab to deploy experiments based on OpenAirInterface.
 
-<br />
+* Video tutorials on YouTube
 
-### Video tutorials on YouTube
+  * [End-to-End Experiment](tuto-900-youtube.md) : Running a wireless experiment end-to-end. 
 
-  * [End-to-End Experiment](tuto-900-youtube.md)
-
-    Running an wireless experiment end-to-end. 
-
-  * [OAI 5G experiment](tuto-900-youtube.md)
-
-    Setting up an OpenAirInterface-based 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
+  * [OAI 5G experiment](tuto-900-youtube.md) : Setting up an OpenAirInterface-based 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
 
 </div>
 
