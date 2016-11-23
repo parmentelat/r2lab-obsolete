@@ -19,6 +19,10 @@ Most recent first&nbsp;:
   * [Demo on R2lab: setting up a 4G network in 3mn, by Thierry Parmentelat](../assets/files/2016-11-opening-r2lab-demo-thierry-parmentelat.pdf)
  
 
+### November 4
+
+* R2lab is [mentioned and described in this article in the WebTimeMedias newspaper (in French)](http://www.webtimemedias.com/article/sophia-inaugure-ses-deux-chambres-sourdes-laboratoires-de-la-5g-20161104-58944)
+
 ### October 24
 
 * OpenAirInterface images for deploying infrastructures and eNodeB's are available under the names

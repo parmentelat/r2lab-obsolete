@@ -485,14 +485,15 @@ write scripts that are
 
 * reasonably simple and short
 * able to run as many jobs as needed simultaneously and in a single thread
-* able to deal with simple time constraints.
+* able to deal with simple synchronization constraints.
 
 ### Next
 
-In [the next tutoorial](tuto-500-wireless.md), we will see how to deal
+In [the next tutorial](tuto-500-wireless.md), we will see how to deal
 with the more complex task of setting up a wireless network.
 
-In [the tutorial after that](tuto-600-files.md), we will see address file transfers to and from `SshNode`s.
+In [the tutorial after that](tuto-600-files.md), we will address file
+transfers to and from `SshNode`s.
 
 </div>
 
