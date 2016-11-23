@@ -19,7 +19,9 @@ from r2lab.settings import logger
 # xxx should be configurable
 markdown_subdir = "markdown"
 code_subdir = "code"
-
+templates_subdir = "templates"
+include_paths = [ markdown_subdir, templates_subdir, code_subdir ]
+    
 # accept names in .html or .md or without extension
 def normalize(filename):
     """
@@ -45,7 +47,9 @@ def match_meta(line):
 def parse(markdown_file):
     """
     parse markdown content for metavars
-    also deals with the << codediff file1 file2 >> tag
+    also deals with
+    * the << codediff file1 file2 >> tag
+    * the << include file >> tag
     returns a tuple metavars, markdown
     with the verbatim resolved
     """
@@ -64,10 +68,47 @@ def parse(markdown_file):
                 else:
                     in_header = False
             markdown += line
+    markdown = resolve_includes(markdown)
     markdown = resolve_codediffs(markdown)
     return metavars, markdown
 
+
+####################
 # could not figure out how to do this with the template engine system....
+def get_included_file(f, tag):
+    print("in get_included_file, f=", f)
+    if not f:
+        return ""
+    for path in include_paths:
+        p = os.path.join(settings.BASE_DIR, path, f)
+        try:
+            print("trying", p)
+            with open(p) as i:
+                print("BINGO with p=", p)
+                return i.read()
+        except:
+            pass
+    return "**include file {} not found in {} tag**".format(f, tag)
+
+re_include = re.compile(r'<<\s*include\s+(?P<file>\S+)\s*>>\s*\n')
+def resolve_includes(markdown):
+    """
+    Looks for <<include file>> tags and resolves them
+    """
+    print("resolve_includes ->")
+    end = 0
+    resolved = ""
+    for match in re_include.finditer(markdown):
+        filename = match.group('file')
+        print("MATCH filename = ", filename)
+        resolved = resolved + markdown[end:match.start()]
+        print("resolved -> len = ", len(resolved))
+        resolved += get_included_file(filename, "include")
+        end = match.end()
+    resolved = resolved + markdown[end:]
+    print("resolve_includes <- {} chars".format(len(resolved)))
+    return resolved
+
 re_codediff = re.compile(r'<<\s*codediff\s+(?P<id>\S+)\s+(?P<file1>\S+)(\s+(?P<file2>\S+))?\s*>>\s*\n')
 def resolve_codediffs(markdown):
     """
@@ -106,17 +147,7 @@ def resolve_codediff(id, f1, f2, lang='python'):
     # by design of re_codediff, bool(f1) is always True
     # while OTOH f2 is optional
 
-    def get_included_file(f):
-        if not f:
-            return ""
-        p = os.path.join(settings.BASE_DIR, code_subdir, f)
-        try:
-            with open(p) as i:
-                return i.read()
-        except:
-            return "codediff: mandatory included file {} not found".format(p)
-            
-    i1, i2 = get_included_file(f1), get_included_file(f2)
+    i1, i2 = get_included_file(f1, 'codediff'), get_included_file(f2, 'codediff')
 
     ########## one file : the simple case - simply use prism
     # for highlighting the code in python with line numbers

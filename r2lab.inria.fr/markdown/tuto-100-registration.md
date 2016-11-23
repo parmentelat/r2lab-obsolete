@@ -1,7 +1,6 @@
 title: R2lab registration
 tab: tutorial
 skip_header: True
-float_menu_template: r2lab/float-menu-tutorials.html
 
 <script src="/assets/r2lab/open_tab.js"></script>
 <script src="/assets/js/diff.js"></script>
@@ -13,6 +12,8 @@ float_menu_template: r2lab/float-menu-tutorials.html
   <li class="active"> <a href="#REGISTER">Register</a> </li>
   <li> <a href="#RESERVE">Reserve</a></li>
   <li> <a href="#ACCESS">Access</a></li>
+
+  << include r2lab/tutos-index.html >>
 </ul>
 
 
@@ -143,23 +144,3 @@ If you're getting a `Permission denied (publickey)` error, please check
 </div>
 
 </div> <!-- end div contents -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

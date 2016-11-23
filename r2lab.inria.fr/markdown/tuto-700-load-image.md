@@ -1,7 +1,6 @@
 title: R2lab - Images
 tab: tutorial
 skip_header: True
-float_menu_template: r2lab/float-menu-tutorials.html
 
 <script src="/assets/r2lab/open_tab.js"></script>
 <script src="/assets/js/diff.js"></script>
@@ -13,6 +12,8 @@ float_menu_template: r2lab/float-menu-tutorials.html
   <li> <a href="#D1">D1</a></li>
   <li> <a href="#D2">D2</a></li>
   <li> <a href="#WRAPUP">WRAPUP</a></li>
+
+  << include r2lab/tutos-index.html >>
 </ul>
 
 

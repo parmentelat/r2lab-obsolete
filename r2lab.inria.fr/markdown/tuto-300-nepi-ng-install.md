@@ -1,10 +1,31 @@
 title: Installing nepi-ng
 tab: tutorial
 skip_header: True
-float_menu_template: r2lab/float-menu-tutorials.html
----
 
-For running experiments right from your own laptop, we provide a set of tools, that we collectively refer to as `nepi-ng`. This page gives you detailed instructions for installing these.
+<script src="/assets/r2lab/open_tab.js"></script>
+<script src="/assets/js/diff.js"></script>
+<script src="/assets/r2lab/r2lab-diff.js"></script>
+<style>@import url("/assets/r2lab/r2lab-diff.css")</style>
+
+<ul class="nav nav-tabs">
+  <li class="active"> <a href="#INSTALL">INSTALL</a> </li>
+  <li> <a href="#SSHAGENT">SSH AGENT</a></li>
+
+  << include r2lab/tutos-index.html >>
+</ul>
+
+<div id="contents" class="tab-content" markdown="1">
+
+<!------------ INSTALL ------------>
+<div id="INSTALL" class="tab-pane fade in active" markdown="1">
+
+The commands that we have seen in the previous tutorial are useful for
+making quick changes on the testbed.
+
+However once you are set up, it is much more convenient to control
+experiments right from your own laptop, and to this end we provide a
+set of tools that we collectively refer to as `nepi-ng`. This page
+gives you detailed instructions for installing these.
 
 ## Terminal-based
 
@@ -40,6 +61,11 @@ You can check the installed versions like this
     $ python3 -c 'from apssh import version; print(version.version)'
     0.2.17
 
+</div>
+
+<!------------ SSHAGENT ------------>
+<div id="SSHAGENT" class="tab-pane fade" markdown="1">
+
 ## Note on ssh and ssh-agent
 
 `nepi-ng` **does not require** a native ssh client to be installed on
@@ -63,3 +89,7 @@ command - at least on unix-based systems.
     ~/.ssh $ ssh-add -l
     1024 SHA256:KNm0U4SgFV9bY957hJAIRR68n5AZHQ6e1gbiXrGHuOA /Users/parmentelat/.ssh/id_rsa (RSA)
     2048 SHA256:WvCdpP+FHBTnkwbkqYl43GVgwEK2iYdwRaNm+fCc+Xg onelab.private (RSA)
+
+</div>
+
+</div> <!-- end div contents -->

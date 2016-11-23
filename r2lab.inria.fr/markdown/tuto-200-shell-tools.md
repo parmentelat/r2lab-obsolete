@@ -1,9 +1,27 @@
-title: Convenience tools on the gateway
+title: shell tools on the gateway
 tab: tutorial
 skip_header: True
-float_menu_template: r2lab/float-menu-tutorials.html
 
-## Logging in the gateway
+<script src="/assets/r2lab/open_tab.js"></script>
+<script src="/assets/js/diff.js"></script>
+<script src="/assets/r2lab/r2lab-diff.js"></script>
+<style>@import url("/assets/r2lab/r2lab-diff.css")</style>
+
+<ul class="nav nav-tabs">
+  <li class="active"> <a href="#LOGIN">LOG IN</a> </li>
+  <li> <a href="#NODES">SELECT NODES</a></li>
+  <li> <a href="#IMAGES">IMAGES</a></li>
+  <li> <a href="#MISCELL">MISCELL</a></li>
+
+  << include r2lab/tutos-index.html >>
+</ul>
+
+<div id="contents" class="tab-content" markdown="1">
+
+<!------------ LOGIN ------------>
+<div id="LOGIN" class="tab-pane fade in active" markdown="1">
+
+### Logging in the gateway
 
 Once you have [obtained a slice account on R2LAB (faraday)](tuto-100-registration.md#main), you can reach the R2lab gateway using ssh
 
@@ -41,6 +59,11 @@ In case you're unsure about the current status of reservation, you can list rese
     rleases
 
 This is a poorman's tool, as of course [the scheduler](/book.md) will give you that same information in a much nicer way.
+
+</div>
+
+<!------------ NODES ------------>
+<div id="NODES" class="tab-pane fade" markdown="1">
 
 ### Selecting nodes
 
@@ -95,6 +118,11 @@ Turning them off is of course just
 You can trigger a reset (reboot) on a node - provided it is already on, with
 
     reset
+
+</div>
+
+<!------------ IMAGES ------------>
+<div id="IMAGES" class="tab-pane fade" markdown="1">
 
 ### Loading images
 
@@ -155,6 +183,11 @@ This ends up in the common repository `/var/lib/rhubarbe-images`, under a name t
 
 Images that may be of common interest usually needto be renamed; get in touch with the admins if you need to do this.
 
+</div>
+
+<!------------ MISCELL ------------>
+<div id="MISCELL" class="tab-pane fade" markdown="1">
+
 ### Miscell
 
 To see the list of nodes that are ON
@@ -168,3 +201,7 @@ You can select all the nodes currently ON with
 To see the linux version running in the nodes (this is less sophisticated than what the [livetable](/status.md#livetable) would provide)
 
     releases
+
+</div>
+
+</div> <!-- end div contents -->

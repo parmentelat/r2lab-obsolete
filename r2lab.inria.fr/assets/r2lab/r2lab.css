@@ -6,19 +6,6 @@
 /* logout button */
 a.button.logout { background-color: #f69a97; }
 
-/* the slices menu from float-menu-slices.html */
-#float_menu div.menu a.set_current_slice {
-    font-size: x-small;
-    font-weight: normal;
-}
-
-#float_menu div.menu a.current_slice {
-    background-color: #c0c0d6;
-}
-#float_menu div.menu a.current_slice:hover {
-    background-color: #c0c0d6;
-}
-
 .numberCircle {
     -webkit-border-radius: 50%;
     -moz-border-radius: 50%;
