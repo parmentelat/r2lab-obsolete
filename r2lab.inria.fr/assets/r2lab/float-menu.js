@@ -45,5 +45,7 @@
         $(window).resize(function () {
             adjust_menu();
         });
-    }
+    };
+
+    $(float_menu);
 })(jQuery);

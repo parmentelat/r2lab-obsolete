@@ -1,10 +1,10 @@
 title: The R2lab Tutorials
 subtitle: Let's get you started
 tab: tutorial
+skip_header: True
 float_menu_template: r2lab/float-menu-tutorials.html
-skip_news: yes
 
-All the items below are accessible through the floating menu on the right hand side of all these pages.
+All the items below are accessible through the navigation menu that appears on all the tutorial pages.
 
 ### Infrastructure
 * [Sign up for a OneLab account](tuto-100-registration.md)
