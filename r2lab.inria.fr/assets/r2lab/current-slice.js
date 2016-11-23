@@ -49,34 +49,6 @@ var current_slice = {
 	    if (current_slice.debug) console.log("Storing current_slice:"+slice);
 	    localStorage.setItem(current_slice.key, slice);
 	}
-    },
-
-    // highlight the item corresponding to current slice
-    update_selectors : function() {
-	$('.set_current_slice').each(function(index){
-            if ($(this).attr('slicename') == current_slice.name){
-		$(this).addClass(current_slice.klass);
-	    } else {
-	    $(this).removeClass(current_slice.klass);
-	    }
-	});
-    },
-				     
-    // all elements of type 'set_current_slice' need a click function
-    // defined on them that will change the current slice name
-    arm_selectors : function() {
-	$('.set_current_slice').on("click", function(){
-	    var new_slice = $(this).attr("slicename");
-	    current_slice.store(new_slice);
-	    current_slice.name = new_slice;
-	    current_slice.update_selectors();
-	});
-    },
-
-    // stuff to call on page load
-    init : function(){
-	current_slice.update_selectors();
-	current_slice.arm_selectors();
     }
 };
 $(current_slice.init)
