@@ -90,7 +90,7 @@ function r2lab-id() {
 }    
 
 doc-nodes data-up "turn up the data interface; returns the interface name (should be data)"
-# should maybe better use wait-forinterface-on-driver e1000e
+# should maybe better use wait-for-interface-on-driver e1000e
 data_ifnames="data"
 # can be used with ifname=$(data-up)
 function data-up() {
@@ -188,6 +188,23 @@ function wait-for-device () {
 	else
 	    >&2 echo "Device $dev is $operstate - waiting 1s"; sleep 1
 	fi
+    done
+}
+
+doc-nodes turn-off-wireless "rmmod both wireless drivers from the kernel"
+function turn-off-wireless() {
+    for driver in iwlwifi ath9k; do
+	while true; do
+	    _found=$(find-interface-by-driver $driver)
+	    if [ -n "$_found" ]; then
+		>&2 echo Shutting down device $_found
+		ip link set down dev $_found
+		modprobe -r $driver mac80211 cfg80211
+	    else
+		>&2 echo "Driver $driver no used";
+		break
+	    fi
+	done
     done
 }
 
