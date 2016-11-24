@@ -194,17 +194,17 @@ function wait-for-device () {
 doc-nodes turn-off-wireless "rmmod both wireless drivers from the kernel"
 function turn-off-wireless() {
     for driver in iwlwifi ath9k; do
-	while true; do
-	    _found=$(find-interface-by-driver $driver)
-	    if [ -n "$_found" ]; then
-		>&2 echo Shutting down device $_found
-		ip link set down dev $_found
-		modprobe -r $driver mac80211 cfg80211
-	    else
-		>&2 echo "Driver $driver no used";
-		break
-	    fi
-	done
+	local _found=$(find-interface-by-driver $driver)
+	if [ -n "$_found" ]; then
+	    >&2 echo Shutting down device $_found
+	    ip link set down dev $_found
+	else
+	    >&2 echo "Driver $driver not used";
+	fi
+	lsmod | grep -q "^${driver} " && {
+	    >&2 echo Removing driver $driver
+	    modprobe -q -r $driver
+	}
     done
 }
 
