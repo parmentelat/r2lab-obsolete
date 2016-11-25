@@ -67,11 +67,12 @@ This is a poorman's tool, as of course [the scheduler](/book.md) will give you t
 
 ### Monitor what you're doing
 
-Be aware that you can have a global view of the testbed status [right
-in the r2lab website](http://r2lab.inria.fr/status.md). This link
-works for all visitors, and if you are logged in you can [also see
-this page](http://r2lab.inria.fr/run.md) that will also show you the
-state of the reservation system.
+Be aware that you can have a global and live view of the testbed
+status [right in the r2lab
+website](http://r2lab.inria.fr/status.md). This link works for all
+visitors, and if you are logged in you can [also see this
+page](http://r2lab.inria.fr/run.md) that will also show you the state
+of the reservation system.
 
 ### Selecting nodes
 
