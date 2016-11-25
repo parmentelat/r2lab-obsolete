@@ -76,15 +76,14 @@ def parse(markdown_file):
 ####################
 # could not figure out how to do this with the template engine system....
 def get_included_file(f, tag):
-    print("in get_included_file, f=", f)
     if not f:
         return ""
     for path in include_paths:
         p = os.path.join(settings.BASE_DIR, path, f)
         try:
-            print("trying", p)
+            # print("get_included_file : trying", p)
             with open(p) as i:
-                print("BINGO with p=", p)
+                # print("get_included_file: using p=", p)
                 return i.read()
         except:
             pass
@@ -95,18 +94,15 @@ def resolve_includes(markdown):
     """
     Looks for <<include file>> tags and resolves them
     """
-    print("resolve_includes ->")
     end = 0
     resolved = ""
     for match in re_include.finditer(markdown):
         filename = match.group('file')
-        print("MATCH filename = ", filename)
         resolved = resolved + markdown[end:match.start()]
-        print("resolved -> len = ", len(resolved))
         resolved += get_included_file(filename, "include")
         end = match.end()
     resolved = resolved + markdown[end:]
-    print("resolve_includes <- {} chars".format(len(resolved)))
+    # print("resolve_includes <- {} chars".format(len(resolved)))
     return resolved
 
 re_codediff = re.compile(r'<<\s*codediff\s+(?P<id>\S+)\s+(?P<file1>\S+)(\s+(?P<file2>\S+))?\s*>>\s*\n')
