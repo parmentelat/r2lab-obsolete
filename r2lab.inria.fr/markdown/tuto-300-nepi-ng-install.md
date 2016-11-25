@@ -29,13 +29,16 @@ gives you detailed instructions for installing these.
 
 ## Terminal-based
 
-All the tools that we will write will run in a terminal, we assume you are familiar with dealing with such interfaces.
+All the tools that we will write will run in a terminal, we assume you
+are familiar with dealing with such interfaces.
 
 ## Requires python-3.5
 
-`nepi-ng` is a set of python libraries; these use [the `asyncio` library](https://docs.python.org/3/library/asyncio.html), 
-and as such require python-3.5 (as we use the latest `async def` and `await` syntax, that won't work under python-3.4).
-Please refer to the python documentation for installing that version of python on your laptop.
+`nepi-ng` is a set of python libraries; these use [the `asyncio`
+library](https://docs.python.org/3/library/asyncio.html), and as such
+require python-3.5 (as we use the latest `async def` and `await`
+syntax, that won't work under python-3.4).  Please refer to the python
+documentation for installing that version of python on your laptop.
 You can check that this requirement is fulfilled by running
 
     $ python3 --version
@@ -51,7 +54,8 @@ this library.
 
 ### Ubuntu
 
-Ubuntu pleasantly offers `asyncssh` as a native package, so no need to run pip3 here.
+Ubuntu pleasantly offers `asyncssh` as a native package, so no need to
+run pip3 here.
 
 Tested on Ubuntu-16
 
@@ -59,7 +63,9 @@ Tested on Ubuntu-16
 
 ### Fedora
 
-Fedora OTOH did not support asyncssh as oof fedora-24, so here's a - possibly non-exhaustive - list of dependencies that help building `asyncssh`
+Fedora OTOH did not support asyncssh as oof fedora-24, so here's a -
+possibly non-exhaustive - list of dependencies that help building
+`asyncssh`
 
 Tested on fedora-23
 
@@ -68,7 +74,8 @@ Tested on fedora-23
 
 ### macos
 
-It is harder to describe the list of dependencies on the MAC, let us know if you run into any trouble when running simply the following
+It is harder to describe the list of dependencies on the MAC, let us
+know if you run into any trouble when running simply the following
 
     pip3 install asyncssh
 
