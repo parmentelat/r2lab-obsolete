@@ -196,13 +196,13 @@ function turn-off-wireless() {
     for driver in iwlwifi ath9k; do
 	local _found=$(find-interface-by-driver $driver)
 	if [ -n "$_found" ]; then
-	    >&2 echo Shutting down device $_found
+	    >&2 echo "turn-off-wireless: shutting down device $_found"
 	    ip link set down dev $_found
 	else
-	    >&2 echo "Driver $driver not used";
+	    >&2 echo "turn-off-wireless: driver $driver not used";
 	fi
 	lsmod | grep -q "^${driver} " && {
-	    >&2 echo Removing driver $driver
+	    >&2 echo "turn-off-wireless: removing driver $driver"
 	    modprobe -q -r $driver
 	}
     done
