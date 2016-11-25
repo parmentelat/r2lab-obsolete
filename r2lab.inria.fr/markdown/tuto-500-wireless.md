@@ -25,6 +25,46 @@ skip_header: True
 
 ### This page is under construction...
 
+<br/>
+<br/>
+<br/>
+
+### Prerequisites
+
+For this series of experiments, we make the same assumptions as in the
+previous series. In a nutshell, we expect you have a valid
+reservation, and the 2 nodes `fit01`and `fit02` are properly loaded with
+the default image, and turned on of course.
+
+Please [visit this page](http://r2lab.inria.fr/tuto-400-ping.md#INTRO)
+to review how to reach that point, if necessary.
+
+### Objectives
+
+In this series we will start playing with the wireless interfaces. Of
+course a minimal background is assumed in terms of dealing with
+wireless interfaces under linux; further information can be found at
+the following locations :
+
+* we recommend to see [this quick introduction to `iw`, that is
+  instrumental in these
+  tasks](https://wireless.wiki.kernel.org/en/users/documentation/iw)
+
+* as well as [this helpful page on how to use `iw` if you were more
+  familiar with `iwconfig` that is now considered
+  obsolete](https://wireless.wiki.kernel.org/en/users/documentation/iw/replace-iwconfig)
+  - much like `ip` has now replaced `ifconfig`.
+
+### `nepi-ng`
+
+Now as far as `nepi-ng` is concerned, in the previous series we have
+seen ways to run remotely simple commands. In this section we will see
+simple means to come up with more complex logic, simply by using shell
+scripts that are pushed remotely under the hood before they are
+triggered. This is what the `RunString` and `RunScript` classes are
+about.
+
+
 </div>
 
 <!------------ B1 ------------>
@@ -32,11 +72,22 @@ skip_header: True
 
 ### Objective
 
+We are going to run the exact same experiment [as in the previous run
+A5](tuto-400-ping.md#A5), that is to say a simple ping triggered on
+`fit01` towards `fit02`, but this time on one of the wireless
+interfaces.
+
+What changes then, as compared with our previous experiment, is that
+we cannot anymore simply run the predefined convenience command
+`data-up`, and we are going to have to put a little more work in this
+step.
+
+
 ### The code
 
 <center>Download the <a href="/code/B1-wireless.py" download target="_blank">B1 experiment</a> code</center>
 
-<< codediff a1 B1-wireless.py B1-wireless.py >>
+<< codediff a1 A5-ping.py B1-wireless.py >>
 
 ### Sample output
 

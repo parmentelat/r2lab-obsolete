@@ -37,8 +37,8 @@ check_lease = SshJob(
 )
 
 # setting up the data interface on both fit01 and fit02
-init_data_01 = SshJob(node = node1, command = Run("data-up"), required = check_lease)
-init_data_02 = SshJob(node = node2, command = Run("data-up"), required = check_lease)
+init_node_01 = SshJob(node = node1, command = Run("data-up"), required = check_lease)
+init_node_02 = SshJob(node = node2, command = Run("data-up"), required = check_lease)
 
 # the command we want to run in faraday is as simple as it gets
 ping = SshJob(
@@ -47,13 +47,13 @@ ping = SshJob(
     # we will soon see other things we can do on an ssh connection
     commands = Run('ping', '-c1', '-I', 'data', 'data02'),
     # this says that we wait for check_lease to finish before we start ping
-    required = (init_data_01, init_data_02),
+    required = (init_node_01, init_node_02),
 )
 
 # forget about the troubleshooting from now on
 
 # we have 4 jobs to run this time
-sched = Scheduler(check_lease, ping, init_data_01, init_data_02)
+sched = Scheduler(check_lease, ping, init_node_01, init_node_02)
 
 # run the scheduler
 ok = sched.orchestrate()

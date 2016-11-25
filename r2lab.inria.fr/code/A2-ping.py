@@ -36,7 +36,7 @@ ping = SshJob(
 print("""---
 for troubleshooting: 
 ssh {}@{} ping -c1 google.fr
----""".format(gateway_username, gateway_hostname))
+---""".format(args.slice, gateway_hostname))
 
 # create an orchestration scheduler with this single job
 sched = Scheduler(ping)
