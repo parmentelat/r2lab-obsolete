@@ -41,14 +41,47 @@ You can check that this requirement is fulfilled by running
     $ python3 --version
     Python 3.5.1
 
+***
+
+## Installing `asyncssh`
+
+There is a core dependency to a library named `asyncssh`; this in turn
+requires binary extensions, so here's our receommendations to install
+this library.
+
+### Ubuntu
+
+Ubuntu pleasantly offers `asyncssh` as a native package, so no need to run pip3 here.
+
+Tested on Ubuntu-16
+
+    apt-get install python3-asyncssh
+
+### Fedora
+
+Fedora OTOH did not support asyncssh as oof fedora-24, so here's a - possibly non-exhaustive - list of dependencies that help building `asyncssh`
+
+Tested on fedora-23
+
+    dnf install redhat-rpm-config python3-cffi python3-devel openssl-devel
+    pip3 install asyncssh
+
+### macos
+
+It is harder to describe the list of dependencies on the MAC, let us know if you run into any trouble when running simply the following
+
+    pip3 install asyncssh
+
+***
+
 ## Installing `asynciojobs` and `apssh`
 
-
 You need to install these libraries, the recommended way is through
-`pip3` like this (if you're not using `virtualenv` or ` anaconda`, you
-might need to run these commands under `sudo`)
+`pip3` like this - if you're not using `virtualenv` or ` anaconda`, you
+might need to run these commands under `sudo`&nbsp;:
 
-    pip3 install asynciojobs apssh
+    pip3 install asynciojobs
+    pip3 install apssh
 
 Note that for upgrading to the latest release published on `pypi.org`, you need to run
 
@@ -57,9 +90,9 @@ Note that for upgrading to the latest release published on `pypi.org`, you need 
 You can check the installed versions like this
 
     $ python3 -c 'from asynciojobs import version; print(version.version)'
-    0.2.3
+    0.4.0
     $ python3 -c 'from apssh import version; print(version.version)'
-    0.2.17
+    0.4.0
 
 </div>
 
