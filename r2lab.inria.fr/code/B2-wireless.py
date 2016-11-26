@@ -1,141 +1,149 @@
 #!/usr/bin/env python3
 
-# for using print() in python3-style even in python2
-from __future__ import print_function
+from argparse import ArgumentParser
 
-# import nepi library and other required packages
-from nepi.execution.ec import ExperimentController
-from nepi.execution.resource import ResourceAction, ResourceState
-from nepi.util.sshfuncs import logger
+from asynciojobs import Scheduler
 
-# creating an ExperimentController (EC) to manage the experiment
-# the exp_id name should be unique for your experiment
-# it will be used on the various resources
-# to store results and similar functions
-ec = ExperimentController(exp_id="A5-ping")
+# also import the Run class
+from apssh import SshNode, SshJob, Run, RunString
 
-# we want to run a command right in the r2lab gateway
-# so we need to define ssh-related details for doing so
 gateway_hostname  = 'faraday.inria.fr'
+gateway_username  = 'onelab.inria.r2lab.tutorial'
 gateway_key       = '~/.ssh/onelab.private'
-# of course: you need to change this to describe your own slice
-gateway_username  = 'onelab.inria.mario.tutorial'
 
-# the names used for configuring the wireless network
-wifi_interface = 'wlan0'
-wifi_channel   = '4'
-wifi_name      = 'my-net'
-wifi_key       = '1234567890'
+# this time we want to be able to specify the slice on the command line
+parser = ArgumentParser()
+parser.add_argument("-s", "--slice", default=gateway_username,
+                    help="specify an alternate slicename, default={}"
+                         .format(gateway_username))
+args = parser.parse_args()
 
-# this time we cannot use DHCP, so we provide all the details
-# of the IP subnet manually
-wifi_netmask   = '24'
-wifi_ip_fit01  = '172.16.1.1'
-wifi_ip_fit02  = '172.16.1.2'
+# we create a SshNode object that holds the details of
+# the first-leg ssh connection to the gateway
 
-fit01 = ec.register_resource("linux::Node",
-                             username = 'root',
-                             hostname = 'fit01',
-                             gateway = gateway_hostname,
-                             gatewayUser = gateway_username,
-                             identity = gateway_key,
-                             cleanExperiment = True,
-                             cleanProcesses = True,
-                             autoDeploy = True)
+# remember to make sure the right ssh key is known to your ssh agent
+faraday = SshNode(hostname = gateway_hostname, username = args.slice)
 
-fit02 = ec.register_resource("linux::Node",
-                             username = 'root',
-                             hostname = 'fit02',
-                             gateway = gateway_hostname,
-                             gatewayUser = gateway_username,
-                             identity = gateway_key,
-                             cleanExperiment = True,
-                             cleanProcesses = True,
-                             autoDeploy = True)
+node1 = SshNode(gateway = faraday, hostname = "fit01", username = "root")
+node2 = SshNode(gateway = faraday, hostname = "fit02", username = "root")
 
-# define the wifi init script
-# that will be uploaded on the node
+check_lease = SshJob(
+    # checking the lease is done on the gateway
+    node = faraday,
+    # this means that a failure in any of the commands
+    # will cause the scheduler to bail out immediately
+    critical = True,
+    command = Run("rhubarbe leases --check"),
+)
 
-init_wlan_script = """\
-#!/bin/bash
-# Usage: $0 wifi_interface wifi_ip wifi_netmask wifi_channel wifi_name wifi_key
-wifi_interface=$1; shift
-wifi_channel=$1; shift
-wifi_name=$1; shift
-wifi_key=$1; shift
-wifi_ip=$1; shift
-wifi_netmask=$1; shift
+####################
+turn_on_wireless_script = """#!/bin/bash
+# this plain bash script will run on the remote machine
+# either sender or receiver
+# and is in charge of initializing a small ad-hoc network
 
-ip addr flush dev $wifi_interface
-ip link set $wifi_interface down
-iwconfig $wifi_interface mode ad-hoc
-iwconfig $wifi_interface channel $wifi_channel
-iwconfig $wifi_interface essid "$wifi_name"
-iwconfig $wifi_interface key $wifi_key
-ip link set $wifi_interface up
-ip addr add $wifi_ip/$wifi_netmask dev $wifi_interface
+# we expect the following arguments
+# 1. wireless driver name (iwlwifi or ath9k)
+# 2. IP-address/mask for that interface 
+# 3. the wifi network name to join
+# 4. the wifi frequency to use
+
+driver=$1; shift
+ifname=$1; shift
+ipaddr_mask=$1; shift
+netname=$1; shift
+freq=$1;   shift
+
+# load the r2lab utilities - code can be found here:
+# https://github.com/parmentelat/r2lab/blob/master/infra/user-env/nodes.sh
+source /root/r2lab/infra/user-env/nodes.sh
+
+turn-off-wireless
+
+echo loading module $driver
+modprobe $driver
+
+# some time for udev to trigger its rules
+sleep 1
+
+echo configuring interface $ifname
+# make sure to wipe down everything first so we can run again and again
+ip address flush dev $ifname
+ip link set $ifname down
+# configure wireless
+iw dev $ifname set type ibss
+ip link set $ifname up
+# set to ad-hoc mode
+iw dev $ifname ibss join $netname $freq
+ip address add $ipaddr_mask dev $ifname
+"""
+####################
+
+#### with the Intel card
+driver="iwlwifi"
+ifname="intel"
+#### with the Atheros card
+driver="ath9k"
+ifname="atheros"
+
+# setting up the data interface on both fit01 and fit02
+init_node_01 = SshJob(
+    node = node1,
+    required = check_lease,
+    command = RunString(
+        turn_on_wireless_script,
+        driver, ifname, "10.0.0.1/24", "foobar", 2412,
+#        verbose=True,
+    ))
+init_node_02 = SshJob(
+    node = node2,
+    required = check_lease,
+    command = RunString(
+        turn_on_wireless_script,
+        driver, ifname, "10.0.0.2/24", "foobar", 2412))
+
+####################
+repetitive_ping_script = """#!/bin/bash
+dest=$1; shift
+ping_options="$@"; shift
+
+for i in $(seq 20); do
+    echo -n $(date +%H:%M:%S) TEST $i " "
+    if ping -c1 -W1 $ping_options $dest >& /dev/null; then
+        echo OK
+        exit 0
+    else
+        echo KO
+    fi
+done
+
+exit 1
 """
 
-# in this tutorial we use an inline script (i.e. a python string)
-# this could as easily be stored in an external file of course
-# which is what is done in practice;
-# init_wlan_script = "./init-wlan.sh"
-# would work just as well
+# the command we want to run in faraday is as simple as it gets
+ping = SshJob(
+    node = node1,
+    required = (init_node_01, init_node_02),
+    # let us be more specific about what to run
+    # we will soon see other things we can do on an ssh connection
+    command = RunString(
+        repetitive_ping_script, '10.0.0.2', '-I', ifname,
+#        verbose=True,
+    ))
 
+# forget about the troubleshooting from now on
 
-# creating an application to
-# configure an ad-hoc network on node fit01
-# this time the command to run uses the shared shell script
-# that gets uploaded on the node thanks to the code= setting on the app
-# so we're left with calling this initscript with proper arguments
-# note that the uploaded script is always (the executable file)
-# in ${APP_HOME}/code
-cmd = \
-"${APP_HOME}/code {wifi_interface} {wifi_ip_fit01} {wifi_netmask}"
-"{wifi_channel} {wifi_name} {wifi_key}"
-.format(**locals())
+# we have 4 jobs to run this time
+sched = Scheduler(check_lease, ping, init_node_01, init_node_02)
 
-app_fit01 = ec.register_resource("linux::Application",
-                                 # to upload the initscript on the node; note that
-                                 # we could have used a local filename instead of a string
-                                 code = init_wlan_script,
-                                 command = cmd,
-                                 autoDeploy = True,
-                                 connectedTo = fit01)
-ec.wait_finished(app_fit01)
+# run the scheduler
+ok = sched.orchestrate()
 
-# ditto on fit02
-cmd = \
-"${APP_HOME}/code {wifi_interface} {wifi_ip_fit02} {wifi_netmask}"
-"{wifi_channel} {wifi_name} {wifi_key}"
-.format(**locals())
+# we say this is a success if the ping command succeeded
+# the result() of the SshJob is the value that the command
+# returns to the OS
+# so it's a success if this value is 0
+success = ok and ping.result() == 0
 
-app_fit02 = ec.register_resource("linux::Application", code = init_wlan_script,
-                                 command = cmd
-                                 autoDeploy = True,
-                                 connectedTo = fit02)
-ec.wait_finished(app_fit02)
-
-# creating an application to ping the wireless
-# interface of fit02 from fit01
-cmd = 'ping -c5 -I {} {}'.format(wifi_interface, wifi_ip_fit02)
-app1 = ec.register_resource("linux::Application",
-                            command = cmd,
-                            autoDeploy = True,
-                            connectedTo = fit01)
-ec.wait_finished(app1)
-
-# and the other way around
-cmd = 'ping -c5 -I {} {}'.format(wifi_interface, wifi_ip_fit01)
-app2 = ec.register_resource("linux::Application",
-                            command = cmd,
-                            autoDeploy = True,
-                            connectedTo = fit02)
-ec.wait_finished(app2)
-
-print ("--- INFO : experiment output on fit01:",
-       ec.trace(app1, "stdout"))
-print ("--- INFO : experiment output on fit02:",
-       ec.trace(app2, "stdout"))
-
-ec.shutdown()
+# return something useful to your OS
+exit(0 if success else 1)

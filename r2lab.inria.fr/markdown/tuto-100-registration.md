@@ -184,22 +184,47 @@ For example, in this tutorial we have used the following names:
 
 * Unix account: `onelab.inria.r2lab.tutorial`
 
-### your private key
+### ssh with your private key
 
 Remember [that we had stored the private key](javascript:open_tab('GETKEY')) in `~/Downloads/onelab.private`. 
 
-So we are ready to try all out - of course you will need to replace `your.actual.slice.name` here
+So we are ready to try it all out - of course you will need to replace `onelab.your.slice.name` here
 
     cd ~/Downloads
     chmod 600 onelab.private
-    ssh -i onelab.private your.actual.slice.name@faraday.inria.fr hostname
+    ssh -i onelab.private onelab.your.slice.name@faraday.inria.fr id
 
+This should run the `id` command on `faraday.inria.fr` and output something like this
 
+    $ ssh -i /dev/null onelab.inria.r2lab.tutorial@faraday.inria.fr id
+    uid=1102(onelab.inria.r2lab.tutorial) gid=1102(onelab.inria.r2lab.tutorial) groups=1102(onelab.inria.r2lab.tutorial)
+
+### Troubleshooting
+
+**Do not proceed** with this tutorial until this command works fine. When it does you can skip to the next section
+
+Here is a list of things to double check if it foes not:
+
+* xxx here a trouble shooting section
+
+### add your pricate key to the ssh agent
+
+xxx what is an agent; why is it useful
+
+reconcile this with tuto-300xxx
+
+Need to also
+
+* add key to ssh-agent
+
+* re-run sh with -i /dev/null this time
+
+xxx here
 
 In the next tutorial, we will [see in more details the available tools
 for manipulating the nodes](tuto-200-shell-tools.md#main).
       
-3 - Troubleshooting
+xxx here
 
 ### Troubleshooting
 

@@ -157,9 +157,10 @@ run [the tutorial in tab A1](javascript:open_tab('A1')).
 
 ### Objective
 
-Our first experiment code is designed to run on YOUR computer.
-From there we trigger a simple command on the R2lab
-gateway, that is to say `faraday.inria.fr`; namely we will simply ping the google server `google.fr` from `faraday`, as depicted below.
+Our first experiment code is designed to run on YOUR computer.  From
+there we trigger a simple command on the R2lab gateway, that is to say
+`faraday.inria.fr`; namely we will simply ping the google server
+`google.fr` from `faraday`, as depicted below.
 
 <center> <img src="/assets/img/A1.png" alt="a1" height="240px"></center>
 
@@ -193,17 +194,21 @@ You should be able to run this script as-is, except for the slice name
 that you will need to change manually in the code downloaded from the
 link just below the picture above.
 
-    $ ./A1-ping.py
+    $ python3 A1-ping.py
+    --- for troubleshooting:
+    ssh -i /dev/null onelab.inria.r2lab.tutorial@faraday.inria.fr ping -c1 google.fr
     ---
-    for troubleshooting:
-    ssh onelab.inria.r2lab.tutorial@faraday.inria.fr ping -c1 google.fr
-    ---
-    faraday.inria.fr:PING google.fr (216.58.198.3) 56(84) bytes of data.
-    faraday.inria.fr:64 bytes from mil04s03-in-f3.1e100.net (216.58.198.3): icmp_seq=1 ttl=55 time=9.76 ms
+    onelab.inria.r2lab.tutorial@faraday.inria.fr:========== Connected (direct)
+    onelab.inria.r2lab.tutorial@faraday.inria.fr:========== Authorization OK with user onelab.inria.r2lab.tutorial
+    faraday.inria.fr:========== Session started for ping -c1 google.fr
+    faraday.inria.fr:PING google.fr (216.58.209.227) 56(84) bytes of data.
+    faraday.inria.fr:64 bytes from par10s29-in-f3.1e100.net (216.58.209.227): icmp_seq=1 ttl=52 time=14.2 ms
     faraday.inria.fr:
     faraday.inria.fr:--- google.fr ping statistics ---
     faraday.inria.fr:1 packets transmitted, 1 received, 0% packet loss, time 0ms
-    faraday.inria.fr:rtt min/avg/max/mdev = 9.769/9.769/9.769/0.000 ms
+    faraday.inria.fr:rtt min/avg/max/mdev = 14.299/14.299/14.299/0.000 ms
+    faraday.inria.fr:========== Session ended for ping -c1 google.fr
+    onelab.inria.r2lab.tutorial@faraday.inria.fr:========== Connection lost None
     orchestrate - True
 
 ### Next
@@ -240,19 +245,21 @@ We now see a slightly different version of the same experiment, but
 
 ### Sample output
 
-So with all this in place you can now run the downloaded script for example like this, 
+So with all this in place you can now run the downloaded script; you
+will notice the disappearance of the verbose messages that gave
+details on the establishment of ssh connections and sessions, that you
+can now turn back on by adding `-v` or `--verbose` to the options
 
-    $ ./A2-ping.py --slice onelab.your.slice.name
+    $ python3 A2-ping.py -s onelab.your.slice.name
+    --- for troubleshooting:
+    ssh -i /dev/null onelab.your.slice.name@faraday.inria.fr ping -c1 google.fr
     ---
-    for troubleshooting:
-    ssh onelab.your.slice.name@faraday.inria.fr ping -c1 google.fr
-    ---
-    faraday.inria.fr:PING google.fr (216.58.198.35) 56(84) bytes of data.
-    faraday.inria.fr:64 bytes from mil04s04-in-f35.1e100.net (216.58.198.35): icmp_seq=1 ttl=55 time=9.79 ms
+    faraday.inria.fr:PING google.fr (216.58.209.227) 56(84) bytes of data.
+    faraday.inria.fr:64 bytes from par10s29-in-f3.1e100.net (216.58.209.227): icmp_seq=1 ttl=52 time=14.2 ms
     faraday.inria.fr:
     faraday.inria.fr:--- google.fr ping statistics ---
     faraday.inria.fr:1 packets transmitted, 1 received, 0% packet loss, time 0ms
-    faraday.inria.fr:rtt min/avg/max/mdev = 9.794/9.794/9.794/0.000 ms
+    faraday.inria.fr:rtt min/avg/max/mdev = 14.262/14.262/14.262/0.000 ms
 
 ### Next
 In [the next tutorial in tab A3](javascript:open_tab('A3')) we will see how to run commands in a node rather than on the gateway.
@@ -289,18 +296,23 @@ to the gateway, regardless of the number of nodes actually controlled.
 
 ### Sample output
 
-    $ ./A3-ping.py --slice onelab.your.slice.name
+    $ python3 A3-ping.py -v
+    --- for troubleshooting:
+    ssh -i /dev/null onelab.inria.r2lab.tutorial@faraday.inria.fr ssh root@fit01 ping -c1 google.fr
     ---
-    for troubleshooting:
-    ssh onelab.your.slice.name@faraday.inria.fr ssh root@fit01 ping -c1 google.fr
-    ---
-    fit01:PING google.fr (216.58.198.35) 56(84) bytes of data.
-    fit01:64 bytes from mil04s04-in-f35.1e100.net (216.58.198.35): icmp_seq=1 ttl=54 time=9.98 ms
+    onelab.inria.r2lab.tutorial@faraday.inria.fr:========== Connected (direct)
+    onelab.inria.r2lab.tutorial@faraday.inria.fr:========== Authorization OK with user onelab.inria.r2lab.tutorial
+    root@fit01:========== Connected (tunnelled)
+    root@fit01:========== Authorization OK with user root
+    fit01:========== Session started for ping -c1 google.fr
+    fit01:PING google.fr (216.58.209.227) 56(84) bytes of data.
+    fit01:64 bytes from par10s29-in-f3.1e100.net (216.58.209.227): icmp_seq=1 ttl=51 time=14.6 ms
     fit01:
     fit01:--- google.fr ping statistics ---
     fit01:1 packets transmitted, 1 received, 0% packet loss, time 0ms
-    fit01:rtt min/avg/max/mdev = 9.987/9.987/9.987/0.000 ms
-
+    fit01:rtt min/avg/max/mdev = 14.657/14.657/14.657/0.000 ms
+    fit01:========== Session ended for ping -c1 google.fr
+    root@fit01:========== Connection lost None
 
 ### Next
 
@@ -359,33 +371,19 @@ the scheduler then bails out immediately.
 
 ### Sample output
 
-    $ ./A4-ping.py -s onelab.your.slice.name
-    ---
-    for troubleshooting:
-    ssh onelab.your.slice.name@faraday.inria.fr ssh root@fit01 ping -c1 google.fr
-    ---
-    faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
-    fit01:PING google.fr (216.58.198.3) 56(84) bytes of data.
-    fit01:64 bytes from mil04s03-in-f3.1e100.net (216.58.198.3): icmp_seq=1 ttl=54 time=10.0 ms
+    $ python3 A4-ping.py -s onelab.your.slice.name
+    faraday.inria.fr:Checking current reservation for onelab.your.slice.name OK
+    fit01:PING google.fr (216.58.209.227) 56(84) bytes of data.
+    fit01:64 bytes from par10s29-in-f3.1e100.net (216.58.209.227): icmp_seq=1 ttl=51 time=14.5 ms
     fit01:
     fit01:--- google.fr ping statistics ---
     fit01:1 packets transmitted, 1 received, 0% packet loss, time 0ms
-    fit01:rtt min/avg/max/mdev = 10.049/10.049/10.049/0.000 ms
+    fit01:rtt min/avg/max/mdev = 14.593/14.593/14.593/0.000 ms
 
+Or, when using a slice that is valid but that does not have the reservation right now:
 
-Or
-
-    $ ./A4-ping.py -s onelab.inria.oai.oai_build
-    ---
-    for troubleshooting:
-    ssh onelab.inria.r2lab.tutorial@faraday.inria.fr ssh root@fit01 ping -c1 google.fr
-    ---
+    $ python3 A4-ping.py -s onelab.inria.oai.oai_build
     faraday.inria.fr:Checking current reservation for onelab.inria.oai.oai_build WARNING: Access currently denied
-
-  <center>
-  <!-- no pic needed here
-    <img src="/assets/img/A4.png" alt="a4" height="240px"><br/> -->
-  </center>
 
 ### Next
 
@@ -400,8 +398,10 @@ Let us now see [how to use other network interfaces](javascript:open_tab('A5')).
 
 This time, we are going to run the same experiment, but using the `data` network.
 
-Each R2lab node has 4 network interfaces (not counting the special `reboot` interface, that can reset and reboot the node, but that is not visible from a linux kernel).
-With the images that we offer, here is how these 4 four interfaces are managed:
+Each R2lab node has 4 network interfaces (not counting the special
+`reboot` interface, that can reset and reboot the node, but that is
+not visible from a linux kernel).  With the images that we offer, here
+is how these 4 four interfaces are managed:
 
 * `control` is
   * a wired interface, it is the one that you actually use when you ssh into the node for the first time;

@@ -4,26 +4,30 @@ from argparse import ArgumentParser
 
 from asynciojobs import Scheduler
 
-# also import the Run class
 from apssh import SshNode, SshJob, Run
 
+##########
 gateway_hostname  = 'faraday.inria.fr'
 gateway_username  = 'onelab.inria.r2lab.tutorial'
-gateway_key       = '~/.ssh/onelab.private'
+verbose_ssh = False
 
-# this time we want to be able to specify the slice on the command line
+# this time we want to be able to specify username and verbose_ssh
 parser = ArgumentParser()
 parser.add_argument("-s", "--slice", default=gateway_username,
                     help="specify an alternate slicename, default={}"
                          .format(gateway_username))
+parser.add_argument("-v", "--verbose-ssh", default=False, action='store_true',
+                    help="run ssh in verbose mode")
 args = parser.parse_args()
 
-# we create a SshNode object that holds the details of
-# the first-leg ssh connection to the gateway
+gateway_username = args.slice
+verbose_ssh = args.verbose_ssh
 
-# remember to make sure the right ssh key is known to your ssh agent
-faraday = SshNode(hostname = gateway_hostname, username = args.slice)
+##########
+faraday = SshNode(hostname = gateway_hostname, username = gateway_username,
+                  verbose = verbose_ssh)
 
+##########
 # the command we want to run in faraday is as simple as it gets
 ping = SshJob(
     node = faraday,
@@ -32,12 +36,13 @@ ping = SshJob(
     command = Run('ping', '-c1',  'google.fr'),
 )
 
+##########
 # how to run the same directly with ssh - for troubleshooting
-print("""---
-for troubleshooting: 
-ssh {}@{} ping -c1 google.fr
----""".format(args.slice, gateway_hostname))
+print("""--- for troubleshooting: 
+ssh -i /dev/null {}@{} ping -c1 google.fr
+---""".format(gateway_username, gateway_hostname))
 
+##########
 # create an orchestration scheduler with this single job
 sched = Scheduler(ping)
 
