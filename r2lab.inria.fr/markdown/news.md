@@ -9,6 +9,9 @@ skip_news: yes
 ## 2016
 ****
 
+### November 30 2016
+
+* All tutorials now point at `nepi-ng` instead of deprecated `nepi`
 
 ### November 9 2016
 

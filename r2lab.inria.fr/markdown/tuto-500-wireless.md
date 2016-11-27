@@ -87,7 +87,7 @@ step.
 
 <center>Download the <a href="/code/B1-wireless.py" download target="_blank">B1 experiment</a> code</center>
 
-<< codediff a1 A5-ping.py B1-wireless.py >>
+<< codeview B1 A5-ping.py B1-wireless.py >>
 
 ### Sample output
 
@@ -105,7 +105,7 @@ step.
 
 <center>Download the <a href="/code/B2-wireless.py" download target="_blank">B2 experiment</a> code</center>
 
-<< codediff a2 B1-wireless.py B2-wireless.py >>
+<< codeview B2 B1-wireless.py B2-wireless.py >>
 
 ### Sample output
 

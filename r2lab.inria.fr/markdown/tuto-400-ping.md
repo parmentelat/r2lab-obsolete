@@ -188,11 +188,7 @@ This example introduces the following classes:
 
 <center>Download the <a href="/code/A1-ping.py" download target="_blank">A1 experiment</a> code</center>
 
-<!-- xxx looks like codediff with a single file is a bit broken,
-     I can't see the first charater on each line in my own etup at least
-     this only takes out the line numbers that we don't care so much about anyways
-     -->
-<< codediff a1 A1-ping.py A1-ping.py >>
+<< codeview A1 A1-ping.py >>
 
 ### Sample output
 
@@ -247,7 +243,7 @@ We now see a slightly different version of the same experiment, but
 ### The code
 
   <center> Download the <a href="/code/A2-ping.py" download target="_blank">A2 experiment</a> code </center>
-<< codediff a2 A1-ping.py A2-ping.py >>
+<< codeview A2 A1-ping.py A2-ping.py >>
 
 ### Sample output
 
@@ -298,7 +294,7 @@ to the gateway, regardless of the number of nodes actually controlled.
 
 <center>Download the <a href="/code/A3-ping.py" download target="_blank">A3 experiment</a> code</center>
 
-<< codediff a3 A2-ping.py A3-ping.py >>
+<< codeview A3 A2-ping.py A3-ping.py >>
 
 ### Sample output
 
@@ -373,7 +369,7 @@ the scheduler then bails out immediately.
 
 <center>Download the <a href="/code/A4-ping.py" download target="_blank">A4 experiment</a> code</center>
 
-<< codediff a4 A3-ping.py A4-ping.py >>
+<< codeview A4 A3-ping.py A4-ping.py >>
 
 ### Sample output
 
@@ -452,7 +448,7 @@ Here is what deserves to be outlined in the code below
 
 <center>Download the <a href="/code/A5-ping.py" download target="_blank">A5 experiment</a> code</center>
 
-<< codediff a5 A4-ping.py A5-ping.py >>
+<< codeview A5 A4-ping.py A5-ping.py >>
 
 ### Sample output
 

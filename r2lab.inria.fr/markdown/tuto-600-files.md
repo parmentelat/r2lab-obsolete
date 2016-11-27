@@ -83,7 +83,7 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
     Download the <a href="/code/B1-send-file.py" download target="_blank">B1 experiment</a> code
   </center>
 
-<< codediff b1s B1-send-file.py >>
+<< codeview C1 xxx.py >>
 </div>
 
 <!------------ C2 ------------>
@@ -100,7 +100,7 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
     Download the <a href="/code/B2-send-file.py" download target="_blank">B2 experiment</a> code
   </center>
 
-<< codediff b2s B1-send-file.py B2-send-file.py >>
+<< codeview C2 B1-send-file.py B2-send-file.py >>
 </div>
 
 <!------------ WRAPUP ------------>

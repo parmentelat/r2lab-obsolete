@@ -110,15 +110,19 @@ def resolve_tags(input):
     return input
 
 ####################
-### # we replace << with &lt;&lt;
-### # and        >> with &gt;&gt;
-### # because this process takes place on the output of markdown
-### def post_markdown(pattern):
-###     return pattern\
-###         .replace("<<", "&lt;&lt;")\
-###         .replace(">>", "&gt;&gt;")
+# when searching for our tags,
+# because this happens **after** markdown has triggered
+# we can typically find:
+# &lt;<  instead of << - and sometimes even <p>&lt;
+# and
+# >&gt; or >&gt;</p> instead of >>
+def post_markdown(pattern):
+    return pattern\
+        .replace("<<", "(<p>)?(&lt;|<)(&lt;|<)")\
+        .replace(">>", "(&gt;|>)(&gt;|>)(</p>)?")
 
-re_include = re.compile(r'<<\s*include\s+(?P<file>\S+)\s*>>\s*\n')
+re_include = re.compile(post_markdown(
+    r'<<\s*include\s+(?P<file>\S+)\s*>>\s*\n'))
 def resolve_includes(markdown):
     """
     Looks for << include file >> tags and resolves them
@@ -128,13 +132,14 @@ def resolve_includes(markdown):
     for match in re_include.finditer(markdown):
         filename = match.group('file')
         resolved = resolved + markdown[end:match.start()]
-        resolved += included_file_body(filename, "include")
+        resolved += implement_include(filename, "include")
         end = match.end()
     resolved = resolved + markdown[end:]
     # print("resolve_includes <- {} chars".format(len(resolved)))
     return resolved
 
-re_codediff = re.compile(r'<<\s*codediff\s+(?P<id>\S+)\s+(?P<file1>\S+)(\s+(?P<file2>\S+))\s*>>\s*\n')
+re_codediff = re.compile(post_markdown(
+    r'<<\s*codediff\s+(?P<id>\S+)\s+(?P<file1>\S+)(\s+(?P<file2>\S+))\s*>>\s*\n'))
 def resolve_codediffs(markdown):
     """
     looks for << codediff id file1 file2 >> for inline inclusion and differences
@@ -168,7 +173,8 @@ def resolve_codediffs(markdown):
 # safely stay away from that for now...
 # 
 
-re_codeview = re.compile(r'<<\s*codeview\s+(?P<id>\S+)\s+(?P<file1>\S+)(\s+(?P<file2>\S+))?\s*>>\s*\n')
+re_codeview = re.compile(post_markdown(
+    r'<<\s*codeview\s+(?P<id>\S+)\s+(?P<file1>\S+)(\s+(?P<file2>\S+))?\s*>>\s*\n'))
 def resolve_codeviews(markdown):
     """
     looks for << codeview id file1 [file2] >> and shows a nav-pills bar
@@ -191,15 +197,15 @@ def resolve_codeviews(markdown):
                       
 ####################
 # could not figure out how to do this with the template engine system....
-def included_file_body(f, tag):
+def implement_include(f, tag):
     if not f:
         return ""
     for path in include_paths:
         p = os.path.join(settings.BASE_DIR, path, f)
         try:
-            # print("included_file_body : trying", p)
+            # print("implement_include : trying", p)
             with open(p) as i:
-                # print("included_file_body: using p=", p)
+                # print("implement_include: using p=", p)
                 return i.read()
         except:
             pass
@@ -212,7 +218,7 @@ def implement_codediff(id, f1, f2, lang='python'):
     the html code to generate for one codediff
     """
 
-    i1, i2 = included_file_body(f1, 'codediff'), included_file_body(f2, 'codediff')
+    i1, i2 = implement_include(f1, 'codediff'), implement_include(f2, 'codediff')
 
     ########## two files must be provided
     result = ""
@@ -239,48 +245,60 @@ def implement_codeview(id, f1, f2, lang='python'):
     """
 
     result = ""
-    result += "WARNING : codeview is known to be BROKEN !"
+
+    # the part to start up with
+    # only f1 : start with plain
+    # f1 & f2 : start with diff
+    if not f2:
+        plain_header_class = 'active'
+        diff_header_class  = ''
+        plain_body_class   = 'in active'
+        diff_body_class    = ''
+    else:
+        plain_header_class = ''
+        diff_header_class  = 'active'
+        plain_body_class   = ''
+        diff_body_class    = 'in active'
 
     ########## the nav pills
     # only one file:
     if not f2:
         result += """
 <ul class="nav nav-pills">
-<li class="active"><a href="#view-{id}-plain">plain {f1}</a></li>
+<li class="{plain_header_class}"><a href="#view-{id}-plain">{f1}</a></li>
 </ul>
-""".format(id=id, f1=f1)
+""".format(**locals())
     else:
         result += """
 <ul class="nav nav-pills">
-<li class="active"><a href="#view-{id}-plain">plain {f2}</a></li>
-<li><a href="#view-{id}-diff">diff {f1} {f2}</a></li>
+<li class="{plain_header_class}"><a href="#view-{id}-plain">{f2}</a></li>
+<li class="{diff_header_class}"><a href="#view-{id}-diff">{f1} ➾ {f2}</a></li>
 </ul>
-""".format(id=id, f1=f1, f2=f2)
+""".format(**locals())
 
     ########## the contents
     result += """
 <div class="tab-content" markdown="0">
-<div id="view-{id}-plain" class="tab-pane fade in active" markdown="0">
-<pre>
-<code>
-""".format(id=id)
+<div id="view-{id}-plain" class="tab-pane fade {plain_body_class}" markdown="0">
+""".format(**locals())
 
     if not f2:
-        result += implement_codediff('plain-'+id, f1, f1)
+        result += "<pre>\n"
+        result += implement_include(f1, "codeview")
+        result += "</pre>\n"
     else:
         result += implement_codediff('plain-'+id, f2, f2)
         
 
     result += """
-</code>
 </pre>
-</div>""".format(id=id)
+</div>""".format(**locals())
 
     if f2:
-        result += """<div id="view-{id}-diff" class="tab-pane fade">"""\
-                              .format(id=id)
+        result += """<div id="view-{id}-diff" class="tab-pane fade {diff_body_class}">"""\
+                              .format(**locals())
         result += implement_codediff('diff-' + id, f1, f2)
-        result += "</div>".format(id=id)
+        result += "</div>".format(**locals())
 
     result += "</div><!-- pills targets-->"
     return result
@@ -301,13 +319,13 @@ def markdown_page(request, markdown_file, extra_metavars={}):
     logger.info("Rendering markdown page {}".format(markdown_file))
     try:
         markdown_file = normalize(markdown_file)
-        metavars, markdown = parse(markdown_file)
         ### fill in metavars: 'title', 'html_from_markdown',
         # and any other defined in header
-        # handle our tags
-        markdown = resolve_tags(markdown)
+        metavars, markdown = parse(markdown_file)
         # convert markdown
         html = markdown_module.markdown(markdown, extras=['markdown-in-html'])
+        # handle our tags
+        html = resolve_tags(html)
         # and mark safe to prevent further escaping
         metavars['html_from_markdown'] = mark_safe(html)
         # set default for the 'title' metavar if not specified in header

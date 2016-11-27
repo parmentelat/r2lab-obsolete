@@ -47,7 +47,7 @@ Fedoras for all users.
     <img src="/assets/img/C1.png" alt="c1"><br>
     Download the <a href="/code/C1-load.py" download target="_blank">C1 experiment</a> code
   </center>
-<< codediff c1 C1-load.py >>
+<< codeview D1 D1-load.py >>
 
 </div>
 
