@@ -48,11 +48,11 @@ init_node_02 = SshJob(node = node2, command = Run("data-up"), required = check_l
 # the command we want to run in faraday is as simple as it gets
 ping = SshJob(
     node = node1,
+    # no need to wait for check_release, since both init_node jobs already do
+    required = (init_node_01, init_node_02),
     # let's be more specific about what to run
     # we will soon see other things we can do on an ssh connection
     commands = Run('ping', '-c1', '-I', 'data', 'data02'),
-    # this says that we wait for check_lease to finish before we start ping
-    required = (init_node_01, init_node_02),
 )
 
 ##########

@@ -43,11 +43,11 @@ check_lease = SshJob(
 # the command we want to run in faraday is as simple as it gets
 ping = SshJob(
     node = node1,
+    # this says that we wait for check_lease to finish before we start ping
+    required = check_lease,
     # let's be more specific about what to run
     # we will soon see other things we can do on an ssh connection
     command = Run('ping', '-c1',  'google.fr'),
-    # this says that we wait for check_lease to finish before we start ping
-    required = check_lease,
 )
 
 ##########

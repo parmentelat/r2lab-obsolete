@@ -52,8 +52,8 @@ the following locations :
 
 * as well as [this helpful page on how to use `iw` if you were more
   familiar with `iwconfig` that is now considered
-  obsolete](https://wireless.wiki.kernel.org/en/users/documentation/iw/replace-iwconfig)
-  - much like `ip` has now replaced `ifconfig`.
+  obsolete](https://wireless.wiki.kernel.org/en/users/documentation/iw/replace-iwconfig) -
+  much like `ip` has now replaced `ifconfig`.
 
 ### `nepi-ng`
 

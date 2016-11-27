@@ -4,39 +4,34 @@ from argparse import ArgumentParser
 
 from asynciojobs import Scheduler
 
-# also import the Run class
-# also import the RunString class, that let's us run
-# an inline script, i.e. defined as a python string 
 from apssh import SshNode, SshJob, Run, RunString
 
+##########
 gateway_hostname  = 'faraday.inria.fr'
 gateway_username  = 'onelab.inria.r2lab.tutorial'
-gateway_key       = '~/.ssh/onelab.private'
+verbose_ssh = False
 
-#### with the Intel card
-driver="iwlwifi"
-ifname="intel"
-#### with the Atheros card
-# just comment these 2 lines to use the intel cards on both nodes
-driver="ath9k"
-ifname="atheros"
-
-# this time we want to be able to specify the slice on the command line
 parser = ArgumentParser()
 parser.add_argument("-s", "--slice", default=gateway_username,
                     help="specify an alternate slicename, default={}"
                          .format(gateway_username))
+parser.add_argument("-v", "--verbose-ssh", default=False, action='store_true',
+                    help="run ssh in verbose mode")
 args = parser.parse_args()
 
-# we create a SshNode object that holds the details of
-# the first-leg ssh connection to the gateway
+gateway_username = args.slice
+verbose_ssh = args.verbose_ssh
 
-# remember to make sure the right ssh key is known to your ssh agent
-faraday = SshNode(hostname = gateway_hostname, username = args.slice)
+##########
+faraday = SshNode(hostname = gateway_hostname, username = gateway_username,
+                  verbose = verbose_ssh)
 
-node1 = SshNode(gateway = faraday, hostname = "fit01", username = "root")
-node2 = SshNode(gateway = faraday, hostname = "fit02", username = "root")
+node1 = SshNode(gateway = faraday, hostname = "fit01", username = "root",
+                verbose = verbose_ssh)
+node2 = SshNode(gateway = faraday, hostname = "fit02", username = "root",
+                verbose = verbose_ssh)
 
+##########
 check_lease = SshJob(
     # checking the lease is done on the gateway
     node = faraday,
@@ -45,6 +40,14 @@ check_lease = SshJob(
     critical = True,
     command = Run("rhubarbe leases --check"),
 )
+
+#### with the Intel card
+driver="iwlwifi"
+ifname="intel"
+#### with the Atheros card
+# just comment these 2 lines to use the intel cards on both nodes
+driver="ath9k"
+ifname="atheros"
 
 ####################
 # This is our own brewed script for setting up a wifi network
@@ -121,9 +124,8 @@ ping = SshJob(
 #        verbose=True,
     ))
 
-# forget about the troubleshooting from now on
-
-# we have 4 jobs to run this time
+##########
+# our orchestration scheduler has 4 jobs to run this time
 sched = Scheduler(check_lease, ping, init_node_01, init_node_02)
 
 # run the scheduler
