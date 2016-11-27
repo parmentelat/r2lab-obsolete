@@ -224,6 +224,17 @@ xxx here
 In the next tutorial, we will [see in more details the available tools
 for manipulating the nodes](tuto-200-shell-tools.md#main).
       
+it means that you
+are not properly registered with the testbed. In this case, please
+make sure that
+
+* you have obtained an account and a project at the Onelab portal
+* you have associated the R2lab meta-node named `37-nodes` to your
+  project in the Onelab resources page
+* you have downloaded the private key from Onelab, and installed it in `~/.ssh/onelab.private` with proper permissions (typically `chmod 600`)
+
+Feel free to contact us on [the R2lab users mailinglist fit-r2lab-user@inria.fr](mailto:fit-r2lab-user@inria.fr) if none of this is helpful.
+
 xxx here
 
 ### Troubleshooting

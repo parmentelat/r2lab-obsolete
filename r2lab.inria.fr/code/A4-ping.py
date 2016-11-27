@@ -50,8 +50,6 @@ ping = SshJob(
     required = check_lease,
 )
 
-########## let's forget about troubleshooting from now on
-
 ##########
 # create an orchestration scheduler with these 2 jobs
 sched = Scheduler(check_lease, ping)

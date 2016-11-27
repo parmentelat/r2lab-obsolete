@@ -23,8 +23,7 @@ skip_header: True
 <div id="contents" class="tab-content" markdown="1">
 
 <!------------ INTRO ------------>
-<div id="INTRO" class="tab-pane fade in active" markdown="1">
-<br>
+<div id="INTRO" class="tab-pane fade in active">
 
 ### Presentation
 
@@ -62,27 +61,34 @@ as follows:
 * click once in a free slot to create a reservation
 * drag a reservation to change it
 * double click on a reservation to cancel it
-* when you belong in several slices, it can also be useful to drag a slice from the left hand side list right into the calendar. Note that the *current* slice is the one with a back arrow; it is the one that is used when you use single click to create a reservation.
+* when you belong in several slices, it can also be useful to drag a
+  slice from the left hand side list right into the calendar. Note
+  that the *current* slice is the one with a back arrow; it is the one
+  that is used when you use single click to create a reservation.
 
-The code in this tutorial assumes you have a slice named `onelab.inria.r2lab.tutorial`, which you will need of course to replace with your actual slice name when trying to run the code yourself.
+The code in this tutorial assumes you have a slice named
+`onelab.inria.r2lab.tutorial`, which you will need of course to
+replace with your actual slice name when trying to run the code
+yourself.
 
 ### Loading images
 
-For loading the images manually on the 2 nodes needed here, please do this (again make sure to use **your slice name** instead of `onelab.inria.r2lab.tutorial`)
+For loading the images manually on the 2 nodes needed here, please do
+this (as usual, make sure to use **your slice name** instead of
+`onelab.your.slice.name`)
 
 ```
-ssh -i ~/.ssh/onelab.private onelab.inria.r2lab.tutorial@faraday.inria.fr
+ssh -i ~/.ssh/onelab.private onelab.your.slice.name@faraday.inria.fr
 ```
 
-If this results in a `Permission denied` message, it means that you are not properly registered with the testbed. In this case, please make sure that
-* you have obtained an account and a project at the Onelab portal
-* you have associated the R2lab meta-node named `37-nodes` to your project in the Onelab resources page
-* you have downloaded the private key from Onelab, and installed it in `~/.ssh/onelab.private` with proper permissions (typically `chmod 600`)
-
-Feel free to contact us on [the R2lab users mailinglist fit-r2lab-user@inria.fr](mailto:fit-r2lab-user@inria.fr) if none of this is helpful.
+If this results in a `Permission denied` message, go [back to this
+page](tuto-100-registration.md#ACCESS) for troubleshooting your
+access, before you can proceed.
 
 ***
-Once logged in faraday, type the following commands, which were explained [in the previous tutorial](tuto-200-shell-tools.md):
+
+Once logged in faraday, type the following commands, which were
+explained [in the previous tutorial](tuto-200-shell-tools.md):
 
     # it's always a good idea to check you currently own the reservation 
     rleases --check
@@ -100,10 +106,10 @@ nodes, is going to take a couple of minutes. Here's what your output
 should look like
 
 
-    onelab.inria.r2lab.tutorial@faraday:~$ rleases --check
-    Checking current reservation for onelab.inria.r2lab.tutorial OK
+    onelab.your.slice.name@faraday:~$ rleases --check
+    Checking current reservation for onelab.your.slice.name OK
     
-    onelab.inria.r2lab.tutorial@faraday:~$ all-off
+    onelab.your.slice.name@faraday:~$ all-off
     reboot05:already off
     reboot19:already off
     reboot28:already off
@@ -119,11 +125,11 @@ should look like
     Broadcasting: Intent { act=android.intent.action.AIRPLANE_MODE (has extras) }
     Broadcast completed: result=0
     
-    onelab.inria.r2lab.tutorial@faraday:~$ n 1 2
+    onelab.your.slice.name@faraday:~$ n 1 2
     export NODES="fit01 fit02"
     export NBNODES=2
     
-    onelab.inria.r2lab.tutorial@faraday:~$ rload
+    onelab.your.slice.name@faraday:~$ rload
     16:12:42 - +000s: Selection: fit01 fit02
     16:12:42 - +000s: Loading image /var/lib/rhubarbe-images/default.ndz
     16:12:42 - +000s: AUTH: checking for a valid lease
@@ -141,7 +147,7 @@ should look like
     16:13:44 - +062s: fit02 reboot = Sending message 'reset' to CMC reboot02
     16:13:46 - +064s: stopped <frisbeed@234.5.6.1:10001 on default.ndz at 500 Mibps>
     
-    onelab.inria.r2lab.tutorial@faraday:~$ rwait
+    onelab.your.slice.name@faraday:~$ rwait
     <Node fit01>:ssh OK
     <Node fit02>:ssh OK
 
@@ -157,7 +163,7 @@ run [the tutorial in tab A1](javascript:open_tab('A1')).
 
 ### Objective
 
-Our first experiment code is designed to run on YOUR computer.  From
+Our first experiment code is designed to run on YOUR computer. From
 there we trigger a simple command on the R2lab gateway, that is to say
 `faraday.inria.fr`; namely we will simply ping the google server
 `google.fr` from `faraday`, as depicted below.
@@ -196,10 +202,10 @@ link just below the picture above.
 
     $ python3 A1-ping.py
     --- for troubleshooting:
-    ssh -i /dev/null onelab.inria.r2lab.tutorial@faraday.inria.fr ping -c1 google.fr
+    ssh -i /dev/null onelab.your.slice.name@faraday.inria.fr ping -c1 google.fr
     ---
-    onelab.inria.r2lab.tutorial@faraday.inria.fr:========== Connected (direct)
-    onelab.inria.r2lab.tutorial@faraday.inria.fr:========== Authorization OK with user onelab.inria.r2lab.tutorial
+    onelab.your.slice.name@faraday.inria.fr:========== Connected (direct)
+    onelab.your.slice.name@faraday.inria.fr:========== Authorization OK with user onelab.your.slice.name
     faraday.inria.fr:========== Session started for ping -c1 google.fr
     faraday.inria.fr:PING google.fr (216.58.209.227) 56(84) bytes of data.
     faraday.inria.fr:64 bytes from par10s29-in-f3.1e100.net (216.58.209.227): icmp_seq=1 ttl=52 time=14.2 ms
@@ -208,7 +214,7 @@ link just below the picture above.
     faraday.inria.fr:1 packets transmitted, 1 received, 0% packet loss, time 0ms
     faraday.inria.fr:rtt min/avg/max/mdev = 14.299/14.299/14.299/0.000 ms
     faraday.inria.fr:========== Session ended for ping -c1 google.fr
-    onelab.inria.r2lab.tutorial@faraday.inria.fr:========== Connection lost None
+    onelab.your.slice.name@faraday.inria.fr:========== Connection lost None
     orchestrate - True
 
 ### Next
@@ -298,10 +304,10 @@ to the gateway, regardless of the number of nodes actually controlled.
 
     $ python3 A3-ping.py -v
     --- for troubleshooting:
-    ssh -i /dev/null onelab.inria.r2lab.tutorial@faraday.inria.fr ssh root@fit01 ping -c1 google.fr
+    ssh -i /dev/null onelab.your.slice.name@faraday.inria.fr ssh root@fit01 ping -c1 google.fr
     ---
-    onelab.inria.r2lab.tutorial@faraday.inria.fr:========== Connected (direct)
-    onelab.inria.r2lab.tutorial@faraday.inria.fr:========== Authorization OK with user onelab.inria.r2lab.tutorial
+    onelab.your.slice.name@faraday.inria.fr:========== Connected (direct)
+    onelab.your.slice.name@faraday.inria.fr:========== Authorization OK with user onelab.your.slice.name
     root@fit01:========== Connected (tunnelled)
     root@fit01:========== Authorization OK with user root
     fit01:========== Session started for ping -c1 google.fr
