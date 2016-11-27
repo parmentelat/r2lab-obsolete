@@ -2,7 +2,7 @@ title: nepi-ng - wireless
 tab: tutorial
 skip_header: True
 
-<script src="/assets/r2lab/open_tab.js"></script>
+<script src="/assets/r2lab/open-tab.js"></script>
 <script src="/assets/js/diff.js"></script>
 <script src="/assets/r2lab/r2lab-diff.js"></script>
 <style>@import url("/assets/r2lab/r2lab-diff.css")</style>
