@@ -21,6 +21,7 @@ unalias ls 2> /dev/null
 doc-nodes gitup "updates /root/r2lab from git repo (as well as OAI repos if found)"
 git_repos="/root/r2lab /root/openair-cn /root/openairinterface5g"
 function gitup() {
+    local repo
     [[ -n "$@" ]] && repos="$@" || repos="$git_repos"
     for repo in $repos; do
 	[ -d $repo ] || continue;
@@ -69,9 +70,9 @@ doc-nodes-sep
 doc-nodes r2lab-id "returns id in the range 01-37; adjusts hostname if needed"
 function r2lab-id() {
     # when hostname is correctly set, e.g. fit16
-    fitid=$(hostname)
-    id=$(sed -e s,fit,, <<< $fitid)
-    origin="from hostname"
+    local fitid=$(hostname)
+    local id=$(sed -e s,fit,, <<< $fitid)
+    local origin="from hostname"
     if [ "$fitid" == "$id" ]; then
 	# sample output
 	#inet 192.168.3.16/24 brd 192.168.3.255 scope global control
@@ -89,11 +90,12 @@ function r2lab-id() {
     echo $id
 }    
 
-doc-nodes data-up "turn up the data interface; returns the interface name (should be data)"
+doc-nodes turn-on-data "turn up the data interface; returns the interface name (should be data)"
 # should maybe better use wait-for-interface-on-driver e1000e
 data_ifnames="data"
-# can be used with ifname=$(data-up)
-function data-up() {
+# can be used with ifname=$(turn-on-data)
+function turn-on-data() {
+    local ifname
     for ifname in $data_ifnames; do
 	ip addr sh dev $ifname >& /dev/null && {
 	    ip link show $ifname | grep -q UP || {
@@ -109,20 +111,64 @@ function data-up() {
 doc-nodes list-interfaces "list the current status of all interfaces"
 function list-interfaces () {
     set +x
+    local f
     for f in /sys/class/net/*; do
-	dev=$(basename $f)
-	driver=$(readlink $f/device/driver/module)
+	local dev=$(basename $f)
+	local driver=$(readlink $f/device/driver/module)
 	[ -n "$driver" ] && driver=$(basename $driver)
-	addr=$(cat $f/address)
-	operstate=$(cat $f/operstate)
-	flags=$(cat $f/flags)
+	local addr=$(cat $f/address)
+	local operstate=$(cat $f/operstate)
+	local flags=$(cat $f/flags)
 	printf "%10s [%s]: %10s flags=%6s (%s)\n" "$dev" "$addr" "$driver" "$flags" "$operstate"
+    done
+}
+
+# we can only list the ones that are turned on, unless the ifnames are
+# provided on the command line
+doc-nodes list-wireless "list currently available wireless interfaces"
+function list-wireless () {
+    local ifnames
+    if [[ -n "$@" ]]; then
+	if [ "$1" == "-a" ]; then
+	    ifnames="intel atheros"
+	else
+	    ifnames="$@"
+	fi
+    else
+	ifnames=""
+	local w
+	for w in /sys/class/net/*/wireless; do
+	    ifnames="$ifnames $(basename $(dirname $w))"
+	done
+    fi
+    local ifname
+    for ifname in $ifnames; do
+	iw dev $ifname info
+	iw dev $ifname link
+    done
+}
+
+doc-nodes turn-off-wireless "rmmod both wireless drivers from the kernel"
+function turn-off-wireless() {
+    local driver
+    for driver in iwlwifi ath9k; do
+	local _found=$(find-interface-by-driver $driver)
+	if [ -n "$_found" ]; then
+	    >&2 echo "turn-off-wireless: shutting down device $_found"
+	    ip link set down dev $_found
+	else
+	    >&2 echo "turn-off-wireless: driver $driver not used";
+	fi
+	lsmod | grep -q "^${driver} " && {
+	    >&2 echo "turn-off-wireless: removing driver $driver"
+	    modprobe -q -r $driver
+	}
     done
 }
 
 doc-nodes details-on-interface "gives extensive details on one interface"
 function details-on-interface () {
-    dev=$1; shift
+    local dev=$1; shift
     echo ==================== ip addr sh $dev
     ip addr sh $dev
     echo ==================== ip link sh $dev
@@ -136,10 +182,11 @@ function details-on-interface () {
 doc-nodes find-interface-by-driver "returns first interface bound to given driver"
 function find-interface-by-driver () {
     set +x
-    search_driver=$1; shift
+    local search_driver=$1; shift
+    local f
     for f in /sys/class/net/*; do
-	_if=$(basename $f)
-	driver=$(readlink $f/device/driver/module)
+	local _if=$(basename $f)
+	local driver=$(readlink $f/device/driver/module)
 	[ -n "$driver" ] && driver=$(basename $driver)
 	if [ "$driver" == "$search_driver" ]; then
 	    echo $_if
@@ -152,7 +199,7 @@ function find-interface-by-driver () {
 # prints interface name on stdout
 doc-nodes wait-for-interface-on-driver "locates and waits for device bound to provided driver, returns its name"
 function wait-for-interface-on-driver() {
-    driver=$1; shift
+    local driver=$1; shift
 
     # artificially pause for one second
     # this is because when used right after a modprobe, we have seen situations
@@ -162,7 +209,7 @@ function wait-for-interface-on-driver() {
     
     while true; do
 	# use the first device that runs on iwlwifi
-	_found=$(find-interface-by-driver $driver)
+	local _found=$(find-interface-by-driver $driver)
 	if [ -n "$_found" ]; then
 	    >&2 echo Using device $_found
 	    echo $_found
@@ -176,35 +223,18 @@ function wait-for-interface-on-driver() {
 doc-nodes wait-for-device "wait for device to be up or down; example: wait-for-device data up"
 function wait-for-device () {
     set +x
-    dev=$1; shift
-    wait_state="$1"; shift
+    local dev=$1; shift
+    local wait_state="$1"; shift
     
     while true; do
-	f=/sys/class/net/$dev
-	operstate=$(cat $f/operstate 2> /dev/null)
+	local f=/sys/class/net/$dev
+	local operstate=$(cat $f/operstate 2> /dev/null)
 	if [ "$operstate" == "$wait_state" ]; then
 	    2>& echo Device $dev is $wait_state
 	    break
 	else
 	    >&2 echo "Device $dev is $operstate - waiting 1s"; sleep 1
 	fi
-    done
-}
-
-doc-nodes turn-off-wireless "rmmod both wireless drivers from the kernel"
-function turn-off-wireless() {
-    for driver in iwlwifi ath9k; do
-	local _found=$(find-interface-by-driver $driver)
-	if [ -n "$_found" ]; then
-	    >&2 echo "turn-off-wireless: shutting down device $_found"
-	    ip link set down dev $_found
-	else
-	    >&2 echo "turn-off-wireless: driver $driver not used";
-	fi
-	lsmod | grep -q "^${driver} " && {
-	    >&2 echo "turn-off-wireless: removing driver $driver"
-	    modprobe -q -r $driver
-	}
     done
 }
 
@@ -267,12 +297,12 @@ doc-nodes ls-datas    "you got the idea; you have also grep-configs and similar 
 
 doc-nodes capture-all "captures logs and datas and configs in a tgz"
 function capture-all() {
-    output=$1; shift
+    local output=$1; shift
     echo "++++++++++++++++++++++++++++++++++++++++"
     echo "capture-all: output = $output"
     [ -z "$output" ] && { echo usage: capture-all output; return; }
-    allfiles="$(ls-logs) $(ls-configs) $(ls-datas)"
-    outpath=$HOME/$output.tgz
+    local allfiles="$(ls-logs) $(ls-configs) $(ls-datas)"
+    localoutpath=$HOME/$output.tgz
     tar -czf $outpath $allfiles
     echo "Captured in $outpath the following files:"
     ls -l $allfiles
@@ -331,33 +361,33 @@ function unbuf-var-log-syslog() {
 
 # Usage -start-tcpdump data|control some-distinctive-name tcpdump-arg..s
 function -start-tcpdump() {
-    interface="$1"; shift
-    name="$1"; shift
+    local interface="$1"; shift
+    local name="$1"; shift
     [ -z "$name" ] && name=$(r2lab-id)
     cd 
-    pcap="${interface}-${name}.pcap"
-    pidfile="tcpdump-${interface}.pid"
-    command="tcpdump -n -U -w $pcap -i ${interface}" "$@"
+    local pcap="${interface}-${name}.pcap"
+    local pidfile="tcpdump-${interface}.pid"
+    local command="tcpdump -n -U -w $pcap -i ${interface}" "$@"
     echo "${interface} traffic tcpdump'ed into $pcap with command:"
     echo "$command"
     nohup $command >& /dev/null < /dev/null &
-    pid=$!
+    local pid=$!
     ps $pid
     echo $pid > $pidfile
 }
     
 # Usage -stop-tcpdump data|control some-distinctive-name
 function -stop-tcpdump() {
-    interface="$1"; shift
-    name="$1"; shift
+    local interface="$1"; shift
+    local name="$1"; shift
     [ -z "$name" ] && name=$(r2lab-id)
     cd
-    pcap="${interface}-${name}.pcap"
-    pidfile="tcpdump-${interface}.pid"
+    local pcap="${interface}-${name}.pcap"
+    local pidfile="tcpdump-${interface}.pid"
     if [ ! -f $pidfile ]; then
 	echo "Could not spot tcpdump pid from $pidfile - exiting"
     else
-	pid=$(cat $pidfile)
+	local pid=$(cat $pidfile)
 	echo "Killing tcpdump pid $pid"
 	kill $pid
 	rm $pidfile
@@ -414,10 +444,10 @@ function offload-off () { -offload off "$@"; }
 function offload-on () { -offload on "$@"; }
 
 function -offload () {
-    mode="$1"; shift
-    ifname=$1; shift
+    local mode="$1"; shift
+    local ifname=$1; shift
     for feature in tso gso gro ; do
-	command="ethtool -K $ifname $feature $mode"
+	local command="ethtool -K $ifname $feature $mode"
 	echo $command
 	$command
     done
@@ -425,7 +455,7 @@ function -offload () {
 
 doc-nodes enable-nat-data "Makes the data interface NAT-enabled to reach the outside world"
 function enable-nat-data() {
-    id=$(r2lab-id)
+    local id=$(r2lab-id)
     ip route add default via 192.168.2.100 dev data table 200
     ip rule add from 192.168.2.2/24 table 200 priority 200
 }
@@ -433,11 +463,11 @@ function enable-nat-data() {
 ####################
 doc-nodes usrp-reset "Reset the URSP attached to this node"
 function usrp-reset() {
-    id=$(r2lab-id)
+    local id=$(r2lab-id)
     # WARNING this might not work on a node that
     # is not in its nominal location,
     # like if node 42 sits in slot 4
-    cmc="192.168.1.$id"
+    local cmc="192.168.1.$id"
     echo "Turning off USRP # $id"
     curl http://$cmc/usrpoff
     sleep 1
@@ -447,8 +477,8 @@ function usrp-reset() {
 
 doc-nodes scramble "shortcuts for scrambling the skype demo; use -blast to use max. gain"
 function scramble() {
-    mode=$1; shift
-    command="uhd_siggen --freq=2.56G --gaussian"
+    local mode=$1; shift
+    local command="uhd_siggen --freq=2.56G --gaussian"
     case "$mode" in
 	"")        command="$command -g 78" ; message="perturbating" ;;
 	"-blast")  command="$command -g 90" ; message="blasting" ;;

@@ -175,7 +175,8 @@ function nodes-add () {
 alias n+=nodes-add
 doc-selection nodes-add "(alias n+) add nodes to current selection"
 function nodes-sub () {
-    subspec=""
+    local subspec
+    local rngspec
     for rngspec in "$@"; do
 	subspec="$subspec ~$rngspec"
     done
@@ -186,9 +187,9 @@ alias n-=nodes-sub
 doc-selection nodes-sub "(alias n-) remove nodes from current selection"
 
 # snapshot current set of nodes for later
-# nodes_save foo
+# nodes-save foo
 function nodes-save () {
-    name=$1; shift
+    local name=$1; shift
     export NODES$name="$NODES"
     echo "Saved NODES$name=$NODES"
 }
@@ -196,8 +197,8 @@ doc-alt nodes-save "name current selection"
 
 # nodes-restore foo : goes back to what NODES was when you did nodes-save foo
 function nodes-restore () {
-    name=$1; shift
-    preserved=NODES$name
+    local name=$1; shift
+    local preserved=NODES$name
     export NODES="${!preserved}"
     nodes
 }
@@ -206,10 +207,10 @@ doc-alt nodes-restore "use previously named selection"
 #preplab && export _all_nodes=38-42 || export _all_nodes=1-37
 #preplab && export _all_nodes=4,38-41 || export _all_nodes=1-37
 
-_all_nodes=""
+_all_nodes_cache=""
 function _get_all_nodes () {
-    [ -z "$_all_nodes" ] && _all_nodes="$(rhubarbe nodes -a)"
-    echo $_all_nodes
+    [ -z "$_all_nodes_cache" ] && _all_nodes_cache="$(rhubarbe nodes -a)"
+    echo $_all_nodes_cache
 }
 
 function all-nodes () { nodes $(_get_all_nodes); }
@@ -217,6 +218,7 @@ doc-selection all-nodes "select all available nodes"
 
 # show-nodes-on : filter nodes that are on from args, or NODES if not provided
 function show-nodes-on () {
+    local nodes
     [ -n "$1" ] && nodes="$@" || nodes="$NODES"
     rhubarbe status $nodes | grep 'on' | cut -d: -f1 | sed -e s,reboot,fit,
 }
@@ -312,24 +314,21 @@ doc-selection load-ubuntu alias
 # releases 12 14
 # -> show fedora/debian releases for fit12 fit14 - does not change NODES
 function releases () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
-    for node in $(norm $nodes); do
-	echo ==================== $node
-	ssh root@$node "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release; gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
-    done
+    map "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release; gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
 }
 
 alias rel=releases
 doc-selection releases "(alias rel) use ssh to display current release (ubuntu or fedora + gnuradio)"
 
 function prefix () {
-    token="$1"; shift
+    local token="$1"; shift
     sed -e "s/^/$token/"
 }
 # utility; run curl
 function -curl () {
-    mode="$1"; shift
+    local mode="$1"; shift
     [ -n "$1" ] && nodes="$@" || nodes="$NODES"
+    local node
     for node in $(normreboot $nodes); do
 	curl --silent http://$node/$mode | prefix "$node:"
     done
@@ -429,10 +428,11 @@ doc-admin pxe-config "Displays various files related to using old or new frisbee
 # -nextboot foo 32-34
 # this script creates a symlink to /tftpboot/pxelinux.cfg/foo
 function -nextboot () {
-    command="$1"; shift
+    local command="$1"; shift
     [ -n "$1" ] && nodes="$@" || nodes="$NODES"
+    local node
     for node in $(norm $nodes); do
-	pxe=/tftpboot/pxelinux.cfg/"01-"$(py host_pxe $node)
+	local pxe=/tftpboot/pxelinux.cfg/"01-"$(py host_pxe $node)
 	echo -n ABOUT $node " "
 	case $command in
 	    list)
@@ -478,14 +478,16 @@ doc-admin nextboot-ll "use ll to list all pxelinux.cfg contents - for doublechec
 # list pending next boot config files
 # -nextboot list or -nextboot clean
 function -nextboot-all () {
-    command=$1; shift
-    hex="[0-9a-f]"
-    byte="$hex$hex"
-    pattern=$byte
+    local command=$1; shift
+    local hex="[0-9a-f]"
+    local byte="$hex$hex"
+    local pattern=$byte
+    local i
     for i in $(seq 6); do pattern=$pattern-$byte; done
+    local symlink
     for symlink in $(ls /tftpboot/pxelinux.cfg/$pattern 2> /dev/null); do
-	name=$(basename $symlink)
-	hostname=$(py pxe_host $name)
+	local name=$(basename $symlink)
+	local hostname=$(py pxe_host $name)
 	echo -n ABOUT $hostname " "
 	case $command in
 	    list*)
@@ -525,7 +527,8 @@ function omf-debug () { echo not implemented; }
 # tn -> telnet fit04
 #
 function -do-first () {
-    command="$1"; shift
+    local command="$1"; shift
+    local node
     if [ -n "$1" ] ; then
 	node=$(norm $1)
     else
@@ -544,20 +547,6 @@ alias ssx="-do-first 'ssh -X'"
 
 doc-admin tn "Enter first selected node using telnet - ditto"
 alias tn="-do-first telnet"
-
-#################### manually run a old or new frisbee server
-function serve_ubuntu_old () {
-    preplab || { echo "designed for preplab only"; return 1; }
-    command="/root/images/frisbee-binaries-uth/frisbeed-old-64 -i 192.168.3.200 -m 224.0.0.1 -p 10000 -W 90000000 /var/lib/omf-images-6/ubuntu14.10-ext2.ndz"
-    echo $command
-    $command
-}
-function serve_ubuntu_new () {
-    preplab || { echo "designed for preplab only"; return 1; }
-    command="/root/images/frisbee-binaries-inria/frisbeed -i 192.168.3.200 -m 224.0.0.1 -p 10000 -W 90000000 /var/lib/omf-images-6/ubuntu14.10-ext2.ndz"
-    echo $command
-    $command
-}
 
 ####################
 alias nitos-gem-203="cd /var/lib/gems/1.9.1/gems/nitos_testbed_rc-2.0.3/lib/nitos_testbed_rc"
@@ -582,14 +571,14 @@ alias sw=ping-switches
 doc-admin sw "ping all 4 faraday switches"
 
 ##########
-function net-names () {
-    [ -n "$1" ] && nodes="$@" || nodes="$NODES"
-    nodes=$(cnorm $nodes)
-    for node in $nodes; do
-	ssh root@$node ip addr show | grep UP | grep -v 'lo:'
-    done
-}
-doc-admin net-names "display network interface names"
+function turn-on-data () { map turn-on-data "$@" ; }
+doc-selection turn-on-data "run turn-on-data on all selected nodes"
+function list-interfaces () { map list-interfaces "$@" ; }
+doc-selection list-interfaces "run list-interfaces on all selected nodes"
+function list-wireless () { map list-wireless "$@" ; }
+doc-selection list-wireless "run list-wireless on all selected nodes"
+function turn-off-wireless () { map turn-off-wireless "$@" ; }
+doc-selection turn-off-wireless "run turn-off-wireless on all selected nodes"
 
 function chmod-private-key () {
     chmod 600 ~/.ssh/id_rsa
@@ -689,6 +678,7 @@ function un-tgz() {
 	echo "usage $0 tgz..files"
 	return
     fi
+    local t
     for t in "$@"; do
 	b=$(basename $t .tgz)
 	echo Unwrapping $t in $b
