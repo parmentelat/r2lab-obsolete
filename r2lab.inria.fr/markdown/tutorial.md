@@ -11,6 +11,7 @@ skip_header: True
 
 <ul class="nav nav-tabs">
   <li class="active"> <a href="#INTRO">INTRO</a> </li>
+  <li> <a href="#CONTACT">CONTACT</a> </li>
 
   << include r2lab/tutos-index.html >>
 </ul>
@@ -67,6 +68,17 @@ All this contents is accessible through the 'TUTORIALS INDEX' dropdown that appe
   * [End-to-End Experiment](tuto-900-youtube.md) : Running a wireless experiment end-to-end. 
 
   * [OAI 5G experiment](tuto-900-youtube.md) : Setting up an OpenAirInterface-based 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
+
+</div>
+
+<!------------ CONTACT ------------>
+<div id="CONTACT" class="tab-pane fade" markdown="1">
+
+### Contacts
+
+If you have any issue with this tutorial, or with using R2lab more
+generally, please contact us at
+[`fit-r2lab-users@inria.fr`](mailto:fit-r2lab-users@inria.fr)
 
 </div>
 

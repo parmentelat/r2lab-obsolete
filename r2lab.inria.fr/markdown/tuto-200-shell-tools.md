@@ -23,15 +23,20 @@ skip_header: True
 
 ### Logging in the gateway
 
-Once you have [obtained a slice account on R2LAB (faraday)](tuto-100-registration.md#main), you can reach the R2lab gateway using ssh
+Once you have [obtained a slice account on R2LAB
+(faraday)](tuto-100-registration.md#main), you can reach the R2lab
+gateway using ssh
 
-    $ ssh onelab.inria.mario.tutorial@faraday.inria.fr
+    $ ssh -i onelab.private onelab.your.slice.name@faraday.inria.fr
 
 ---
 
 ### Listing commands
 
-From your bash account on the gateway, you have a few very simple but handy tools at your disposal for the early steps of your experiment, like seeing the nodes status, turning them on or off, and loading images.
+From your bash account on the gateway, you have a few very simple but
+handy tools at your disposal for the early steps of your experiment,
+like seeing the nodes status, turning them on or off, and loading
+images.
 
     help
 
@@ -39,26 +44,50 @@ From your bash account on the gateway, you have a few very simple but handy tool
 
 From the gateway, you can use the following hostnames to refer to nodes
 
-* `fit08` : refers to the `control` wired interface on node 8; the control interface is configured in all our images to start up automatically at boot-time so the nodes can be reached.
-* `data08` : refers to the `data` wired interface; this one is not automatically turned on, it is up to you to use it or not, you can use DHCP for that purpose.
-* `reboot08` : refers to the ethernet interface of the CMC device on the node, that allows for remote management of the motherboard (i.e. turning nodes on and off)
+* `fit08` : refers to the `control` wired interface on node 8; the
+  control interface is configured in all our images to start up
+  automatically at boot-time so the nodes can be reached.
 
-Here's an example of how these names resolve. Beware that the IP address of the reboot interface might occassionnally not be directly to the node index, but this is seldom used by experiments.
+* `data08` : refers to the `data` wired interface; this one is not
+  automatically turned on, it is up to you to use it or not, you can
+  use DHCP for that purpose.
 
-    onelab.inria.mario.tutorial@faraday:~$ host fit08
+* `reboot08` : refers to the ethernet interface of the CMC device on
+  the node, that allows for remote management of the motherboard
+  (i.e. turning nodes on and off)
+
+Here's an example of how these names resolve. Beware that the IP
+address of the reboot interface might occassionnally not be directly
+to the node index, but this is seldom used by experiments.
+
+    onelab.your.slice.name@faraday:~$ host fit08
     fit08 has address 192.168.3.8
-    onelab.inria.mario.tutorial@faraday:~$ host data08
+    onelab.your.slice.name@faraday:~$ host data08
     data08 has address 192.168.2.8
-    onelab.inria.mario.tutorial@faraday:~$ host reboot08
+    onelab.your.slice.name@faraday:~$ host reboot08
     reboot08 has address 192.168.1.8
 
 ### Checking leases
 
-In case you're unsure about the current status of reservation, you can list reserved timeslots - known as leases - with
+In case you're unsure about the current status of reservation, you can
+list reserved timeslots - known as leases - with
 
     rleases
 
-This is a poorman's tool, as of course [the scheduler](/book.md) will give you that same information in a much nicer way.
+This is a poorman's tool, as of course [the scheduler](/book.md) will
+give you that same information in a much nicer way.
+
+Note also that this is in fact equivalent to
+
+    rhubarbe leases
+
+[`rhubarbe`](https://github.com/parmentelat/rhubarbe) being the set of
+tools that help us run the testbed. Indeed many of the convenience
+functions starting with `r` in fact are aliases to a `rhubarbe`
+subcommand.
+
+In [the next tab](javascript:open_tab('NODES')) we will see how we can
+focus on a specific set of nodes, and easily control them.<
 
 </div>
 

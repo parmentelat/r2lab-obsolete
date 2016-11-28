@@ -126,11 +126,16 @@ in this tutorial use **the set of keys known to your ssh agent**.
 You can inspect and manage this set of keys using the `ssh-add`
 command - at least on unix-based systems.
 
+    # inspect current contents
     ~/.ssh $ ssh-add -l
-    1024 SHA256:KNm0U4SgFV9bY957hJAIRR68n5AZHQ6e1gbiXrGHuOA onelab.private (RSA)
+    1024 SHA256:KNm0U4SgFV9bY957hJAIRR68n5AZHQ6e1gbiXrGHuOA /Users/parmentelat/.ssh/id_rsa (RSA)
+
+    # actually add the onelab key 
     ~/.ssh $ ssh-add onelab.private
     Enter passphrase for onelab.private:
     Identity added: onelab.private (onelab.private)
+    
+    # check for the addition
     ~/.ssh $ ssh-add -l
     1024 SHA256:KNm0U4SgFV9bY957hJAIRR68n5AZHQ6e1gbiXrGHuOA /Users/parmentelat/.ssh/id_rsa (RSA)
     2048 SHA256:WvCdpP+FHBTnkwbkqYl43GVgwEK2iYdwRaNm+fCc+Xg onelab.private (RSA)
