@@ -99,7 +99,7 @@ function turn-on-data() {
     for ifname in $data_ifnames; do
 	ip addr sh dev $ifname >& /dev/null && {
 	    ip link show $ifname | grep -q UP || {
-		echo Turning on data network on interface $ifname >&2-
+		echo "turn-on-data: data network on interface" $ifname >&2-
 		ifup $ifname >&2-
 	    }
 	    echo $ifname
@@ -129,11 +129,7 @@ doc-nodes list-wireless "list currently available wireless interfaces"
 function list-wireless () {
     local ifnames
     if [[ -n "$@" ]]; then
-	if [ "$1" == "-a" ]; then
-	    ifnames="intel atheros"
-	else
-	    ifnames="$@"
-	fi
+	ifnames="$@"
     else
 	ifnames=""
 	local w

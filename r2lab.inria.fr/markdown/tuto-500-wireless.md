@@ -12,6 +12,9 @@ skip_header: True
   <li class="active"> <a href="#INTRO">INTRO</a> </li>
   <li> <a href="#B1">B1</a></li>
   <li> <a href="#B2">B2</a></li>
+  <li> <a href="#B3">B3</a></li>
+  <li> <a href="#B4">B4</a></li>
+  <li> <a href="#B5">B5</a></li>
   <li> <a href="#WRAPUP">WRAPUP</a></li>
 
   << include r2lab/tutos-index.html >>
@@ -22,12 +25,6 @@ skip_header: True
 
 <!------------ INTRO ------------>
 <div id="INTRO" class="tab-pane fade in active" markdown="1">
-
-### This page is under construction...
-
-<br/>
-<br/>
-<br/>
 
 ### Prerequisites
 
@@ -62,7 +59,7 @@ seen ways to run remotely simple commands. In this section we will see
 simple means to come up with more complex logic, simply by using shell
 scripts that are pushed remotely under the hood before they are
 triggered. This is what the `RunString` and `RunScript` classes are
-about.
+about. Let us [see them in action right away](javascript:open_tab('B1')).
 
 
 </div>
@@ -74,13 +71,32 @@ about.
 
 We are going to run the exact same experiment [as in the previous run
 A5](tuto-400-ping.md#A5), that is to say a simple ping triggered on
-`fit01` towards `fit02`, but this time on one of the wireless
-interfaces.
+`fit01` towards `fit02`, but this time on one of the **wireless
+interfaces**. 
 
 What changes then, as compared with our previous experiment, is that
 we cannot anymore simply run the predefined convenience command
-`data-up`, and we are going to have to put a little more work in this
+`turn-on-data`, and we are going to have to put a little more work in this
 step.
+
+### New features
+
+The `B1 code` below exhibits the use of a new class, `RunString`,
+which is a very convenient variation around the `Run` class.
+
+Instead of remotely invoking a command that is supposed to be
+available there already, like we have done so far when e.g. invoking
+`ping` or even `turn-on-data`, `RunString` allows you to invoke a command
+that we provide **as a python variable**.
+
+This means that we can write our own shell snippet, in charge of
+creating a small ad-hoc network, and embed this script right inside
+our nepi-ng script; see the `turn_on_wireless_script` variable in the
+code below.
+
+See also how the `init_node_01` job now uses `RunString` to pass it
+python variables as arguments. For example this is how
+`turn_on_wireless_script` gets passed the right IP address for each node.
 
 
 ### The code
@@ -91,8 +107,47 @@ step.
 
 ### Sample output
 
+    $ python3 B1-wireless.py
+    faraday.inria.fr:Checking current reservation for onelab.your.slice.name OK
+    fit02:turn-off-wireless: driver iwlwifi not used
+    fit02:turn-off-wireless: shutting down device atheros
+    fit01:turn-off-wireless: driver iwlwifi not used
+    fit01:turn-off-wireless: shutting down device atheros
+    fit02:turn-off-wireless: removing driver ath9k
+    fit01:turn-off-wireless: removing driver ath9k
+    fit02:loading module ath9k
+    fit01:loading module ath9k
+    fit02:configuring interface atheros
+    fit01:configuring interface atheros
+    fit01:PING 10.0.0.2 (10.0.0.2) from 10.0.0.1 atheros: 56(84) bytes of data.
+    fit01:From 10.0.0.1 icmp_seq=1 Destination Host Unreachable
+    fit01:From 10.0.0.1 icmp_seq=2 Destination Host Unreachable
+    fit01:From 10.0.0.1 icmp_seq=3 Destination Host Unreachable
+    fit01:From 10.0.0.1 icmp_seq=4 Destination Host Unreachable
+    fit01:From 10.0.0.1 icmp_seq=5 Destination Host Unreachable
+    fit01:From 10.0.0.1 icmp_seq=6 Destination Host Unreachable
+    fit01:From 10.0.0.1 icmp_seq=7 Destination Host Unreachable
+    fit01:From 10.0.0.1 icmp_seq=8 Destination Host Unreachable
+    fit01:From 10.0.0.1 icmp_seq=9 Destination Host Unreachable
+    fit01:64 bytes from 10.0.0.2: icmp_seq=10 ttl=64 time=4.71 ms
+    fit01:64 bytes from 10.0.0.2: icmp_seq=11 ttl=64 time=2.32 ms
+    fit01:64 bytes from 10.0.0.2: icmp_seq=12 ttl=64 time=2.33 ms
+    fit01:64 bytes from 10.0.0.2: icmp_seq=13 ttl=64 time=2.35 ms
+    fit01:64 bytes from 10.0.0.2: icmp_seq=14 ttl=64 time=2.31 ms
+    fit01:64 bytes from 10.0.0.2: icmp_seq=15 ttl=64 time=2.31 ms
+    fit01:64 bytes from 10.0.0.2: icmp_seq=16 ttl=64 time=2.35 ms
+    fit01:64 bytes from 10.0.0.2: icmp_seq=17 ttl=64 time=1.77 ms
+    fit01:64 bytes from 10.0.0.2: icmp_seq=18 ttl=64 time=1.45 ms
+    fit01:64 bytes from 10.0.0.2: icmp_seq=19 ttl=64 time=1.42 ms
+    fit01:64 bytes from 10.0.0.2: icmp_seq=20 ttl=64 time=1.43 ms
+    fit01:
+    fit01:--- 10.0.0.2 ping statistics ---
+    fit01:20 packets transmitted, 11 received, +9 errors, 45% packet loss, time 19062ms
+    fit01:rtt min/avg/max/mdev = 1.421/2.253/4.714/0.871 ms, pipe 3
+
 ### Next
-[](javascript:open_tab(''))
+
+Let us see some variants on that theme [in the next tab](javascript:open_tab('B2'))
 
 </div>
 
@@ -106,6 +161,60 @@ step.
 <center>Download the <a href="/code/B2-wireless.py" download target="_blank">B2 experiment</a> code</center>
 
 << codeview B2 B1-wireless.py B2-wireless.py >>
+
+### Sample output
+
+### Next
+[](javascript:open_tab(''))
+
+</div>
+
+<!------------ B3 ------------>
+<div id="B3" class="tab-pane fade" markdown="1">
+
+### Objective
+
+### The code
+
+<center>Download the <a href="/code/B3-wireless.py" download target="_blank">B3 experiment</a> code</center>
+
+<< codeview B3 B2-wireless.py B3-wireless.py >>
+
+### Sample output
+
+### Next
+[](javascript:open_tab(''))
+
+</div>
+
+<!------------ B4 ------------>
+<div id="B4" class="tab-pane fade" markdown="1">
+
+### Objective
+
+### The code
+
+<center>Download the <a href="/code/B4-wireless.py" download target="_blank">B4 experiment</a> code</center>
+
+<< codeview B4 B3-wireless.py B4-wireless.py >>
+
+### Sample output
+
+### Next
+[](javascript:open_tab(''))
+
+</div>
+
+<!------------ B5 ------------>
+<div id="B5" class="tab-pane fade" markdown="1">
+
+### Objective
+
+### The code
+
+<center>Download the <a href="/code/B5-wireless.py" download target="_blank">B5 experiment</a> code</center>
+
+<< codeview B5 B4-wireless.py B5-wireless.py >>
 
 ### Sample output
 

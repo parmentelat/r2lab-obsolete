@@ -74,6 +74,10 @@ list reserved timeslots - known as leases - with
 
     rleases
 
+or check that you currently hold a reservation with
+
+    rleases --check
+
 This is a poorman's tool, as of course [the scheduler](/book.md) will
 give you that same information in a much nicer way.
 

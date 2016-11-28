@@ -430,19 +430,22 @@ these on and off.
 
 Here is what deserves to be outlined in the code below
 
-* on all nodes you will find a command named `data-up`; this of course
+* on all nodes you will find a command named `turn-on-data`; this of course
   is not a standard command, it is preinstalled on the nodes for your
   convenience. It's job is to turn on the data interface using DHCP.
 
 * you will find this command documented if you type `help` when logged
-  on any node.
+  on any node;
 
 * take a look [at the source code for similar utilities
   here](https://github.com/parmentelat/r2lab/blob/master/infra/user-env/nodes.sh)
 
 * also notice how we can very easily make sure to run our ping once
   **BOTH** nodes have configured their data interface, by just using 2
-  jobs in the `requires` attribute of the ping job.
+  jobs in the `requires` attribute of the ping job;
+
+* Finally, notice how at the epilogue we check that the ping command
+  actually succeeded, by using `result()` on a `SshJob` instance.
 
 ### The code
 
@@ -500,3 +503,9 @@ transfers to and from `SshNode`s.
 </div>
 
 </div> <!-- end div contents -->
+.
+
+
+
+
+

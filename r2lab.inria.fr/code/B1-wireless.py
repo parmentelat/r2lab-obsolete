@@ -10,6 +10,8 @@ from apssh import SshNode, SshJob, Run, RunString
 gateway_hostname  = 'faraday.inria.fr'
 gateway_username  = 'onelab.inria.r2lab.tutorial'
 verbose_ssh = False
+wireless_driver="ath9k"
+wireless_interface="atheros"
 
 parser = ArgumentParser()
 parser.add_argument("-s", "--slice", default=gateway_username,
@@ -41,30 +43,23 @@ check_lease = SshJob(
     command = Run("rhubarbe leases --check"),
 )
 
-#### with the Intel card
-driver="iwlwifi"
-ifname="intel"
-#### with the Atheros card
-# just comment these 2 lines to use the intel cards on both nodes
-driver="ath9k"
-ifname="atheros"
-
 ####################
 # This is our own brewed script for setting up a wifi network
+# it run on the remote machine - either sender or receiver
+# and is in charge of initializing a small ad-hoc network
 #
 # Thanks to the RunString class, we can just define this as
 # a python string, and pass it arguments from python variables
 #
+
 turn_on_wireless_script = """#!/bin/bash
-# this plain bash script will run on the remote machine
-# either sender or receiver
-# and is in charge of initializing a small ad-hoc network
 
 # we expect the following arguments
 # 1. wireless driver name (iwlwifi or ath9k)
-# 2. IP-address/mask for that interface 
-# 3. the wifi network name to join
-# 4. the wifi frequency to use
+# 2. wireless interface name (intel or atheros)
+# 3. IP-address/mask for that interface 
+# 4. the wifi network name to join
+# 5. the wifi frequency to use
 
 driver=$1; shift
 ifname=$1; shift
@@ -95,15 +90,15 @@ ip link set $ifname up
 iw dev $ifname ibss join $netname $freq
 ip address add $ipaddr_mask dev $ifname
 """
-####################
 
-# setting up the data interface on both fit01 and fit02
+##########
+# setting up the wireless interface on both fit01 and fit02
 init_node_01 = SshJob(
     node = node1,
     required = check_lease,
     command = RunString(
         turn_on_wireless_script,
-        driver, ifname, "10.0.0.1/24", "foobar", 2412,
+        wireless_driver, wireless_interface, "10.0.0.1/24", "foobar", 2412,
 #        verbose=True,
     ))
 init_node_02 = SshJob(
@@ -111,16 +106,14 @@ init_node_02 = SshJob(
     required = check_lease,
     command = RunString(
         turn_on_wireless_script,
-        driver, ifname, "10.0.0.2/24", "foobar", 2412))
+        wireless_driver, wireless_interface, "10.0.0.2/24", "foobar", 2412))
 
 # the command we want to run in faraday is as simple as it gets
 ping = SshJob(
     node = node1,
     required = (init_node_01, init_node_02),
-    # let us be more specific about what to run
-    # we will soon see other things we can do on an ssh connection
     command = Run(
-        'ping', '-c', '20', '10.0.0.2', '-I', ifname,
+        'ping', '-c', '20', '10.0.0.2', '-I', wireless_interface,
 #        verbose=True,
     ))
 
@@ -131,10 +124,6 @@ sched = Scheduler(check_lease, ping, init_node_01, init_node_02)
 # run the scheduler
 ok = sched.orchestrate()
 
-# we say this is a success if the ping command succeeded
-# the result() of the SshJob is the value that the command
-# returns to the OS
-# so it's a success if this value is 0
 success = ok and ping.result() == 0
 
 # return something useful to your OS

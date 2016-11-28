@@ -41,9 +41,10 @@ check_lease = SshJob(
     command = Run("rhubarbe leases --check"),
 )
 
+##########
 # setting up the data interface on both fit01 and fit02
-init_node_01 = SshJob(node = node1, command = Run("data-up"), required = check_lease)
-init_node_02 = SshJob(node = node2, command = Run("data-up"), required = check_lease)
+init_node_01 = SshJob(node = node1, command = Run("turn-on-data"), required = check_lease)
+init_node_02 = SshJob(node = node2, command = Run("turn-on-data"), required = check_lease)
 
 # the command we want to run in faraday is as simple as it gets
 ping = SshJob(
@@ -52,7 +53,7 @@ ping = SshJob(
     required = (init_node_01, init_node_02),
     # let's be more specific about what to run
     # we will soon see other things we can do on an ssh connection
-    commands = Run('ping', '-c1', '-I', 'data', 'data02'),
+    command = Run('ping', '-c1', '-I', 'data', 'data02'),
 )
 
 ##########
@@ -62,5 +63,11 @@ sched = Scheduler(check_lease, ping, init_node_01, init_node_02)
 # run the scheduler
 ok = sched.orchestrate()
 
+# we say this is a success if the ping command succeeded
+# the result() of the SshJob is the value that the command
+# returns to the OS
+# so it's a success if this value is 0
+success = ok and ping.result() == 0
+
 # return something useful to your OS
-exit(0 if ok else 1)
+exit(0 if success else 1)

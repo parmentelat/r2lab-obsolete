@@ -107,9 +107,11 @@ slice](https://portal.onelab.eu/portal/slice_request/)** (fig. 3,
 When a slice request is created, a confirmation email is sent to a
 manager within your institution for validation. Once the validation is
 done your dashboard shows you (fig. 3, <font color="red">**C**</font>)
-the list of all slices where you belong.  Clicking on one of these
-slices will lead you to the slice dashboard, as you can see
-[on fig. 4 in the next tab](javascript:open_tab('R2LAB')).
+the list of all slices where you belong. Note that you might have to
+**log out of Onelab** and relog back in in order to see newly created
+slices. Clicking on one of these slices will lead you to the slice
+dashboard, as you can see [on fig. 4 in the next
+tab](javascript:open_tab('R2LAB')).
 
 </div>
 
