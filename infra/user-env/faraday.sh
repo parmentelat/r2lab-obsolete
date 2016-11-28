@@ -316,9 +316,12 @@ doc-selection load-ubuntu alias
 function releases () {
     map "cat /etc/lsb-release /etc/fedora-release /etc/gnuradio-release 2> /dev/null | grep -i release; gnuradio-config-info --version 2> /dev/null || echo NO GNURADIO"
 }
+doc-selection releases "to display current release (ubuntu or fedora + gnuradio)"
 
-alias rel=releases
-doc-selection releases "(alias rel) use ssh to display current release (ubuntu or fedora + gnuradio)"
+function images () {
+    map tail -1 /etc/rhubarbe-image
+}
+doc-selection images "show image info from last line from /etc/rhubarbe-image"
 
 function prefix () {
     local token="$1"; shift
@@ -571,15 +574,6 @@ alias sw=ping-switches
 doc-admin sw "ping all 4 faraday switches"
 
 ##########
-function turn-on-data () { map turn-on-data "$@" ; }
-doc-selection turn-on-data "run turn-on-data on all selected nodes"
-function list-interfaces () { map list-interfaces "$@" ; }
-doc-selection list-interfaces "run list-interfaces on all selected nodes"
-function list-wireless () { map list-wireless "$@" ; }
-doc-selection list-wireless "run list-wireless on all selected nodes"
-function turn-off-wireless () { map turn-off-wireless "$@" ; }
-doc-selection turn-off-wireless "run turn-off-wireless on all selected nodes"
-
 function chmod-private-key () {
     chmod 600 ~/.ssh/id_rsa
 }
@@ -593,8 +587,8 @@ function restart-omf () {
 }
 doc-admin restart-all "Restart all 4 services omf-sfa, ntrc, openfire and dnsmasq"
 
-alias images="cd /var/lib/rhubarbe-images/"
-doc-admin images alias
+alias images-repo="cd /var/lib/rhubarbe-images/"
+doc-admin images-repo alias
 
 alias r2lab-users="ls -d /home/onelab.inria.r2lab*"
 doc-admin r2lab-users alias

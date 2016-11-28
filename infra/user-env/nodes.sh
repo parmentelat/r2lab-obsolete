@@ -18,9 +18,9 @@ augment-help-with nodes
 unalias ls 2> /dev/null
 
 ##########
-doc-nodes gitup "updates /root/r2lab from git repo (as well as OAI repos if found)"
+doc-nodes git-pull-r2lab "updates /root/r2lab from git repo (as well as OAI repos if found)"
 git_repos="/root/r2lab /root/openair-cn /root/openairinterface5g"
-function gitup() {
+function git-pull-r2lab() {
     local repo
     [[ -n "$@" ]] && repos="$@" || repos="$git_repos"
     for repo in $repos; do
@@ -33,20 +33,20 @@ function gitup() {
     done
 }
 
-# reload this file after a gitup
+# reload this file after a git-pull-r2lab
 doc-nodes bashrc "reload ~/.bashrc"
 function bashrc() { echo "Reloading ~/.bashrc"; source ~/.bashrc; }
 
 # update and reload
-doc-nodes refresh "gitup + bashrc"
-function refresh() { gitup /root/r2lab; bashrc; }
+doc-nodes refresh "git-pull-r2lab + bashrc"
+function refresh() { git-pull-r2lab /root/r2lab; bashrc; }
 
 doc-nodes rimage "Shows info on current image from last line in /etc/rhubarbe-image"
 function rimage() { tail -1 /etc/rhubarbe-image | sed -e 's, node , built-on ,' -e 's, image , from-image ,' ; }
 
 ##########
-doc-nodes init-clock "Sets date from ntp"
-function init-clock() {
+doc-nodes init-ntp-clock "Sets date from ntp"
+function init-ntp-clock() {
     if type ntpdate >& /dev/null; then
 	echo "Running ntpdate faraday3"
 	ntpdate faraday3

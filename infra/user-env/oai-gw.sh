@@ -73,7 +73,7 @@ base_packages="git cmake build-essential gdb"
 doc-nodes base "the script to install base software on top of a raw image" 
 function base() {
 
-    gitup
+    git-pull-r2lab
     # apt-get requirements
     apt-get update
     apt-get install -y $base_packages
@@ -119,7 +119,7 @@ function base() {
 doc-nodes deps "builds hss and epc and installs dependencies" 
 function deps() {
     
-    gitup
+    git-pull-r2lab
     cd $run_dir
     echo "========== Building HSS"
     run-in-log  build-hss-deps.log ./build_hss -c -i -F
@@ -181,7 +181,7 @@ doc-nodes init "sync clock from NTP, checks /etc/hosts, and tweaks MTU's"
 function init() {
 
     # clock
-    init-clock
+    init-ntp-clock
     # data interface if relevant
     [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
     for interface in data control; do

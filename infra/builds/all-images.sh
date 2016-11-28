@@ -86,16 +86,16 @@ function u14-319(){
 }
 
 function gnuradio(){
-    bim 1 ubuntu-16.04-gnuradio-3.7.10.1-update3 ubuntu-16.04-gnuradio-3.7.10.1-update4 "nodes.sh gitup"
+    bim 1 ubuntu-16.04-gnuradio-3.7.10.1-update3 ubuntu-16.04-gnuradio-3.7.10.1-update4 "nodes.sh git-pull-r2lab"
 }
 
 function update-root-bash() {
-    bim 1 ubuntu-16.04-v5-ntp ubuntu-16.04-v6-user-env "imaging.sh common-setup" "nodes.sh gitup" &
-    bim 2 ubuntu-14.04-v5-ntp ubuntu-14.04-v6-user-env "imaging.sh common-setup" "nodes.sh gitup" &
-    bim 3 fedora-23-v4-ntp fedora-23-v6-user-env       "imaging.sh common-setup" "nodes.sh gitup" &
-    bim 5 intelcsi-node-env intelcsi-v3-user-env       "imaging.sh common-setup" "nodes.sh gitup" &
+    bim 1 ubuntu-16.04-v5-ntp ubuntu-16.04-v6-user-env "imaging.sh common-setup" "nodes.sh git-pull-r2lab" &
+    bim 2 ubuntu-14.04-v5-ntp ubuntu-14.04-v6-user-env "imaging.sh common-setup" "nodes.sh git-pull-r2lab" &
+    bim 3 fedora-23-v4-ntp fedora-23-v6-user-env       "imaging.sh common-setup" "nodes.sh git-pull-r2lab" &
+    bim 5 intelcsi-node-env intelcsi-v3-user-env       "imaging.sh common-setup" "nodes.sh git-pull-r2lab" &
     bim 6 ubuntu-16.04-gnuradio-3.7.10.1-update4    \
-          ubuntu-16.04-gnuradio-3.7.10.1-v5-user-env   "imaging.sh common-setup" "nodes.sh gitup" &
+          ubuntu-16.04-gnuradio-3.7.10.1-v5-user-env   "imaging.sh common-setup" "nodes.sh git-pull-r2lab" &
 }
 
 # preserving the oai images for now
@@ -136,15 +136,16 @@ function ubuntu-udev() {
     bim 11 intelcsi     intelcsi-v8-wireless-names "imaging.sh ubuntu-udev" &
 }
 
-#ssh root@faraday.inria.fr rhubarbe off 1-10
-#u14-48 &
-#u16-48 &
-#u16-47 &
-#u14-319
-#gnuradio
-#ubuntu-udev
-#update-root-bash
-#redo-netnames
+# preserving the oai images for now
+function bye-gitup() {
+    bim 1 ubuntu-16.04-v10-wireless-names                   == "nodes.sh git-pull-r2lab" &
+    bim 2 ubuntu-14.04-v10-wireless-names                   == "nodes.sh git-pull-r2lab" &
+    bim 3 fedora-23-v10-wireless-names                      == "nodes.sh git-pull-r2lab" &
+    bim 5 intelcsi-v10-wireless-names                       == "nodes.sh git-pull-r2lab" &
+    bim 6 ubuntu-16.04-gnuradio-3.7.10.1-v10-wireless-names == "nodes.sh git-pull-r2lab" &
+}
+
+bye-gitup
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work
@@ -158,14 +159,14 @@ function ubuntu-udev() {
 #0#  "imaging.sh ubuntu-setup-ntp" \
 #0#  "imaging.sh common-setup-user-env" \
 #0#  "imaging.sh common-setup-node-ssh-key" \
-#0#  "nodes.sh gitup"
+#0#  "nodes.sh git-pull-r2lab"
 
 #bim 36 ubuntu-14.04-v4-ntp-node-env == "nodes.sh common-setup-user-env"
 
 # same on fedora-23
 #0#bim fit03 fedora-23-node-env fedora-23-v4-ntp \
 #0#  "imaging.sh fedora-setup-ntp" \
-#0#  "nodes.sh gitup"
+#0#  "nodes.sh git-pull-r2lab"
 
 #bim 37 fedora-23-v4-ntp == "nodes.sh common-setup-user-env"
 
