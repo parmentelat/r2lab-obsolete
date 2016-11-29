@@ -145,7 +145,12 @@ function bye-gitup() {
     bim 6 ubuntu-16.04-gnuradio-3.7.10.1-v10-wireless-names == "nodes.sh git-pull-r2lab" &
 }
 
-bye-gitup
+function fix-gnuradio() {
+    bim 6 gnuradio ubuntu-16.04-gnuradio-3.7.10.1-v10-wireless-names \
+	"nodes.sh git-pull-r2lab" "imaging.sh network-names-udev" &
+}
+
+fix-gnuradio
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work
