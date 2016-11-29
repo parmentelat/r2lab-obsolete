@@ -133,7 +133,7 @@ function list-wireless () {
     else
 	ifnames=""
 	local w
-	for w in /sys/class/net/*/wireless; do
+	for w in $(ls -d /sys/class/net/*/wireless 2> /dev/null); do
 	    ifnames="$ifnames $(basename $(dirname $w))"
 	done
     fi
