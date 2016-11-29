@@ -87,7 +87,7 @@ modprobe $driver
 # some time for udev to trigger its rules
 sleep 1
 
-ifname=$(wait-for-interface-or-driver $driver)
+ifname=$(wait-for-interface-on-driver $driver)
 
 echo configuring interface $ifname
 # make sure to wipe down everything first so we can run again and again
