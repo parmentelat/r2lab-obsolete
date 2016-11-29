@@ -12,18 +12,25 @@
 # (*) create a Unix account if not already present
 # (*) check its authorized_keys
 
+verbose=""
+case "$1" in
+    -v|--verbose)   shift; verbose=true;;
+esac
+
 ACCOUNT=$1; shift
 
-##########
-verbose=""
+function verbose-echo() {
+    [ -n "$verbose" ] && echo "$@"
+}
 
+##########
 # use shortcuts from ../user-env/faraday.sh
 ( cd /root/r2lab/; git pull )
 source /root/r2lab/infra/user-env/faraday.sh
 
 cd /tmp
 
-[ -n "$verbose" ] && echo retrieving details for account $ACCOUNT in ACCOUNT
+verbose-echo retrieving details for account $ACCOUNT in ACCOUNT
 $CURL --silent $RU/accounts?name=$ACCOUNT > ACCOUNT 2> /dev/null
 
 if [ -d /home/$ACCOUNT ]; then
@@ -33,11 +40,9 @@ else
     useradd --create-home --shell /bin/bash $ACCOUNT
 fi
 
+#################### retrieving authorized keys
 
-
-#################### retrieving authorzied keys
-
-[ -n "$verbose" ] && echo retrieving all keys in KEYS
+verbose-echo retrieving all keys in KEYS
 $CURL --silent $RU/keys > KEYS
 
 cat << FIN > parse.py
@@ -102,16 +107,16 @@ if [ -z "$user_uuids" ] ; then
     exit 1
 fi
 
-[ -n "$verbose" ] && echo user_uuids=$user_uuids
+verbose-echo user_uuids=$user_uuids
 
 for user_uuid in $user_uuids; do
-    [ -n "$verbose" ] && echo retrieving keys for user $user_uuid in $user_uuid.keys
+    verbose-echo retrieving keys for user $user_uuid in $user_uuid.keys
     $CURL --silent $RU/users/$user_uuid/keys > $user_uuid.keys
 done
 
 key_user_ids=$(python3 pass2.py $user_uuids)
 
-[ -n "$verbose" ] && echo key_user_ids=$key_user_ids
+verbose-echo key_user_ids=$key_user_ids
 
 # this sentence generates the authorized_keys for that user
 python3 pass3.py $key_user_ids > $ACCOUNT.authorized_keys
