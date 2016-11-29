@@ -17,7 +17,7 @@ $(function () {
 /*	e.preventDefault(); */
         $(this).tab('show');
     });
-    $(".nav-pills a").click(function(e){
+    $(".nav-pills a:not(.default-click)").click(function(e){
 /* we DO call this one, so the codeview elements do not cause a change in the url
    e.g. when clicking in 'plain' or 'diff' this does not reflect in url */
 	e.preventDefault(); 

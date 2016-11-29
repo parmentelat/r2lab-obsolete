@@ -80,7 +80,6 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
 
   <center>
     <img src="/assets/img/B1.png" alt="b1"><br/>
-    Download the <a href="/code/B1-send-file.py" download target="_blank">B1 experiment</a> code
   </center>
 
 << codeview C1 xxx.py >>
@@ -97,7 +96,6 @@ In addition to what we have seen in the previous experiments (A1-A4), we will no
 
   <center>
     <img src="/assets/img/B2.png" alt="b2"><br/>
-    Download the <a href="/code/B2-send-file.py" download target="_blank">B2 experiment</a> code
   </center>
 
 << codeview C2 B1-send-file.py B2-send-file.py >>

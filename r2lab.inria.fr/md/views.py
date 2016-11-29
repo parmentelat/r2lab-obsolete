@@ -254,27 +254,26 @@ def implement_codeview(id, f1, f2, lang='python'):
         diff_header_class  = ''
         plain_body_class   = 'in active'
         diff_body_class    = ''
+        focus              = f1
     else:
         plain_header_class = ''
         diff_header_class  = 'active'
         plain_body_class   = ''
         diff_body_class    = 'in active'
+        focus              = f2
 
     ########## the nav pills
-    # only one file:
-    if not f2:
-        result += """
+    result += """
 <ul class="nav nav-pills">
-<li class="{plain_header_class}"><a href="#view-{id}-plain">{f1}</a></li>
-</ul>
+<li class="{plain_header_class}"><a href="#view-{id}-plain">{focus}</a></li>
+<li class="navbar-right"><a class="default-click" href="/code/{focus}" download target="_blank">
+<span class='fa fa-cloud-download'></span> {focus}</a></li>
 """.format(**locals())
-    else:
+    if f2:
         result += """
-<ul class="nav nav-pills">
-<li class="{plain_header_class}"><a href="#view-{id}-plain">{f2}</a></li>
 <li class="{diff_header_class}"><a href="#view-{id}-diff">{f1} ➾ {f2}</a></li>
-</ul>
 """.format(**locals())
+    result += "</ul>"
 
     ########## the contents
     result += """

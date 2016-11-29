@@ -45,7 +45,6 @@ Fedoras for all users.
   At the end, you will create also an application at the <strong>fit01</strong> node to check if the version corresponds as expected.
   <center>
     <img src="/assets/img/C1.png" alt="c1"><br>
-    Download the <a href="/code/C1-load.py" download target="_blank">C1 experiment</a> code
   </center>
 << codeview D1 D1-load.py >>
 

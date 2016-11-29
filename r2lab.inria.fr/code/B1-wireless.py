@@ -55,11 +55,11 @@ check_lease = SshJob(
 turn_on_wireless_script = """#!/bin/bash
 
 # we expect the following arguments
-# 1. wireless driver name (iwlwifi or ath9k)
-# 2. wireless interface name (intel or atheros)
-# 3. IP-address/mask for that interface 
-# 4. the wifi network name to join
-# 5. the wifi frequency to use
+# * wireless driver name (iwlwifi or ath9k)
+# * wireless interface name (intel or atheros)
+# * IP-address/mask for that interface 
+# * the wifi network name to join
+# * the wifi frequency to use
 
 driver=$1; shift
 ifname=$1; shift

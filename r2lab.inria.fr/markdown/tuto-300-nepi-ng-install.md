@@ -48,15 +48,13 @@ You can check that this requirement is fulfilled by running
 
 ## Installing `asyncssh`
 
-There is a core dependency to a library named `asyncssh`; this in turn
-requires binary extensions, so here's our receommendations to install
-this library. Use `sudo` for running `pip3` unless you are working in
-a `virtualenv` or similar.
+There is a core dependency to a library named
+[`asyncssh`](https://github.com/ronf/asyncssh); this in turn requires
+binary extensions, so here's our recommendation to install this
+library. Use `sudo` for running `pip3` unless you are working in a
+`virtualenv` or similar.
 
 ### Ubuntu
-
-Ubuntu pleasantly offers `asyncssh` as a native package, so no need to
-run pip3 here.
 
 Tested on Ubuntu-16
 
@@ -66,8 +64,7 @@ Tested on Ubuntu-16
 
 ### Fedora
 
-Fedora OTOH did not support asyncssh as oof fedora-24, so here's a -
-possibly non-exhaustive - list of dependencies that help building
+Here's a - possibly non-exhaustive - list of dependencies that help building
 `asyncssh`
 
 Tested on fedora-23
@@ -111,13 +108,13 @@ and that will bring you the latest release published on `pypi.org`.
 <!------------ SSHAGENT ------------>
 <div id="SSHAGENT" class="tab-pane fade" markdown="1">
 
-## Note on ssh and ssh-agent
+### ssh and ssh-agent
 
 `nepi-ng` **does not require** a native ssh client to be installed on
-your laptop, as it uses the great `asyncssh` library instead. However,
-it is recommended to have one installed, if only for running an ssh
-agent, as using ssh repeatedly is almost impossible without an
-ssh-agent.
+your laptop, as it uses the great [`asyncssh`
+library](https://github.com/ronf/asyncssh) instead. However, it is
+recommended to have one installed, if only for running an ssh agent,
+as using ssh repeatedly is almost impossible without an ssh-agent.
 
 You will see that in all the code of these tutorials, there is no
 option to specify an alternate key. This is because all the examples
@@ -139,6 +136,32 @@ command - at least on unix-based systems.
     ~/.ssh $ ssh-add -l
     1024 SHA256:KNm0U4SgFV9bY957hJAIRR68n5AZHQ6e1gbiXrGHuOA /Users/parmentelat/.ssh/id_rsa (RSA)
     2048 SHA256:WvCdpP+FHBTnkwbkqYl43GVgwEK2iYdwRaNm+fCc+Xg onelab.private (RSA)
+
+### ssh-agent lifespan
+
+In your ssh agent, the keys you add are kept **in memory**. This means
+that they can only be added for the lifespan of the agent, and **need
+to be added again** if, for example, you **log out of your session**,
+or otherwise reboot your laptop.
+
+### other means to deal with keys
+
+The reasons we use keys from an ssh agent in the tutorial are:
+
+* first it makes code a little simpler
+
+* second, first in standard situations a private key is password
+protected. And when a private key indeed is password-protected, then
+using an ssh agent really becomes almost mandatory, because otherwise
+you get prompted your password every single time you run an ssh
+command.
+
+However if you prefer, you can as well run without an ssh agent,
+and tweak your script so that a specific key be used instead.
+
+xxx we cannot give details at this point because it is too early;
+to be added somewhere else towards the end.
+
 
 </div>
 

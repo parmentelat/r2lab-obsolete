@@ -186,8 +186,6 @@ This example introduces the following classes:
 
 ### The code
 
-<center>Download the <a href="/code/A1-ping.py" download target="_blank">A1 experiment</a> code</center>
-
 << codeview A1 A1-ping.py >>
 
 ### Sample output
@@ -242,7 +240,6 @@ We now see a slightly different version of the same experiment, but
 
 ### The code
 
-  <center> Download the <a href="/code/A2-ping.py" download target="_blank">A2 experiment</a> code </center>
 << codeview A2 A1-ping.py A2-ping.py >>
 
 ### Sample output
@@ -291,8 +288,6 @@ to the gateway, regardless of the number of nodes actually controlled.
   </center>
 
 ### The code
-
-<center>Download the <a href="/code/A3-ping.py" download target="_blank">A3 experiment</a> code</center>
 
 << codeview A3 A2-ping.py A3-ping.py >>
 
@@ -366,8 +361,6 @@ the scheduler then bails out immediately.
   immediately if we do not own the reservation at that time.
 
 ### The code
-
-<center>Download the <a href="/code/A4-ping.py" download target="_blank">A4 experiment</a> code</center>
 
 << codeview A4 A3-ping.py A4-ping.py >>
 
@@ -448,8 +441,6 @@ Here is what deserves to be outlined in the code below
   actually succeeded, by using `result()` on a `SshJob` instance.
 
 ### The code
-
-<center>Download the <a href="/code/A5-ping.py" download target="_blank">A5 experiment</a> code</center>
 
 << codeview A5 A4-ping.py A5-ping.py >>
 

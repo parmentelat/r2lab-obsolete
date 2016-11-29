@@ -101,8 +101,6 @@ python variables as arguments. For example this is how
 
 ### The code
 
-<center>Download the <a href="/code/B1-wireless.py" download target="_blank">B1 experiment</a> code</center>
-
 << codeview B1 A5-ping.py B1-wireless.py >>
 
 ### Sample output
@@ -158,8 +156,6 @@ Let us see some variants on that theme [in the next tab](javascript:open_tab('B2
 
 ### The code
 
-<center>Download the <a href="/code/B2-wireless.py" download target="_blank">B2 experiment</a> code</center>
-
 << codeview B2 B1-wireless.py B2-wireless.py >>
 
 ### Sample output
@@ -175,8 +171,6 @@ Let us see some variants on that theme [in the next tab](javascript:open_tab('B2
 ### Objective
 
 ### The code
-
-<center>Download the <a href="/code/B3-wireless.py" download target="_blank">B3 experiment</a> code</center>
 
 << codeview B3 B2-wireless.py B3-wireless.py >>
 
@@ -194,8 +188,6 @@ Let us see some variants on that theme [in the next tab](javascript:open_tab('B2
 
 ### The code
 
-<center>Download the <a href="/code/B4-wireless.py" download target="_blank">B4 experiment</a> code</center>
-
 << codeview B4 B3-wireless.py B4-wireless.py >>
 
 ### Sample output
@@ -211,8 +203,6 @@ Let us see some variants on that theme [in the next tab](javascript:open_tab('B2
 ### Objective
 
 ### The code
-
-<center>Download the <a href="/code/B5-wireless.py" download target="_blank">B5 experiment</a> code</center>
 
 << codeview B5 B4-wireless.py B5-wireless.py >>
 
