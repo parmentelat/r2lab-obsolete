@@ -90,6 +90,12 @@ tools that help us run the testbed. Indeed many of the convenience
 functions starting with `r` in fact are aliases to a `rhubarbe`
 subcommand.
 
+One very frequently used command, that requires that you have a valid lease, is the one that turns off the nodes when you are done:
+
+    all-off
+
+Please try to make sure to use it, especially when you have many nodes running.
+
 In [the next tab](javascript:open_tab('NODES')) we will see how we can
 focus on a specific set of nodes, and easily control them.<
 

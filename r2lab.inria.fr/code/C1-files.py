@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 
 from asynciojobs import Scheduler, Job
 
-from apssh import SshNode, SshJob, Run
+from apssh import SshNode, SshJob, LocalNode, Run
 from apssh import Push
 
 ##########
@@ -37,33 +37,13 @@ node1 = SshNode(gateway = faraday, hostname = "fit01", username = "root",
                 verbose = verbose_ssh)
 
 ########## 1 step, generate a random data file of 1 M bytes
-#
-# paradoxically we do not yet have anything similar to SshNode and Run/RunScript
-# to trigger local commands, so let's do this manually fo now
-#
-async def run_local_command(*argv, inputname=None, outputname=None):
-    command = " ".join(str(arg) for arg in argv)
-    if inputname:
-        command += " < {}".format(inputname)
-    if outputname:
-        command += " > {}".format(outputname)
-    print("run_local_command:", command)
-    process = await asyncio.create_subprocess_shell(command)
-    retcod = await process.wait()
-    if retcod != 0:
-        raise Exception("Command {} failed with code {}"
-                        .format(command, retcod))
-
-async def create_random():
-    await run_local_command("head", "-c", 2**20, 
-                            inputname="/dev/random",
-                            outputname="RANDOM")
-    os.system("ls -l RANDOM")
-    # on a MAC system, it's shasum, replace with sha1sum on linux
-    os.system("shasum RANDOM")
-        
-# a plain Job instance can be created based on a regular coroutine
-create_random_job = Job(create_random())
+create_random_job = SshJob(
+    node = LocalNode(),
+    commands = [
+        Run("head", "-c", 2**20, "<", "/dev/random", ">", "RANDOM"),
+        Run("ls", "-l", "RANDOM"),
+        Run("shasum", "RANDOM"),
+        ])
 
 ########## 2nd step : push this over to node1
 

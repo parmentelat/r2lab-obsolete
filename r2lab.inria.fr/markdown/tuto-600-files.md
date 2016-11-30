@@ -66,11 +66,10 @@ This is what the code below carries out; the things to outline in this code are
 ### Sample output
 
     $ python3 ./C1-files.py
-    run_local_command: head -c 1048576 < /dev/random > RANDOM
-    -rw-r--r--  1 parmentelat  staff  1048576 Nov 30 17:09 RANDOM
-    159613611d196faa4117f80123d37b997496d331  RANDOM
-    fit01:-rw-r--r-- 1 root root 1048576 Nov 30 17:09 RANDOM
-    fit01:159613611d196faa4117f80123d37b997496d331  RANDOM
+    LOCALNODE:-rw-r--r--  1 parmentelat  staff  1048576 Nov 30 21:32 RANDOM
+    LOCALNODE:3f147d42ed40df83819de3ab2093de352a1c5c6b  RANDOM
+    fit01:-rw-r--r-- 1 root root 1048576 Nov 30 21:32 RANDOM
+    fit01:3f147d42ed40df83819de3ab2093de352a1c5c6b  RANDOM
 
 ### Next
 
