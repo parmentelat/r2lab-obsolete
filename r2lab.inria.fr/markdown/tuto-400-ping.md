@@ -186,6 +186,8 @@ This example introduces the following classes:
 
 ### The code
 
+Every time we will see a piece of code, you can download the raw code with the right-most button.
+
 << codeview A1 A1-ping.py >>
 
 ### Sample output
@@ -213,7 +215,8 @@ link just below the picture above.
 
 ### Next
 
-We will now see [in tab A2 how to specify your slice name on the command line](javascript:open_tab('A2')), and other good practices.
+We will now see [in tab A2 how to specify your slice name on the
+command line](javascript:open_tab('A2')), and other good practices.
 
 </div>
 

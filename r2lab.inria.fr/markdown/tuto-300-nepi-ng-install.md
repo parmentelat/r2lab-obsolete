@@ -27,6 +27,13 @@ experiments right from your own laptop, and to this end we provide a
 set of tools that we collectively refer to as `nepi-ng`. This page
 gives you detailed instructions for installing these.
 
+You will also find a more complete documentation on these 2 tools below 
+
+* [the `asynciojobs` documentation](http://nepi-ng.inria.fr/asynciojobs)
+  including [its API reference](http://nepi-ng.inria.fr/asynciojobs/API.html)
+* [the `apssh` documentation](http://nepi-ng.inria.fr/apssh)
+  including [its API reference](http://nepi-ng.inria.fr/apssh/API.html)
+
 ## Terminal-based
 
 All the tools that we will write will run in a terminal, we assume you

@@ -79,6 +79,12 @@ we cannot anymore simply run the predefined convenience command
 `turn-on-data`, and we are going to have to put a little more work in this
 step.
 
+We are going to configure a small *ad hoc* network between both nodes,
+using their Atheros WiFi card, and this is the purpose of the bash
+shell script named `turn_on_wireless_script`; as you will see, this
+script uses some hard-wired settings like the channel and SSID, but
+you can easily tweak the code so as to make this a parameter.
+
 ### New features
 
 The `B1 code` below exhibits the use of a new class, `RunString`,
@@ -98,6 +104,8 @@ See also how the `init_node_01` job now uses `RunString` to pass it
 python variables as arguments. For example this is how
 `turn_on_wireless_script` gets passed the right IP address for each node.
 
+As you will see in the sample output below, it takes some time for the
+IP connectivity to be established after the driver is configured.
 
 ### The code
 
@@ -153,6 +161,37 @@ Let us see some variants on that theme [in the next tab](javascript:open_tab('B2
 <div id="B2" class="tab-pane fade" markdown="1">
 
 ### Objective
+
+In this new variant, we are going to illustrate a few convenient tricks:
+
+* we add a new option to the script so that one can choose, right on
+  the command line, whether we want to use the intel or the atheros
+  WiFi card; this simply relies on the [standard `argparse`
+  module](https://docs.python.org/3/library/argparse.html) that we
+  have already used for other options, the only new thing being the
+  use of the `choices` keyword, so that only the 2 supported driver
+  names can be used;
+
+* more interestingly, we can remove the `wireless_interface` variable
+  from that script altogether, thanks to a shell utilily available on
+  all nodes and named `wait-for-interface-on-driver`. This shell
+  function returns the name of the network interface associated with a
+  given driver name, so it is enough to load, say, module `ath9k` and
+  let this function figure out that the actual interface name is
+  `atheros`;
+
+* finally, this new script displays the outputs of the ssh
+  commands with a slightly different format, in that every line will
+  now receive a timestamp in addition to the hostname. So for example we would issue lines like
+
+    14-37-28:fit01:turn-off-wireless: shutting down device intel
+
+  instead of just
+
+    fit01:turn-off-wireless: shutting down device intel
+
+This is achieved through the use of the `TimeColonFormatter()` class; we create one instance of this class for each instance of `SshNode`
+
 
 ### The code
 

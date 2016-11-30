@@ -17,19 +17,14 @@ parser.add_argument("-s", "--slice", default=gateway_username,
                          .format(gateway_username))
 parser.add_argument("-v", "--verbose-ssh", default=False, action='store_true',
                     help="run ssh in verbose mode")
-parser.add_argument("-i", "--interface", default='atheros',
-                    choices = ['intel', 'atheros'],
-                    help="use intel or atheros")
+parser.add_argument("-d", "--driver", default='ath9k',
+                    choices = ['iwlwifi', 'ath9k'],
+                    help="specify which driver to use")
 args = parser.parse_args()
 
 gateway_username = args.slice
 verbose_ssh = args.verbose_ssh
-if args.interface == 'atheros':
-    wireless_driver="ath9k"
-    wireless_interface="atheros"
-else:
-    wireless_driver="iwlwifi"
-    wireless_interface="intel"
+wireless_driver = args.driver
 
 ##########
 faraday = SshNode(hostname = gateway_hostname, username = gateway_username,
