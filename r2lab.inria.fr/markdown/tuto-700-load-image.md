@@ -1,4 +1,4 @@
-title: R2lab - Images
+title: nepi-ng - managing files
 tab: tutorial
 skip_header: True
 
@@ -11,11 +11,11 @@ skip_header: True
   <li class="active"> <a href="#INTRO">INTRO</a> </li>
   <li> <a href="#D1">D1</a></li>
   <li> <a href="#D2">D2</a></li>
+  <li> <a href="#D2">D3</a></li>
   <li> <a href="#WRAPUP">WRAPUP</a></li>
 
   << include r2lab/tutos-index.html >>
 </ul>
-
 
 <div id="contents" class="tab-content" markdown="1">
 
@@ -24,34 +24,55 @@ skip_header: True
 
 ### This page is under construction...
 
+[](javascript:open_tab('D1'))
+
 </div>
 
 <!------------ D1 ------------>
 <div id="D1" class="tab-pane fade" markdown="1">
 
-<br>
+### Objective
 
-Below we present an experiment which will conduct a load image using [NEPI](http://nepi.inria.fr/Install/WebHome) network tool at R2lab simulation testbed. 
+### The code
 
-You will be able to load and control the most common Linux distros at
-R2lab testbed as root user. We provide the most recent Ubuntus and
-Fedoras for all users.
+<< codeview D1 D1-files.py >>
 
+### Sample output
 
-<br/>
-  From your computer you will create and deploy <strong>gateway</strong> and <strong>fit01</strong> nodes.
-  Once in R2lab <strong>gateway</strong> node you launch the code to load a fresh distro at <strong>fit01</strong> node. 
-  <br/><br/>
-  At the end, you will create also an application at the <strong>fit01</strong> node to check if the version corresponds as expected.
-  <center>
-    <img src="/assets/img/C1.png" alt="c1"><br>
-  </center>
-<< codeview D1 D1-load.py >>
+### Next
+[](javascript:open_tab('D2'))
 
 </div>
 
 <!------------ D2 ------------>
 <div id="D2" class="tab-pane fade" markdown="1">
+
+### Objective
+
+### The code
+
+<< codeview D2 D1-files.py D2-files.py >>
+
+### Sample output
+
+### Next
+[](javascript:open_tab('D3'))
+
+</div>
+
+<!------------ D3 ------------>
+<div id="D3" class="tab-pane fade" markdown="1">
+
+### Objective
+
+### The code
+
+<< codeview D3 D2-files.py D3-files.py >>
+
+### Sample output
+
+### Next
+[](javascript:open_tab('WRAPUP'))
 
 </div>
 
