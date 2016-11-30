@@ -41,21 +41,23 @@ node1 = SshNode(gateway = faraday, hostname = "fit01", username = "root",
 # paradoxically we do not yet have anything similar to SshNode and Run/RunScript
 # to trigger local commands, so let's do this manually fo now
 #
-async def run_local_command(*argv, input="/dev/null", output="/dev/null"):
+async def run_local_command(*argv, inputname=None, outputname=None):
     command = " ".join(str(arg) for arg in argv)
-    with open(input) as i, open(output, "w") as o:
-        print("run_local_command:", command, "<", input, ">", output)
-        process = await asyncio.create_subprocess_shell(
-            command, stdin=i, stdout=o)
-        retcod = await process.wait()
-        if retcod != 0:
-            raise Exception("Command {} failed with code {}"
-                            .format(command, retcod))
+    if inputname:
+        command += " < {}".format(inputname)
+    if outputname:
+        command += " > {}".format(outputname)
+    print("run_local_command:", command)
+    process = await asyncio.create_subprocess_shell(command)
+    retcod = await process.wait()
+    if retcod != 0:
+        raise Exception("Command {} failed with code {}"
+                        .format(command, retcod))
 
 async def create_random():
-    await run_local_command("head", "-c", 2**20,
-                            input="/dev/random",
-                            output="RANDOM")
+    await run_local_command("head", "-c", 2**20, 
+                            inputname="/dev/random",
+                            outputname="RANDOM")
     os.system("ls -l RANDOM")
     # on a MAC system, it's shasum, replace with sha1sum on linux
     os.system("shasum RANDOM")
