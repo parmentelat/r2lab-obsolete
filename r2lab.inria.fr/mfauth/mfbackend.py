@@ -41,15 +41,19 @@ class ManifoldBackend:
             session, auth, mfuser, slicenames = manifold_details(self.manifold_url, email, password, logger)
             if session is None or mfuser is None:
                 if debug:
-                    print("could not get or missing manifold details")
+                    logger.info("dbg: could not get or missing manifold details")
                 return None
             if debug:
-                print("SESSION keys: {}".format(session.keys()))
+                logger.info("dbg: SESSION keys: {}".format(session.keys()))
             
             ### get a more relevant list of slices right at the r2lab portal
             r2lab_user = get_r2lab_user(mfuser['urn'])
             if debug:
-                print("r2lab_user = {}".format(r2lab_user))
+                logger.info("dbg: r2lab_user = {}".format(r2lab_user))
+
+            if not r2lab_user:
+                logger.error("mfbackend.authenticate emergency exit")
+                return
 
             # extend request to save this environment
             # auth and session['expires'] may be of further interest
