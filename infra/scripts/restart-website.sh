@@ -1,15 +1,30 @@
 #!/bin/bash
 ###
-# this utility script is called every 10 minutes through cron on both faraday and r2lab
+# this utility script is cron'ed to run every morning at 6:00 on both faraday and r2lab
 #
 
-GIT_REPO=/root/r2lab
 LOG=/var/log/restart-website.log
 
-#### updates the contents of /root/r2lab on both boxes
-cd $GIT_REPO
-git reset --hard HEAD >> $LOG 2>&1
-./auto-update.sh
+#### depending on which host:
+case $(hostname) in
+    faraday*)
+	GIT_REPOS=/root/r2lab
+	;;
+    r2lab*)
+	GIT_REPOS="/root/r2lab /root/asynciojobs /root/apssh"
+	;;
+    *)
+	echo Unknown host $(hostname); exit 1;;
+esac
+
+#### updates the contents of selected git repos
+for git_repo in $GIT_REPOS; do
+    cd $git_repo
+    git reset --hard HEAD >> $LOG 2>&1
+    git pull >> $LOG 2>&1
+done
+
+cd
 
 #### depending on which host:
 case $(hostname) in
@@ -18,10 +33,11 @@ case $(hostname) in
 	systemctl restart monitorphones
 	;;
     r2lab*)
+	make -C /root/r2lab/r2lab.inria.fr publish >> $LOG 2>&1
+	make -C /root/asynciojobs publish >> $LOG 2>&1
+	make -C /root/apssh publish >> $LOG 2>&1
 	systemctl restart sidecar
-	make -C $GIT_REPO/r2lab.inria.fr install >> $LOG 2>&1
+	systemctl restart httpd
 	;;
-    *)
-	echo Unknown host $(hostname); exit 1;;
 esac
 
