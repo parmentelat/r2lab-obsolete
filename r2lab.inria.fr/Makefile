@@ -2,15 +2,13 @@
 # invoked every 10 minutes from cron through restart-website.sh
 # which does make install
 
-PUBLISH_PATH = /var/www/r2lab.inria.fr
-
+PUBLISH-PATH = /var/www/r2lab.inria.fr
 EXCLUDES = .git
-
 RSYNC-EXCLUDES = $(foreach exc,$(EXCLUDES), --exclude $(exc))
 
 ########## mirror this contents 
 publish:
-	rsync -av $(RSYNC-EXCLUDES) --delete --delete-excluded ./ $(PUBLISH_PATH)/
+	rsync -av $(RSYNC-EXCLUDES) --delete --delete-excluded ./ $(PUBLISH-PATH)/
 
 ########## restart apache on r2lab.inria.fr
 # maybe not strictly necessary when the python code is stable
