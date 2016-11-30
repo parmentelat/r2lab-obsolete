@@ -3,9 +3,10 @@
 from argparse import ArgumentParser
 
 from asynciojobs import Scheduler
+from asynciojobs import Job
 
 from apssh import SshNode, SshJob, Run
-from apssh import RunString, TimeColonFormatter
+from apssh import RunString, RunScript, TimeColonFormatter
 
 ##########
 gateway_hostname  = 'faraday.inria.fr'
@@ -49,84 +50,50 @@ check_lease = SshJob(
     command = Run("rhubarbe leases --check"),
 )
 
-####################
-# This is our own brewed script for setting up a wifi network
-# it run on the remote machine - either sender or receiver
-# and is in charge of initializing a small ad-hoc network
-#
-# Thanks to the RunString class, we can just define this as
-# a python string, and pass it arguments from python variables
-#
-
-turn_on_wireless_script = """#!/bin/bash
-
-# we expect the following arguments
-# * wireless driver name (iwlwifi or ath9k)
-# * IP-address/mask for that interface 
-# * the wifi network name to join
-# * the wifi frequency to use
-
-driver=$1; shift
-ipaddr_mask=$1; shift
-netname=$1; shift
-freq=$1;   shift
-
-# load the r2lab utilities - code can be found here:
-# https://github.com/parmentelat/r2lab/blob/master/infra/user-env/nodes.sh
-source /root/r2lab/infra/user-env/nodes.sh
-
-turn-off-wireless
-
-echo loading module $driver
-modprobe $driver
-
-# some time for udev to trigger its rules
-sleep 1
-
-ifname=$(wait-for-interface-on-driver $driver)
-
-echo configuring interface $ifname
-# make sure to wipe down everything first so we can run again and again
-ip address flush dev $ifname
-ip link set $ifname down
-# configure wireless
-iw dev $ifname set type ibss
-ip link set $ifname up
-# set to ad-hoc mode
-iw dev $ifname ibss join $netname $freq
-ip address add $ipaddr_mask dev $ifname
-"""
-
 ##########
 # setting up the wireless interface on both fit01 and fit02
 init_node_01 = SshJob(
     node = node1,
     required = check_lease,
-    command = RunString(
-        turn_on_wireless_script,
+    command = RunScript(
+        "B3-wireless.sh", "init-ad-hoc-network", 
         wireless_driver, "10.0.0.1/24", "foobar", 2412,
-        remote_name = "init-wireless",
 #        verbose=True,
     ))
 init_node_02 = SshJob(
     node = node2,
     required = check_lease,
-    command = RunString(
-        turn_on_wireless_script,
+    command = RunScript(
+        "B3-wireless.sh", "init-ad-hoc-network", 
         wireless_driver, "10.0.0.2/24", "foobar", 2412))
 
 # the command we want to run in faraday is as simple as it gets
 ping = SshJob(
     node = node1,
     required = (init_node_01, init_node_02),
-    command = Run(
-        'ping', '-c', '20', '10.0.0.2', 
+    command = RunScript(
+        "B3-wireless.sh", "my-ping", '10.0.0.2', 20
 #        verbose=True,
     ))
 
+########
+# for the fun of it, let's add a job that runs forever and writes
+# current time ever second
+import time
+import asyncio
+
+async def infinite_clock():
+    while True:
+        print("--- TICK - {}".format(time.strftime("%H:%M:%S")))
+        await asyncio.sleep(1)
+
+# a forever job is not expected to end, instead
+# it gets killed when the rest of the flock is done with
+clock_job = Job(infinite_clock(), forever=True)
+        
 ##########
 # our orchestration scheduler has 4 jobs to run this time
-sched = Scheduler(check_lease, ping, init_node_01, init_node_02)
+sched = Scheduler(check_lease, ping, init_node_01, init_node_02, clock_job)
 
 # run the scheduler
 ok = sched.orchestrate()
