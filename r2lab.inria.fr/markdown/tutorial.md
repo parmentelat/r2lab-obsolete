@@ -80,6 +80,13 @@ If you have any issue with this tutorial, or with using R2lab more
 generally, please contact us at
 [`fit-r2lab-users@inria.fr`](mailto:fit-r2lab-users@inria.fr)
 
+You can subscribe to that `fit-r2lab-users` discussion list by sending
+an email to `sympa@inria.fr` with `subscribe fit-r2lab-users` in the
+body of the message.
+
+You can do this by [simply clicking this link](mailto:sympa@inria.fr?subject=subscribe fit-r2lab-users)
+
+
 </div>
 
 </div> <!-- end div contents -->
