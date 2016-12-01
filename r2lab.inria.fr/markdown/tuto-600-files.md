@@ -11,7 +11,7 @@ skip_header: True
   <li class="active"> <a href="#INTRO">INTRO</a> </li>
   <li> <a href="#C1">C1</a></li>
   <li> <a href="#C2">C2</a></li>
-  <li> <a href="#C2">C3</a></li>
+  <li> <a href="#C3">C3</a></li>
   <li> <a href="#WRAPUP">WRAPUP</a></li>
 
   << include r2lab/tutos-index.html >>
@@ -28,6 +28,12 @@ the `Push` and `Pull` commands in a `SshNode`.
 We will also take this chance to see that a `SshJob` object can be
 defined with several commands if that's helpful, avoiding the need to
 create long strings of jobs.
+
+Finally, we will illustrate another possible way to manage the
+components of the scheduler: instead of creating the scheduler at the
+end with all the jobs, we create the scheduler at the very beginning
+and update it as we go. Of course the result is exactly the same, it's
+just another programming style that is probably worth considering.
 
 Let us start with [copying files over to the nodes](javascript:open_tab('C1')).
 
@@ -47,7 +53,8 @@ This is what the code below carries out; the things to outline in this code are
 
 * the local commands are in this version executed using low-level
   tools, it is a little awkward, and we plan on providing as part of
-  `apssh` tools similar to `SshJob` to achieve the same result in a more elegant way
+  `apssh` tools similar to `SshJob` to achieve the same result in a
+  more elegant way
 
 * once the local file is created, we use a `Push` instance instead of
   the `Run` and its variants that we have seen so far, to actually
@@ -80,6 +87,8 @@ how to retrieve back that same file in order to close the loop.
 
 <!------------ C2 ------------>
 <div id="C2" class="tab-pane fade" markdown="1">
+
+XXX This page is under construction XXX
 
 ### Objective
 
