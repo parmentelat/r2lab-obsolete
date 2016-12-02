@@ -261,6 +261,8 @@ and then you invoke `myscript.sh foo 1 2 "3 4"` you will get this ouput
 
 ### The code
 
+Make sure you download both files in the same location before trying to run the python script.
+
 << codeview B3 B2-wireless.py B3-wireless.py >>
 
 << codeview B3SHELL B3-wireless.sh >>

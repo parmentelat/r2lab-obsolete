@@ -9,7 +9,7 @@ from argparse import ArgumentParser
 from asynciojobs import Scheduler, Job, Sequence
 
 from apssh import SshNode, SshJob, LocalNode
-from apssh import Run, RunString, Push, Pull
+from apssh import Run, RunString, Push
 
 ##########
 
@@ -86,18 +86,54 @@ turn_on_datas = [ SshJob( node = node,
 
 ########## next : run a sender on node1 and a receiver on node 2
 # in order to transfer RANDOM over a netcat session on the data network
+#
+receiver_manager_script = """#!/bin/bash
+source /root/r2lab/infra/user-env/nodes.sh
 
-# a Sequence object is a container for jobs, they will have their
-# 'requires' relationship organized along the sequence order
+function start() {
+    port=$1; shift
+    outfile=$1; shift
+    # r2lab-id returns a 2-digit string with the node number
+    ipaddr="data"$(r2lab-id)
+    echo "STARTING CAPTURE into $outfile"
+    # start netcat in listen mode
+    netcat -l $ipaddr $port > $outfile &
+    # bash's special $! returns pid of the last job sent in background
+    # preserve this pid in local file 
+    echo $! > netcat.pid
+    echo netcat server running on $ipaddr:$port in pid $!
+}
 
-transfer_job = Sequence(
+function stop() {
+    echo "STARTING CAPTURE into $outfile"
+    pid=$(cat netcat.pid)
+    # not necessary as netcat dies on its own when clent terminates
+    echo Would kill process $pid
+    rm netcat.pid
+}
 
-    # start the receiver - this of course returns immediately
-    SshJob( node = node2,
-            commands = [
-                Run("netcat", "-l", "data02", netcat_port, ">", "RANDOM", "&"),
-            ]),
+function monitor () {
+    while true; do
+        pid=$(pgrep netcat)
+        [ -n "$pid" ] && ps $pid || echo no netcat process
+# thanks to Ubuntu the shell's sleep can do fractions of seconds
+        sleep .2
+    done
+}
+# usual generic laucher
+"$@"
+"""
 
+# start the receiver - this of course returns immediately
+SshJob( node = node2,
+        scheduler = scheduler,
+        required = turn_on_datas,
+        commands = [
+            RunString(receiver_manager_script, "start", netcat_port, "RANDOM",
+                      remote_name = "receiver-manager"),
+        ])
+
+Sequence(
     # start the sender 
     SshJob( node = node1,
             # ignore netcat result
@@ -108,41 +144,37 @@ transfer_job = Sequence(
                 Run("netcat", "data02", netcat_port, "<", "RANDOM"),
                 Run("echo SENDER DONE"),
             ]),
-
+    # kill the receiver, and
     # check contents on the receiving end
     SshJob( node=node2,
+            # set a label for the various representations
+            # including the graphical one obtained with export_as_dotfile
+            label = "stop receiver",
             commands = [
+                RunString(receiver_manager_script, "stop",
+                          remote_name="receiver-manager"),
                 Run("ls -l RANDOM"),
                 Run("sha1sum RANDOM"),
             ]),
-
-    ### these two apply to the Sequence
-    # required applies to the first job in the sequence
     required = turn_on_datas,
-    # scheduler applies to all jobs in the sequence
     scheduler = scheduler,
 )
 
-########## finally : let's complete the loop and
-########## retrieve RANDOM from node2 back on local laptop
+SshJob( node = node2,
+        scheduler = scheduler,
+        forever = True,
+        # see above
+        label = "infinite monitor",
+        commands = [
+            RunString(receiver_manager_script, "monitor",
+                      remote_name="receiver-manager"),
+        ])
 
-Sequence(
-    SshJob( node = node2,
-            commands = [
-                Run("echo the Pull command runs on $(hostname)"),
-                Pull(remotepaths = "RANDOM",
-                     localpath = "RANDOM.loopback"),
-            ]),
-    # make sure the file we receive at the end of the loop
-    # is identical to the original
-    SshJob( node = LocalNode(),
-            commands = [
-                Run("ls -l RANDOM.loopback", verbose=True),
-                Run("diff RANDOM RANDOM.loopback && echo RANDOM.loopback identical to RANDOM"),
-            ]),
-    scheduler = scheduler,
-    required = transfer_job
-)
+# we produce the attached png in 2 stages
+# first we create a dot file with this call:
+scheduler.export_as_dotfile("C2bis-files.dot")
+# then we run
+# dot -Tpng -o C2bis-files.png C2bis-files.dot
 
 ##########
 

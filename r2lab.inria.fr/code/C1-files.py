@@ -8,14 +8,16 @@ from argparse import ArgumentParser
 
 from asynciojobs import Scheduler, Job
 
-from apssh import SshNode, SshJob, LocalNode, Run
-from apssh import Push
+from apssh import SshNode, SshJob, LocalNode
+from apssh import Run, RunString, Push
 
 ##########
 
 gateway_hostname  = 'faraday.inria.fr'
 gateway_username  = 'onelab.inria.r2lab.tutorial'
 verbose_ssh = False
+random_size = 2**20
+random_size = 2**10
 
 # this time we want to be able to specify username and verbose_ssh
 parser = ArgumentParser()
@@ -46,9 +48,11 @@ scheduler = Scheduler()
 
 create_random_job = SshJob(
     node = LocalNode(),
+    # this is how we can create the job right into the scheduler
+    # so no need to add it later on
     scheduler = scheduler,
     commands = [
-        Run("head", "-c", 2**20, "<", "/dev/random", ">", "RANDOM"),
+        Run("head", "-c", random_size, "<", "/dev/random", ">", "RANDOM"),
         Run("ls", "-l", "RANDOM"),
         Run("shasum", "RANDOM"),
         ])
@@ -70,7 +74,7 @@ push_job = SshJob(
 ##########
 
 # run the scheduler
-ok = sched.orchestrate()
+ok = scheduler.orchestrate()
 
 # return something useful to your OS
 exit(0 if ok else 1)
