@@ -92,9 +92,7 @@ git-pull-r2lab
 
 turn-off-wireless
 
-byte=$(sed -e 's,^0,,' <<< $(r2lab-id))
-
-ipaddr_mask=10.0.0.$byte/24
+ipaddr_mask=10.0.0.$(r2lab-ip)/24
 
 echo loading module $driver
 modprobe $driver

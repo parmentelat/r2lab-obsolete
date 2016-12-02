@@ -24,7 +24,7 @@ function init-ad-hoc-network (){
     # https://github.com/parmentelat/r2lab/blob/master/infra/user-env/nodes.sh
     source /root/r2lab/infra/user-env/nodes.sh
 
-    ipaddr_mask=10.0.0.$(r2lab-id)/24
+    ipaddr_mask=10.0.0.$(r2lab-ip)/24
 
     turn-off-wireless
     

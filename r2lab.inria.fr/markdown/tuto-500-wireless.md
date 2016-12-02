@@ -182,7 +182,25 @@ In this new variant, we are going to illustrate a few convenient tricks:
 * in much the same way, we will remove the need to pass an IP address
   to the `turn_on_wireless_script`, by computing this address based on
   the node rank in r2lab, using another convenience tool named
-  `r2lab-id`.
+  `r2lab-ip`; there actually are 2 similar functions available on each node
+
+  * `r2lab-ip`: will return the number of the current node, under **1 or 2 digits**;
+    for example on node 8, this returns `8`;
+    this is suitable to build IP addresses;
+
+
+  * `r2lab-id`: will return the number of the current node, but **always in 2 digits**;
+    for example on node 8, this returns `08`;
+    this is suitable to build hostnames; so for example you would do
+
+# 
+
+    my_data_hostname="data$(r2lab-id)"
+    echo $my_data_hostname
+    data08
+    my_wireless_ip_address="10.0.0.$(r2lab-ip)"
+    echo my_wireless_ip_address
+    10.0.0.8
 
 * finally, this new script displays the outputs of the ssh commands
   with a slightly different format, in that every line will now

@@ -74,8 +74,8 @@ freq=$1;   shift
 source /root/r2lab/infra/user-env/nodes.sh
 
 # local IP address to use is computed on the 10.0.0.0/24
-# subnet and based on current node number (using r2lab-id)
-ipaddr_mask=10.0.0.$(r2lab-id)/24
+# subnet and based on current node number (using r2lab-ip)
+ipaddr_mask=10.0.0.$(r2lab-ip)/24
 
 turn-off-wireless
 
