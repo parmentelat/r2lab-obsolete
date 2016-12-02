@@ -25,11 +25,11 @@ All this contents is accessible through the 'TUTORIALS INDEX' dropdown that appe
 
 ### Infrastructure
 
-##### [Sign up for a OneLab account](tuto-100-registration.md)
+#### [Sign up for a OneLab account](tuto-100-registration.md)
 
   All information about how to register and schedule a node
 
-##### [Shell tools](tuto-200-shell-tools.md) available in the R2lab gateway
+#### [Shell tools](tuto-200-shell-tools.md) available in the R2lab gateway
 
   Discover how to do basic control of the nodes by logging in at the
   `faraday.inria.fr` gateway from a regular `ssh` session: how to
@@ -37,24 +37,24 @@ All this contents is accessible through the 'TUTORIALS INDEX' dropdown that appe
   
 ### Examples of experimentation scripts with `nepi-ng`
 
-##### [`nepi-ng`: install](tuto-300-nepi-ng-install.md)
+#### [`nepi-ng`: install](tuto-300-nepi-ng-install.md)
 
-##### [`nepi-ng`: ping examples](tuto-400-ping.md)
+#### [`nepi-ng`: ping examples](tuto-400-ping.md) - a.k.a. the **A** series
 
   A couple examples to get started with the `nepi-ng` network tool
 
-##### [`nepi-ng` : wireless](tuto-500-wireless.md)
+#### [`nepi-ng` : wireless](tuto-500-wireless.md) - a.k.a. the **B** series
 
   A few more pings to see how one can initialize and configure wireless links
 
-##### [`nepi-ng` : file exchange](tuto-600-files.md)
+#### [`nepi-ng` : file exchange](tuto-600-files.md) - a.k.a. the **C** series
 
 A full loop doing file transfers: a random file is produced locally,
 then pushed on one node, transferred to a second node using netcat
 over the wired network, retrieved back on the local laptop where it is
 compared with the original.
 
-##### [`nepi-ng`: miscell](tuto-700-miscell.md)
+#### [`nepi-ng`: miscell](tuto-700-miscell.md) 
 
 Additional resources here, most importantly
 
@@ -65,19 +65,20 @@ Additional resources here, most importantly
 * a more realistic script:
 dealing with any number of nodes, and running pings between all couples of nodes.
 
-<br />
-
 ### Other stuff
 
-##### [R2lab and OpenAirInterface](tuto-800-oai.md)
+#### [R2lab and OpenAirInterface](tuto-800-oai.md)
 
   Some indications on the features present on R2lab to deploy experiments based on OpenAirInterface.
 
-##### Video tutorials on YouTube
+#### Video tutorials on YouTube
 
-  * [End-to-End Experiment](tuto-900-youtube.md) : Running a wireless experiment end-to-end. 
+  * [End-to-End Experiment](tuto-900-youtube.md) : Running a wireless
+    experiment end-to-end.
 
-  * [OAI 5G experiment](tuto-900-youtube.md) : Setting up an OpenAirInterface-based 5G infrastructure, and a tour in the chamber using Skype on a commercial NEXUS phone.
+  * [OAI 5G experiment](tuto-900-youtube.md) : Setting up an
+    OpenAirInterface-based 5G infrastructure, and a tour in the
+    chamber using Skype on a commercial NEXUS phone.
 
 </div>
 
@@ -94,7 +95,8 @@ You can subscribe to that `fit-r2lab-users` discussion list by sending
 an email to `sympa@inria.fr` with `subscribe fit-r2lab-users` in the
 body of the message.
 
-You can do this by [simply clicking this link](mailto:sympa@inria.fr?subject=subscribe fit-r2lab-users)
+You can do this by
+[simply clicking this link](mailto:sympa@inria.fr?subject=subscribe fit-r2lab-users)
 
 
 </div>

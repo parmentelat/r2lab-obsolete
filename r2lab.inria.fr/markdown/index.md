@@ -45,11 +45,13 @@ widget_login_template: r2lab/widget_login.html
   <div class="row">
   <div class="col-md-3">
     <h4>1. Subscribe in the portal</h4>
-    <p>Create your account through OneLab interface, schedule your experiments and manage the resources through the dashboard control
+    <p>Create your account through OneLab interface,
+    schedule your experiments and manage the resources through the dashboard control
     </p></div>
     <div class="col-md-3">
     <h4>2. Book a timeslot</h4>
-    <p>At your time... in your prefered day! With few clicks the whole platform are entirely available for your tests.
+    <p>At your time... in your prefered day!
+    With few clicks the whole platform are entirely available for your tests.
     </p></div>
     <div class="col-md-3">
     <h4>3. Configure nodes</h4>
@@ -67,7 +69,7 @@ widget_login_template: r2lab/widget_login.html
 
   <footer class="footer footer-collapse">
     <div class="container">
-      Interested in more? <a href="events.md#main">Follow the last <strong>news</strong> » </a>
+      Interested in more? <a href="news.md#main">Follow the latest news » </a>
     </div>
   </footer>
 
