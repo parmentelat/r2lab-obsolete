@@ -4,7 +4,7 @@ $(function() {
 	this.init = function() {
 	    console.log($("#chat-container"));
 	    $("#chat-container").html(
-		'<button class="chat-on-off">Join chat room #r2lab at freenode (on and off)</button>'
+		'<a class="chat-on-off btn btn-primary btn-large">Join chat room #r2lab at freenode (on and off)</a>'
 		    + '<iframe style="display:none" class="chat-body" src="http://webchat.freenode.net?nick='
 		    + this.username
 		    + '&channels=%23r2lab&uio=MTY9dHJ1ZSY5PXRydWUmMTE9MzA572"'
