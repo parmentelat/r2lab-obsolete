@@ -9,7 +9,6 @@ from apssh import Run, RunString, Pull
 
 import time
 
-node_ids = range(1, 6)
 
 ##########
 gateway_hostname  = 'faraday.inria.fr'
@@ -17,18 +16,25 @@ gateway_username  = 'onelab.inria.r2lab.tutorial'
 verbose_ssh = False
 wireless_driver="ath9k"
 wireless_interface="atheros"
-ping_count = 20
+ping_count = 12
 
 parser = ArgumentParser()
 parser.add_argument("-s", "--slice", default=gateway_username,
                     help="specify an alternate slicename, default={}"
                          .format(gateway_username))
+parser.add_argument("-m", "--max", default=5, type=int,
+                    help="will run on all nodes beteen 1 and this number")
 parser.add_argument("-v", "--verbose-ssh", default=False, action='store_true',
                     help="run ssh in verbose mode")
+parser.add_argument("-d", "--debug", default=False, action='store_true',
+                    help="run jobs and engine in verbose mode")
 args = parser.parse_args()
 
 gateway_username = args.slice
 verbose_ssh = args.verbose_ssh
+verbose_jobs = args.debug
+
+node_ids = range(1, args.max+1)
 
 ##########
 faraday = SshNode(hostname = gateway_hostname, username = gateway_username,
@@ -45,12 +51,13 @@ node_index = {
     for id in node_ids
 }
 
-scheduler = Scheduler()
+scheduler = Scheduler(verbose = verbose_jobs)
 
 ##########
 check_lease = SshJob(
     scheduler = scheduler,
     node = faraday,
+#    verbose = verbose_jobs,
     critical = True,
     command = Run("rhubarbe leases --check"),
 )
@@ -81,9 +88,13 @@ freq=$1;   shift
 # https://github.com/parmentelat/r2lab/blob/master/infra/user-env/nodes.sh
 source /root/r2lab/infra/user-env/nodes.sh
 
+git-pull-r2lab
+
 turn-off-wireless
 
-ipaddr_mask=10.0.0.$(r2lab-id)/24
+byte=$(sed -e 's,^0,,' <<< $(r2lab-id))
+
+ipaddr_mask=10.0.0.$byte/24
 
 echo loading module $driver
 modprobe $driver
@@ -114,6 +125,7 @@ init_wireless_jobs = [
         command = RunString(
             turn_on_wireless_script,
             wireless_driver, wireless_interface, "foobar", 2412,
+            verbose = verbose_jobs,
             remote_name="turn-on-wireless",
         ))
     for id, node in node_index.items() ]
@@ -127,6 +139,7 @@ pings = [
         scheduler = scheduler,
         node = nodei,
         required = init_wireless_jobs,
+#        verbose = verbose_jobs,
         commands = [
             Run("echo", "Pinging", j, "from", i, ping_count, "times"),
             Run("ping", "-c", ping_count, "10.0.0.{}".format(j),
@@ -155,8 +168,8 @@ SshJob(
 # for job in pings:
 #     print(job)
 
-print("==================== COMPLETE SCHEDULER")
-scheduler.list(details=True)
+# print("==================== COMPLETE SCHEDULER")
+# scheduler.list(details=True)
 
 success = scheduler.orchestrate()
 
