@@ -49,6 +49,9 @@ check_lease = SshJob(
     command = Run("rhubarbe leases --check"),
 )
 
+# the shell script has gone into B3-wireless.sh
+####################
+
 ##########
 # setting up the wireless interface on both fit01 and fit02
 init_node_01 = SshJob(
@@ -56,7 +59,7 @@ init_node_01 = SshJob(
     required = check_lease,
     command = RunScript(
         "B3-wireless.sh", "init-ad-hoc-network", 
-        wireless_driver, "10.0.0.1/24", "foobar", 2412,
+        wireless_driver, "foobar", 2412,
 #        verbose=True,
     ))
 init_node_02 = SshJob(
@@ -64,7 +67,7 @@ init_node_02 = SshJob(
     required = check_lease,
     command = RunScript(
         "B3-wireless.sh", "init-ad-hoc-network", 
-        wireless_driver, "10.0.0.2/24", "foobar", 2412))
+        wireless_driver, "foobar", 2412))
 
 # the command we want to run in faraday is as simple as it gets
 ping = SshJob(

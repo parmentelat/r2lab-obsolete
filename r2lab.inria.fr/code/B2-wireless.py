@@ -62,18 +62,20 @@ turn_on_wireless_script = """#!/bin/bash
 
 # we expect the following arguments
 # * wireless driver name (iwlwifi or ath9k)
-# * IP-address/mask for that interface 
 # * the wifi network name to join
 # * the wifi frequency to use
 
 driver=$1; shift
-ipaddr_mask=$1; shift
 netname=$1; shift
 freq=$1;   shift
 
 # load the r2lab utilities - code can be found here:
 # https://github.com/parmentelat/r2lab/blob/master/infra/user-env/nodes.sh
 source /root/r2lab/infra/user-env/nodes.sh
+
+# local IP address to use is computed on the 10.0.0.0/24
+# subnet and based on current node number (using r2lab-id)
+ipaddr_mask=10.0.0.$(r2lab-id)/24
 
 turn-off-wireless
 
@@ -83,6 +85,7 @@ modprobe $driver
 # some time for udev to trigger its rules
 sleep 1
 
+# use r2lab tools to figure out the interface name
 ifname=$(wait-for-interface-on-driver $driver)
 
 echo configuring interface $ifname
@@ -104,7 +107,7 @@ init_node_01 = SshJob(
     required = check_lease,
     command = RunString(
         turn_on_wireless_script,
-        wireless_driver, "10.0.0.1/24", "foobar", 2412,
+        wireless_driver, "foobar", 2412,
         remote_name = "init-wireless",
 #        verbose=True,
     ))
@@ -113,7 +116,7 @@ init_node_02 = SshJob(
     required = check_lease,
     command = RunString(
         turn_on_wireless_script,
-        wireless_driver, "10.0.0.2/24", "foobar", 2412))
+        wireless_driver, "foobar", 2412))
 
 # the command we want to run in faraday is as simple as it gets
 ping = SshJob(

@@ -179,6 +179,11 @@ In this new variant, we are going to illustrate a few convenient tricks:
   let this function figure out that the actual interface name is
   `atheros`;
 
+* in much the same way, we will remove the need to pass an IP address
+  to the `turn_on_wireless_script`, by computing this address based on
+  the node rank in r2lab, using another convenience tool named
+  `r2lab-id`.
+
 * finally, this new script displays the outputs of the ssh commands
   with a slightly different format, in that every line will now
   receive a timestamp in addition to the hostname. This is achieved
@@ -206,6 +211,48 @@ About that last point, note that other types of formatters are
 
 ### Sample output
 
+    $ python3 B2-wireless.py
+    16-56-38:faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
+    16-56-39:fit02:Using id=02 and fitid=fit02 - from hostname
+    16-56-39:fit02:turn-off-wireless: driver iwlwifi not used
+    16-56-39:fit01:Using id=01 and fitid=fit01 - from hostname
+    16-56-39:fit02:turn-off-wireless: shutting down device atheros
+    16-56-39:fit01:turn-off-wireless: driver iwlwifi not used
+    16-56-39:fit01:turn-off-wireless: shutting down device atheros
+    16-56-39:fit02:turn-off-wireless: removing driver ath9k
+    16-56-39:fit01:turn-off-wireless: removing driver ath9k
+    16-56-39:fit02:loading module ath9k
+    16-56-39:fit01:loading module ath9k
+    16-56-41:fit02:Using device atheros
+    16-56-41:fit02:configuring interface atheros
+    16-56-41:fit01:Using device atheros
+    16-56-41:fit01:configuring interface atheros
+    16-56-44:fit01:PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
+    16-56-44:fit01:From 10.0.0.1 icmp_seq=1 Destination Host Unreachable
+    16-56-44:fit01:From 10.0.0.1 icmp_seq=2 Destination Host Unreachable
+    16-56-44:fit01:From 10.0.0.1 icmp_seq=3 Destination Host Unreachable
+    16-56-47:fit01:From 10.0.0.1 icmp_seq=4 Destination Host Unreachable
+    16-56-47:fit01:From 10.0.0.1 icmp_seq=5 Destination Host Unreachable
+    16-56-47:fit01:From 10.0.0.1 icmp_seq=6 Destination Host Unreachable
+    16-56-50:fit01:From 10.0.0.1 icmp_seq=7 Destination Host Unreachable
+    16-56-50:fit01:From 10.0.0.1 icmp_seq=8 Destination Host Unreachable
+    16-56-50:fit01:From 10.0.0.1 icmp_seq=9 Destination Host Unreachable
+    16-56-50:fit01:64 bytes from 10.0.0.2: icmp_seq=10 ttl=64 time=4.45 ms
+    16-56-51:fit01:64 bytes from 10.0.0.2: icmp_seq=11 ttl=64 time=2.12 ms
+    16-56-53:fit01:64 bytes from 10.0.0.2: icmp_seq=12 ttl=64 time=2.12 ms
+    16-56-53:fit01:64 bytes from 10.0.0.2: icmp_seq=13 ttl=64 time=2.13 ms
+    16-56-54:fit01:64 bytes from 10.0.0.2: icmp_seq=14 ttl=64 time=2.10 ms
+    16-56-55:fit01:64 bytes from 10.0.0.2: icmp_seq=15 ttl=64 time=2.44 ms
+    16-56-56:fit01:64 bytes from 10.0.0.2: icmp_seq=16 ttl=64 time=2.13 ms
+    16-56-57:fit01:64 bytes from 10.0.0.2: icmp_seq=17 ttl=64 time=1.49 ms
+    16-56-58:fit01:64 bytes from 10.0.0.2: icmp_seq=18 ttl=64 time=1.59 ms
+    16-56-59:fit01:64 bytes from 10.0.0.2: icmp_seq=19 ttl=64 time=1.48 ms
+    16-57-00:fit01:64 bytes from 10.0.0.2: icmp_seq=20 ttl=64 time=1.56 ms
+    16-57-00:fit01:
+    16-57-00:fit01:--- 10.0.0.2 ping statistics ---
+    16-57-00:fit01:20 packets transmitted, 11 received, +9 errors, 45% packet loss, time 19060ms
+    16-57-00:fit01:rtt min/avg/max/mdev = 1.489/2.152/4.455/0.795 ms, pipe 3
+    
 ### Next
 
 In [the next variant](javascript:open_tab('B3')), we are going to see

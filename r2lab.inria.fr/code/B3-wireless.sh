@@ -12,19 +12,19 @@
 
 # we expect the following arguments
 # * wireless driver name (iwlwifi or ath9k)
-# * IP-address/mask for that interface 
 # * the wifi network name to join
 # * the wifi frequency to use
 
 function init-ad-hoc-network (){
     driver=$1; shift
-    ipaddr_mask=$1; shift
     netname=$1; shift
     freq=$1;   shift
 
     # load the r2lab utilities - code can be found here:
     # https://github.com/parmentelat/r2lab/blob/master/infra/user-env/nodes.sh
     source /root/r2lab/infra/user-env/nodes.sh
+
+    ipaddr_mask=10.0.0.$(r2lab-id)/24
 
     turn-off-wireless
     
