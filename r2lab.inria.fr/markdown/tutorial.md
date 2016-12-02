@@ -24,46 +24,56 @@ skip_header: True
 All this contents is accessible through the 'TUTORIALS INDEX' dropdown that appears on all the tutorial pages on the upper right end of the navbar.
 
 ### Infrastructure
-* [Sign up for a OneLab account](tuto-100-registration.md)
+
+##### [Sign up for a OneLab account](tuto-100-registration.md)
 
   All information about how to register and schedule a node
 
-* [Shell tools](tuto-200-shell-tools.md) available in the R2lab gateway
+##### [Shell tools](tuto-200-shell-tools.md) available in the R2lab gateway
 
   Discover how to do basic control of the nodes by logging in at the
   `faraday.inria.fr` gateway from a regular `ssh` session: how to
   check for control nodes status, leases, images, and phones even.
   
+### Examples of experimentation scripts with `nepi-ng`
 
-### Examples of experimentations scenarios
+##### [`nepi-ng`: install](tuto-300-nepi-ng-install.md)
 
-* [`nepi-ng`: install](tuto-300-nepi-ng-install.md)
+##### [`nepi-ng`: ping examples](tuto-400-ping.md)
 
-* [`nepi-ng`: ping examples](tuto-400-ping.md)
+  A couple examples to get started with the `nepi-ng` network tool
 
-  A couple of examples to get started with the `nepi-ng` network tool.
+##### [`nepi-ng` : wireless](tuto-500-wireless.md)
 
-* [`nepi-ng` : wireless](tuto-500-wireless.md)
+  A few more pings to see how one can initialize and configure wireless links
 
-  A few more to see how one can initialize and configure wireless links
+##### [`nepi-ng` : file exchange](tuto-600-files.md)
 
-* [`nepi-ng` : file exchange](tuto-600-files.md)
+A full loop doing file transfers: a random file is produced locally,
+then pushed on one node, transferred to a second node using netcat
+over the wired network, retrieved back on the local laptop where it is
+compared with the original.
 
-  A file exchange between two nodes with `nepi-ng` using wired and wireless interfaces.
+##### [`nepi-ng`: miscell](tuto-700-miscell.md)
 
-* [`nepi-ng`: load images](tuto-700-load-image.md)
+Additional resources here, most importantly
 
-  An experiment to load fresh distros to the nodes (tools.md)
+* guidelines on troubleshooting a `nepi-ng` script
+
+* how to load images on the nodes in a nepi-ng script
+
+* a more realistic script:
+dealing with any number of nodes, and running pings between all couples of nodes.
 
 <br />
 
 ### Other stuff
 
-* [R2lab and OpenAirInterface](tuto-800-oai.md)
+##### [R2lab and OpenAirInterface](tuto-800-oai.md)
 
   Some indications on the features present on R2lab to deploy experiments based on OpenAirInterface.
 
-* Video tutorials on YouTube
+##### Video tutorials on YouTube
 
   * [End-to-End Experiment](tuto-900-youtube.md) : Running a wireless experiment end-to-end. 
 

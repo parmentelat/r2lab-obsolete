@@ -1,4 +1,4 @@
-title: nepi-ng - managing files
+title: nepi-ng - miscellaneous
 tab: tutorial
 skip_header: True
 
@@ -9,10 +9,9 @@ skip_header: True
 
 <ul class="nav nav-tabs">
   <li class="active"> <a href="#INTRO">INTRO</a> </li>
-  <li> <a href="#D1">D1</a></li>
-  <li> <a href="#D2">D2</a></li>
-  <li> <a href="#D2">D3</a></li>
-  <li> <a href="#WRAPUP">WRAPUP</a></li>
+  <li> <a href="#TROUBLESHOOTING">TROUBLESHOOTING</a></li>
+  <li> <a href="#LOAD_IMAGES">LOAD IMAGES</a></li>
+  <li> <a href="#MULTI_PING">MULTI_PING</a></li>
 
   << include r2lab/tutos-index.html >>
 </ul>
@@ -24,60 +23,52 @@ skip_header: True
 
 ### This page is under construction...
 
-[](javascript:open_tab('D1'))
+[](javascript:open_tab('TROUBLESHOOTING'))
 
 </div>
 
-<!------------ D1 ------------>
-<div id="D1" class="tab-pane fade" markdown="1">
+<!------------ TROUBLESHOOTING ------------>
+<div id="TROUBLESHOOTING" class="tab-pane fade" markdown="1">
 
 ### Objective
 
 ### The code
 
-<< codeview D1 D1-files.py >>
+<< codeview D1 D1-troubleshooting.py >>
 
 ### Sample output
 
 ### Next
-[](javascript:open_tab('D2'))
+[](javascript:open_tab('LOAD_IMAGES'))
 
 </div>
 
-<!------------ D2 ------------>
-<div id="D2" class="tab-pane fade" markdown="1">
+<!------------ LOAD_IMAGES ------------>
+<div id="LOAD_IMAGES" class="tab-pane fade" markdown="1">
 
 ### Objective
 
 ### The code
 
-<< codeview D2 D1-files.py D2-files.py >>
+<< codeview D2 D2-load-images.py >>
 
 ### Sample output
 
 ### Next
-[](javascript:open_tab('D3'))
+[](javascript:open_tab('MULTI_PING'))
 
 </div>
 
-<!------------ D3 ------------>
-<div id="D3" class="tab-pane fade" markdown="1">
+<!------------ MULTI_PING ------------>
+<div id="MULTI_PING" class="tab-pane fade" markdown="1">
 
 ### Objective
 
 ### The code
 
-<< codeview D3 D2-files.py D3-files.py >>
+<< codeview D3 D3-multi-ping.py >>
 
 ### Sample output
-
-### Next
-[](javascript:open_tab('WRAPUP'))
-
-</div>
-
-<!------------ WRAPUP ------------>
-<div id="WRAPUP" class="tab-pane fade" markdown="1">
 
 </div>
 
