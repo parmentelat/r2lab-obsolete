@@ -3,6 +3,10 @@ tab: run
 skip_header: yes
 require_login: true
 
+<div id="chat-container"></div>
+<script type="text/javascript" src="/assets/r2lab/chat.js"></script>
+<style type="text/css"> @import url("/assets/r2lab/chat.css"); </style>
+
 <div class="container">
   <div class="row">
     <div class="col-md-12">
