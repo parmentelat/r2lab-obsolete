@@ -67,6 +67,15 @@ function apt-upgrade-all() {
 ##########
 doc-nodes-sep
 
+# so, to build a hostname you would use r2lab-id
+# BUT
+# to build an IP address you need to remove leading 0s
+# it actually only triggers for 08 and 09, somehow
+#
+# dataip="data$(r2lab-id)"
+#
+# ipaddr_mask=10.0.0.$(r2lab-ip)/24
+#
 doc-nodes r2lab-id "returns id in the range 01-37; adjusts hostname if needed"
 function r2lab-id() {
     # when hostname is correctly set, e.g. fit16
@@ -88,7 +97,10 @@ function r2lab-id() {
     fi
     echo "Using id=$id and fitid=$fitid - $origin" >&2-
     echo $id
-}    
+}
+
+doc-nodes r2lab-ip "same as r2lab-id, but returns a single digit on nodes 1-9 - useful for buidling IP addresses"
+function r2lab-ip() { r2lab-id | sed -e 's,^0,,'; }
 
 doc-nodes turn-on-data "turn up the data interface; returns the interface name (should be data)"
 # should maybe better use wait-for-interface-on-driver e1000e
