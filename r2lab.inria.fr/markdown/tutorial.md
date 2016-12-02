@@ -21,62 +21,61 @@ skip_header: True
 <!------------ INTRO ------------>
 <div id="INTRO" class="tab-pane fade in active" markdown="1">
 
-All this contents is accessible through the 'TUTORIALS INDEX' dropdown that appears on all the tutorial pages on the upper right end of the navbar.
+All this contents is accessible through the **TUTORIALS INDEX** dropdown that appears on all the tutorial pages on the upper right end of the navbar.
 
 ### Infrastructure
 
 #### [Sign up for a OneLab account](tuto-100-registration.md)
 
-  All information about how to register and schedule a node
+*  All information about how to register and schedule a node
 
 #### [Shell tools](tuto-200-shell-tools.md) available in the R2lab gateway
 
-  Discover how to do basic control of the nodes by logging in at the
-  `faraday.inria.fr` gateway from a regular `ssh` session: how to
-  check for control nodes status, leases, images, and phones even.
+*  Discover how to do basic control of the nodes by logging in at the
+  `faraday.inria.fr` gateway from a regular `ssh` session :
+* how to check for the nodes status, leases, images, and phones even.
   
 ### Examples of experimentation scripts with `nepi-ng`
 
 #### [`nepi-ng`: install](tuto-300-nepi-ng-install.md)
 
-#### [`nepi-ng`: ping examples](tuto-400-ping.md) - a.k.a. the **A** series
+* How to install `nepi-ng` on your laptop
 
-  A couple examples to get started with the `nepi-ng` network tool
+#### [`nepi-ng`: the basics](tuto-400-ping.md) - a.k.a. the **A** series
+
+*  A couple examples to get started with the `nepi-ng` network tool
 
 #### [`nepi-ng` : wireless](tuto-500-wireless.md) - a.k.a. the **B** series
 
-  A few more pings to see how one can initialize and configure wireless links
+*  A few more pings to see how one can initialize and configure wireless links
 
 #### [`nepi-ng` : file exchange](tuto-600-files.md) - a.k.a. the **C** series
 
-A full loop doing file transfers: a random file is produced locally,
-then pushed on one node, transferred to a second node using netcat
-over the wired network, retrieved back on the local laptop where it is
-compared with the original.
+A full loop doing file transfers :
+
+* a random file is produced locally,
+* then pushed on one node, transferred to a second node using netcat over the wired network,
+* and retrieved back on the local laptop where it is compared with the original.
 
 #### [`nepi-ng`: miscell](tuto-700-miscell.md) 
 
 Additional resources here, most importantly
 
 * guidelines on troubleshooting a `nepi-ng` script
-
 * how to load images on the nodes in a nepi-ng script
-
-* a more realistic script:
-dealing with any number of nodes, and running pings between all couples of nodes.
+* a more realistic script : dealing with any number of nodes, and running pings between all couples of nodes.
 
 ### Other stuff
 
 #### [R2lab and OpenAirInterface](tuto-800-oai.md)
 
-  Some indications on the features present on R2lab to deploy experiments based on OpenAirInterface.
+* Some indications on the features present on R2lab to deploy experiments based on OpenAirInterface.
 
-#### Video tutorials on YouTube
+#### [Video tutorials on YouTube](tuto-900-youtube.md)
 
-  * [End-to-End Experiment](tuto-900-youtube.md) : Running a wireless
+  * [End-to-End Experiment](tuto-900-youtube.md#AOA) : Running a wireless
     experiment end-to-end.
-
-  * [OAI 5G experiment](tuto-900-youtube.md) : Setting up an
+  * [OAI 5G experiment](tuto-900-youtube.md#OAI) : Setting up an
     OpenAirInterface-based 5G infrastructure, and a tour in the
     chamber using Skype on a commercial NEXUS phone.
 
