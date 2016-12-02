@@ -69,11 +69,15 @@ function -doc-helper-sep() {
 
 ########################################
 ########## utilities to deal with a set of files of the same kind
+function random-string() {
+    cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w ${1:-32} | head -n 1
+}
+
 function create-file-category() {
     catname=$1; shift
     plural=${catname}s
-    codefile='/tmp/def-category'
-    cat << EOF > $codefile
+    codefile="/tmp/def-category-$(random-string 12)"
+    cat << EOF > "$codefile"
 function clear-${plural}() {
     _${plural}=""
 }
@@ -105,7 +109,8 @@ function tail-${plural}() {
     tail -f \$files
 }
 EOF
-    source $codefile
+    source "$codefile"
+    rm "$codefile"
 }
 
 ########################################
