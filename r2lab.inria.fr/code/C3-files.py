@@ -47,12 +47,18 @@ nodes = (node1, node2)
 ########## let us create the scheduler instance upfront
 
 scheduler = Scheduler()
+check_lease = SshJob(node = faraday, critical = True,
+                     # this is how we can create the job right into the scheduler
+                     # so no need to add it later on
+                     scheduler = scheduler,
+                     command = Run("rhubarbe leases --check"))
 
 ########## 1 step, generate a random data file of 1 M bytes
 
 create_random_job = SshJob(
     node = LocalNode(),
     scheduler = scheduler,
+    required = check_lease,
     commands = [
         Run("head", "-c", random_size, "<", "/dev/random", ">", "RANDOM"),
         Run("ls", "-l", "RANDOM"),

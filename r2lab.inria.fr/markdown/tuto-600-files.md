@@ -105,7 +105,8 @@ This is what the code below carries out; the things to outline in this code are
 
 ### Sample output
 
-    $ python3 ./C1-files.py
+    $ python3 C1-files.py
+    faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1048576 Nov 30 21:32 RANDOM
     LOCALNODE:3f147d42ed40df83819de3ab2093de352a1c5c6b  RANDOM
     fit01:-rw-r--r-- 1 root root 1048576 Nov 30 21:32 RANDOM
@@ -182,6 +183,7 @@ scheduler.
 ### Sample output
 
     $ python3 C2-files.py
+    faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1024 Dec  2 12:13 RANDOM
     LOCALNODE:384500c5f756f72720c2fed631191dae7edaf0bd  RANDOM
     fit01:-rw-r--r-- 1 root root 1024 Dec  2 12:13 RANDOM
@@ -221,7 +223,8 @@ node as part of a `SshJob`.
 
 ### Sample output
 
-    parmentelat ~/git/r2lab/r2lab.inria.fr/code $ ./C3-files.py
+    $ python3 C3-files.py
+    faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1024 Dec  2 12:17 RANDOM
     LOCALNODE:ad8ccdea8fc4fefb3f5aa2d23920aae84cb23fb8  RANDOM
     fit01:-rw-r--r-- 1 root root 1024 Dec  2 12:17 RANDOM
@@ -300,8 +303,8 @@ In this respect, note that:
 
 ### Sample output
 
-    python3 C2bis-files.py
-    $ ./C2bis-files.py
+    $ python3 C2bis-files.py
+    faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1024 Dec  2 14:13 RANDOM
     LOCALNODE:950dd7f38a2691dd172cc09a00a3fe1da24cb413  RANDOM
     fit01:-rw-r--r-- 1 root root 1024 Dec  2 14:13 RANDOM
