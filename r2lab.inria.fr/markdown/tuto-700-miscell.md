@@ -140,10 +140,10 @@ just define the list of nodes in a `node_ids` variable.
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1024 Dec  3 16:33 RANDOM.loopback
     LOCALNODE:RANDOM.loopback identical to RANDOM
     
-</div>
-
 ### Next
 [next tuto: multi-ping](javascript:open_tab('MULTI_PING'))
+
+</div>
 
 <!------------ MULTI_PING ------------>
 <div id="MULTI_PING" class="tab-pane fade" markdown="1">
