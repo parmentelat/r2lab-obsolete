@@ -170,6 +170,8 @@ SshJob(
 # scheduler.list(details=True)
 
 success = scheduler.orchestrate()
+# give details if it failed
+ok or scheduler.debrief()
 
 # return something useful to your OS
 exit(0 if success else 1)

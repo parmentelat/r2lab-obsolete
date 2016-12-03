@@ -73,11 +73,14 @@ freq=$1;   shift
 # https://github.com/parmentelat/r2lab/blob/master/infra/user-env/nodes.sh
 source /root/r2lab/infra/user-env/nodes.sh
 
+# make sure to use the latest code on the node
+git-pull-r2lab
+
+turn-off-wireless
+
 # local IP address to use is computed on the 10.0.0.0/24
 # subnet and based on current node number (using r2lab-ip)
 ipaddr_mask=10.0.0.$(r2lab-ip)/24
-
-turn-off-wireless
 
 echo loading module $driver
 modprobe $driver
@@ -133,6 +136,8 @@ sched = Scheduler(check_lease, ping, init_node_01, init_node_02)
 
 # run the scheduler
 ok = sched.orchestrate()
+# give details if it failed
+ok or sched.debrief()
 
 success = ok and ping.result() == 0
 

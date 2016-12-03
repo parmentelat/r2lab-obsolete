@@ -62,6 +62,8 @@ sched = Scheduler(check_lease, ping, init_node_01, init_node_02)
 
 # run the scheduler
 ok = sched.orchestrate()
+# give details if it failed
+ok or sched.debrief()
 
 # we say this is a success if the ping command succeeded
 # the result() of the SshJob is the value that the command

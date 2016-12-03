@@ -153,6 +153,8 @@ Sequence(
 
 # run the scheduler
 ok = scheduler.orchestrate()
+# give details if it failed
+ok or scheduler.debrief()
 
 # return something useful to your OS
 exit(0 if ok else 1)

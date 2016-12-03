@@ -72,6 +72,9 @@ freq=$1;   shift
 # https://github.com/parmentelat/r2lab/blob/master/infra/user-env/nodes.sh
 source /root/r2lab/infra/user-env/nodes.sh
 
+# make sure to use the latest code on the node
+git-pull-r2lab
+
 turn-off-wireless
 
 echo loading module $driver
@@ -124,6 +127,8 @@ sched = Scheduler(check_lease, ping, init_node_01, init_node_02)
 
 # run the scheduler
 ok = sched.orchestrate()
+# give details if it failed
+ok or sched.debrief()
 
 success = ok and ping.result() == 0
 

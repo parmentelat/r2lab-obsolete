@@ -84,6 +84,8 @@ sched = Scheduler(check_lease, ping, init_node_01, init_node_02)
 
 # run the scheduler
 ok = sched.orchestrate()
+# give details if it failed
+ok or sched.debrief()
 
 success = ok and ping.result() == 0
 

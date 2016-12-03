@@ -24,10 +24,13 @@ function init-ad-hoc-network (){
     # https://github.com/parmentelat/r2lab/blob/master/infra/user-env/nodes.sh
     source /root/r2lab/infra/user-env/nodes.sh
 
-    ipaddr_mask=10.0.0.$(r2lab-ip)/24
+    # make sure to use the latest code on the node
+    git-pull-r2lab
 
     turn-off-wireless
     
+    ipaddr_mask=10.0.0.$(r2lab-ip)/24
+
     echo loading module $driver
     modprobe $driver
     

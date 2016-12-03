@@ -276,6 +276,8 @@ In [the next tutorial in tab A3](javascript:open_tab('A3')) we will see how to r
 This time, we want to run the same `ping` command, but from a node,
 and not from the gateway.
 
+<center><img src="/assets/img/A3.png" alt="a3" height="240px"></center>
+
 To this end, we only need to build a second instance of an `SshNode`,
 that leverages on the one we had created to join the gateway.  This is
 achieved by creating an `SshNode` object with the `gateway = `
@@ -284,10 +286,6 @@ argument.
 This materializes the fact that we reach node `fit01` through the
 gateway. It also ensures that only one ssh connection gets established
 to the gateway, regardless of the number of nodes actually controlled.
-
-  <center>
-    <img src="/assets/img/A3.png" alt="a3" height="240px"><br/>
-  </center>
 
 ### The code
 
@@ -393,7 +391,10 @@ Let us now see [how to use other network interfaces](javascript:open_tab('A5')).
 
 ### Objectives
 
-This time, we are going to run the same experiment, but using the `data` network.
+This time, we are going to run ping between two nodes in the testbed,
+over using the `data` wired network.
+
+<center><img src="/assets/img/A5.png" alt="a5" height="240px"></center>
 
 Each R2lab node has 4 network interfaces (not counting the special
 `reboot` interface, that can reset and reboot the node, but that is
@@ -409,7 +410,8 @@ is how these 4 four interfaces are managed:
   * another wired interface,
   * that is **NOT** turned on automatically at boot time,
   * since it is dedicated for your usage, so you can turn it on or off as you please
-  * even using DHCP if it is convenient for you; in this case its IP address will be on `192.168.2.x/24` and known to DNS as e.g. `data01`
+  * even using DHCP if it is convenient for you; in this case its IP address
+    will be on `192.168.2.x/24` and known to DNS as e.g. `data01`
 
 * `atheros`, and `intel`
   * both are the 2 WiFi interfaces,
@@ -448,7 +450,7 @@ Here is what deserves to be outlined in the code below
 
 ### Sample output
 
-    $ A5-ping.py onelab.your.slice.name
+    $ A5-ping.py -s onelab.your.slice.name && echo OK
     faraday.inria.fr:Checking current reservation for onelab.your.slice.name OK
     fit02:Turning on data network on interface data
     fit01:Turning on data network on interface data
@@ -460,6 +462,7 @@ Here is what deserves to be outlined in the code below
     fit01:--- data02 ping statistics ---
     fit01:1 packets transmitted, 1 received, 0% packet loss, time 0ms
     fit01:rtt min/avg/max/mdev = 0.244/0.244/0.244/0.000 ms
+    OK
 
 </div>
 

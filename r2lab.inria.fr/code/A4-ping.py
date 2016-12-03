@@ -56,6 +56,8 @@ sched = Scheduler(check_lease, ping)
 
 # run the scheduler
 ok = sched.orchestrate()
+# give details if it failed
+ok or sched.debrief()
 
 # return something useful to your OS
 exit(0 if ok else 1)

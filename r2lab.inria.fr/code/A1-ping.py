@@ -9,7 +9,7 @@ from apssh import SshNode, SshJob
 gateway_hostname  = 'faraday.inria.fr'
 gateway_username  = 'onelab.inria.r2lab.tutorial'
 # to get feedback on the ssh-connection and see why it fails
-verbose_ssh = False
+verbose_ssh = True
 
 ##########
 # this SshNode object holds the details of
