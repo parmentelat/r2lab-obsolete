@@ -286,7 +286,6 @@ gateway. It also ensures that only one ssh connection gets established
 to the gateway, regardless of the number of nodes actually controlled.
 
   <center>
-    Note - this picture is out of date<br/>
     <img src="/assets/img/A3.png" alt="a3" height="240px"><br/>
   </center>
 

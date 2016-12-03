@@ -40,7 +40,7 @@ check_lease = SshJob(
     command = Run("rhubarbe leases --check"),
 )
 
-# the command we want to run in faraday is as simple as it gets
+# the command we want to run in node1 is as simple as it gets
 ping = SshJob(
     node = node1,
     # this says that we wait for check_lease to finish before we start ping

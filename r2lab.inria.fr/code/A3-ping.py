@@ -32,7 +32,7 @@ node1 = SshNode(gateway = faraday, hostname = "fit01", username = "root",
                 verbose = verbose_ssh)
 
 ##########
-# the command we want to run in faraday is as simple as it gets
+# the command we want to run in node1 is as simple as it gets
 ping = SshJob(
     node = node1,
     # let's be more specific about what to run
