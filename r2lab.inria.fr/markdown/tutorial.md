@@ -44,39 +44,39 @@ All this contents is accessible through the **TUTORIALS INDEX** dropdown that ap
 #### [`nepi-ng`: the basics](tuto-400-ping.md) - a.k.a. the **A** series
 
 * A couple examples to get started with the `nepi-ng` network tool:
-* [A1](tuto-400-ping.md#A1) : run a simple ping from `faraday.inria.fr` to `google.fr`
-* [A2](tuto-400-ping.md#A2) : 
-* [A3](tuto-400-ping.md#A3) : 
-* [A4](tuto-400-ping.md#A4) : 
-* [A5](tuto-400-ping.md#A5) : 
+* [A1](tuto-400-ping.md#A1) : simplest way to run a simple ping from `faraday.inria.fr` to `google.fr`
+* [A2](tuto-400-ping.md#A2) : same functions, but can pass a slice name on the command line
+* [A3](tuto-400-ping.md#A3) : run the ping from a node instead of from the gateway
+* [A4](tuto-400-ping.md#A4) : check for a valid reservation
+* [A5](tuto-400-ping.md#A5) : run ping between two nodes inside the chamber, on the wired network
 
 #### [`nepi-ng` : wireless](tuto-500-wireless.md) - a.k.a. the **B** series
 
 *  A few more pings to see how one can initialize and configure wireless links
-* [B1](tuto-500-wireless.md#B1) : 
-* [B2](tuto-500-wireless.md#B2) : 
-* [B3](tuto-500-wireless.md#B3) : 
-* [B4](tuto-500-wireless.md#B4) : 
-* [B5](tuto-500-wireless.md#B5) : 
+* [B1](tuto-500-wireless.md#B1) : like A5, but on a wireless ad hoc network
+* [B2](tuto-500-wireless.md#B2) : same scenario, simplified by using `r2lab-id` 
+* [B3](tuto-500-wireless.md#B3) : same scenario, but extract all the shell code in a single external file
+* [B4](tuto-500-wireless.md#B4) : add an infinite loop that prints out TICK every second
 
 #### [`nepi-ng` : file exchange](tuto-600-files.md) - a.k.a. the **C** series; a full loop doing file transfers, i.e.:
 
+* A set of examples that deal with file transfers, using SFTP to and from the nodes; and that show an example of file transfer between two nodes
 * [C1](tuto-600-files.md#C1) : a random file is produced locally,
 * [C2](tuto-600-files.md#C2) : then pushed on one node, transferred to a second node using netcat over the wired network,
 * [C3](tuto-600-files.md#C3) : and retrieved back on the local laptop where it is compared with the original;
-* [C4](tuto-600-files.md#C4) : this extended version knows how to **load images** on the nodes before running C3.
+* [C4](tuto-600-files.md#C4) : this extended version knows how to load images on the nodes before running C3.
 * [C2bis](tuto-600-files.md#C2bis) : a variant on C2, that deals with a service that is started and stopped in sync with another job
 
-#### [`nepi-ng`: troubleshooting](tuto-700-troubleshooting.md) 
+#### Guidelines for [troubleshooting a `nepi-ng` script](tuto-700-troubleshooting.md) 
 
-* xxx to check
-* How to check for common mistakes
-* guidelines on troubleshooting a `nepi-ng` script
-* how to load images on the nodes in a nepi-ng script
+* [COMMON_MISTAKES](tuto-700-troubleshooting.md#COMMON_MISTAKES) how to check for common mistakes
+* [CODE_UPDATE](tuto-700-troubleshooting.md#CODE_UPDATE) how to check your software environment
+* [VERBOSITY](tuto-700-troubleshooting.md#VERBOSITY) how to enable more verbosity
 
 #### [`nepi-ng`: real scale examples](tuto-750-real-scale.md)
 
-* [MULTI_PING](tuto-750-real-scale.md#MULTI_PING) : dealing with any number of nodes: run pings between all couples of nodes.
+* [MULTI_PING](tuto-750-real-scale.md#MULTI_PING) : dealing with any
+  number of nodes, run pings between all couples of nodes.
 
 ### Other stuff
 
