@@ -9,7 +9,6 @@ from apssh import Run, RunString, Pull
 
 import time
 
-
 ##########
 gateway_hostname  = 'faraday.inria.fr'
 gateway_username  = 'onelab.inria.r2lab.tutorial'

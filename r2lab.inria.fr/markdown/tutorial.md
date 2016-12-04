@@ -43,27 +43,40 @@ All this contents is accessible through the **TUTORIALS INDEX** dropdown that ap
 
 #### [`nepi-ng`: the basics](tuto-400-ping.md) - a.k.a. the **A** series
 
-*  A couple examples to get started with the `nepi-ng` network tool
+* A couple examples to get started with the `nepi-ng` network tool:
+* [A1](tuto-400-ping.md#A1) : run a simple ping from `faraday.inria.fr` to `google.fr`
+* [A2](tuto-400-ping.md#A2) : 
+* [A3](tuto-400-ping.md#A3) : 
+* [A4](tuto-400-ping.md#A4) : 
+* [A5](tuto-400-ping.md#A5) : 
 
 #### [`nepi-ng` : wireless](tuto-500-wireless.md) - a.k.a. the **B** series
 
 *  A few more pings to see how one can initialize and configure wireless links
+* [B1](tuto-500-wireless.md#B1) : 
+* [B2](tuto-500-wireless.md#B2) : 
+* [B3](tuto-500-wireless.md#B3) : 
+* [B4](tuto-500-wireless.md#B4) : 
+* [B5](tuto-500-wireless.md#B5) : 
 
-#### [`nepi-ng` : file exchange](tuto-600-files.md) - a.k.a. the **C** series
+#### [`nepi-ng` : file exchange](tuto-600-files.md) - a.k.a. the **C** series; a full loop doing file transfers, i.e.:
 
-A full loop doing file transfers :
+* [C1](tuto-600-files.md#C1) : a random file is produced locally,
+* [C2](tuto-600-files.md#C2) : then pushed on one node, transferred to a second node using netcat over the wired network,
+* [C3](tuto-600-files.md#C3) : and retrieved back on the local laptop where it is compared with the original;
+* [C4](tuto-600-files.md#C4) : this extended version knows how to **load images** on the nodes before running C3.
+* [C2bis](tuto-600-files.md#C2bis) : a variant on C2, that deals with a service that is started and stopped in sync with another job
 
-* a random file is produced locally,
-* then pushed on one node, transferred to a second node using netcat over the wired network,
-* and retrieved back on the local laptop where it is compared with the original.
+#### [`nepi-ng`: troubleshooting](tuto-700-troubleshooting.md) 
 
-#### [`nepi-ng`: miscell](tuto-700-miscell.md) 
-
-Additional resources here, most importantly
-
+* xxx to check
+* How to check for common mistakes
 * guidelines on troubleshooting a `nepi-ng` script
 * how to load images on the nodes in a nepi-ng script
-* a more realistic script : dealing with any number of nodes, and running pings between all couples of nodes.
+
+#### [`nepi-ng`: real scale examples](tuto-750-real-scale.md)
+
+* [MULTI_PING](tuto-750-real-scale.md#MULTI_PING) : dealing with any number of nodes: run pings between all couples of nodes.
 
 ### Other stuff
 
@@ -97,6 +110,12 @@ body of the message.
 You can do this by
 [simply clicking this link](mailto:sympa@inria.fr?subject=subscribe fit-r2lab-users)
 
+
+### Chat room
+
+We use the `#r2lab` channel on freenode; also once you are logged into
+the website, in the `RUN` page, you will find on top of the page a
+button that will let you join this chat room in a single click.
 
 </div>
 
