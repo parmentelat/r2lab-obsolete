@@ -62,14 +62,14 @@ function my-ping (){
 	if ping -w 1 -c 1 $dest >& /dev/null; then
 	    end=$(date +%s)
 	    duration=$(($end - $start))
-	    echo "SUCCESS after ${duration}s"
+	    echo "$(hostname) -> $dest: SUCCESS after ${duration}s"
 	    return 0
 	else
 	    echo "$dest not reachable"
 	    end=$(date +%s)
 	    duration=$(($end - $start))
 	    if [ "$duration" -ge "$maxwait" ]; then
-		echo "FAILURE after ${duration}s"
+		echo "$(hostname) -> $dest: FAILURE after ${duration}s"
 		return 1
 	    fi
 	fi

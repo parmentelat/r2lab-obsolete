@@ -31,30 +31,88 @@ We have grouped in this page a few more elaborate examples:
 <!------------ MULTI_PING ------------>
 <div id="MULTI_PING" class="tab-pane fade" markdown="1">
 
-### Objective
+## Objective
 
 This script is an extension of the B series, but the number of nodes
 involved is now a parameter in the experiment (the `--max` option that
 defaults to 5).
 
 We will thus use the `m` first nodes in the system, and
+
 * initialize the wireless ad-hoc network, on all those node, like we had done in the `B` series,
 * and then run as many pings as there are couples of nodes - that is to say `m*(m-1)/2`  pings
 * the results of these are then retrieved locally in files names `PING-i-j`
 
-All the pings are essentially running at the same time here.  This is
-why, as you will realize if you try to run the script yourself, the
-script can cope with something around 8 nodes.
+## `--parallel` : 2 modes: sequential *vs* parallel
 
-With a higher number of nodes, there is a too great need of open
-connections at the same time; the script stops to behave as
-expected, and a subtler variant is needed for this situation.
+This script implements two radically different strategies, mostly for the purpose of this tutorial:
+
+* sequential (default) :
+
+  * check that we have the lease,
+  * then prepare all nodes (init their wireless ad-hoc network) in parallel,
+  * then **sequentially** run all the pings
+  
+* parallel (with the `-p` option) : same, but all the pings are
+running **at the same time**.  This is why, as you will realize if you
+try to run the script yourself, this strategy can cope with something
+like around 8 nodes. With a higher number of nodes, there is a too
+great need of simultaneous open connections, and the script stops to
+behave as expected.
+
+It could of course make sense to try and come up with a smarter
+strategy somewhere in the middle, but be aware that running the
+sequential version on the full 37 nodes in R2lab takes about 10
+minutes, so it is not totally unworkable either.
+
+## `--dry-run`
+
+This script also implements a dry-run mode. If the `-n` option is
+provided, the scheduler is merely printed out in text form, and a
+`.dot` file is also produced, as well as a `.png` file if you have
+`dot` installed on your system.
+
+Here are the outputs obtained with `--max 4`. As you can see on these
+figures, the only difference between both strategies is the addition
+of one required relationship per ping job, that implements the
+sequence.
+
+
+<div class="row" markdown="1">
+<div class="col-md-4">  
+<center><img src="assets/img/multi-ping-seq-4.png" width="100%"><br/><br/>Sequential scheduler with `--max 4`</center>
+</div>  
+<div class="col-md-8" markdown="1">  
+<center><img src="assets/img/multi-ping-par-4.png" width="100%"><br/><br/>Parallel scheduler with `--max 4`</center>
+</div>
+</div>
+
+
+## troubleshooting: `--verbose` and `--debug` 
+
+The script implements 2 options to increase verbosity
+
+* `-v/--verbose` sets verbosity of the ssh layer, like we have done
+  throughout these tutorials, and
+* `-d/--debug` sets verbosity on the scheduler and jobs objects.
+
+That's an option, but your specific needs may lead you to doing other
+choices.
+
 
 ### The code
 
 << codeview MULTI_PING multi-ping.py >>
 
-### Sample output
+### How to run it
+
+How to produce the 2 figures above:
+
+    # sequential
+    ./multi-ping.py -m 4 -n
+    # parallel
+    ./multi-ping.py -m 4 -p -n
+
 
 </div>
 

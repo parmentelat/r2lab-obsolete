@@ -61,8 +61,8 @@ All this contents is accessible through the **TUTORIALS INDEX** dropdown that ap
 #### [`nepi-ng` : file exchange](tuto-600-files.md) - a.k.a. the **C** series; a full loop doing file transfers, i.e.:
 
 * A set of examples that deal with file transfers, using SFTP to and from the nodes; and that show an example of file transfer between two nodes
-* [C1](tuto-600-files.md#C1) : a random file is produced locally,
-* [C2](tuto-600-files.md#C2) : then pushed on one node, transferred to a second node using netcat over the wired network,
+* [C1](tuto-600-files.md#C1) : a random file is produced locally, and pushed on one node,
+* [C2](tuto-600-files.md#C2) : then transferred to a second node using netcat over the wired network,
 * [C3](tuto-600-files.md#C3) : and retrieved back on the local laptop where it is compared with the original;
 * [C4](tuto-600-files.md#C4) : this extended version knows how to load images on the nodes before running C3.
 * [C2bis](tuto-600-files.md#C2bis) : a variant on C2, that deals with a service that is started and stopped in sync with another job

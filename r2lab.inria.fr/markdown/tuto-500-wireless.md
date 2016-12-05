@@ -356,7 +356,7 @@ Make sure you download both files in the same location before trying to run the 
     14-08-45:fit01:10.0.0.2 not reachable
     14-08-46:fit01:10.0.0.2 not reachable
     14-08-47:fit01:10.0.0.2 not reachable
-    14-08-47:fit01:SUCCESS after 8s
+    14-08-47:fit01:fit01 -> 10.0.0.2: SUCCESS after 8s
 
 ### Next
 

@@ -19,27 +19,33 @@ skip_header: True
 <!------------ INSTALL ------------>
 <div id="INSTALL" class="tab-pane fade in active" markdown="1">
 
+# What is `nepi-ng` ? 
 The commands that we have seen in the previous tutorial are useful for
 making quick changes on the testbed.
 
 However once you are set up, it is much more convenient to control
 experiments right from your own laptop, and to this end we provide a
-set of tools that we collectively refer to as `nepi-ng`. This page
-gives you detailed instructions for installing these.
+set of tools that we collectively refer to as `nepi-ng`.
 
-You will also find a more complete documentation on these 2 tools below 
+### `nepi-ng` = `asynciojobs` + `apssh`
+
+`nepi-ng` is simply made of 2 python libraries. This page gives you
+detailed instructions for installing them. You will also find a more
+complete documentation on these 2 tools below :
 
 * [the `asynciojobs` documentation](http://nepi-ng.inria.fr/asynciojobs)
   including [its API reference](http://nepi-ng.inria.fr/asynciojobs/API.html)
 * [the `apssh` documentation](http://nepi-ng.inria.fr/apssh)
   including [its API reference](http://nepi-ng.inria.fr/apssh/API.html)
 
-## Terminal-based
+### Terminal-based
 
 All the tools that we will write will run in a terminal, we assume you
 are familiar with dealing with such interfaces.
 
-## Requires python-3.5
+***
+
+# Requires python-3.5
 
 `nepi-ng` is a set of python libraries; these use [the `asyncio`
 library](https://docs.python.org/3/library/asyncio.html), and as such
@@ -53,9 +59,9 @@ You can check that this requirement is fulfilled by running
 
 ***
 
-## Installing `asyncssh`
+# Installing requirement `asyncssh`
 
-There is a core dependency to a library named
+`apssh` has a core dependency to a third-party library named
 [`asyncssh`](https://github.com/ronf/asyncssh); this in turn requires
 binary extensions, so here's our recommendation to install this
 library. Use `sudo` for running `pip3` unless you are working in a
@@ -79,7 +85,7 @@ Tested on fedora-23
     sudo dnf install redhat-rpm-config python3-cffi python3-devel openssl-devel
     [sudo] pip3 install asyncssh
 
-### macos
+### MacOS
 
 It is harder to describe the list of dependencies on the MAC, let us
 know if you run into any trouble when running simply the following
@@ -88,7 +94,7 @@ know if you run into any trouble when running simply the following
 
 ***
 
-## Installing `asynciojobs` and `apssh`
+# Installing `asynciojobs` and `apssh`
 
 You need to install these libraries, the recommended way is through
 `pip3` like this - if you're not using `virtualenv` or ` anaconda`, you
@@ -100,9 +106,9 @@ might need to run these commands under `sudo`&nbsp;:
 You can check the installed versions like this
 
     $ python3 -c 'from asynciojobs import version; print(version.version)'
-    0.4.0
+    0.4.3
     $ python3 -c 'from apssh import version; print(version.version)'
-    0.4.0
+    0.4.6
 
 Note that if you need to upgrade in the future, you will need to run
 

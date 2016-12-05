@@ -9,8 +9,8 @@ skip_header: True
 
 <ul class="nav nav-tabs">
   <li class="active"> <a href="#INTRO">INTRO</a> </li>
-  <li> <a href="#COMMON_MISTAKES">COMMON_MISTAKES</a></li>
-  <li> <a href="#CODE_UPDATE">CODE_UPDATE</a></li>
+  <li> <a href="#COMMON MISTAKES">COMMON_MISTAKES</a></li>
+  <li> <a href="#CODE UPDATE">CODE_UPDATE</a></li>
   <li> <a href="#VERBOSITY">VERBOSITY</a></li>
   << include r2lab/tutos-index.html >>
 </ul>
