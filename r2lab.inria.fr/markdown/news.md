@@ -13,6 +13,10 @@ skip_news: yes
 
 * All tutorials now point at `nepi-ng` instead of deprecated `nepi`
 
+### November 26 2016
+
+* [R2lab Anechoic Chamber on WebTimeMedia.]http://www.webtimemedias.com/article/sophia-inaugure-ses-deux-chambres-sourdes-laboratoires-de-la-5g-20161104-58944
+
 ### November 9 2016
 
 * [Inauguration ceremony - see detailed program here.](https://www.inria.fr/en/centre/sophia/calendar/r2lab-anechoic-chamber-a-heterogeneous-wireless-testbed)
@@ -25,7 +29,7 @@ skip_news: yes
   * [FIT/R2lab, by Walid Dabbous](../assets/files/2016-11-opening-r2lab-walid-dabbous.pdf)
   * [OpenAirInterface, by Raymond Knopp](../assets/files/2016-11-opening-openairinterface-raymond-knopp.pdf)
   * [Demo on R2lab: setting up a 4G network in 3mn, by Thierry Parmentelat](../assets/files/2016-11-opening-r2lab-demo-thierry-parmentelat.pdf)
- 
+
 
 ### November 4
 
