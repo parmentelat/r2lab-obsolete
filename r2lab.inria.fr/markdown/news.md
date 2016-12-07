@@ -13,10 +13,6 @@ skip_news: yes
 
 * All tutorials now point at `nepi-ng` instead of deprecated `nepi`
 
-### November 26 2016
-
-* [R2lab Anechoic Chamber on WebTimeMedia.]http://www.webtimemedias.com/article/sophia-inaugure-ses-deux-chambres-sourdes-laboratoires-de-la-5g-20161104-58944
-
 ### November 9 2016
 
 * [Inauguration ceremony - see detailed program here.](https://www.inria.fr/en/centre/sophia/calendar/r2lab-anechoic-chamber-a-heterogeneous-wireless-testbed)
