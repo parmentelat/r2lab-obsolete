@@ -21,7 +21,11 @@ skip_header: True
 <!------------ INTRO ------------>
 <div id="INTRO" class="tab-pane fade in active" markdown="1">
 
-All this contents is accessible through the **TUTORIALS INDEX** dropdown that appears on all the tutorial pages on the upper right end of the navbar.
+# Contents
+
+All this contents is accessible through the **TUTORIALS INDEX**
+dropdown that appears on the upper right end of the navbar, in all the
+tutorial pages.
 
 ### Infrastructure
 

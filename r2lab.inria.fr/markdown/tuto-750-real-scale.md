@@ -19,7 +19,9 @@ skip_header: True
 <!------------ INTRO ------------>
 <div id="INTRO" class="tab-pane fade in active" markdown="1">
 
-We have grouped in this page a few more elaborate examples:
+# Contents
+
+We have grouped in this page a few more elaborate examples :
 
 * a `multi-ping` example that in particular deals with a variable
   number of nodes, and runs ping beween each couple of nodes.
@@ -43,27 +45,30 @@ We will thus use the `m` first nodes in the system, and
 * and then run as many pings as there are couples of nodes - that is to say `m*(m-1)/2`  pings
 * the results of these are then retrieved locally in files names `PING-i-j`
 
-## `--parallel` : 2 modes: sequential *vs* parallel
+## `--parallel` : 3 modes: sequential, full parallel, partially parallel
 
-This script implements two radically different strategies, mostly for the purpose of this tutorial:
+This script implements 3 different strategies, mostly for
+the purpose of this tutorial:
 
-* sequential (default) :
+### sequential (default) :
 
   * check that we have the lease,
   * then prepare all nodes (init their wireless ad-hoc network) in parallel,
   * then **sequentially** run all the pings
   
-* parallel (with the `-p` option) : same, but all the pings are
-running **at the same time**.  This is why, as you will realize if you
-try to run the script yourself, this strategy can cope with something
-like around 8 nodes. With a higher number of nodes, there is a too
-great need of simultaneous open connections, and the script stops to
-behave as expected.
+### full parallel (with the `-p 0` option) :
 
-It could of course make sense to try and come up with a smarter
-strategy somewhere in the middle, but be aware that running the
-sequential version on the full 37 nodes in R2lab takes about 10
-minutes, so it is not totally unworkable either.
+Same, but all the pings are running **at the same time**.  This is
+why, as you will realize if you try to run the script yourself, this
+strategy can cope with something like around 8 nodes. With a higher
+number of nodes, there is a too great need of simultaneous open
+connections, and the script stops to behave as expected.
+
+### parallel / limited window - with the .e.g `-p 20` option :
+
+This is an illustration of the ability that an `asynciojobs` scheduler
+has, to limit the number of simultaneous jobs. So if you say `-p 20`
+only a maximum number of 20 pings will run at the same time. 
 
 ## `--dry-run`
 
@@ -74,16 +79,19 @@ provided, the scheduler is merely printed out in text form, and a
 
 Here are the outputs obtained with `--max 4`. As you can see on these
 figures, the only difference between both strategies is the addition
-of one required relationship per ping job, that implements the
-sequence.
+of one `required` relationship per ping job. This is what the
+`Sequence` object is only about, [see more details on `Sequence`
+in its own documentation](http://nepi-ng.inria.fr/asynciojobs/API.html#module-asynciojobs.sequence).
 
 
 <div class="row" markdown="1">
 <div class="col-md-4">  
-<center><img src="assets/img/multi-ping-seq-4.png" width="100%"><br/><br/>Sequential scheduler with `--max 4`</center>
+<center><img src="assets/img/multi-ping-seq-4.png" width="100%">
+<br/><br/>Sequential scheduler with `--max 4`</center>
 </div>  
 <div class="col-md-8" markdown="1">  
-<center><img src="assets/img/multi-ping-par-4.png" width="100%"><br/><br/>Parallel scheduler with `--max 4`</center>
+<center><img src="assets/img/multi-ping-par-4.png" width="100%">
+<br/><br/>Parallel scheduler with `--max 4`</center>
 </div>
 </div>
 
@@ -96,8 +104,8 @@ The script implements 2 options to increase verbosity
   throughout these tutorials, and
 * `-d/--debug` sets verbosity on the scheduler and jobs objects.
 
-That's an option, but your specific needs may lead you to doing other
-choices.
+That's one way to see it, but your specific needs may lead you to
+doing other choices.
 
 
 ### The code
@@ -111,7 +119,7 @@ How to produce the 2 figures above:
     # sequential
     ./multi-ping.py -m 4 -n
     # parallel
-    ./multi-ping.py -m 4 -p -n
+    ./multi-ping.py -m 4 -p 0 -n
 
 
 </div>

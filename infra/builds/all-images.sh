@@ -137,7 +137,7 @@ function ubuntu-udev() {
 }
 
 # preserving the oai images for now
-function bye-gitup() {
+function  gitup-v10() {
     bim 1 ubuntu-16.04-v10-wireless-names                   == "nodes.sh git-pull-r2lab" &
     bim 2 ubuntu-14.04-v10-wireless-names                   == "nodes.sh git-pull-r2lab" &
     bim 3 fedora-23-v10-wireless-names                      == "nodes.sh git-pull-r2lab" &
@@ -145,12 +145,7 @@ function bye-gitup() {
     bim 6 ubuntu-16.04-gnuradio-3.7.10.1-v10-wireless-names == "nodes.sh git-pull-r2lab" &
 }
 
-function fix-gnuradio() {
-    bim 6 gnuradio ubuntu-16.04-gnuradio-3.7.10.1-v10-wireless-names \
-	"nodes.sh git-pull-r2lab" "imaging.sh network-names-udev" &
-}
-
-fix-gnuradio
+gitup-v10
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work

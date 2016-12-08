@@ -8,6 +8,7 @@ from asynciojobs import Scheduler, Sequence, PrintJob
 
 from apssh import SshNode, LocalNode, SshJob
 from apssh import Run, RunScript, Pull
+from apssh import TimeColonFormatter
 
 ##########
 gateway_hostname  = 'faraday.inria.fr'
@@ -30,8 +31,9 @@ parser.add_argument("-w", "--wifi-driver", default='ath9k',
 
 parser.add_argument("-m", "--max", default=5, type=int,
                     help="will run on all nodes between 1 and this number")
-parser.add_argument("-p", "--parallel", default=False, action='store_true',
-                    help="run all the pings in parallel")
+parser.add_argument("-p", "--parallel", default=None,type=int,
+                    help="""run in parallel, with this value as the
+                    limit to the number of simultaneous pings - -p 0 means no limit""")
 parser.add_argument("-t", "--ping-timeout", default=ping_timeout,
                     help="specify timeout for each individual ping - default={}".format(ping_timeout))
 
@@ -60,14 +62,15 @@ def fitname(id):
 
 ########## the nodes involved
 faraday = SshNode(hostname = gateway_hostname, username = gateway_username,
-                  verbose = verbose_ssh)
+formatter=TimeColonFormatter(), verbose = verbose_ssh)
 
 # this is a python dictionary that allows to retrieve a node object
 # from an id
 node_index = {
     id: SshNode(gateway = faraday,
                 hostname = fitname(id),
-                username = "root", 
+                username = "root",
+                formatter=TimeColonFormatter(),
                 verbose = verbose_ssh)
     for id in node_ids
 }
@@ -165,16 +168,23 @@ pings = [
     if j > i
 ]
 
-if args.parallel:
+if args.parallel is None:
+    # with the sequential strategy, we just need to
+    # create a Sequence out of the list of pings
+    # Sequence will add the required relationships 
+    scheduler.add(Sequence(*pings, scheduler=scheduler))
+    # for running sequentially we impose no limit on the scheduler
+    # that will be limitied anyways by the very structure
+    # of the required graph
+    jobs_window = None
+else:
     # with the parallel strategy
     # we just need to insert all the ping jobs
     # as each already has its required OK
     scheduler.update(pings)
-else:
-    # with the sequential strategy
-    # we just need to create a Sequence out of the list
-    # of pings
-    scheduler.add(Sequence(*pings, scheduler=scheduler))
+    # this time the value in args.parallel is the one
+    # to use as the jobs_limit; if 0 then inch'allah
+    jobs_window = args.parallel
 
 # finally - i.e. when all pings are done
 # we can list the current contents of our local directory
@@ -217,7 +227,7 @@ if args.dry_run:
     # in dry-run mode we are done
     exit(0)
 
-ok = scheduler.orchestrate()
+ok = scheduler.orchestrate(jobs_window=jobs_window)
 # give details if it failed
 ok or scheduler.debrief()
 
