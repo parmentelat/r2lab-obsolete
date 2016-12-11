@@ -64,7 +64,7 @@ strategy can cope with something like around 8 nodes. With a higher
 number of nodes, there is a too great need of simultaneous open
 connections, and the script stops to behave as expected.
 
-### parallel / limited window - with the .e.g `-p 20` option :
+### parallel / limited window (with .e.g the `-p 20` option) :
 
 This is an illustration of the ability that an `asynciojobs` scheduler
 has, to limit the number of simultaneous jobs. So if you say `-p 20`
