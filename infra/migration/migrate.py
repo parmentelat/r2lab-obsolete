@@ -371,6 +371,7 @@ def rebuild():
         was_renamed = new_hrn != hrn
 #        print("SLICE", "**" if was_renamed else "", new_hrn)
         plcapi.AddSlice({'name' : new_hrn})
+        plcapi.AddSliceToNodes(new_hrn, [ unique_hostname ])
         for user in account['users']:
             userhrn = username(user)
             if userhrn in sel_users_by_hrn:
@@ -386,6 +387,7 @@ def rebuild():
     for slicename in manual_slices:
         new_hrn = plc_compliant_slicename(slicename)
         plcapi.AddSlice({'name' : new_hrn})
+        plcapi.AddSliceToNodes(new_hrn, [ unique_hostname ])
     with open("DATA/LEASES.json") as f:
         leases = json.loads(f.read())
     for lease in leases:
