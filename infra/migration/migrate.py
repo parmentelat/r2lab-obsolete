@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import sys
 import os
+import time
 import json
 
 import ssl
@@ -267,7 +268,7 @@ def auth_plcapi():
                     
 
 # a fake version
-def dummy_auth_plcapi():
+def auth_plcapi():
     class DummyApi:
         def __getattr__(self, attr):
             def fun(*args, **kwds):
@@ -332,7 +333,9 @@ def rebuild():
                   for hrn in sel_users_by_hrn.keys()}
     plcapi.AddNode('r2lab',
                    {'hostname' : unique_hostname,
-                    'node_type' : 'reservable' })
+                    'node_type' : 'reservable',
+                    'hrn' : '37nodes.r2lab.inria.fr',
+                   })
 
     for sitename in sitenames:
         plcapi.AddSite(
@@ -366,11 +369,12 @@ def rebuild():
     # creating slices
     print("============================== slices")
     for hrn, account in sel_accounts_by_hrn.items():
-        new_hrn = account_renamings.get(hrn, hrn)
-        new_hrn = plc_compliant_slicename(new_hrn)
+        new_plain_hrn = account_renamings.get(hrn, hrn)
+        new_hrn = plc_compliant_slicename(new_plain_hrn)
         was_renamed = new_hrn != hrn
 #        print("SLICE", "**" if was_renamed else "", new_hrn)
-        plcapi.AddSlice({'name' : new_hrn})
+        plcapi.AddSlice({'name' : new_hrn,
+                         'hrn' : new_plain_hrn})
         plcapi.AddSliceToNodes(new_hrn, [ unique_hostname ])
         for user in account['users']:
             userhrn = username(user)
@@ -384,23 +388,35 @@ def rebuild():
     
 
     # leases
-    for slicename in manual_slices:
-        new_hrn = plc_compliant_slicename(slicename)
-        plcapi.AddSlice({'name' : new_hrn})
+    for hrn in manual_slices:
+        new_hrn = plc_compliant_slicename(hrn)
+        plcapi.AddSlice({'name' : new_hrn, 'hrn': hrn})
         plcapi.AddSliceToNodes(new_hrn, [ unique_hostname ])
     with open("DATA/LEASES.json") as f:
         leases = json.loads(f.read())
+    total_leases = 0
+    added_leases = 0
     for lease in leases:
         try:
             hrn, from_st, until_st, status = lease
             new_hrn = account_renamings.get(hrn, hrn)
             slname = plc_compliant_slicename(new_hrn)
-            print("lease {} {}".format(slname, status))
-            plcapi.AddLeases( [ unique_hostname ], slname,
-                              int(from_st), int(until_st))
+            from_gm = time.gmtime(int(from_st))
+            from_pretty = "{}:{}".format(from_gm.tm_hour, from_gm.tm_min)
+            until_gm = time.gmtime(int(until_st))
+            until_pretty = "{}:{}".format(until_gm.tm_hour, until_gm.tm_min)
+            total_leases += 1
+            print("lease {} {} from {} until {}"
+                  .format(slname, status, from_pretty, until_pretty))
+            if status != 'cancelled':
+                added_leases += 1
+                plcapi.AddLeases( [ unique_hostname ], slname,
+                                  int(from_st), int(until_st))
         except Exception as e:
             print("oops,", e)
 
+    print("added {} leases out of a total of {}"
+          .format(added_leases, total_leases))
     return 0
 
 
