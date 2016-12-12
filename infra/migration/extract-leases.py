@@ -63,7 +63,7 @@ def main():
     parser.add_argument('-c', '--discard-cancelled', action='store_true', default=False,
                         help="discard leases marked as cancelled - whatever that means")
     # broken for now, datetime objects cannot be serialized
-    #parser.add_argument('-j', '--json', metavar='json-file', help="produce JSON")
+    parser.add_argument('-j', '--json', metavar='json-file', help="produce JSON")
     parser.add_argument('password')
     args = parser.parse_args()
     password = args.password
@@ -79,9 +79,16 @@ def main():
     sort_leases_function = sort_leases_by_slice if args.sort_slice else sort_leases_by_time
     sort_leases_function(leases)
 
+    def date_time_epoch(dt):
+        return dt.strftime("%s")
+    def translate_to_epoch(lease):
+        name, from_dt, until_dt, status = lease
+        return name, date_time_epoch(from_dt), date_time_epoch(until_dt), status
+
+    leases = [translate_to_epoch(lease) for lease in leases]
+
     # broken for now
-    #write_json = args.json
-    write_json = False
+    write_json = args.json
     if write_json:
         with open(args.json, 'w') as output:
             output.write(json.dumps(leases))
