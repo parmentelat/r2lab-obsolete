@@ -24,7 +24,7 @@ install: publish apache
 
 ########## force both infra boxes to use latest commit
 infra:
-	apssh -u root -t faraday.inria.fr -t r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
+	apssh -l root -t faraday.inria.fr -t r2lab.inria.fr /root/r2lab/infra/scripts/restart-website.sh
 
 .PHONY: infra
 

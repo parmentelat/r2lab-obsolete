@@ -293,7 +293,7 @@ function smap () {
 # parallel version thanks to apssh
 function map () {
     [ -z "$1" ] && { echo "usage: map command - runs command on $NODES with apssh"; return; }
-    apssh -u root -t "$NODES" "$@"
+    apssh -l root -t "$NODES" "$@"
 }
 alias rmap=map
 doc-selection map "parallel run an ssh command on all selected nodes"
