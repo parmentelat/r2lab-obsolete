@@ -1,0 +1,3 @@
+function plr() { echo root@$1.pl.sophia.inria.fr; }
+rsync -av $(plr r2labapi):/etc/planetlab/configs/site.xml plc-site.xml
+rsync -av $(plr r2labapi):/etc/sfa/configs/site_config sfa-site_config
