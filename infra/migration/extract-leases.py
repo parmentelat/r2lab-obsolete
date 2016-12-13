@@ -11,6 +11,8 @@ from argparse import ArgumentParser
 from pg import DB
 
 import json
+import time
+import calendar
 
 dbname = "inventory"
 dbuser = "omf_sfa"
@@ -79,8 +81,14 @@ def main():
     sort_leases_function = sort_leases_by_slice if args.sort_slice else sort_leases_by_time
     sort_leases_function(leases)
 
+    # looks like pg interprets times as localtime..
+    # need to artificially shift dates from local to utc
     def date_time_epoch(dt):
-        return dt.strftime("%s")
+        format = "%Y-%m-%d %H:%M:%S"
+        utc_time = dt.strftime(format)
+        struct_time = time.strptime(utc_time, format)
+        result = calendar.timegm(struct_time)
+        return result
     def translate_to_epoch(lease):
         name, from_dt, until_dt, status = lease
         return name, date_time_epoch(from_dt), date_time_epoch(until_dt), status
