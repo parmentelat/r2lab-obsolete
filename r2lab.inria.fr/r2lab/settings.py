@@ -29,8 +29,15 @@ LOG_FILE = os.path.join(RUNTIME_DIR, "django.log")
 from .logger import init_logger
 logger = init_logger(LOG_FILE)
 
-########## details on the OMF REST endpoint for creating an OmfSfaProxy object
+########## details on the R2lab API
 
+
+# historically 'omfrest'
+# and migrating to 'plcapi'
+testbed_api = 'omfrest'
+
+### OMF REST endpoint for creating an OmfSfaProxy object
+# relevant only if testbed_api == 'omfrest':
 omfrest_settings = {
     'hostname' : "faraday.inria.fr",
     'port' : 12346,
@@ -38,11 +45,22 @@ omfrest_settings = {
     # in production mode, root_pem is /etc/rhubarbe/root.pem
     # but can be r2lab.inria.fr/r2lab/root.pem on devel boxes
     'root_pem' : "/etc/rhubarbe/root.pem" if PRODUCTION \
-                   else os.path.join(BASE_DIR, "r2lab", "root.pem")
-    }
-
+    else os.path.join(BASE_DIR, "r2lab", "root.pem")
+}
+# ditto
 if not os.path.exists(omfrest_settings['root_pem']):
     logger.warning("Could not find a certificate for issuing REST calls")
+
+### PLC API endpoint for creating a PlcApiProxy
+# relevant only if testbed_api == 'plcapi':
+plcapi_settings = {
+    'url' : 'https://r2labapi.inria.fr:443/PLCAPI/',
+    # this of course should be owned by group apache and in mode 0440
+    'credentials' : [
+        '/etc/rhubarbe/plcapi.credentials',
+        'plcapi.credentials',
+    ]
+}
 
 ####################
 

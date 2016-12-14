@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_protect
 
 from r2lab.settings import logger
 # importing OmfSfaProxy through this module because of the symlink hack
-from r2lab.omfrestview import OmfRestView, OmfSfaProxy
+from omf.omfrestview import OmfRestView, OmfSfaProxy
 
 # Create your views here.
 class LeasesProxy(OmfRestView):

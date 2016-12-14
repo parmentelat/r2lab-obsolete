@@ -1,13 +1,12 @@
-import os.path
 import json
 import asyncio
 
 from django.http import HttpResponse
 
-from django.views.generic import View
+from r2lab.testbedapiview import TestbedApiView
 
 # essentially, this describes the OMF REST API endpoint details
-from r2lab.settings import omfrest_settings, logger
+from r2lab.settings import omfrest_settings
 
 ### the standard way to use rhubarbe is to have it installed separately
 try:
@@ -16,31 +15,8 @@ try:
 except:
     from .omfsfaproxy import OmfSfaProxy
 
-class OmfRestView(View):
+class OmfRestView(TestbedApiView):
 
-    def not_authenticated_error(self, request):
-        """
-        The error to return as-is if user is not authenticated
-        """
-        if 'r2lab_context' not in request.session or \
-          'mfuser' not in request.session['r2lab_context']:
-            return self.http_response_from_struct(
-                {'error' : 'User is not authenticated'})
-        
-
-    def decode_body_as_json(self, request):
-        utf8 = request.body.decode()
-        return json.loads(utf8)
-    
-    def http_method_not_allowed(self, request):
-        env = {'previous_message' : 'HTTP method not allowed'}
-        return md.views.markdown_page(request, 'oops', env)
-    
-    # JSON encode and wrap into a HttpResponse
-    def http_response_from_struct(self, answer):
-        return HttpResponse(json.dumps(answer))
-
-    # xxx all the hard-wired data here needs to become configurable
     # we want to leverage the code from rhubarbe that does all this
     # but asynchroneously
     # we need to create a loop object for each hit on this URL
@@ -56,23 +32,6 @@ class OmfRestView(View):
                           omfrest_settings['root_pem'], None,
                           omfrest_settings['nodename'],
                           loop=self.loop)
-
-    def check_record(self, record, mandatory, optional):
-        """
-        checks for the keys in the input record
-        
-        returns None if everything is OK
-        and an error message otherwise
-        """
-        missing = { k for k in mandatory if k not in record }
-        known = set(mandatory) | set(optional)
-        unknown = { k for k in record if k not in known }
-        error = ""
-        if missing:
-            error += "missing mandatory field(s): {}".format(" ".join(missing))
-        if unknown:
-            error += " unknown field(s): {}".format(" ".join(unknown))
-        return None if not error else {'error' : error}
 
     def normalize_responses(self, responses):
         """

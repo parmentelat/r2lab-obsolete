@@ -7,7 +7,7 @@ from manifoldapi.manifoldapi import ManifoldException
 
 from .mfdetails import manifold_details
 
-from r2lab.omfsfauser import get_r2lab_user
+from omf.omfsfauser import get_r2lab_user
 
 from r2lab.settings import manifold_url as config_manifold_url
 from r2lab.settings import logger

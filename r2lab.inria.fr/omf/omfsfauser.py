@@ -32,7 +32,7 @@ def co_get_user(urn, loop):
 
 def get_r2lab_user(urn):
     """
-    This function retrieves at the r2lab omf-sfa db the list of slices
+    This function retrieves at the omf.omf-sfa db the list of slices
     that a user is attached to, together with all the attached details 
     """
 

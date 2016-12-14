@@ -16,7 +16,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from r2lab.settings import logger
-from r2lab.omfrestview import OmfRestView
+from omf.omfrestview import OmfRestView
 
 from r2lab.isotime import expiration_date
 

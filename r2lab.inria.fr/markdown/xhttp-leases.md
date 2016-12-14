@@ -19,9 +19,9 @@ var added_lease_uuid;
 // an example of how to add a lease
 var add_lease = function() {
     var request = { 
-    		    "slicename" : 'onelab.inria.r2lab.admin',
-                    "valid_from": "2016-02-20T08:00:00Z",
-                    "valid_until": "2016-02-20T09:00:00Z"
+    		    "slicename" : 'onelab.inria.r2lab.tutorial',
+                    "valid_from": "2016-12-15T08:00:00Z",
+                    "valid_until": "2016-12-15T09:00:00Z"
 		    };
     post_xhttp_django('/leases/add', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
@@ -48,8 +48,8 @@ $(function(){$('#add-lease').click(add_lease);})
 var update_lease = function() {
     var request = { 
     		    "uuid" : added_lease_uuid,
-                    "valid_from": "2016-02-20T11:00:00Z",
-                    "valid_until": "2016-02-20T12:00:00Z"
+                    "valid_from": "2016-12-15T11:00:00Z",
+                    "valid_until": "2016-12-15T12:00:00Z"
 		    };
     post_xhttp_django('/leases/update', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
