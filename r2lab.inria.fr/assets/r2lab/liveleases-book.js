@@ -1,5 +1,5 @@
 // -*- js-indent-level:2 -*-
-// this requires omfrest.js and liveleases-common.js
+// this requires xhttp-django.js and liveleases-common.js
 
 $(document).ready(function() {
   var version = '1.33';

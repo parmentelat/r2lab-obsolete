@@ -55,7 +55,7 @@ $(document).ready(function() {
       var request = {};
       request['names'] = [value];
 
-      post_omfrest_request('/slices/get', request, function(xhttp) {
+      post_xhttp_django('/slices/get', request, function(xhttp) {
 
         if (xhttp.readyState == 4 && xhttp.status == 200) {
           var responses = JSON.parse(xhttp.responseText);
@@ -139,7 +139,7 @@ var renew_slice = function(element, slicename) {
   var request = {
     "name" : slicename,
 	};
-  post_omfrest_request('/slices/renew', request, function(xhttp) {
+  post_xhttp_django('/slices/renew', request, function(xhttp) {
     if (xhttp.readyState == 4 && xhttp.status == 200) {
       var answer = JSON.parse(xhttp.responseText);
       console.log(answer);

@@ -7,7 +7,7 @@ This is a unit test; all data is hard-coded in the page itself
 See also `users/view.py`
 
 <!-- this exposes the getCookie function -->
-<script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
+<script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
 
 ---
 <div id="getall-div"><p>Click this paragraph to get the complete list of users</p>
@@ -30,7 +30,7 @@ var get_users = function(id, urn) {
     var sel = "#"+id;
     var request = {};
     if (urn) request['urn'] = urn;
-    post_omfrest_request('/users/get', request, function(xhttp) {
+    post_xhttp_django('/users/get', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
 	 // decoding
 	 var responses = JSON.parse(xhttp.responseText);

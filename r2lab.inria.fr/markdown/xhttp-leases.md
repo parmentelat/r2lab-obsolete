@@ -7,7 +7,7 @@ This is a unit test; all data is hard-coded in the page itself
 See also `leases/view.py`
 
 <!-- this exposes the getCookie function -->
-<script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
+<script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
 
 ---
 <div id="add-lease"><p>Click this paragraph to add a lease</p>
@@ -23,7 +23,7 @@ var add_lease = function() {
                     "valid_from": "2016-02-20T08:00:00Z",
                     "valid_until": "2016-02-20T09:00:00Z"
 		    };
-    post_omfrest_request('/leases/add', request, function(xhttp) {
+    post_xhttp_django('/leases/add', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
           document.getElementById("add-response").innerHTML = xhttp.responseText;
 	  // decoding
@@ -51,7 +51,7 @@ var update_lease = function() {
                     "valid_from": "2016-02-20T11:00:00Z",
                     "valid_until": "2016-02-20T12:00:00Z"
 		    };
-    post_omfrest_request('/leases/update', request, function(xhttp) {
+    post_xhttp_django('/leases/update', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
           document.getElementById("update-response").innerHTML = xhttp.responseText;
 	  // decoding
@@ -75,7 +75,7 @@ var delete_lease = function() {
     var request = { 
     		    "uuid" : added_lease_uuid,
 		    };
-    post_omfrest_request('/leases/delete', request, function(xhttp) {
+    post_xhttp_django('/leases/delete', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
           document.getElementById("delete-response").innerHTML = xhttp.responseText;
 	  // decoding

@@ -14,7 +14,7 @@ tab: platform
 
       In any case, below is a summary of the issues found since Jan. 2016.
 
-      <script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
+      <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
       <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
       <script src="/assets/js/moment.min.js"></script>
       <script src="/assets/js/underscore-min.js"></script>

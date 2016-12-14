@@ -41,7 +41,7 @@ require_login: true
 
       <style type="text/css"> @import url("/assets/r2lab/liveleases-common.css"); </style>
       <style type="text/css"> @import url("/assets/r2lab/liveleases-run.css"); </style>
-      <script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
+      <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
       <script type="text/javascript" src="/assets/r2lab/liveleases-common.js"></script>      
       <script type="text/javascript" src="/assets/r2lab/liveleases-run.js"></script>
       <div id="current-slice" data-current-slice-color="#000"></div>

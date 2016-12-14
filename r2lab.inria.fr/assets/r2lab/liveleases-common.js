@@ -462,7 +462,7 @@ function setActionsQueue(action, data){
   }
   // xxx replace this with some more sensible code for showing errors
   var display_error_message = alert;
-  post_omfrest_request("/leases/"+verb, request, function(xhttp) {
+  post_xhttp_django("/leases/"+verb, request, function(xhttp) {
     if (xhttp.readyState == 4) {
       // this triggers a refresh of the leases once the sidecar server answers back
       refreshLeases();
@@ -736,7 +736,7 @@ function parseLeases(data){
       if(isZombie(v)){
         theZombieLeases.push(newLease);
         var request = {"uuid" : newLease.uuid};
-        post_omfrest_request('/leases/delete', request, function(xhttp) {
+        post_xhttp_django('/leases/delete', request, function(xhttp) {
           if (xhttp.readyState == 4 && xhttp.status == 200) {
             if (liveleases_debug) console.log("return from /leases/delete");
             if (liveleases_debug) console.log(request);

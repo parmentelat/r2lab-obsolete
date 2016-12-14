@@ -7,7 +7,7 @@ This is a unit test; all data is hard-coded in the page itself
 See also `slices/view.py`
 
 <!-- this exposes the getCookie function -->
-<script type="text/javascript" src="/assets/r2lab/omfrest.js"></script>
+<script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
 
 ---
 <div id="get2-div"><p>Click this paragraph to get slices details (hard-wired list)</p>
@@ -25,7 +25,7 @@ var get_slices = function(id, names) {
     var sel = "#"+id;
     var request = {};
     if (names) request['names'] = names;
-    post_omfrest_request('/slices/get', request, function(xhttp) {
+    post_xhttp_django('/slices/get', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
 	  // decoding
 	  var responses = JSON.parse(xhttp.responseText);
@@ -62,7 +62,7 @@ var renew_slice = function() {
     var request = { 
     		    "name" : "onelab.inria.r2lab.naoufal",
 		  };
-    post_omfrest_request('/slices/renew', request, function(xhttp) {
+    post_xhttp_django('/slices/renew', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
           document.getElementById("renew-response").innerHTML = xhttp.responseText;
 	  // decoding
