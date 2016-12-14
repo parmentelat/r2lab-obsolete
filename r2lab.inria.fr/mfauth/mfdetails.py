@@ -8,14 +8,15 @@ if __name__ == '__main__':
     sys.path.append('..')
 
 # see DEPS.md on how to get these dependencies
-from manifold.core.query     import Query
+from manifold.core.query import Query
 from manifoldapi.manifoldapi import ManifoldAPI
+
 
 def manifold_details(url, email, password, logger):
     """
     return a tuple with (session, auth, person, slices)
     associated with these credentials at the manifold backend
-    
+
     * session : the session with the manifold API
     * auth : ready-to use auth to talk to the API again
     * user : a flat structure with at least the following keys
@@ -26,8 +27,9 @@ def manifold_details(url, email, password, logger):
     in case of failure, return tuple with same size with only None's
     """
     failure_result = None, None, None, None
-    
-    auth = {'AuthMethod': 'password', 'Username': email, 'AuthString': password}
+
+    auth = {'AuthMethod': 'password',
+            'Username': email, 'AuthString': password}
     api = ManifoldAPI(url, auth)
     sessions_result = api.forward(Query.create('local:session').to_dict())
     logger.debug("sessions_result = ", sessions_result)
@@ -51,7 +53,8 @@ def manifold_details(url, email, password, logger):
     logger.debug("PERSON : {}".format(person))
 
     # get related slices
-    query = Query.get('myslice:user').filter_by('user_hrn', '==', '$user_hrn').select(['user_hrn', 'slices'])
+    query = Query.get('myslice:user').filter_by(
+        'user_hrn', '==', '$user_hrn').select(['user_hrn', 'slices'])
     mf_result = api.forward(query.to_dict())
     logger.debug("mf_result=", mf_result)
     # xxx - needs more work
@@ -67,33 +70,34 @@ def manifold_details(url, email, password, logger):
         # xxx use ManifoldResult ?
         # this is a list of dicts that have a 'slices' field
         val_d_s = mf_result['value']
-        slicenames = [ nm for val_d in val_d_s for nm in val_d['slices'] ]
+        slicenames = [nm for val_d in val_d_s for nm in val_d['slices']]
         logger.info("slices from manifold={}".format(slicenames))
-        # in fact there is only one of these dicts because we have specified myslice:user
-        hrns = [ val_d['user_hrn'] for val_d in val_d_s ]
+        # in fact there is only one of these dicts because we have specified
+        # myslice:user
+        hrns = [val_d['user_hrn'] for val_d in val_d_s]
         if hrns:
             hrn = hrns[0]
-        urns = [ val_d['user_urn'] for val_d in val_d_s ]
+        urns = [val_d['user_urn'] for val_d in val_d_s]
         if urns:
             urn = urns[0]
-            
+
     except Exception as e:
         logger.exception("mfdetails: Could not retrieve user's slices")
 
 # looks like it's useless
 #    # add hrn in person
 #    person['hrn'] = hrn
-    
+
     # synthesize our own user structure
     import json
     person_config = json.loads(person['config'])
-    user = { 'email' : person['email'],
-             'hrn' : hrn,
-             'urn' : urn,
-             'authority' : person_config['authority'],
-             'firstname' : person_config['firstname'],
-             'lastname' : person_config['lastname'],
-             }
+    user = {'email': person['email'],
+            'hrn': hrn,
+            'urn': urn,
+            'authority': person_config['authority'],
+            'firstname': person_config['firstname'],
+            'lastname': person_config['lastname'],
+            }
 
     return session, auth, user, slicenames
 
@@ -104,9 +108,9 @@ if __name__ == '__main__':
 
     default_tests = [
         # should succeed
-        ( 'demo', 'demo'),
+        ('demo', 'demo'),
         # should fail
-        ( 'demo', 'not-the-password'),
+        ('demo', 'not-the-password'),
     ]
 
     # with an empty argv, we use the tests above
@@ -122,14 +126,13 @@ if __name__ == '__main__':
         def chunks(l, n):
             """Yield successive n-sized chunks from l."""
             for i in range(0, len(l), n):
-                yield l[i:i+n]
+                yield l[i:i + n]
         tests = chunks(args, 2)
-    
 
     import logging
     logger = logging.getLogger('session')
     for email, password in tests:
-        print(10*'=', "testing {} / {}".format(email, password))
+        print(10 * '=', "testing {} / {}".format(email, password))
         import time
         beg = time.time()
         tuple = manifold_details(test_manifold_url, email, password, logger)
@@ -140,4 +143,4 @@ if __name__ == '__main__':
                 print("\t{}".format(elem))
         else:
             print("NOPE - manifold_details authenticated KO".format(email, password))
-        print("total duration for manifold_details = {}s".format(end-beg))
+        print("total duration for manifold_details = {}s".format(end - beg))

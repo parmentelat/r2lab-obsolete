@@ -11,14 +11,17 @@ from r2lab.settings import logger
 # which is invoked from widget_login.html
 # together with username/password in the POST data
 
+
 class Login(View):
 
     def post(self, request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        # pass request within the token, so manifold session key can be attached to the request session.
-        token = {'username': username, 'password': password, 'request': request}
+        # pass request within the token, so manifold session key can be
+        # attached to the request session.
+        token = {'username': username,
+                 'password': password, 'request': request}
 
         # authentication occurs through the backend
         # our authenticate function returns either
@@ -37,7 +40,8 @@ class Login(View):
         elif not user.is_active:
             env['login_message'] = "this user is inactive"
             return md.views.markdown_page(request, 'index', env)
-        # r2lab_context is expected to have been attached to the session by mfbackend
+        # r2lab_context is expected to have been attached to the session by
+        # mfbackend
         elif 'r2lab_context' not in request.session:
             logger.error("Internal error - cannot retrieve r2lab_context")
             env['login_message'] = "cannot log you in - please get in touch with admin"
@@ -46,7 +50,7 @@ class Login(View):
             env['login_message'] = "this user has no slice !"
             return md.views.markdown_page(request, 'index', env)
         elif 'slicenames' not in request.session['r2lab_context'] or \
-          not request.session['r2lab_context']['slicenames']:
+                not request.session['r2lab_context']['slicenames']:
             env['login_message'] = "this user has no slice !"
             return md.views.markdown_page(request, 'index', env)
         else:
@@ -57,15 +61,17 @@ class Login(View):
             return md.views.markdown_page(request, 'run', env)
 
     def http_method_not_allowed(self, request):
-        env = {'login_message' : 'HTTP method not allowed'}
+        env = {'login_message': 'HTTP method not allowed'}
         return md.views.markdown_page(request, 'oops', env)
+
 
 class Logout(View):
     # using GET for now - should probably be POST instead some day
+
     def get(self, request):
         env = {}
         if 'r2lab_context' not in request.session or \
-         'mfuser' not in request.session['r2lab_context']:
+                'mfuser' not in request.session['r2lab_context']:
             env['login_message'] = 'cannot logout - not logged in'
             return md.views.markdown_page(request, 'index', env)
         logout(request)
@@ -73,7 +79,5 @@ class Logout(View):
         return md.views.markdown_page(request, 'index', env)
 
     def http_method_not_allowed(self, request):
-        env = {'login_message' : 'HTTP method not allowed'}
+        env = {'login_message': 'HTTP method not allowed'}
         return md.views.markdown_page(request, 'oops', env)
-
-        
