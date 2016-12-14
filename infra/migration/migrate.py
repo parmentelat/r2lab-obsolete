@@ -268,7 +268,7 @@ def auth_plcapi():
                     
 
 # a fake version
-def auth_plcapi():
+def dummy_auth_plcapi():
     class DummyApi:
         def __getattr__(self, attr):
             def fun(*args, **kwds):
