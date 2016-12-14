@@ -49,6 +49,16 @@ function init-ad-hoc-network (){
     # set to ad-hoc mode
     iw dev $ifname ibss join $netname $freq
     ip address add $ipaddr_mask dev $ifname
+
+    ### addition - would be cool to come up with something along these lines that
+    # works on both cards
+    # a recipe from Naoufal for Intel
+    # modprobe iwlwifi
+    # iwconfig wlan2 mode ad-hoc
+    # ip addr add 10.0.0.41/16 dev wlan2
+    # ip link set wlan2 up
+    # iwconfig wlan2 essid mesh channel 1
+    
 }
 
 function my-ping (){

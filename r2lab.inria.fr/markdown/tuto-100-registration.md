@@ -9,11 +9,12 @@ skip_header: True
 
 
 <ul class="nav nav-tabs">
-  <li class="active"> <a href="#REGISTER">REGISTER</a> </li>
-  <li> <a href="#SLICE">SLICE</a></li>
-  <li> <a href="#R2LAB">R2LAB</a></li>
-  <li> <a href="#GETKEY">GET KEY</a></li>
-  <li> <a href="#ACCESS">ACCESS</a></li>
+  <li class="active"> <a href="#REGISTER">1- REGISTER</a> </li>
+  <li> <a href="#SLICE">2- SLICE</a></li>
+  <li> <a href="#R2LAB">3- R2LAB</a></li>
+  <li> <a href="#GETKEY">4- GET KEY</a></li>
+  <li> <a href="#RESERVATION">5- RESERVATION</a></li>
+  <li> <a href="#ACCESS">6- ACCESS</a></li>
 
   << include r2lab/tutos-index.html >>
 </ul>
@@ -31,7 +32,7 @@ The official OneLab portal is located at
 
 In order to sign up at the onelab portal:
 
-**1 -** Fill the form with the requested info. 
+**1 -** Fill the form with the requested info.
 
 <center>
 ![register](/assets/img/register.png)<br/>
@@ -146,26 +147,8 @@ key.
 fig. 4 - Attaching R2lab to your slice
 </center>
 
-### Reservation
-
-Optionnally, you can use the onelab portal to reserve the
-testbed. This is currently not the recommended method, as this feature
-is available right from the R2lab website as well (see the [book.md]
-page if you are currently logged in).
-
-For each resource scheduled a time slot must be selected to operate in
-the resource.
-
-This is done in the **scheduler tab** (fig. 4, <font
-color="red">**A**</font>), which leads you to fig. 5:
-
-<br/>
-<br/>
-<center>
-![dashboard](/assets/img/schedule_details.png)<br/>
-fig. 5 - Booking a node from Onelab
-</center>
 </div>
+
 
 <!------------ GETKEY ------------>
 <div id="GETKEY" class="tab-pane fade" markdown="1">
@@ -192,9 +175,46 @@ down where it is stored because we will need this later on when we set
 up our ssh credentials.
 
 When this is done, you can [move to the next
-tab](javascript:open_tab('RESERVE')) to create our account on R2lab.
+tab](javascript:open_tab('RESERVATION')) to book your slices in R2lab.
 
 </div>
+
+
+<!------------ RESERVATION ------------>
+<div id="RESERVATION" class="tab-pane fade" markdown="1">
+
+### Make the reservation
+
+In order to use R2lab, you must reserve the testbed. The right way to do this is
+using [R2lab UI](http://r2lab.inria.fr/run.md) (see http://r2lab.inria.fr/run.md).
+However, you must be logged in to see the reservation page.
+
+Once in private area, click twice to select your slice (fig. 5, <font
+color="red">**A**</font>) and drag and drop into the day calendar
+(fig. 5, <font color="red">**B**</font>).
+If you want dates in future, do the same action as described above but in the [complete
+calendar](http://r2lab.inria.fr/book.md) (see http://r2lab.inria.fr/book.md).
+
+Other actions you can do in the calendar:
+
+- If you want to **remove** or **cancel** your booking, just use double click in
+the slice already booked;
+
+- if you want to **move** the slice booked, drag and move the slice;
+
+- if you want to **increase** or **decrease** in hours the duration of your slice,
+just click and drag in the tiny line placed on the botton of each slice.
+<br/>
+<center>
+![dashboard](/assets/img/schedule_details_1.png)<br/>
+fig. 5 - Booking a slice in R2lab
+</center>
+
+When this is done, you can [move to the next
+tab](javascript:open_tab('ACCESS')) to access R2lab platform and run your tests.
+
+</div>
+
 
 <!------------ ACCESS ------------>
 <div id="ACCESS" class="tab-pane fade" markdown="1">
@@ -203,7 +223,7 @@ From the moment where you have both (i) successfully attached your
 slice to R2lab, and (ii) downloaded your Onelab key, you should be
 able to reach the R2lab testbed by ssh.
 
-### Your Unix account 
+### Your Unix account
 
 The name that you need to use to enter the testbed using ssh is the
 name of the Unix account that has been created for you.  The name of
@@ -238,7 +258,7 @@ something like this
 
 Once this command works for you, proceed to the next tutorial), where [we see in more details the available tools
 for manipulating the nodes](tuto-200-shell-tools.md).
-      
+
 ### Troubleshooting
 
 **Do not proceed** with this tutorial until this command works fine. When it does you can skip to the next section
@@ -254,7 +274,7 @@ Here is a list of things to double check if it does not:
   should not be able to read it)
 
 * Was this Unix account properly created at R2lab ?
-  **NOTE**: as of 2016 end of November, a known glitch seems to prevent this to work properly. 
+  **NOTE**: as of 2016 end of November, a known glitch seems to prevent this to work properly.
 
 Feel free to contact us on [the R2lab users mailinglist
 fit-r2lab-user@inria.fr](mailto:fit-r2lab-user@inria.fr) if you cannot
