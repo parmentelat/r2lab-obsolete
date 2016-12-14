@@ -30,6 +30,12 @@ infra:
 
 ##########
 tags:
-	git ls-files | egrep -v '\.(pdf|png|jpg)' | xargs etags
+	$(MAKE) --no-print-directory files | xargs etags
 
 .PHONY: tags
+
+########## get rid of pdf's and the like
+files:
+	@git ls-files | egrep -v '\.(pdf|png|jpg|gif)'
+
+.PHONY: files
