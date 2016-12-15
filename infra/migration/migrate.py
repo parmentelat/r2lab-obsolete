@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# use python2 as we need sfa
 
 from __future__ import print_function
 
@@ -8,7 +9,8 @@ import time
 import json
 
 import ssl
-import xmlrpc.client
+
+from xmlrpclib import ServerProxy
 
 from sfa.util.xrn import Xrn
 
@@ -74,15 +76,15 @@ def username(user):
     return 'ANON user'
 
 def username_to_plc_sitename(username):
-    ol, site, *_ = username.split('.')
-    return "{}.{}".format(ol, site)
+    ol, site = username.split('.')[:2]
+    return site
 
 def plc_compliant_slicename(slicename):
     pieces = slicename.split('.')
     assert len(pieces) == 4
 
     ol, site, proj, sl = pieces
-    return ("{}.{}_{}.{}".format(ol, site, proj, sl))
+    return ("{}_{}.{}".format(site, proj, sl))
 
 ########## dump stuff
 # run with migrate.py dump
@@ -202,6 +204,7 @@ def parse_selected():
 ####################
 def notify_start():
     os.system("rm -rf MAILS/NOTIFY*")
+    os.system("mkdir MAILS")
 
 mail_message="""
 Subject: R2lab migration - your new slice names
@@ -229,12 +232,12 @@ through ssh.
 """
 
 def notify_init(email, first_name, last_name):
-    with open("NOTIFY-{}".format(email), 'a') as f:
+    with open("MAILS/NOTIFY-{}".format(email), 'a') as f:
         f.write(mail_message.format(**locals()))
 
 def notify_record(email, old_hrn, new_hrn):
-    with open("NOTIFY-{}".format(email), 'a') as f:
-        f.write("{} \n  is now know as\t\t{}\n"
+    with open("MAILS/NOTIFY-{}".format(email), 'a') as f:
+        f.write("{} \n\t\tis now known as\t{}\n"
                 .format(old_hrn, new_hrn))
 
 def auth_plcapi():
@@ -248,15 +251,15 @@ def auth_plcapi():
     context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
     context.check_hostname = False
 
-    class AutoAuthApi(xmlrpc.client.ServerProxy):
+    class AutoAuthApi(ServerProxy):
         def __init__(self):
-            xmlrpc.client.ServerProxy.__init__(
+            ServerProxy.__init__(
                 self, api_url, allow_none=True, context=context)
             
         def __getattr__(self, attr):
             def fun(*args, **kwds):
                 print(attr, *args, **kwds)
-                actual_fun = xmlrpc.client.ServerProxy.__getattr__(
+                actual_fun = ServerProxy.__getattr__(
                     self, attr)
                 try:
                     return actual_fun(auth, *args, **kwds)
@@ -334,13 +337,14 @@ def rebuild():
     plcapi.AddNode('r2lab',
                    {'hostname' : unique_hostname,
                     'node_type' : 'reservable',
-                    'hrn' : '37nodes.r2lab.inria.fr',
                    })
-
+    plcapi.UpdateNode(unique_hostname, {'hrn' : '37nodes.r2lab.inria.fr'})
     for sitename in sitenames:
+        simplename = sitename.replace("onelab.", "", 1)
         plcapi.AddSite(
-            {'login_base' : sitename, 'name' : sitename,
+            {'login_base' : simplename, 'name' : sitename,
              'abbreviated_name': sitename, 'max_slices' : 100 })
+        plcapi.SetSiteHrn(sitename, simplename)
     
     # creating users and keys
     print("============================== users and keys")
@@ -348,9 +352,10 @@ def rebuild():
         first_name, last_name, email = users_details[hrn]
 #        print("USER", hrn, email, first_name, last_name)
         plcapi.AddPerson(
-            {'email' : email, 'hrn' : hrn,
+            {'email' : email, 
              'first_name' : first_name, 'last_name' : last_name})
         plcapi.UpdatePerson(email, {'enabled' : True})
+        plcapi.SetPersonHrn(email, hrn)
         plcapi.AddRoleToPerson('user', email)
         sitename = username_to_plc_sitename(hrn)
         plcapi.AddPersonToSite(email, sitename)
@@ -374,7 +379,13 @@ def rebuild():
         was_renamed = new_hrn != hrn
 #        print("SLICE", "**" if was_renamed else "", new_hrn)
         plcapi.AddSlice({'name' : new_hrn,
-                         'hrn' : new_plain_hrn})
+                         'hrn' : new_plain_hrn,
+                         'url' : "http://r2lab.inria.fr/news.md#migration",
+                         'description' : 
+"""automatically migrated from omf-sfa
+former name was {}
+new name is {}""".format(hrn, new_hrn)
+        })
         plcapi.AddSliceToNodes(new_hrn, [ unique_hostname ])
         for user in account['users']:
             userhrn = username(user)
@@ -397,6 +408,8 @@ def rebuild():
     total_leases = 0
     added_leases = 0
     for lease in leases:
+        print("tmp: SKIPPING LEASES ...")
+        break
         try:
             hrn, from_st, until_st, status = lease
             new_hrn = account_renamings.get(hrn, hrn)
@@ -427,5 +440,8 @@ def main(*args):
     function(*args[1:])
     return 0
 
+# run with
+# migrate.py dump (on faraday - as part of dump-all.sh)
+# migrate.py rebuild (on local laptop if needed - requires DATA/ as captured by dump)
 if __name__ == '__main__':
     exit(main(*sys.argv[1:]))

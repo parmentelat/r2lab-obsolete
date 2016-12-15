@@ -27,21 +27,24 @@ function verbose-echo() {
 # ( cd /root/r2lab/; git pull )
 source /root/r2lab/infra/user-env/faraday.sh
 
+mkdir DATA
+
 verbose-echo "retrieving all accounts in ACCOUNTS"
-$CURL --silent $RU/accounts > ACCOUNTS 2> /dev/null
+$CURL --silent $RU/accounts > DATA/ACCOUNTS 2> /dev/null
 
 verbose-echo "retrieving all users in USERS"
-$CURL --silent $RU/users > USERS 2> /dev/null
+$CURL --silent $RU/users > DATA/USERS 2> /dev/null
 
 verbose-echo retrieving all keys in KEYS
-$CURL --silent $RU/keys > KEYS
+$CURL --silent $RU/keys DATA/> DATA/KEYS
 
 ######################################## 
-./migrate.py dump
+HERE=$(dirname $(readlink -f $BASH_SOURCE))
+python2 $HERE/migrate.py dump
 
 ########################################
-for user_uuid in $(cat USER-uuids); do
+for user_uuid in $(cat DATA/USER-uuids); do
     verbose-echo retrieving keys for user $user_uuid in $user_uuid.keys
-    $CURL --silent $RU/users/$user_uuid/keys > $user_uuid.keys
+    $CURL --silent $RU/users/$user_uuid/keys > DATA/$user_uuid.keys
 done
 
