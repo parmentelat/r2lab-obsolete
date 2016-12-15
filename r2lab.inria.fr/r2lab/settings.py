@@ -31,7 +31,6 @@ logger = init_logger(LOG_FILE)
 
 ########## details on the R2lab API
 
-
 # historically 'omfrest'
 # and migrating to 'plcapi'
 testbed_api = 'omfrest'
@@ -59,7 +58,8 @@ plcapi_settings = {
     'credentials' : [
         '/etc/rhubarbe/plcapi.credentials',
         'plcapi.credentials',
-    ]
+    ],
+    'nodename_match' : '37nodes',
 }
 
 ####################
