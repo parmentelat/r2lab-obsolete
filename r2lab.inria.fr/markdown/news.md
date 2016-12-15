@@ -9,6 +9,12 @@ skip_news: yes
 ## 2016
 ****
 
+### <a name='migration'>December 20 2016</a>
+
+* Running new architecture based on **PLCAPI** instead of **omf_sfa**
+* Previous contents (accounts, slices, keys...) has been migrated automatically
+* Slice names have changed a little, to be completed
+
 ### November 30 2016
 
 * All tutorials now point at `nepi-ng` instead of deprecated `nepi`
