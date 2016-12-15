@@ -16,8 +16,6 @@ from django.http import HttpResponse
 
 from django.views.generic import View
 
-from r2lab.settings import testbed_api
-
 class TestbedApiView(View):
     
     def not_authenticated_error(self, request):

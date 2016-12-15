@@ -60,7 +60,7 @@ $(function(){
 // an example of how to renew a slice
 var renew_slice = function() {
     var request = { 
-    		    "name" : "onelab.inria.r2lab.naoufal",
+    		    "name" : "onelab.inria.r2lab.tutorial",
 		  };
     post_xhttp_django('/slices/renew', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {
