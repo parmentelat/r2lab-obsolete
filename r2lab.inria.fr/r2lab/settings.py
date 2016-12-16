@@ -33,7 +33,7 @@ logger = init_logger(LOG_FILE)
 
 # historically 'omfrest'
 # and migrating to 'plcapi'
-testbed_api = 'omfrest'
+testbed_api = 'plcapi'
 
 ### OMF REST endpoint for creating an OmfSfaProxy object
 # relevant only if testbed_api == 'omfrest':

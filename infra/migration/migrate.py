@@ -426,7 +426,8 @@ new name is {}""".format(hrn, new_hrn)
                 plcapi.AddLeases( [ unique_hostname ], slname,
                                   int(from_st), int(until_st))
         except Exception as e:
-            print("oops,", e)
+            print("oops, lease={} - exc={}"
+                  .format(lease, e))
 
     print("added {} leases out of a total of {}"
           .format(added_leases, total_leases))
