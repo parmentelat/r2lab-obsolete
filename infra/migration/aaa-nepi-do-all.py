@@ -52,9 +52,8 @@ rebuild = SshJob(
     required = (gather, reset),
     commands = [
         Run("python2", "-u", "migrate.py", "rebuild"),
-        Run("rsync -av root@faraday.inria.fr:MAILS/ MAILS/")
-        ],
-    )
+    ],
+)
 
 ok = scheduler.orchestrate()
 ok or scheduler.debrief()

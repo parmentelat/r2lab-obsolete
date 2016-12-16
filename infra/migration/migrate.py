@@ -408,8 +408,6 @@ new name is {}""".format(hrn, new_hrn)
     total_leases = 0
     added_leases = 0
     for lease in leases:
-        print("tmp: SKIPPING LEASES ...")
-        break
         try:
             hrn, from_st, until_st, status = lease
             new_hrn = account_renamings.get(hrn, hrn)
@@ -426,7 +424,8 @@ new name is {}""".format(hrn, new_hrn)
                 plcapi.AddLeases( [ unique_hostname ], slname,
                                   int(from_st), int(until_st))
         except Exception as e:
-            print("oops,", e)
+            print("oops, lease={} - exc={}"
+                  .format(lease, e))
 
     print("added {} leases out of a total of {}"
           .format(added_leases, total_leases))
