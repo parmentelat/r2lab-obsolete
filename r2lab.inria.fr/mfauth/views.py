@@ -49,10 +49,10 @@ class Login(View):
         elif 'hrn' not in request.session['r2lab_context']['mfuser']:
             env['login_message'] = "this user has no slice !"
             return md.views.markdown_page(request, 'index', env)
-        elif 'slicenames' not in request.session['r2lab_context'] or \
-                not request.session['r2lab_context']['slicenames']:
-            env['login_message'] = "this user has no slice !"
-            return md.views.markdown_page(request, 'index', env)
+#        elif 'slicenames' not in request.session['r2lab_context'] or \
+#                not request.session['r2lab_context']['slicenames']:
+#            env['login_message'] = "this user has no slice !"
+#            return md.views.markdown_page(request, 'index', env)
         else:
             logger.debug("login for user={}".format(user))
             login(request, user)

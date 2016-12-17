@@ -1,6 +1,6 @@
 // -*- js-indent-level:2 -*-
 
-var my_slices_name      = r2lab_slicenames; // a list of slice hrns
+var my_slices_name      = r2lab_accounts.map(function(account){return account['name'];}) // a list of slice hrns
 var my_slices_color     = [];
 var actionsQueue        = [];
 var actionsQueued       = [];
@@ -15,7 +15,7 @@ var socket              = io.connect("http://r2lab.inria.fr:443");
 var version             = '1.35';
 var refresh             = true;
 var currentTimezone     = 'local';
-var nigthly_slice_name  = 'inria.r2lab.nightly'
+var nigthly_slice_name  = 'inria_r2lab.nightly'
 
 var liveleases_debug = false;
 
@@ -139,10 +139,9 @@ function getRandomColor() {
 }
 
 
+// no extra 'onelab.' anymore
 function fullName(name){
-  var new_name = name;
-  new_name = 'onelab.'+name;
-  return new_name
+  return name;
 }
 
 
@@ -360,9 +359,12 @@ function sendMessage(msg, type){
 }
 
 
+// xxx plcapi : do we still have zombies ?
 function isZombie(obj){
+  return false;
+  
   var is_zombie = false;
-  if(obj.resource_type == 'lease' && obj.status == 'pending' && isMySlice(shortName(obj.account.name))){
+  if(obj.resource_type == 'lease' && obj.status == 'pending' && isMySlice(shortName(obj.slicename))){
     is_zombie = true;
   }
   return is_zombie;
@@ -374,8 +376,9 @@ function isZombie(obj){
 // of course it must be called *after* the actual API call
 // via django
 function refreshLeases(){
-  msg = "INIT";
-  if (liveleases_debug) console.log("sending on request:leases -> " + msg);
+  var msg = "INIT";
+  if (liveleases_debug)
+    console.log("sending on request:leases -> " + msg);
   socket.emit('request:leases', msg);
 }
 
@@ -469,8 +472,7 @@ function setActionsQueue(action, data){
       ////////// temporary
       // in all cases, show the results in console, in case we'd need to improve this
       // logic further on in the future
-      if (liveleases_debug) console.log("upon ajax POST: xhttp.status = " + xhttp.status +
-					" and xhttp.responseText = " + xhttp.responseText);
+      if (liveleases_debug) console.log("upon ajax POST: xhttp.status = " + xhttp.status);
       ////////// what should remain
       if (xhttp.status != 200) {
 	// this typically is a 500 error inside django
@@ -712,43 +714,41 @@ function parseLeases(data){
   var leases = [];
   resetZombieLeases();
 
-  $.each(parsedData, function(key,val){
-    $.each(val, function(k,v){
-      newLease = new Object();
-      newLease.title = shortName(v.account.name);
-      newLease.uuid = String(v.uuid);
-      newLease.start = v.valid_from;
-      newLease.end = v.valid_until;
-      newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);
-      newLease.color = getColorLease(newLease.title);
-      newLease.editable = isMySlice(newLease.title);
+  parsedData.forEach(function(lease){
+    newLease = new Object();
+    newLease.title = shortName(lease.slicename);
+    newLease.uuid = String(lease.uuid);
+    newLease.start = lease.valid_from;
+    newLease.end = lease.valid_until;
+    newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);
+    newLease.color = getColorLease(newLease.title);
+    newLease.editable = isMySlice(newLease.title);
+    newLease.overlap = false;
+
+    // //HARD CODE TO SET SPECIAL ATTR to nightly routine
+    if(newLease.title == nigthly_slice_name){
+      newLease.title = "nightly routine";
+      newLease.color = "#616161";
+      newLease.uuid = '';
       newLease.overlap = false;
+      newLease.editable = false;
+    }
 
-      // //HARD CODE TO SET SPECIAL ATTR to nightly routine
-      if(newLease.title == nigthly_slice_name){
-        newLease.title = "nightly routine";
-        newLease.color = "#616161";
-        newLease.uuid = '';
-        newLease.overlap = false;
-        newLease.editable = false;
-      }
+    if(isZombie(lease)){
+      theZombieLeases.push(newLease);
+      var request = {"uuid" : newLease.uuid};
+      post_xhttp_django('/leases/delete', request, function(xhttp) {
+        if (xhttp.readyState == 4 && xhttp.status == 200) {
+          if (liveleases_debug) console.log("return from /leases/delete");
+          if (liveleases_debug) console.log(request);
+        }
+      });
+    }
+    else {
+      leases.push(newLease);
+      queueAction(newLease.title, newLease.start, newLease.end);
+    }
 
-      if(isZombie(v)){
-        theZombieLeases.push(newLease);
-        var request = {"uuid" : newLease.uuid};
-        post_xhttp_django('/leases/delete', request, function(xhttp) {
-          if (xhttp.readyState == 4 && xhttp.status == 200) {
-            if (liveleases_debug) console.log("return from /leases/delete");
-            if (liveleases_debug) console.log(request);
-          }
-        });
-      }
-      else {
-        leases.push(newLease);
-        queueAction(newLease.title, newLease.start, newLease.end);
-      }
-
-    });
   });
   buildSlicesBox(leases);
   if($(location).attr('pathname') == '/run.md'){

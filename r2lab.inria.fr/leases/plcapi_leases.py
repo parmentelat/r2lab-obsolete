@@ -71,7 +71,7 @@ class LeasesProxy(PlcApiView):
         # only one lease gets created
         lease_id = retcod['new_ids'][0]
         # go back to the API to get limits - possibly rectified wrt granularity
-        lease = self.plcapi_proxy.GetLeases(lease_id)[0]
+        lease = self.plcapi_proxy.GetLeases(int(lease_id))[0]
         response = self.http_response_from_struct(self.return_lease(lease))
         return response
 
@@ -86,14 +86,14 @@ class LeasesProxy(PlcApiView):
         self.init_plcapi_proxy()
         lease_id = record['uuid']
         retcod = self.plcapi_proxy.UpdateLeases(
-            [lease_id],
+            [int(lease_id)],
             {'t_from': self.ui_ts_to_plc_ts(record['valid_from']),
              't_until': self.ui_ts_to_plc_ts(record['valid_until'])})
         if retcod['errors']:
             self.http_response_from_struct(
                 {'error': '\n'.join(retcod['errors'])})
         # go back to the API to get limits - possibly rectified wrt granularity
-        lease = self.plcapi_proxy.GetLeases(lease_id)[0]
+        lease = self.plcapi_proxy.GetLeases(int(lease_id))[0]
         response = self.http_response_from_struct(self.return_lease(lease))
         return response
 
@@ -106,6 +106,6 @@ class LeasesProxy(PlcApiView):
             return self.http_response_from_struct(error)
         lease_id = record['uuid']
         self.init_plcapi_proxy()
-        retcod = self.plcapi_proxy.DeleteLeases([lease_id])
+        retcod = self.plcapi_proxy.DeleteLeases([int(lease_id)])
         return self.http_response_from_struct(
             {'ok': retcod == 1})

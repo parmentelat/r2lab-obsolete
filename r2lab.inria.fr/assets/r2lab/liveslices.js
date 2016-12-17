@@ -125,9 +125,11 @@ Click here to renew it!</a>';
   }
 
   function main(){
-    console.log("liveslices version " + version);
-    partial();
-    get_slices("list-slices", r2lab_slicenames);
+      console.log("liveslices version " + version);
+      partial();
+      var slicenames = r2lab_accounts.map(
+	  function(account){return account['name'];});
+      get_slices("list-slices", slicenames);
   }
 
   main();

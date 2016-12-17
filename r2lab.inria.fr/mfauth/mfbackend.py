@@ -7,13 +7,15 @@ from manifoldapi.manifoldapi import ManifoldException
 
 from .mfdetails import manifold_details
 
-from omf.omfsfauser import get_r2lab_user
-
 from r2lab.settings import manifold_url as config_manifold_url
-from r2lab.settings import logger
+from r2lab.settings import logger, testbed_api
+
+if testbed_api == 'plcapi':
+    from plc.plcsfauser import get_r2lab_user
+else:
+    from omf.omfsfauser import get_r2lab_user
 
 debug = True
-
 
 class ManifoldBackend:
     """
@@ -67,7 +69,7 @@ class ManifoldBackend:
                 'session': session,
                 'auth': auth,
                 'mfuser': mfuser,
-                'slicenames': slicenames,
+                # 'slicenames': slicenames,
                 'accounts': r2lab_user['accounts'],
                 'manifold_url': self.manifold_url,
             }

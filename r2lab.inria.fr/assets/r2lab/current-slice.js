@@ -16,8 +16,10 @@ var current_slice = {
     // retrieve current slice upon page load
     // avail_slices is the full list as retrieved at the registry
     // mostly for the r2lab-user.js template
-    init_from_storage : function(avail_slices) {
-	current_slice.name = current_slice.get(avail_slices);
+    init_from_storage : function(r2lab_accounts_slices) {
+	slicenames = r2lab_accounts.map(
+	    function(account){return account['name'];});
+	current_slice.name = current_slice.get(slicenames);
 	current_slice.store(current_slice.name);
     },
 

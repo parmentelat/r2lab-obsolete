@@ -64,16 +64,20 @@ class SlicesProxy(PlcApiView):
             'slice_id', 'name', 'expires'
         ]
         # compute filter based on whether names are specified
-        plc_filter = {} if 'names' not in record \
-                     else [self.ensure_plc_slicename(name)
-                           for name in record['names']]
+        if 'names' not in record:
+            plc_filter = {}
+        else:
+            plc_names = [self.ensure_plc_slicename(name)
+                         for name in record['names']]
+            plc_names = [x for x in plc_names if x]
+            if not plc_names:
+                return self.http_response_from_struct([])
+            plc_filter = { 'name' : plc_names }
         plc_slices = self.plcapi_proxy.GetSlices(
             plc_filter, columns
         )
-        print('plc_slices', plc_slices)
         slices = [self.return_slice(plc_slice)
                   for plc_slice in plc_slices]
-        print('slices', slices)
         slices.sort(key=lambda slice: slice['valid_until'])
         return self.http_response_from_struct(slices)
 

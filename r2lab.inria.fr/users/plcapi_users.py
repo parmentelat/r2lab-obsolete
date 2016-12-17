@@ -71,11 +71,7 @@ class UsersProxy(PlcApiView):
         """
         retrieve user objects
 
-        xxx In a first implementation, we have not found a means to craft
-        a REST URL that allows to pull only one name
-        This means that all users are pulled no matter what
-
-        Now, if 'urn' is provided in the input record, it should contain a
+        If 'urn' is provided in the input record, it should contain a
         URN and only this one will be returned
 
         otherwise all users are returned
