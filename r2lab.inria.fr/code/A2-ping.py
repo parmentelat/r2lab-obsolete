@@ -8,7 +8,7 @@ from apssh import SshNode, SshJob, Run
 
 ##########
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.r2lab.tutorial'
+gateway_username  = 'inria_r2lab.tutorial'
 verbose_ssh = False
 
 # this time we want to be able to specify username and verbose_ssh
@@ -38,7 +38,7 @@ ping = SshJob(
 
 ##########
 # how to run the same directly with ssh - for troubleshooting
-print("""--- for troubleshooting: 
+print("""--- for troubleshooting:
 ssh -i /dev/null {}@{} ping -c1 google.fr
 ---""".format(gateway_username, gateway_hostname))
 

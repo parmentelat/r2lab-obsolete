@@ -45,7 +45,7 @@ var get_slices = function(id, names) {
 }
 $(function(){
   $('#get2-div').click(function() {
-    get_slices("get2", [ "onelab.inria.r2lab.tutorial", "onelab.upmc.infocom.demo2016"])});
+    get_slices("get2", [ "inria_r2lab.tutorial", "onelab.upmc.infocom.demo2016"])});
   $('#getall-div').click(function() {
     get_slices('getall');});
 });
@@ -59,8 +59,8 @@ $(function(){
 <script>
 // an example of how to renew a slice
 var renew_slice = function() {
-    var request = { 
-    		    "name" : "onelab.inria.r2lab.tutorial",
+    var request = {
+    		    "name" : "inria_r2lab.tutorial",
 		  };
     post_xhttp_django('/slices/renew', request, function(xhttp) {
       if (xhttp.readyState == 4 && xhttp.status == 200) {

@@ -9,7 +9,7 @@ from apssh import RunString, TimeColonFormatter
 
 ##########
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.r2lab.tutorial'
+gateway_username  = 'inria_r2lab.tutorial'
 verbose_ssh = False
 
 parser = ArgumentParser()
@@ -126,7 +126,7 @@ ping = SshJob(
     node = node1,
     required = (init_node_01, init_node_02),
     command = Run(
-        'ping', '-c', '20', '10.0.0.2', 
+        'ping', '-c', '20', '10.0.0.2',
 #        verbose=True,
     ))
 

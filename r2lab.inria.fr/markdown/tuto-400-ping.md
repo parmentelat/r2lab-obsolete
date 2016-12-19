@@ -67,7 +67,7 @@ as follows:
   that is used when you use single click to create a reservation.
 
 The code in this tutorial assumes you have a slice named
-`onelab.inria.r2lab.tutorial`, which you will need of course to
+`inria_r2lab.tutorial`, which you will need of course to
 replace with your actual slice name when trying to run the code
 yourself.
 
@@ -75,10 +75,10 @@ yourself.
 
 For loading the images manually on the 2 nodes needed here, please do
 this (as usual, make sure to use **your slice name** instead of
-`onelab.your.slice.name`)
+`your_slicename`)
 
 ```
-ssh -i ~/.ssh/onelab.private onelab.your.slice.name@faraday.inria.fr
+ssh -i ~/.ssh/onelab.private your_slicename@faraday.inria.fr
 ```
 
 If this results in a `Permission denied` message, go [back to this
@@ -90,9 +90,9 @@ access, before you can proceed.
 Once logged in faraday, type the following commands, which were
 explained [in the previous tutorial](tuto-200-shell-tools.md):
 
-    # it's always a good idea to check you currently own the reservation 
+    # it's always a good idea to check you currently own the reservation
     rleases --check
-    # turn off the whole testbed - just in case 
+    # turn off the whole testbed - just in case
     all-off
     # select nodes 1 and 2
     n 1 2
@@ -106,10 +106,10 @@ nodes, is going to take a couple of minutes. Here's what your output
 should look like
 
 
-    onelab.your.slice.name@faraday:~$ rleases --check
-    Checking current reservation for onelab.your.slice.name OK
-    
-    onelab.your.slice.name@faraday:~$ all-off
+    your_slicename@faraday:~$ rleases --check
+    Checking current reservation for your_slicename OK
+
+    your_slicename@faraday:~$ all-off
     reboot05:already off
     reboot19:already off
     reboot28:already off
@@ -124,12 +124,12 @@ should look like
     Turning OFF phone : turning on airplane mode
     Broadcasting: Intent { act=android.intent.action.AIRPLANE_MODE (has extras) }
     Broadcast completed: result=0
-    
-    onelab.your.slice.name@faraday:~$ n 1 2
+
+    your_slicename@faraday:~$ n 1 2
     export NODES="fit01 fit02"
     export NBNODES=2
-    
-    onelab.your.slice.name@faraday:~$ rload
+
+    your_slicename@faraday:~$ rload
     16:12:42 - +000s: Selection: fit01 fit02
     16:12:42 - +000s: Loading image /var/lib/rhubarbe-images/default.ndz
     16:12:42 - +000s: AUTH: checking for a valid lease
@@ -146,8 +146,8 @@ should look like
     16:13:44 - +062s: fit02 Uploading successful
     16:13:44 - +062s: fit02 reboot = Sending message 'reset' to CMC reboot02
     16:13:46 - +064s: stopped <frisbeed@234.5.6.1:10001 on default.ndz at 500 Mibps>
-    
-    onelab.your.slice.name@faraday:~$ rwait
+
+    your_slicename@faraday:~$ rwait
     <Node fit01>:ssh OK
     <Node fit02>:ssh OK
 
@@ -198,10 +198,10 @@ link just below the picture above.
 
     $ python3 A1-ping.py
     --- for troubleshooting:
-    ssh -i /dev/null onelab.your.slice.name@faraday.inria.fr ping -c1 google.fr
+    ssh -i /dev/null your_slicename@faraday.inria.fr ping -c1 google.fr
     ---
-    onelab.your.slice.name@faraday.inria.fr:========== Connected (direct)
-    onelab.your.slice.name@faraday.inria.fr:========== Authorization OK with user onelab.your.slice.name
+    your_slicename@faraday.inria.fr:========== Connected (direct)
+    your_slicename@faraday.inria.fr:========== Authorization OK with user your_slicename
     faraday.inria.fr:========== Session started for ping -c1 google.fr
     faraday.inria.fr:PING google.fr (216.58.209.227) 56(84) bytes of data.
     faraday.inria.fr:64 bytes from par10s29-in-f3.1e100.net (216.58.209.227): icmp_seq=1 ttl=52 time=14.2 ms
@@ -210,7 +210,7 @@ link just below the picture above.
     faraday.inria.fr:1 packets transmitted, 1 received, 0% packet loss, time 0ms
     faraday.inria.fr:rtt min/avg/max/mdev = 14.299/14.299/14.299/0.000 ms
     faraday.inria.fr:========== Session ended for ping -c1 google.fr
-    onelab.your.slice.name@faraday.inria.fr:========== Connection lost None
+    your_slicename@faraday.inria.fr:========== Connection lost None
     orchestrate - True
 
 ### Next
@@ -228,7 +228,7 @@ command line](javascript:open_tab('A2')), and other good practices.
 We now see a slightly different version of the same experiment, but
 
 * using standard python's `argparse` module, we let users specify
-  their slice on the command line with `--slice onelab.your.own.slice`
+  their slice on the command line with `--slice inria_your.own.slice`
   without having to edit the source.
 
 * we introduce the `Run` class, that is a companion to `SshNode`, and
@@ -252,9 +252,9 @@ will notice the disappearance of the verbose messages that gave
 details on the establishment of ssh connections and sessions, that you
 can now turn back on by adding `-v` or `--verbose` to the options
 
-    $ python3 A2-ping.py -s onelab.your.slice.name
+    $ python3 A2-ping.py -s your_slicename
     --- for troubleshooting:
-    ssh -i /dev/null onelab.your.slice.name@faraday.inria.fr ping -c1 google.fr
+    ssh -i /dev/null your_slicename@faraday.inria.fr ping -c1 google.fr
     ---
     faraday.inria.fr:PING google.fr (216.58.209.227) 56(84) bytes of data.
     faraday.inria.fr:64 bytes from par10s29-in-f3.1e100.net (216.58.209.227): icmp_seq=1 ttl=52 time=14.2 ms
@@ -295,10 +295,10 @@ to the gateway, regardless of the number of nodes actually controlled.
 
     $ python3 A3-ping.py -v
     --- for troubleshooting:
-    ssh -i /dev/null onelab.your.slice.name@faraday.inria.fr ssh root@fit01 ping -c1 google.fr
+    ssh -i /dev/null your_slicename@faraday.inria.fr ssh root@fit01 ping -c1 google.fr
     ---
-    onelab.your.slice.name@faraday.inria.fr:========== Connected (direct)
-    onelab.your.slice.name@faraday.inria.fr:========== Authorization OK with user onelab.your.slice.name
+    your_slicename@faraday.inria.fr:========== Connected (direct)
+    your_slicename@faraday.inria.fr:========== Authorization OK with user your_slicename
     root@fit01:========== Connected (tunnelled)
     root@fit01:========== Authorization OK with user root
     fit01:========== Session started for ping -c1 google.fr
@@ -366,8 +366,8 @@ the scheduler then bails out immediately.
 
 ### Sample output
 
-    $ python3 A4-ping.py -s onelab.your.slice.name
-    faraday.inria.fr:Checking current reservation for onelab.your.slice.name OK
+    $ python3 A4-ping.py -s your_slicename
+    faraday.inria.fr:Checking current reservation for your_slicename OK
     fit01:PING google.fr (216.58.209.227) 56(84) bytes of data.
     fit01:64 bytes from par10s29-in-f3.1e100.net (216.58.209.227): icmp_seq=1 ttl=51 time=14.5 ms
     fit01:
@@ -377,8 +377,8 @@ the scheduler then bails out immediately.
 
 Or, when using a slice that is valid but that does not have the reservation right now:
 
-    $ python3 A4-ping.py -s onelab.inria.oai.oai_build
-    faraday.inria.fr:Checking current reservation for onelab.inria.oai.oai_build WARNING: Access currently denied
+    $ python3 A4-ping.py -s inria_inria.oai.oai_build
+    faraday.inria.fr:Checking current reservation for inria_inria.oai.oai_build WARNING: Access currently denied
 
 ### Next
 
@@ -450,8 +450,8 @@ Here is what deserves to be outlined in the code below
 
 ### Sample output
 
-    $ A5-ping.py -s onelab.your.slice.name && echo OK
-    faraday.inria.fr:Checking current reservation for onelab.your.slice.name OK
+    $ A5-ping.py -s your_slicename && echo OK
+    faraday.inria.fr:Checking current reservation for your_slicename OK
     fit02:Turning on data network on interface data
     fit01:Turning on data network on interface data
     fit01:data
@@ -500,8 +500,3 @@ transfers to and from `SshNode`s.
 
 </div> <!-- end div contents -->
 .
-
-
-
-
-

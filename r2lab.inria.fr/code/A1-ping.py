@@ -7,7 +7,7 @@ from apssh import SshNode, SshJob
 ##########
 # globals - how to reach the gateway
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.r2lab.tutorial'
+gateway_username  = 'inria_r2lab.tutorial'
 # to get feedback on the ssh-connection and see why it fails
 verbose_ssh = True
 
@@ -28,7 +28,7 @@ ping = SshJob(
 
 ##########
 # how to run the same directly with ssh - for troubleshooting
-print("""--- for troubleshooting: 
+print("""--- for troubleshooting:
 ssh -i /dev/null {}@{} ping -c1 google.fr
 ---""".format(gateway_username, gateway_hostname))
 

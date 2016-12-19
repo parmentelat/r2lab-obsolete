@@ -333,7 +333,7 @@ function isPastDate(end){
 
 function isR2lab(name){
   var r2lab = false;
-  if (name.substring(0, 13) == 'onelab.inria.'){
+  if (name.substring(0, 13) == 'inria_'){
     r2lab = true;
   }
   return r2lab;

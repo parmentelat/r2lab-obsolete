@@ -18,8 +18,8 @@ See also `leases/view.py`
 var added_lease_uuid;
 // an example of how to add a lease
 var add_lease = function() {
-    var request = { 
-    		    "slicename" : 'onelab.inria.r2lab.tutorial',
+    var request = {
+    		    "slicename" : 'inria_r2lab.tutorial',
                     "valid_from": "2016-12-15T08:00:00Z",
                     "valid_until": "2016-12-15T09:00:00Z"
 		    };
@@ -46,7 +46,7 @@ $(function(){$('#add-lease').click(add_lease);})
 <script>
 // an example of how to update a lease
 var update_lease = function() {
-    var request = { 
+    var request = {
     		    "uuid" : added_lease_uuid,
                     "valid_from": "2016-12-15T11:00:00Z",
                     "valid_until": "2016-12-15T12:00:00Z"
@@ -72,7 +72,7 @@ $(function(){$('#update-lease').click(update_lease);})
 <script>
 // an example of how to delete a lease
 var delete_lease = function() {
-    var request = { 
+    var request = {
     		    "uuid" : added_lease_uuid,
 		    };
     post_xhttp_django('/leases/delete', request, function(xhttp) {
@@ -85,6 +85,3 @@ var delete_lease = function() {
 }
 $(function(){$('#delete-lease').click(delete_lease);})
 </script>
-
-
-

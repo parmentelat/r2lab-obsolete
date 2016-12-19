@@ -40,7 +40,7 @@ require_login: true
       <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
       <script type="text/javascript" src="/assets/r2lab/liveleases-common.js"></script>
       <script type="text/javascript" src="/assets/r2lab/liveleases-book.js"></script>
-      <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="onelab.inria.mario.script"></div>
+      <div id="current-slice" data-current-slice-color="#000" data-current-slice-name="inria_mario.script"></div>
     </div>
   </div>
 

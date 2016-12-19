@@ -232,11 +232,11 @@ name appended with a `.`
 
 For example, in this tutorial we have used the following names:
 
-* project: `onelab.inria.r2lab`
+* project: `inria_r2lab`
 
 * slice name : `tutorial`
 
-* unix account / full slice name: `onelab.inria.r2lab.tutorial`
+* unix account / full slice name: `inria_r2lab.tutorial`
 
 ### ssh with your private key
 
@@ -247,13 +247,13 @@ So we are ready to try it all out :
 
     cd ~/Downloads
     chmod 600 onelab.private
-    ssh -i onelab.private onelab.your.slice.name@faraday.inria.fr id
+    ssh -i onelab.private your_slicename@faraday.inria.fr id
 
 This should run the `id` command on `faraday.inria.fr` and output
 something like this
 
-    $ ssh -i /dev/null onelab.inria.r2lab.tutorial@faraday.inria.fr id
-    uid=1102(onelab.inria.r2lab.tutorial) gid=1102(onelab.inria.r2lab.tutorial) groups=1102(onelab.inria.r2lab.tutorial)
+    $ ssh -i /dev/null inria_r2lab.tutorial@faraday.inria.fr id
+    uid=1102(inria_r2lab.tutorial) gid=1102(inria_r2lab.tutorial) groups=1102(inria_r2lab.tutorial)
 
 
 Once this command works for you, proceed to the next tutorial), where [we see in more details the available tools

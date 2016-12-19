@@ -71,7 +71,7 @@ about. Let us [see them in action right away](javascript:open_tab('B1')).
 We are going to run the exact same experiment [as in the previous run
 A5](tuto-400-ping.md#A5), that is to say a simple ping triggered on
 `fit01` towards `fit02`, but this time on one of the **wireless
-interfaces**. 
+interfaces**.
 
 What changes then, as compared with our previous experiment, is that
 we cannot anymore simply run the predefined convenience command
@@ -113,7 +113,7 @@ IP connectivity to be established after the driver is configured.
 ### Sample output
 
     $ python3 B1-wireless.py
-    faraday.inria.fr:Checking current reservation for onelab.your.slice.name OK
+    faraday.inria.fr:Checking current reservation for your_slicename OK
     fit02:turn-off-wireless: driver iwlwifi not used
     fit02:turn-off-wireless: shutting down device atheros
     fit01:turn-off-wireless: driver iwlwifi not used
@@ -193,7 +193,7 @@ In this new variant, we are going to illustrate a few convenient tricks:
     for example on node 8, this returns `08`;
     this is suitable to build hostnames; so for example you would do
 
-# 
+#
 
     my_data_hostname="data$(r2lab-id)"
     echo $my_data_hostname
@@ -230,7 +230,7 @@ About that last point, note that other types of formatters are
 ### Sample output
 
     $ python3 B2-wireless.py
-    16-56-38:faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
+    16-56-38:faraday.inria.fr:Checking current reservation for inria_inria.r2lab.tutorial OK
     16-56-39:fit02:Using id=02 and fitid=fit02 - from hostname
     16-56-39:fit02:turn-off-wireless: driver iwlwifi not used
     16-56-39:fit01:Using id=01 and fitid=fit01 - from hostname
@@ -270,7 +270,7 @@ About that last point, note that other types of formatters are
     16-57-00:fit01:--- 10.0.0.2 ping statistics ---
     16-57-00:fit01:20 packets transmitted, 11 received, +9 errors, 45% packet loss, time 19060ms
     16-57-00:fit01:rtt min/avg/max/mdev = 1.489/2.152/4.455/0.795 ms, pipe 3
-    
+
 ### Next
 
 In [the next variant](javascript:open_tab('B3')), we are going to see
@@ -335,7 +335,7 @@ Make sure you download both files in the same location before trying to run the 
 ### Sample output
 
     $ python3 B3-wireless.py
-    14-08-35:faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
+    14-08-35:faraday.inria.fr:Checking current reservation for inria_inria.r2lab.tutorial OK
     14-08-36:fit02:turn-off-wireless: driver iwlwifi not used
     14-08-36:fit02:turn-off-wireless: shutting down device atheros
     14-08-36:fit01:turn-off-wireless: driver iwlwifi not used
@@ -391,7 +391,7 @@ job never ends, so it's no use waiting for it to complete.
     --- TICK - 14:09:21
     --- TICK - 14:09:22
     --- TICK - 14:09:23
-    14-09-24:faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
+    14-09-24:faraday.inria.fr:Checking current reservation for inria_r2lab.tutorial OK
     --- TICK - 14:09:24
     14-09-25:fit02:turn-off-wireless: driver iwlwifi not used
     14-09-25:fit02:turn-off-wireless: shutting down device atheros

@@ -12,11 +12,11 @@ from apssh import TimeColonFormatter
 
 ##########
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.r2lab.tutorial'
+gateway_username  = 'inria_r2lab.tutorial'
 # a fixed amount of time that we wait for once all the nodes
 # have their wireless interface configured
 settle_delay      = 10
-# this should be amply enough to talk to another 
+# this should be amply enough to talk to another
 ping_timeout      = 5
 
 parser = ArgumentParser()
@@ -89,7 +89,7 @@ check_lease = SshJob(
 
 ########## load images if requested
 
-green_light = check_lease 
+green_light = check_lease
 
 if args.load_images:
     negated_node_ids = [ "~{}".format(id) for id in node_ids ]
@@ -123,13 +123,13 @@ init_wireless_jobs = [
         verbose = verbose_jobs,
         label = "init {}".format(id),
         command = RunScript(
-            "B3-wireless.sh", "init-ad-hoc-network", 
+            "B3-wireless.sh", "init-ad-hoc-network",
             wireless_driver, "foobar", 2412,
         ))
     for id, node in node_index.items() ]
 
 
-########## let the wireless network settle 
+########## let the wireless network settle
 settle_wireless_job = PrintJob(
     "Let the wireless network settle",
     sleep = settle_delay,
@@ -141,7 +141,7 @@ settle_wireless_job = PrintJob(
 # create all the ping jobs, i.e. max*(max-1)/2
 # this again is a python list comprehension
 # see the 2 for instructions at the bottom
-# 
+#
 # notice that these SshJob instances are not yet added
 # to the scheduler, we will add them later on
 # depending on the sequential/parallel strategy
@@ -171,7 +171,7 @@ pings = [
 if args.parallel is None:
     # with the sequential strategy, we just need to
     # create a Sequence out of the list of pings
-    # Sequence will add the required relationships 
+    # Sequence will add the required relationships
     scheduler.add(Sequence(*pings, scheduler=scheduler))
     # for running sequentially we impose no limit on the scheduler
     # that will be limitied anyways by the very structure

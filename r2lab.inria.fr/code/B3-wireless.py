@@ -9,7 +9,7 @@ from apssh import RunString, RunScript, TimeColonFormatter
 
 ##########
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.r2lab.tutorial'
+gateway_username  = 'inria_r2lab.tutorial'
 verbose_ssh = False
 
 parser = ArgumentParser()
@@ -58,7 +58,7 @@ init_node_01 = SshJob(
     node = node1,
     required = check_lease,
     command = RunScript(
-        "B3-wireless.sh", "init-ad-hoc-network", 
+        "B3-wireless.sh", "init-ad-hoc-network",
         wireless_driver, "foobar", 2412,
 #        verbose=True,
     ))
@@ -66,7 +66,7 @@ init_node_02 = SshJob(
     node = node2,
     required = check_lease,
     command = RunScript(
-        "B3-wireless.sh", "init-ad-hoc-network", 
+        "B3-wireless.sh", "init-ad-hoc-network",
         wireless_driver, "foobar", 2412))
 
 # the command we want to run in faraday is as simple as it gets

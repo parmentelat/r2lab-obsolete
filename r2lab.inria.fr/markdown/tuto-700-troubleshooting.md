@@ -60,7 +60,7 @@ If your script does not check for that, it's a good idea to double check.
 
 Try to enter the gateway with this simple command
 
-    ssh onelab.your.slice.name@faaday.inria.fr
+    ssh your_slicename@faaday.inria.fr
 
 If this does not work, then double check that your onelab private key
 is known to your ssh agent - especially if you have recently logged out :
@@ -72,18 +72,18 @@ is known to your ssh agent - especially if you have recently logged out :
 You can check all your nodes [directly in the `RUN`](run.md) page on the web
 site, or with a session like this (when logged in `faraday`), assuming
 that you need nodes 4, 6 and from 10 to 13 inclusive :
-    
+
 
     $ rleases --check
-    Checking current reservation for onelab.inria.r2lab.tutorial OK
-    
-    # select your nodes 
-    onelab.inria.r2lab.tutorial@faraday:~$ n 4 6 10-13
+    Checking current reservation for inria_r2lab.tutorial OK
+
+    # select your nodes
+    inria_r2lab.tutorial@faraday:~$ n 4 6 10-13
     export NODES="fit04 fit06 fit10 fit11 fit12 fit13"
     export NBNODES=6
 
     # check they are reachable through ssh - use the --timeout option if needed
-    onelab.inria.r2lab.tutorial@faraday:~$ rwait
+    inria_r2lab.tutorial@faraday:~$ rwait
     <Node fit04>:ssh OK
     <Node fit06>:ssh OK
     <Node fit10>:ssh OK
@@ -92,13 +92,13 @@ that you need nodes 4, 6 and from 10 to 13 inclusive :
     <Node fit13>:ssh OK
 
     # what image are they all running ?
-    onelab.inria.r2lab.tutorial@faraday:~$ map rimage
-    fit04:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by onelab.inria.r2lab.tutorial
-    fit10:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by onelab.inria.r2lab.tutorial
-    fit06:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by onelab.inria.r2lab.tutorial
-    fit13:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by onelab.inria.r2lab.tutorial
-    fit11:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by onelab.inria.r2lab.tutorial
-    fit12:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by onelab.inria.r2lab.tutorial
+    inria_r2lab.tutorial@faraday:~$ map rimage
+    fit04:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by inria_r2lab.tutorial
+    fit10:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by inria_r2lab.tutorial
+    fit06:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by inria_r2lab.tutorial
+    fit13:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by inria_r2lab.tutorial
+    fit11:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by inria_r2lab.tutorial
+    fit12:2016-11-29@00:12 - built-on fit03 - from-image fedora-23-v10-wireless-names - by inria_r2lab.tutorial
 
 </div>
 
@@ -178,7 +178,7 @@ run the `debrief()` method on that scheduler.
 Keep in mind that `orchestrate` orchestration returns `False` only in
 either of these 2 cases:
 
-* one of the *critical* jobs inside the scheduler has raised an exception, 
+* one of the *critical* jobs inside the scheduler has raised an exception,
 * and when you specify a timeout by calling e.g. `orchestrate(timeout=120)`,
 if the total duration of `orchestrate` exceeds that timeout.
 
@@ -223,7 +223,7 @@ to see the meaning of the different symbols, but in a nutshell:
 * `⚠` : critical
 * `★` : raised an exception
 * `☉` : went through fine (no exception raised)
-* `☓` : complete 
+* `☓` : complete
 * `↺` : running  
 * `⚐` : idle     
 * `∞` : forever  
@@ -247,7 +247,7 @@ program in this fragment. Here's the example of output obtained in
 
 # Verbosity
 
-You can also enable more verbosity in any of the following classes. 
+You can also enable more verbosity in any of the following classes.
 
 ### `SshNode`
 

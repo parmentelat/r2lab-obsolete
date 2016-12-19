@@ -9,7 +9,7 @@ from apssh import RunString
 
 ##########
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.r2lab.tutorial'
+gateway_username  = 'inria_r2lab.tutorial'
 verbose_ssh = False
 wireless_driver="ath9k"
 wireless_interface="atheros"
@@ -58,7 +58,7 @@ turn_on_wireless_script = """#!/bin/bash
 # we expect the following arguments
 # * wireless driver name (iwlwifi or ath9k)
 # * wireless interface name (intel or atheros)
-# * IP-address/mask for that interface 
+# * IP-address/mask for that interface
 # * the wifi network name to join
 # * the wifi frequency to use
 

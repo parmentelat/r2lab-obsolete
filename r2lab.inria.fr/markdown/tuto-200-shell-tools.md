@@ -27,7 +27,7 @@ Once you have [obtained a slice account on R2LAB
 (faraday)](tuto-100-registration.md#main), you can reach the R2lab
 gateway using ssh
 
-    $ ssh -i onelab.private onelab.your.slice.name@faraday.inria.fr
+    $ ssh -i onelab.private your_slicename@faraday.inria.fr
 
 ---
 
@@ -60,11 +60,11 @@ Here's an example of how these names resolve. Beware that the IP
 address of the reboot interface might occassionnally not be directly
 to the node index, but this is seldom used by experiments.
 
-    onelab.your.slice.name@faraday:~$ host fit08
+    your_slicename@faraday:~$ host fit08
     fit08 has address 192.168.3.8
-    onelab.your.slice.name@faraday:~$ host data08
+    your_slicename@faraday:~$ host data08
     data08 has address 192.168.2.8
-    onelab.your.slice.name@faraday:~$ host reboot08
+    your_slicename@faraday:~$ host reboot08
     reboot08 has address 192.168.1.8
 
 ### Checking leases
@@ -152,7 +152,7 @@ By default - i.e. **with no argument** - this command and most of the ones we wi
 So this will give you the status of nodes 1 2 and 3, no matter what you have selected
 
     st 1-3
-    
+
 ### Managing nodes (turning them on or off, or rebooting)
 
 To turn on your selected nodes selection just do
@@ -177,7 +177,7 @@ To see the list of nodes that are ON
 
 You can select all the nodes currently ON with
 
-    focus-nodes-on -a 
+    focus-nodes-on -a
 
 To see the linux version running in the nodes (this is less
 sophisticated than what the [livetable](/status.md#livetable) would

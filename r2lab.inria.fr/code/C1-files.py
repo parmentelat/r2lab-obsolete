@@ -14,7 +14,7 @@ from apssh import Run, RunString, Push
 ##########
 
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.r2lab.tutorial'
+gateway_username  = 'inria_r2lab.tutorial'
 verbose_ssh = False
 random_size = 2**10
 

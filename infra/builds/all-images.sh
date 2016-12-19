@@ -6,7 +6,7 @@ case $(hostname) in
 	gitroot=/root/r2lab
 	;;
     *)
-	gateway=onelab.inria.r2lab.tutorial@faraday.inria.fr
+	gateway=inria_r2lab.tutorial@faraday.inria.fr
 	gitroot=$HOME/git/r2lab
 	;;
 esac
@@ -40,7 +40,7 @@ function bim () {
 
 gw_options="
     -l /root/openair-cn/SCRIPTS/build-hss-deps.log
-    -l /root/openair-cn/SCRIPTS/build-mme-deps.log	
+    -l /root/openair-cn/SCRIPTS/build-mme-deps.log
     -l /root/openair-cn/SCRIPTS/build-spgw-deps.log
     -b /root/openair-cn/BUILD/MME/BUILD/mme
     -b /root/openair-cn/BUILD/SPGW/BUILD/spgw
@@ -81,8 +81,8 @@ function u14-48(){
 function u14-319(){
     #bim 1 ubuntu-14.04-v5-ntp u14-lowlat319 "imaging.sh ubuntu-k319-lowlatency"
     ###bim $gw_options  2 u14-lowlat48 u14.48-oai-gw "oai-gw.sh image"
-    bim $enb_options 37 u14-lowlat319 u14.319-oai-enb-uhdoai "oai-enb.sh image uhd-oai" 
-    #bim $enb_options 36 u14-lowlat319 u14.319-oai-enb-uhdettus "oai-enb.sh image uhd-ettus" 
+    bim $enb_options 37 u14-lowlat319 u14.319-oai-enb-uhdoai "oai-enb.sh image uhd-oai"
+    #bim $enb_options 36 u14-lowlat319 u14.319-oai-enb-uhdettus "oai-enb.sh image uhd-ettus"
 }
 
 function gnuradio(){
@@ -169,5 +169,3 @@ gitup-v10
 #0#  "nodes.sh git-pull-r2lab"
 
 #bim 37 fedora-23-v4-ntp == "nodes.sh common-setup-user-env"
-
-

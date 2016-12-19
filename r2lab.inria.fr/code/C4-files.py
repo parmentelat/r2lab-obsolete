@@ -14,7 +14,7 @@ from apssh import Run, RunString, Push, Pull
 ##########
 
 gateway_hostname  = 'faraday.inria.fr'
-gateway_username  = 'onelab.inria.r2lab.tutorial'
+gateway_username  = 'inria_r2lab.tutorial'
 verbose_ssh = False
 random_size = 2**10
 netcat_port = 10000
@@ -120,7 +120,7 @@ push_job = SshJob(
 )
 
 ########## step 3 : turn on data interfaces
-# a convenient way to create many jobs in a single pass is  
+# a convenient way to create many jobs in a single pass is
 # to build a list of jobs using a python comprehension
 
 turn_on_datas = [ SshJob( node = node,
@@ -143,7 +143,7 @@ transfer_job = Sequence(
                 Run("netcat", "-l", "data02", netcat_port, ">", "RANDOM", "&"),
             ]),
 
-    # start the sender 
+    # start the sender
     SshJob( node = node1,
             # ignore netcat result
             critical = False,

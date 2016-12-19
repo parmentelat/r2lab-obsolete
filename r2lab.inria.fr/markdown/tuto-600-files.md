@@ -107,7 +107,7 @@ This is what the code below carries out; the things to outline in this code are
 ### Sample output
 
     $ python3 C1-files.py
-    faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
+    faraday.inria.fr:Checking current reservation for inria_r2lab.tutorial OK
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1048576 Nov 30 21:32 RANDOM
     LOCALNODE:3f147d42ed40df83819de3ab2093de352a1c5c6b  RANDOM
     fit01:-rw-r--r-- 1 root root 1048576 Nov 30 21:32 RANDOM
@@ -161,9 +161,9 @@ In terms of synchronization, note how we
 The purpose of the C2bis script is to show how one can use shell
 tricks to deal with less fortunate situations, where typically the
 server side runs forever, but you need to stop it once some other job
-is done. 
+is done.
 
-### The `Sequence` object 
+### The `Sequence` object
 
 Note the use of the `Sequence` object in variable `transfer_job`, that
 almost entirely relieves us of managing the `required` relationships.
@@ -184,7 +184,7 @@ scheduler.
 ### Sample output
 
     $ python3 C2-files.py
-    faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
+    faraday.inria.fr:Checking current reservation for inria_r2lab.tutorial OK
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1024 Dec  2 12:13 RANDOM
     LOCALNODE:384500c5f756f72720c2fed631191dae7edaf0bd  RANDOM
     fit01:-rw-r--r-- 1 root root 1024 Dec  2 12:13 RANDOM
@@ -225,7 +225,7 @@ node as part of a `SshJob`.
 ### Sample output
 
     $ python3 C3-files.py
-    faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
+    faraday.inria.fr:Checking current reservation for inria_r2lab.tutorial OK
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1024 Dec  2 12:17 RANDOM
     LOCALNODE:ad8ccdea8fc4fefb3f5aa2d23920aae84cb23fb8  RANDOM
     fit01:-rw-r--r-- 1 root root 1024 Dec  2 12:17 RANDOM
@@ -255,7 +255,7 @@ ability to load images on the two nodes involved before the C3
 scenario actually triggers.
 
 To this end, we add a new command line option to the script, that
-users can use to request image loading. 
+users can use to request image loading.
 
 Remember that the C3 scenario is about creating a local random file,
 and have it circulate from your laptop to fit01, then fit02, and back
@@ -297,7 +297,7 @@ just define the list of nodes in a `node_ids` variable.
 ### Sample output
 
     $ python3 C4-files.py --load
-    faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
+    faraday.inria.fr:Checking current reservation for inria_r2lab.tutorial OK
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1024 Dec  3 16:31 RANDOM
     LOCALNODE:22aaa184304f7202dc2554839d5e6c09fe6757ba  RANDOM
     faraday.inria.fr:reboot21:ok
@@ -340,7 +340,7 @@ just define the list of nodes in a `node_ids` variable.
     fit02:the Pull command runs on fit02
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1024 Dec  3 16:33 RANDOM.loopback
     LOCALNODE:RANDOM.loopback identical to RANDOM
-    
+
 ### Next
 
 If this is your first reading, we suggest you skip C2bis and [go
@@ -407,7 +407,7 @@ In this respect, note that:
 ### Sample output
 
     $ python3 C2bis-files.py
-    faraday.inria.fr:Checking current reservation for onelab.inria.r2lab.tutorial OK
+    faraday.inria.fr:Checking current reservation for inria_r2lab.tutorial OK
     LOCALNODE:-rw-r--r--  1 parmentelat  staff  1024 Dec  2 14:13 RANDOM
     LOCALNODE:950dd7f38a2691dd172cc09a00a3fe1da24cb413  RANDOM
     fit01:-rw-r--r-- 1 root root 1024 Dec  2 14:13 RANDOM
