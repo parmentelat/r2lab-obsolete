@@ -56,7 +56,7 @@ class MonitorPhone:
         self.info = { 'id' : self.id }
 
     def emit(self):
-        self.reconnectable.emit_info(sidecar_channel, self.info)
+        self.reconnectable.emit_info(sidecar_channel, self.info, wrap_in_list=True)
 
     async def probe(self, verbose):
 
