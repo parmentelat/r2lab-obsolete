@@ -8,7 +8,7 @@ The code will search for all WEDNESDAYs and SUNDAYs between a given period to sc
 in each day found.
 If no period is given, the whole year period is assumed based in the current year.
 
-Be careful in use a different slice name because: onelab.inria.r2lab.nightly is hardcoded in run/book r2lab pages
+Be careful in use a different slice name because: inria_r2lab.nightly is hardcoded in run/book r2lab pages
 to present special contents linked with this name.
 """
 
@@ -32,7 +32,7 @@ def main():
                         help="Each WED and SUN between a given period")
     parser.add_argument("-d", "--days", dest="days", default=["mon","tue","wed","thu","fri","sat","sun"],
                         help="Comma separated list of week days to match between the given period")
-    parser.add_argument("-s", "--slice", dest="slice", default="onelab.inria.r2lab.nightly",
+    parser.add_argument("-s", "--slice", dest="slice", default="inria_r2lab.nightly",
                         help="Slice name")
     parser.add_argument("-t", "--time", dest="time", nargs=2, type=int, default=[3,4],
                         help="Hour to start and hour to finish")

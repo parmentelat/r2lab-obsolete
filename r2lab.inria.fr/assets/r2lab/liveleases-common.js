@@ -362,7 +362,7 @@ function sendMessage(msg, type){
 // xxx plcapi : do we still have zombies ?
 function isZombie(obj){
   return false;
-  
+
   var is_zombie = false;
   if(obj.resource_type == 'lease' && obj.status == 'pending' && isMySlice(shortName(obj.slicename))){
     is_zombie = true;
@@ -644,7 +644,7 @@ function buildInitialSlicesBox(leases){
   $.each(leases, function(key,val){
     val = shortName(val);
     var color = getColorLease(val);
-    if ($.inArray(val, knew_slices) === -1 && val != 'inria.r2lab.nightly' ) { //removgin nightly routine and slices already present?
+    if ($.inArray(val, knew_slices) === -1 && val != 'inria_r2lab.nightly' ) { //removgin nightly routine and slices already present?
       if (isMySlice(val)) {
         if(val === getCurrentSliceName()){
           setCurrentSliceColor(color);
