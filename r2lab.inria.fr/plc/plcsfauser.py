@@ -37,6 +37,8 @@ def user_with_accounts(plc_person, slices_index):
         plc_slice_account(slices_index[slice_id])
         for slice_id in plc_person['slice_ids']
     ]
+    omflike_record['accounts'].sort(
+        key = lambda slice: slice['name'])
     return omflike_record
 
 def get_r2lab_user(urn):
