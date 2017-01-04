@@ -44,6 +44,30 @@ function refresh() { git-pull-r2lab /root/r2lab; bashrc; }
 doc-nodes rimage "Shows info on current image from last line in /etc/rhubarbe-image"
 function rimage() { tail -1 /etc/rhubarbe-image | sed -e 's, node , built-on ,' -e 's, image , from-image ,' ; }
 
+########## 
+doc-nodes update-os-packages "runs the core OS package update (dnf or apt-get) to update to latest versions"
+function update-os-packages () {
+    if type -p dnf >& /dev/null; then
+	update-dnf-packages
+    elif type -p apt-get >& /dev/null; then
+	update-apt-get-packages
+    else
+	echo update-core-os unknown package manager
+    fi
+}
+
+function update-dnf-packages () {
+    dnf -y update
+}
+
+function update-apt-get-packages () {
+    # debconf-get-selections | grep grub-pc
+    # dpkg-reconfigure grub-pc
+    apt install debconf-utils
+    debconf-set-selections <<< 'grub-pc	grub-pc/install_devices	multiselect /dev/sda'
+    apt-get -y update
+    apt-get -y upgrade
+}
 ##########
 doc-nodes init-ntp-clock "Sets date from ntp"
 function init-ntp-clock() {
