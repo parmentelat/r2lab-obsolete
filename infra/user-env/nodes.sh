@@ -60,14 +60,23 @@ function update-dnf-packages () {
     dnf -y update
 }
 
+# when debconf hangs, it's hard to get more details on where apt-get is stuck or failing
+# hence the two tricks to get more details with
+# * the DEBCONF_DEBUG variable
+# * as well as storing output locally on the node to avoid any buffering over the (ap)ssh mechanism
 function update-apt-get-packages () {
+    # potentially useful commands when writing/troubleshooting this
     # debconf-get-selections | grep grub-pc
     # dpkg-reconfigure grub-pc
     apt install debconf-utils
     debconf-set-selections <<< 'grub-pc	grub-pc/install_devices	multiselect /dev/sda'
+    debconf-set-selections <<< 'console-setup console-setup/charmap47 select UTF-8'
+    # try to get more
+    export DEBCONF_DEBUG=developer
     apt-get -y update
-    apt-get -y upgrade
+    apt-get -y upgrade > /root/.apt-get-upgrade.log
 }
+
 ##########
 doc-nodes init-ntp-clock "Sets date from ntp"
 function init-ntp-clock() {

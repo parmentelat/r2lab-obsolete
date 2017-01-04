@@ -21,7 +21,7 @@ function bim () {
     $command --silent "$@"
 }
 
-# run with an arg to get the command to run manually
+# when run with an arg : just print the command to run manually
 [[ -n "$@" ]] && { bim --help; exit; }
 
 ####################
@@ -137,15 +137,25 @@ function ubuntu-udev() {
 }
 
 # preserving the oai images for now
-function  gitup-v10() {
-    bim 1 ubuntu-16.04-v10-wireless-names                   == "nodes.sh git-pull-r2lab" &
-    bim 2 ubuntu-14.04-v10-wireless-names                   == "nodes.sh git-pull-r2lab" &
-    bim 3 fedora-23-v10-wireless-names                      == "nodes.sh git-pull-r2lab" &
-    bim 5 intelcsi-v10-wireless-names                       == "nodes.sh git-pull-r2lab" &
-    bim 6 ubuntu-16.04-gnuradio-3.7.10.1-v10-wireless-names == "nodes.sh git-pull-r2lab" &
+# also stay away from node 4 that is prone to mishaps
+function  update-v11() {
+    # update OS packages on vanilla images only
+    bim 1 ubuntu-16.04-v10-wireless-names \
+	ubuntu-16.04-v11-os-update	"nodes.sh git-pull-r2lab" "nodes.sh update-os-packages" &
+    bim 2 ubuntu-14.04-v10-wireless-names \
+	ubuntu-14.04-v11-os-update	"nodes.sh git-pull-r2lab" "nodes.sh update-os-packages" &
+    bim 3 fedora-23-v10-wireless-names \
+	fedora-23-v11-os-update		"nodes.sh git-pull-r2lab" "nodes.sh update-os-packages" &
+    bim 5 intelcsi-v10-wireless-names \
+	intelcsi-v11-os-update		"nodes.sh git-pull-r2lab" "nodes.sh update-os-packages" &
+    bim 6 ubuntu-16.04-gnuradio-3.7.10.1-v10-wireless-names \
+          gnuradio-v11-os-packages	"nodes.sh git-pull-r2lab" "nodes.sh update-os-packages" &
 }
 
-gitup-v10
+# seems to have worked except for nodes
+# 1 : ubuntu-16.04-v10-wireless-names.log - which is odd because it seemed to have worked manually
+# 8 : gnuradio-3.7.10.1-v11-os-packages.log
+update-v11
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work
