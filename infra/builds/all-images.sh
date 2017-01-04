@@ -149,7 +149,7 @@ function  update-v11() {
     bim 5 intelcsi-v10-wireless-names \
 	intelcsi-v11-os-update		"nodes.sh git-pull-r2lab" "nodes.sh update-os-packages" &
     bim 6 ubuntu-16.04-gnuradio-3.7.10.1-v10-wireless-names \
-          gnuradio-v11-os-packages	"nodes.sh git-pull-r2lab" "nodes.sh update-os-packages" &
+          gnuradio-v11-os-update	"nodes.sh git-pull-r2lab" "nodes.sh update-os-packages" &
 }
 
 # seems to have worked except for nodes

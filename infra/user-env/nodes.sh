@@ -58,6 +58,8 @@ function update-os-packages () {
 
 function update-dnf-packages () {
     dnf -y update
+    # don't clobber space with cached packages
+    dnf clean all
 }
 
 # when debconf hangs, it's hard to get more details on where apt-get is stuck or failing
@@ -75,6 +77,7 @@ function update-apt-get-packages () {
     export DEBCONF_DEBUG=developer
     apt-get -y update
     apt-get -y upgrade > /root/.apt-get-upgrade.log
+    apt-get clean
 }
 
 ##########
