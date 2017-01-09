@@ -12,10 +12,11 @@ var color_removing      = '#000000';
 var keepOldEvent        = null;
 var theZombieLeases     = [];
 var socket              = io.connect("http://r2lab.inria.fr:443");
-var version             = '1.35';
+var version             = '1.36';
 var refresh             = true;
 var currentTimezone     = 'local';
 var nigthly_slice_name  = 'inria_r2lab.nightly'
+var nigthly_slice_color = '#000000';
 
 var liveleases_debug = false;
 
@@ -330,6 +331,25 @@ function isPastDate(end){
   return past;
 }
 
+function adaptStart(start, end) {
+  now = new Date();
+  limit_minutes = 10;
+  started = moment(now).diff(moment(start), 'minutes');
+  remaining = moment(end).diff(moment(now), 'minutes');
+  if (started > 0 && remaining >= limit_minutes){
+    s   = moment(now).diff(moment(start), 'minutes')
+    ns  = moment(start).add(s, 'minutes');
+    start = ns;
+  } else if (started > 0 && remaining < limit_minutes) {
+    s   = moment(now).diff(moment(start), 'minutes')
+    ns  = moment(start).add(s, 'minutes');
+    start = ns;
+    end = moment(end).add(1, 'hour');
+    alert("The minimum time slot is 10 min. We'll reserve the next hour as well." );
+  }
+  return [start, end];
+}
+
 
 function isR2lab(name){
   var r2lab = false;
@@ -607,6 +627,11 @@ function isPresent(element, list){
 }
 
 
+function getNightlyColor(){
+  return nigthly_slice_color;
+}
+
+
 function buildSlicesBox(leases){
   // var knew_slices = getMySlicesinShortName();
   var slices = $("#my-slices");
@@ -614,7 +639,11 @@ function buildSlicesBox(leases){
   $.each(leases, function(key,val){
     if ($.inArray(val.title, knew_slices) === -1) { //already present?
       if (isMySlice(val.title)) {
-        if(val.title === getCurrentSliceName()){
+        if(val.title === nigthly_slice_name){
+          color = getNightlyColor();
+          setCurrentSliceColor(color);
+        }
+        else if(val.title === getCurrentSliceName()){
           setCurrentSliceColor(val.color);
         }
         slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ val.color +"").text(val.title)).append($("<div />").attr("id", idFormat(val.title)).addClass('noactive'));
@@ -644,9 +673,13 @@ function buildInitialSlicesBox(leases){
   $.each(leases, function(key,val){
     val = shortName(val);
     var color = getColorLease(val);
-    if ($.inArray(val, knew_slices) === -1 && val != 'inria_r2lab.nightly' ) { //removgin nightly routine and slices already present?
+    if ($.inArray(val, knew_slices) === -1) { //removgin nightly routine and slices already present?
       if (isMySlice(val)) {
-        if(val === getCurrentSliceName()){
+        if(val === nigthly_slice_name){
+          color = getNightlyColor();
+          setCurrentSliceColor(color);
+        }
+        else if(val === getCurrentSliceName()){
           setCurrentSliceColor(color);
         }
         slices.append($("<div />").addClass('fc-event').attr("style", "background-color: "+ color +"").text(val)).append($("<div />").attr("id", idFormat(val)).addClass('noactive'));
@@ -727,11 +760,7 @@ function parseLeases(data){
 
     // //HARD CODE TO SET SPECIAL ATTR to nightly routine
     if(newLease.title == nigthly_slice_name){
-      newLease.title = "nightly routine";
-      newLease.color = "#616161";
-      newLease.uuid = '';
-      newLease.overlap = false;
-      newLease.editable = false;
+      newLease.color = getNightlyColor();
     }
 
     if(isZombie(lease)){
