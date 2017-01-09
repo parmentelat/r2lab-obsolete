@@ -331,14 +331,23 @@ function isPastDate(end){
   return past;
 }
 
-function adaptStart(start) {
+function adaptStart(start, end) {
   now = new Date();
-  if (moment(now).diff(moment(start), 'minutes') > 0) {
+  limit_minutes = 10;
+  started = moment(now).diff(moment(start), 'minutes');
+  remaining = moment(end).diff(moment(now), 'minutes');
+  if (started > 0 && remaining >= limit_minutes){
     s   = moment(now).diff(moment(start), 'minutes')
     ns  = moment(start).add(s, 'minutes');
     start = ns;
+  } else if (started > 0 && remaining < limit_minutes) {
+    s   = moment(now).diff(moment(start), 'minutes')
+    ns  = moment(start).add(s, 'minutes');
+    start = ns;
+    end = moment(end).add(1, 'hour');
+    alert("The minimum time slot is 10 min. We'll reserve the next hour as well." );
   }
-  return start;
+  return [start, end];
 }
 
 

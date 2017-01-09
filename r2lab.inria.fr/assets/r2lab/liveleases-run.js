@@ -45,6 +45,10 @@ $(document).ready(function() {
         }
         var my_title = getCurrentSliceName();
         var eventData;
+        var adapt = adaptStart(start, end);
+        start = adapt[0];
+        end   = adapt[1];
+        
         if (my_title) {
           eventData = {
             title: pendingName(my_title),
@@ -73,6 +77,10 @@ $(document).ready(function() {
         }
 
         setSlice($(this))
+
+        var adapt = adaptStart(start, end);
+        start = adapt[0];
+        end   = adapt[1];
 
         var my_title = getCurrentSliceName();
         var eventData;
