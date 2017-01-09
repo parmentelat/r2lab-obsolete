@@ -18,7 +18,7 @@ import sys
 import re
 import json
 
-LEASE_NIGHTLY = 'inria_mario.script'
+LEASE_NIGHTLY = 'inria_r2lab.nightly'
 def main():
     print('INFO: fetching nightly leases...')
     fetching_leases()
