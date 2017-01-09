@@ -59,7 +59,7 @@ $(document).ready(function() {
         }
         var my_title = getCurrentSliceName();
         var eventData;
-        
+
         if (my_title) {
           eventData = {
             title: pendingName(my_title),
@@ -94,7 +94,7 @@ $(document).ready(function() {
         if (my_title) {
           eventData = {
             title: pendingName(my_title),
-            start: start,
+            start: adaptStart(start),
             end: end,
             overlap: false,
             editable: false,
