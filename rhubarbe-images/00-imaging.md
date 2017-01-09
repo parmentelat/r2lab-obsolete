@@ -2,6 +2,48 @@
 * OAI-related details in a separate file `01-oai.md`
 * List of known issues in `02-fixes.md`
 
+# fedora25 - ***STANDBY***
+
+* Jan 5 2017
+* fit42
+
+### ========== ***STANDBY***
+Turns out frisbee cannot save the image produced like below - see mail exchange with MikeH ibler
+### ========== ***STANDBY***
+
+## iso image & USB key
+* bittorrent'ed `os-images/Fedora-Server-dvd-x86_64-25-1.3.iso` 
+* put that on a key (inside a FAT)
+* used goeland to extract to hdd
+* and then just `dd if=the.iso of=/dev/sdb bs=8M`
+
+## installing
+* graphic mode KO, used basic graphic mode (see section on fedora24 below)
+* I confirm I had to re-create the partition layout over again
+* no user created
+* entered as root 
+* `passwd -d root`
+* `vi /etc/ssh/sshd_config` -> enabled passwd auth and empty passwords
+* saved into `fedora-25-v0`
+
+## scaffolding
+
+* running from `r2lab/infra/user-env`
+* individual commands like this one
+
+```
+apssh -g $(plr bemol) -t root@fit42 -i r2labutils.sh -s imaging.sh fedora-setup-ntp
+```
+
+* which gives us
+
+```
+functions="fedora-base common-setup fedora-ifcfg network-names-udev"
+for function in $functions; do
+  apssh -g $(plr bemol) -t root@fit42 -i r2labutils.sh -s imaging.sh $function
+done
+```
+
 # building 4.7 on Ubuntu-14.04
 
 * first attempt to run [4.7.0/lowlatency kernel inside ubuntu-**16.04**](http://ubuntuhandbook.org/index.php/2016/07/install-linux-kernel-4-7-ubuntu-16-04/) ran without a glitch by just installing pre-packaged stuff

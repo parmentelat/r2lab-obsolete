@@ -256,12 +256,38 @@ EOF
 ########################################
 # FEDORA
 ########################################
-# very incomplete for now...
+doc-imaging fedora-base "minimal packages"
+function fedora-base() {
+    rm /etc/hostname
+    packages=" rsync git make gcc emacs-nox wireshark"
+    dnf -y install $packages
+}
+
 doc-imaging fedora-setup-ntp "installs ntp"
 function fedora-setup-ntp() {
     dnf -y install ntp
     systemctl enable ntpd
     systemctl start ntpd
+}
+
+# most likely there are much smarter ways to do that..
+doc-imaging fedora-ifcfg "overwrite /etc/sysconfig/networks-scripts"
+function fedora-ifcfg() {
+    echo WARNING fedora-interfaces might be brittle
+    cd /etc/sysconfig/network-scripts
+    for renaming in enp3s0:control enp0s25:data; do
+	oldname=$(cut -d: -f1 <<< $renaming)
+	newname=$(cut -d: -f2 <<< $renaming)
+	oldfile=ifcfg-$oldname
+	newfile=ifcfg-$newname
+	if [ -f $oldfile ]; then
+	    echo Creating $newfile to replace $oldfile
+	    sed -e "s,$oldname,$newname,g" $oldfile > $newfile
+	    rm $oldfile
+	else
+	    echo Could not find file $oldfile in $(pwd)
+	fi
+    done
 }
 
 ########################################
