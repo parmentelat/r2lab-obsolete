@@ -20,13 +20,36 @@ import json
 
 LEASE_NIGHTLY = 'inria_r2lab.nightly'
 def main():
+
+    parser = ArgumentParser()
+    parser.add_argument("-N", "--nodes", dest="nodes", default="all",
+                        help="Comma separated list of nodes")
+    parser.add_argument("-a", "--avoid", dest="avoid_nodes", default="0",
+                        help="Comma separated list of nodes to avoid")
+    parser.add_argument("-V", "--version", default="fedora-23.ndz", dest="version",
+                        help="O.S version to load")
+    parser.add_argument("-t", "--text-dir", default="/root/r2lab/nightly/", dest="text_dir",
+                        help="Directory to save text file")
+    parser.add_argument("-e", "--email", default="fit-r2lab-users@inria.fr", dest="send_to_email",
+                        help="Email to receive the execution results")
+    #parser.add_argument("-d", "--days", dest="days", default=['wed','sun'],
+    #                    help="Comma separated list of weekday to run")
+    args = parser.parse_args()
+
+    send_to_email  = args.send_to_email
+    nodes          = args.nodes
+    version        = args.version
+    dir_name       = args.text_dir
+    avoid_nodes    = args.avoid_nodes
+    send_results_to= [str(send_to_email)]
+
     print('INFO: fetching nightly leases...')
-    fetching_leases()
+    fetching_leases(nodes, avoid_nodes, version, dir_name, send_results_to)
     print('INFO: done')
     return 0
 
 
-def fetching_leases():
+def fetching_leases(nodes, avoid_nodes, version, dir_name, send_results_to):
     """recovering the leases list"""
     command = "rhubarbe-leases | awk 'FNR > 1{{print $4} {print $6} {print $8} {print $10}}'"
     ans_cmd = run(command)
@@ -45,11 +68,12 @@ def fetching_leases():
                 end = given_date('{},{},{},{},{}'.format(cur.year, dd.split('-')[0], dd.split('-')[1], en.split(':')[0], en.split(':')[1]))
                 if(cur >= bgn and cur < end):
                     print('INFO: should run: {}  {}'.format(lease_name, cur.strftime('%Y-%m-%d %H:%M')))
-                    command = 'python /root/r2lab/nightly/nightly.py -N 25 -e mario.zancanaro@inria.fr /var/log/nightly.log 2>&1;'
+                    command = 'python /root/r2lab/nightly/nightly.py -N {} -a {} -V {} -t {} -e {} > /var/log/nightly.log 2>&1;'.format(nodes, avoid_nodes, version, dir_name, send_results_to)
                     ans_cmd = run(command)
                     if not ans_cmd['status']:
                         print('ERROR: something went wrong in run nightly.')
                         print(ans_cmd['output'])
+                        print(ans_cmd['status'])
                         exit()
 
 
