@@ -41,7 +41,7 @@ def main():
     version        = args.version
     dir_name       = args.text_dir
     avoid_nodes    = args.avoid_nodes
-    send_results_to= [str(send_to_email)]
+    send_results_to= str(send_to_email)
 
     print('INFO: fetching nightly leases...')
     fetching_leases(nodes, avoid_nodes, version, dir_name, send_results_to)
@@ -73,7 +73,13 @@ def fetching_leases(nodes, avoid_nodes, version, dir_name, send_results_to):
                     if not ans_cmd['status']:
                         print('ERROR: something went wrong in run nightly.')
                         print(ans_cmd['output'])
-                        print(ans_cmd['status'])
+                        exit()
+                    print('INFO: sync results...')
+                    command = '/root/r2lab/infra/scripts/sync-nightly-results-at-r2lab.sh'
+                    ans_cmd = run(command)
+                    if not ans_cmd['status']:
+                        print('ERROR: something went wrong in sync results.')
+                        print(ans_cmd['output'])
                         exit()
 
 
