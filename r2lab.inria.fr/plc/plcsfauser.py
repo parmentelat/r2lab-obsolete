@@ -41,14 +41,14 @@ def user_with_accounts(plc_person, slices_index):
         key = lambda slice: slice['name'])
     return omflike_record
 
-def get_r2lab_user(hrn):
+def get_r2lab_user(email):
     """
-    This function retrieves at the omf.omf-sfa db the list of slices
+    This function retrieves at the plcapi db the list of slices
     that a user is attached to, together with all the attached details 
     """
 
     plcapi = init_plcapi_proxy()
-    plc_filter = {'hrn' : hrn}
+    plc_filter = {'email' : email}
     columns = ['person_id', 'email', 'slice_ids', 'hrn']
     person = plcapi.GetPersons(plc_filter, columns)[0]
 

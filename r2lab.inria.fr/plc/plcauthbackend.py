@@ -3,23 +3,23 @@
 from django.contrib.auth.models import User
 
 ##################################################
-from manifoldapi.manifoldapi import ManifoldException
+from rhubarbe.plcapiproxy import PlcApiProxy
 
-from .mfdetails import manifold_details
-
-from r2lab.settings import manifold_url as config_manifold_url
+from r2lab.settings import plcapi_settings
 from r2lab.settings import logger
+
 from plc.plcsfauser import get_r2lab_user
 
 debug = True
+config_plcapi_url = plcapi_settings['url']
 
-class ManifoldBackend:
+class PlcAuthBackend:
     """
-    Authenticate against the onelab portal user accounts
+    Authenticate against the user accounts in r2labapi (a PLCAPI instance)
     """
 
-    def __init__(self, manifold_url=config_manifold_url):
-        self.manifold_url = manifold_url
+    def __init__(self, plcapi_url=config_plcapi_url):
+        self.plcapi_url = plcapi_url
 
     # Required for your backend to work properly - unchanged in most scenarios
     def get_user(self, user_id):
@@ -33,24 +33,39 @@ class ManifoldBackend:
         if token is None:
             return
 
-        if debug:
-            print("authenticating token={}".format(token))
         try:
             email = token['username']
             password = token['password']
             request = token['request']
 
-            session, auth, user_details = manifold_details(
-                self.manifold_url, email, password, logger)
-            if session is None or user_details is None:
-                if debug:
-                    logger.info(
-                        "dbg: could not get or missing manifold details")
-                return None
             if debug:
-                logger.info("dbg: SESSION keys: {}".format(session.keys()))
+                logger.info("connecting to plcapi at {}"
+                            .format(self.plcapi_url))
+            plcapi_proxy = PlcApiProxy(self.plcapi_url,
+                                       email=email, password=password)
 
-            # get a more relevant list of slices right at the r2lab portal
+            # check that email/password
+            exists = plcapi_proxy.AuthCheck()
+            if exists != 1:
+                logger.error("AuthCheck failed, email={}".format(email))
+                return None
+            persons = plcapi_proxy.GetPersons(
+                {'email' : email},
+                ['email', 'first_name', 'last_name', 'slice_ids', 'hrn'])
+            # should have exactly one
+            if len(persons) != 1:
+                logger.error("Unexpected : cannot locate person from email")
+                return None
+            person = persons[0]
+            user_details = {
+                'email': person['email'],
+                'hrn': person['hrn'],
+                'firstname': person['first_name'],
+                'lastname': person['last_name'],
+            }
+
+            # get the slices right at the r2lab portal
+            # xxx this is a bit suboptimal, as get_r2lab_user will resend a GetPersons()
             r2lab_user = get_r2lab_user(email)
             if debug:
                 logger.info("dbg: r2lab_user = {}".format(r2lab_user))
@@ -64,16 +79,10 @@ class ManifoldBackend:
             # we cannot expose just 'api' because it can't be marshalled in JSON
             # BUT we can expose the 'auth' field
             request.session['r2lab_context'] = {
-                'session': session,
-                'auth': auth,
                 'user_details': user_details,
                 'accounts': r2lab_user['accounts'],
-                'manifold_url': self.manifold_url,
             }
 
-        except ManifoldException as e:
-            logger.error("ManifoldException in Auth Backend: {}"
-                         .format(e.manifold_result))
         except Exception as e:
             logger.exception("ERROR in Manifold Auth Backend")
             return None

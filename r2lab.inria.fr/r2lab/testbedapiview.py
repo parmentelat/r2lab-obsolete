@@ -23,7 +23,7 @@ class TestbedApiView(View):
         The error to return as-is if user is not authenticated
         """
         if 'r2lab_context' not in request.session or \
-          'mfuser' not in request.session['r2lab_context']:
+          'user_details' not in request.session['r2lab_context']:
             return self.http_response_from_struct(
                 {'error' : 'User is not authenticated'})
         

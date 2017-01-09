@@ -166,6 +166,6 @@ manifold_url = "https://portal.onelab.eu:7080/"
 
 # transitioning to plcauthbackend
 AUTHENTICATION_BACKENDS = (
-    # 'plc.plcauthbackend.PlcAuthBackend',
-    'mfauth.mfbackend.ManifoldBackend',
+    'plc.plcauthbackend.PlcAuthBackend',
+#    'mfauth.mfbackend.ManifoldBackend',
 )

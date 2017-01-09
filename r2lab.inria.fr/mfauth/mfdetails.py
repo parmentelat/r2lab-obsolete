@@ -25,7 +25,7 @@ def manifold_details(url, email, password, logger):
 
     in case of failure, return tuple with same size with only None's
     """
-    failure_result = None, None, None, None
+    failure_result = None, None, None
 
     auth = {'AuthMethod': 'password',
             'Username': email, 'AuthString': password}
@@ -84,13 +84,13 @@ def manifold_details(url, email, password, logger):
     # synthesize our own user structure
     import json
     person_config = json.loads(person['config'])
-    user = {'email': person['email'],
-            'hrn': hrn,
-            'firstname': person_config['firstname'],
-            'lastname': person_config['lastname'],
-            }
+    user_details = {'email': person['email'],
+                    'hrn': hrn,
+                    'firstname': person_config['firstname'],
+                    'lastname': person_config['lastname'],
+    }
 
-    return session, auth, user
+    return session, auth, user_details
 
 ####################
 if __name__ == '__main__':

@@ -83,14 +83,11 @@
      <div class="col-lg-2 col-xs-12 col-sm-2 col-md-3 secondary">
       <ul>
        <li>
-{# temporary - show a logout button when actually logged in #}
-{# this way we can still this code in production #}
-{% if r2lab_context.mfuser %}
-        <a class="button logout" href="/logout/">Logout</a>
+{% if r2lab_context.user_details %}
+    <a class="button logout" href="/logout/">Logout</a>
 {% else %}
-        <a class="button" target="_blank" href="http://portal.onelab.eu">Access the portal</a>
+    <a class="button" target="_blank" href="http://portal.onelab.eu">Access the portal</a>
 {% endif %}
-{# temporary #}
        </li>
       </ul>
      </div>
@@ -118,11 +115,6 @@
     <div class="col-md-10 col-md-offset-1 fit">
      <h2><span class="blue bold">{{title}}</span></h2>
      {% if subtitle %} <p class="subtitle">{{subtitle}}</p>{% endif %}
-{# temporary #}
-{#{% if skip_header %}#}
-{#{% include 'r2lab/widget_id.html' %}#}
-{#{% endif %}#}
-{# temporary #}
     </div>
    </div>
    <div class="row">
