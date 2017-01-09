@@ -331,6 +331,16 @@ function isPastDate(end){
   return past;
 }
 
+function adaptStart(start) {
+  now = new Date();
+  if (moment(now).diff(moment(start), 'minutes') > 0) {
+    s   = moment(now).diff(moment(start), 'minutes')
+    ns  = moment(start).add(s, 'minutes');
+    start = ns;
+  }
+  return start;
+}
+
 
 function isR2lab(name){
   var r2lab = false;
