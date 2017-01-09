@@ -58,6 +58,6 @@ $(function(){
   $('#get1-div').click(function() {
     get_users("get1", "urn:publicid:IDN+onelab:inria+user+walid_dabbous");});
   $('#getme-div').click(function() {
-    get_users("getme", r2lab_urn);});
+    get_users("getme", r2lab_hrn);});
 });
 </script>

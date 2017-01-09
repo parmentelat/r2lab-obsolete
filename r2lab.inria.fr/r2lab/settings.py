@@ -38,7 +38,7 @@ plcapi_settings = {
     # this of course should be owned by group apache and in mode 0440
     'credentials' : [
         '/etc/rhubarbe/plcapi.credentials',
-        'plcapi.credentials',
+        'r2lab/plcapi.credentials',
     ],
     # xxx doublecheck this one
     'nodename_match' : '37nodes',
@@ -164,4 +164,8 @@ STATICFILES_DIRS = [
 
 manifold_url = "https://portal.onelab.eu:7080/"
 
-AUTHENTICATION_BACKENDS = ( 'mfauth.mfbackend.ManifoldBackend', )
+# transitioning to plcauthbackend
+AUTHENTICATION_BACKENDS = (
+    # 'plc.plcauthbackend.PlcAuthBackend',
+    'mfauth.mfbackend.ManifoldBackend',
+)

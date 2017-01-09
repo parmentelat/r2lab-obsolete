@@ -6,10 +6,6 @@ r2lab_user = {{r2lab_context.mfuser|jsonify|safe}};
 // shortcuts
 r2lab_email = {{r2lab_context.mfuser.email|jsonify|safe}};
 r2lab_hrn = {{r2lab_context.mfuser.hrn|jsonify|safe}};
-r2lab_urn = {{r2lab_context.mfuser.urn|jsonify|safe}};
-// slices
-// this used to come from onelab
-// r2lab_slicenames = {{r2lab_context.slicenames|jsonify|safe}};
 r2lab_accounts = {{r2lab_context.accounts|jsonify|safe}};
 // initialize current_slice
 // javascript code should use 'current_slice.name'

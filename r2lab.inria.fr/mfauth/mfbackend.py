@@ -33,12 +33,14 @@ class ManifoldBackend:
         if token is None:
             return
 
+        if debug:
+            print("authenticating token={}".format(token))
         try:
             email = token['username']
             password = token['password']
             request = token['request']
 
-            session, auth, mfuser, slicenames = manifold_details(
+            session, auth, mfuser = manifold_details(
                 self.manifold_url, email, password, logger)
             if session is None or mfuser is None:
                 if debug:
@@ -49,7 +51,7 @@ class ManifoldBackend:
                 logger.info("dbg: SESSION keys: {}".format(session.keys()))
 
             # get a more relevant list of slices right at the r2lab portal
-            r2lab_user = get_r2lab_user(mfuser['urn'])
+            r2lab_user = get_r2lab_user(mfuser['hrn'])
             if debug:
                 logger.info("dbg: r2lab_user = {}".format(r2lab_user))
 
@@ -65,7 +67,6 @@ class ManifoldBackend:
                 'session': session,
                 'auth': auth,
                 'mfuser': mfuser,
-                # 'slicenames': slicenames,
                 'accounts': r2lab_user['accounts'],
                 'manifold_url': self.manifold_url,
             }

@@ -20,9 +20,8 @@ def manifold_details(url, email, password, logger):
     * session : the session with the manifold API
     * auth : ready-to use auth to talk to the API again
     * user : a flat structure with at least the following keys
-      * email, hrn, authority
+      * email, hrn
       * firstname, lastname
-    * slicenames : the list of slice hrns that the person is in
 
     in case of failure, return tuple with same size with only None's
     """
@@ -65,21 +64,15 @@ def manifold_details(url, email, password, logger):
     # so it would be best to refuse logging in and to provide this kind of hint
     # we don't report login_message properly yet though...
     hrn = "<unknown_hrn>"
-    slicenames = []
     try:
         # xxx use ManifoldResult ?
         # this is a list of dicts that have a 'slices' field
         val_d_s = mf_result['value']
-        slicenames = [nm for val_d in val_d_s for nm in val_d['slices']]
-        logger.info("slices from manifold={}".format(slicenames))
         # in fact there is only one of these dicts because we have specified
         # myslice:user
         hrns = [val_d['user_hrn'] for val_d in val_d_s]
         if hrns:
             hrn = hrns[0]
-        urns = [val_d['user_urn'] for val_d in val_d_s]
-        if urns:
-            urn = urns[0]
 
     except Exception as e:
         logger.exception("mfdetails: Could not retrieve user's slices")
@@ -93,13 +86,11 @@ def manifold_details(url, email, password, logger):
     person_config = json.loads(person['config'])
     user = {'email': person['email'],
             'hrn': hrn,
-            'urn': urn,
-            'authority': person_config['authority'],
             'firstname': person_config['firstname'],
             'lastname': person_config['lastname'],
             }
 
-    return session, auth, user, slicenames
+    return session, auth, user
 
 ####################
 if __name__ == '__main__':
