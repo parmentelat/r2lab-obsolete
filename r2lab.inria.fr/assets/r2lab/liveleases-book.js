@@ -59,6 +59,13 @@ $(document).ready(function() {
         }
         var my_title = getCurrentSliceName();
         var eventData;
+
+        now = new Date();
+        if (moment(now).diff(moment(start), 'minutes') > 0) {
+          s   = moment(now).diff(moment(start), 'minutes')
+          ns  = moment(start).add(s, 'minutes');
+          start = ns;
+        }
         if (my_title) {
           eventData = {
             title: pendingName(my_title),
