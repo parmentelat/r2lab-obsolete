@@ -36,6 +36,8 @@ def user_with_accounts(plc_person, slices_index):
     omflike_record['accounts'] = [
         plc_slice_account(slices_index[slice_id])
         for slice_id in plc_person['slice_ids']
+        # for when expired slices are not yet garbage-collected
+        if slice_id in slices_index
     ]
     omflike_record['accounts'].sort(
         key = lambda slice: slice['name'])

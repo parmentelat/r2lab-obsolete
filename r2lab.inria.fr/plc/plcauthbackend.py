@@ -84,7 +84,7 @@ class PlcAuthBackend:
             }
 
         except Exception as e:
-            logger.exception("ERROR in Manifold Auth Backend")
+            logger.exception("ERROR in PLCAPI Auth Backend")
             return None
 
         try:
