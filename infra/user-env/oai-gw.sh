@@ -183,7 +183,7 @@ function init() {
     # clock
     init-ntp-clock
     # data interface if relevant
-    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
+    [ "$oai_ifname" == data ] && echo Checking interface is up : $(turn-on-data)
     for interface in data control; do
 	echo "========== setting mtu to 9000 on interface $interface"
 	ip link set dev $interface mtu 9000

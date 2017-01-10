@@ -218,7 +218,7 @@ function init() {
     # clock
     init-ntp-clock
     # data interface if relevant
-    [ "$oai_ifname" == data ] && echo Checking interface is up : $(data-up)
+    [ "$oai_ifname" == data ] && echo Checking interface is up : $(turn-on-data)
 #    echo "========== turning on offload negociations on ${oai_ifname}"
 #    offload-on ${oai_ifname}
     echo "========== setting mtu to 9000 on interface ${oai_ifname}"
