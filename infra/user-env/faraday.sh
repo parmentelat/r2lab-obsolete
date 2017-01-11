@@ -691,7 +691,12 @@ function macphone() {
 doc-selection-sep "See also help-alt for other commands"
 
 ########################################
-doc-admin maintenance "to be completed"
+doc-admin maintenance "run nightly routine | nightly -N all | nightly -N <nodes> -e <email result> -a <avoid nodes>"
+function nightly () {
+  python /root/r2lab/nodes/nightly.py "$@"
+}
+
+doc-admin maintenance "update a json file which contains information about nodes maintenance | maitenance -i|r <node> -m <the message>"
 function maintenance () {
   python3 /root/r2lab/nodes/maintenance.py "$@"
 }
