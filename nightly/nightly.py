@@ -94,19 +94,19 @@ def main():
     cmd = "rhubarbe-load {} -i {}; ".format(all_nodes, version)
     result = execute(cmd, key='node')
     if error_presence(result):
-        print "ERROR: one or more node were not loaded correctly. CMD and result logs below:"
+        print "ERROR: something went wrong in load process. The command and the results are logs below:"
         print cmd
         print "-----"
         print result
         print "-----"
-    else:
-        stdout = remove_special_char(result['node']['stdout'])
-        #==================================================================
-        #searching in the answer of the command for the sentence of success
-        #+058s: fit23 Uploading successful
-        #+058s: <node> Uploading successful
-        nodes_found = parse_results_from_load(stdout)
-        update_phases_db(nodes_found, 2)
+
+    stdout = remove_special_char(result['node']['stdout'])
+    #==================================================================
+    #searching in the answer of the command for the sentence of success
+    #+058s: fit23 Uploading successful
+    #+058s: <node> Uploading successful
+    nodes_found = parse_results_from_load(stdout)
+    update_phases_db(nodes_found, 2)
 
 
     #=========================================
