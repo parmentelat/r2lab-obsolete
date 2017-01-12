@@ -334,15 +334,15 @@ function isPastDate(end){
 
 function adaptStart(start, end) {
   now = new Date();
-  limit_min = 30;
+  //limit_min = 30;
   started   = moment(now).diff(moment(start), 'minutes');
-  remaining = moment(end).diff(moment(now), 'minutes');
+  //remaining = moment(end).diff(moment(now), 'minutes');
   if (started > 0){
     s   = moment(now).diff(moment(start), 'minutes')
     ns  = moment(start).add(s, 'minutes');
     start = ns;
-    if(remaining <= limit_min)
-      end = moment(end).add(1, 'hour');
+    //if(remaining <= limit_min)
+    //  end = moment(end).add(1, 'hour');
   }
   return [start, end];
 }
