@@ -1,16 +1,14 @@
-# infra
-
-* install SSL certificates
-* tweak https config so that `fit-r2lab.inria.fr` points at `r2lab.inria.fr`
-* set up **backups on r2labapi** including PLCAPI db
-
 # web UI (Mario)
 
-* update tutos to describe new registration 
+##  update tutos to describe new registration 
 
-* iron out leases management
-  * cf mail to Mario
-* manage ssh keys
+## iron out leases management:
+
+* smarter way to delete a lease: shrink it down so its end is in the past, but keep the object in the DB for usage stats
+* create lease: make sure to start with a one-hour lease if possible at that time
+* enlarge the book page so that one can deal with smaller leases (or come up with a dialog of some kind..)
+
+## manage ssh keys
 
 # nightly
 
@@ -18,6 +16,12 @@
 * On that subject, we **badly need** to get back to some **convergence** between `sidecar` and the `r2lab/nodes` thingy so as to 
   * remove data duplication
   * ease out publication path
+
+# infra
+
+* install SSL certificates
+* tweak https config so that `fit-r2lab.inria.fr` points at `r2lab.inria.fr`
+* set up **backups on r2labapi** including PLCAPI db
 
 # images
 
