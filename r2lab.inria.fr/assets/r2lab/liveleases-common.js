@@ -333,7 +333,7 @@ function isPastDate(end){
 
 function adaptStart(start, end) {
   now = new Date();
-  limit_minutes = 10;
+  limit_minutes = 0;
   started = moment(now).diff(moment(start), 'minutes');
   remaining = moment(end).diff(moment(now), 'minutes');
   if (started > 0 && remaining >= limit_minutes){
@@ -345,7 +345,6 @@ function adaptStart(start, end) {
     ns  = moment(start).add(s, 'minutes');
     start = ns;
     end = moment(end).add(1, 'hour');
-    alert("The minimum time slot is 10 min. We'll reserve the next hour as well." );
   }
   return [start, end];
 }
