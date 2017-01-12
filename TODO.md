@@ -6,6 +6,8 @@
 
 # web UI (Mario)
 
+* update tutos to describe new registration 
+
 * iron out leases management
   * cf mail to Mario
 * manage ssh keys
