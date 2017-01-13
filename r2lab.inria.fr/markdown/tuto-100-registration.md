@@ -11,10 +11,9 @@ skip_header: True
 <ul class="nav nav-tabs">
   <li class="active"> <a href="#REGISTER">1- REGISTER</a> </li>
   <li> <a href="#SLICE">2- SLICE</a></li>
-  <li> <a href="#R2LAB">3- R2LAB</a></li>
-  <li> <a href="#GETKEY">4- GET KEY</a></li>
-  <li> <a href="#RESERVATION">5- RESERVATION</a></li>
-  <li> <a href="#ACCESS">6- ACCESS</a></li>
+  <li> <a href="#CREDENTIALS">3- CREDENTIALS</a></li>
+  <li> <a href="#RESERVATION">4- RESERVATION</a></li>
+  <li> <a href="#ACCESS">5- ACCESS</a></li>
 
   << include r2lab/tutos-index.html >>
 </ul>
@@ -27,32 +26,36 @@ skip_header: True
 
 ### Entry point
 
-The official OneLab portal is located at
-[http://portal.onelab.eu](http://portal.onelab.eu).
+The temporary portal to register at R2lab is located at
+[https://r2labapi.inria.fr/](https://r2labapi.inria.fr/).
 
-In order to sign up at the onelab portal:
+Because the working is in progress, a message advising security  SSL cerrificate
+and unsafe site will prompt in your browser. In **this special case**, ignore it.
+To do it:
 
-**1 -** Fill the form with the requested info.
+  1. On the page where you see a warning, click Details.
+  2. Click Visit this unsafe site.
+  3. The page will load.
+
+Once in the website, in order to sign up at the onelab portal:
+
+**1 -** Click in **Create an account** link (fig 1, <font color="red">**A**</font>).
+
+**2 -** Fill the form with the requested info(fig 1, <font color="red">**B**</font>).
+Special attention for the last field which must be selected as **INRIA** (fig 1, <font color="red">**C**</font>).
 
 <center>
-![register](/assets/img/register.png)<br/>
+![register](/assets/img/register/new-1.png)<br/>
 Fig. 1 - Register
 </center>
 
-If your organization is not listed in the portal, you can
-[request](https://portal.onelab.eu/portal/join) its addition (fig 1,
-<font color="red">**A**</font>).
-
-In the keys form (fig 1, <font color="red">**B**</font>), make
-sure you select the **default/automatic:** option.  
-
-**2 -** An email will be sent to confirm your subscription. At this
-  point you are a limited user. To gain full access you must **click
+**3 -** An email will be sent to confirm your subscription. At this
+  point you are a *limited* user. To gain full access you must **click
   at the link present** in the email confirmation and wait for the
   manager in your organization to **validate your request**.
 
-From that point you can login into the portal, [and move to the
-next tab](javascript:open_tab('SLICE')).
+From that point you can login into the [portal](http://r2lab.inria.fr/index.md).
+However, you need a slice. Let's move to the [next tab](javascript:open_tab('SLICE')) to create one.
 
 </div>
 
@@ -61,124 +64,78 @@ next tab](javascript:open_tab('SLICE')).
 
 ### You need a slice
 
-Once you have signed up, you can log in the Onelab portal, which will
-lead you to the dashboard:
+**Slice** is a set of testbed resources on which you can conduct an
+experiment. You can request a new slice **sending us an email** (`thierry.parmentelat@inria.fr`) with the name
+you wish for your slice.
 
-<br/>
-<center>
-![dashboard](/assets/img/dashboard.png)<br/>
-fig. 3 - The Onelab Dashboard
-</center>
+Your slice will have a composed name like:
 
-Before you can use any resource, you must **create a new project** or
-**join a project** that already exists, and select one of its
-**slices**. These concepts and how to interact with them are explained
-below.
+*inria*_ **[the-name-you-have-asked]**
 
-### Project
+Note that you might have to **log out R2lab** and relog back in in order to see
+newly created slices.
 
-A **project** is a sub-authority under the responsibility of your
-institution gathering users who will be able to create slices for
-their experiments.  
-Once logged in your dashboard, the [create/join
-project](https://portal.onelab.eu/portal/project_request/) (fig. 3,
-<font color="red">**A**</font>) link allows you to:
-
-* **create new project** tab: In this option some informations for
-your new project are required.  Once this information is given the
-project could be submited.
-
-* **join a project** tab: In this option a list of projects already
-    created are proposed. Select the project you would like to join
-    and confirm.
-
-An email confirmation resumes your action and your request will be
-send to authority manager validation.
-
-### Slice
-
-A **slice** is a set of testbed resources on which you can conduct an
-experiment. You can request a new slice, or ask your colleagues to
-give you access to an existing one.
-
-This can be done throught the **[request
-slice](https://portal.onelab.eu/portal/slice_request/)** (fig. 3,
-<font color="red">**B**</font>) link.
-
-When a slice request is created, a confirmation email is sent to a
-manager within your institution for validation. Once the validation is
-done your dashboard shows you (fig. 3, <font color="red">**C**</font>)
-the list of all slices where you belong. Note that you might have to
-**log out of Onelab** and relog back in in order to see newly created
-slices. Clicking on one of these slices will lead you to the slice
-dashboard, as you can see [on fig. 4 in the next
-tab](javascript:open_tab('R2LAB')).
+While your slice is created, please, inform us your **puclic SSH key**.
+We explain how to do it in the [next
+tab](javascript:open_tab('CREDENTIALS')).
 
 </div>
 
 <!------------ R2LAB ------------>
-<div id="R2LAB" class="tab-pane fade" markdown="1">
+<div id="CREDENTIALS" class="tab-pane fade" markdown="1">
 
-### Attaching your slice to R2lab
+### Attaching your SSH key to R2lab
 
-At that point, your slice is still unknown to R2lab. Before you can
-use that slice for entering R2lab, you need to **attach it** to
-R2lab. For this, from the slice dashboard depicted in fig. 4 below,
-simply
+Before you can use the entering R2lab platform, you need to **attach your SSH key** to
+R2lab. For this, let's folow 3 steps.
 
-* Select the (single) resource attached to R2lab using the table list
-  (fig. 4, <font color="red">**B**</font>) or using the map (fig. 4,
-  <font color="red">**A**</font>). The node that needs to be chosen
-  here is named `37nodes.r2lab`, you can find it easily by typing
-  `37nodes` in the search area (below the <font color="red">**A**</font> mark)
+**1 - Generating the RSA key pair.**
 
-* Send the request using the submit button (fig. 4, <font
-  color="red">**C**</font>) and wait for the answer, that can take a
-  little while.
+  - Type in your terminal:
 
-Once this is done successfully, you can [go to the next
-tab](javascript:open_tab('GETKEY')) to see how to obtain your Onelab
-key.
+    $> `ssh-keygen -t rsa`
 
-<br/>
-<center>
-![dashboard](/assets/img/slice_a.png)
-<br/><br/>
-fig. 4 - Attaching R2lab to your slice
-</center>
+  - Once you have entered the Gen Key command, you will get a few more questions.
+    To simplify, you can press enter here, saving the file to the user home with the defaul name **id_rsa**.
 
-</div>
+  - The entire key generation process looks like this:
+  <center>
+  ![register](/assets/img/register/new-2.png)<br/>
+  Fig. 2 - Key Pair
+  </center>
 
+  - The public key is now located in /home/**user-home**/.ssh/id_rsa**.pub**
 
-<!------------ GETKEY ------------>
-<div id="GETKEY" class="tab-pane fade" markdown="1">
+  - The private key (identification) is now located in /home/demo/.ssh/id_rsa
 
-### Downloading the Onelab private key
+  - *In case you are using a macOS, do not forget to include the new key pair to the agent, typing:*
 
-When you create your user, the Onelab portal generates a keypair for
-you, and the next thing we will do is to download the corresponding
-**private key**.
+    $> `ssh-add -K /path/of/private/key`
 
-From the dashboard, click the `Account` tab (fig. 2, <font
-color="red">**A**</font>), and from there download that private key.
+**2 - Send to us.**
 
-<br/>
-<center>
-![register](/assets/img/dashboard2.png)<br/>
-Fig. 2 - Selecting the Account tab in the Onelab dashboard
-</center>
+  In order to send us your **public key**, point your browser to the [R2lab register](http://r2labapi.inria.fr/) site, then:
 
-In the rest of this tutorial, we assume that you store this private
-key in a file named `~/Downloads/onelab.private`. You can choose any
-other location that is convenient for you, just make sure to write
-down where it is stored because we will need this later on when we set
-up our ssh credentials.
+  - log in your account using the *email* and the *password* you already created.
 
-When this is done, you can [move to the next
+  - Once inside your account, click the link **my account** located at the left panel (fig 3, <font color="red">**A**</font>).
+
+  - The rigth panel will show your infos. Just below you will find a form to submit your public key (fig 3, <font color="red">**B**</font>). Click in **browser button**, find in your machine the key you already generated.
+
+    Note that, in general, the key pair is located under a hide folder (`../.ssh/`).
+    In the browser view, after click *browse* button , enable the **hide file options view** to find it.
+
+  - Confirm in **updload key** button (fig 3, <font color="red">**C**</font>).
+
+  <center>
+  ![register](/assets/img/register/new-3.png)<br/>
+  Fig. 2 - Uploading the SSH key
+  </center>
+
+Once this is done, you can [move to the next
 tab](javascript:open_tab('RESERVATION')) to book your slices in R2lab.
 
 </div>
-
 
 <!------------ RESERVATION ------------>
 <div id="RESERVATION" class="tab-pane fade" markdown="1">
@@ -210,8 +167,8 @@ just click and drag in the tiny line placed on the botton of each slice.
 fig. 5 - Booking a slice in R2lab
 </center>
 
-When this is done, you can [move to the next
-tab](javascript:open_tab('ACCESS')) to access R2lab platform and run your tests.
+When this is done, you can [move to the next tab](javascript:open_tab('ACCESS'))
+to access R2lab platform and run your tests.
 
 </div>
 
@@ -219,67 +176,31 @@ tab](javascript:open_tab('ACCESS')) to access R2lab platform and run your tests.
 <!------------ ACCESS ------------>
 <div id="ACCESS" class="tab-pane fade" markdown="1">
 
-From the moment where you have both (i) successfully attached your
-slice to R2lab, and (ii) downloaded your Onelab key, you should be
-able to reach the R2lab testbed by ssh.
-
 ### Your Unix account
 
-The name that you need to use to enter the testbed using ssh is the
-name of the Unix account that has been created for you.  The name of
-this Unix account is simply the name of your project, with the slice
-name appended with a `.`
+The name that you need to use to enter the testbed using SSH is the
+name of the unix account that has been created for you. The name of
+this unix account is simply the **slice name**.
 
 For example, in this tutorial we have used the following names:
 
-* project: `inria_r2lab`
+* slice name : `inria_tutorial`
 
-* slice name : `tutorial`
+* unix account / full slice name: `inria_tutorial`
 
-* unix account / full slice name: `inria_r2lab.tutorial`
+At this point you should reach R2lab platform typing in your terminal:
 
-### ssh with your private key
-
-Remember [that we had stored the private
-key](javascript:open_tab('GETKEY')) in `~/Downloads/onelab.private`.
-
-So we are ready to try it all out :
-
-    cd ~/Downloads
-    chmod 600 onelab.private
-    ssh -i onelab.private your_slicename@faraday.inria.fr id
-
-This should run the `id` command on `faraday.inria.fr` and output
-something like this
-
-    $ ssh -i /dev/null inria_r2lab.tutorial@faraday.inria.fr id
-    uid=1102(inria_r2lab.tutorial) gid=1102(inria_r2lab.tutorial) groups=1102(inria_r2lab.tutorial)
-
+$> `ssh -i `**your_slicename**`@faraday.inria.fr`
 
 Once this command works for you, proceed to the next tutorial), where [we see in more details the available tools
 for manipulating the nodes](tuto-200-shell-tools.md).
 
-### Troubleshooting
-
-**Do not proceed** with this tutorial until this command works fine. When it does you can skip to the next section
-
-Here is a list of things to double check if it does not:
-
-* Did you attach the R2lab `37nodes` metanode to your slice ?
-
-* Does file `onelab.private` exist and contain the **private** key as
-  downloaded from the Onelab portal ?
-
-* Does it have the right permissions (in essence, others than you
-  should not be able to read it)
-
-* Was this Unix account properly created at R2lab ?
-  **NOTE**: as of 2016 end of November, a known glitch seems to prevent this to work properly.
+### Problems?
 
 Feel free to contact us on [the R2lab users mailinglist
 fit-r2lab-user@inria.fr](mailto:fit-r2lab-user@inria.fr) if you cannot
-reach the point where this ssh command works out, and none of those hints are
-helpful.
+reach the point where you cannot reach correctlly R2lab, run your experiments,
+and/or none of those hints are helpful.
 
 </div>
 

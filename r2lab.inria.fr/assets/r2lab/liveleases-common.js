@@ -331,20 +331,22 @@ function isPastDate(end){
   return past;
 }
 
+
 function adaptStart(start, end) {
   now = new Date();
-  limit_minutes = 0;
-  started = moment(now).diff(moment(start), 'minutes');
-  remaining = moment(end).diff(moment(now), 'minutes');
-  if (started > 0 && remaining >= limit_minutes){
+  //limit_min = 30;
+  started   = moment(now).diff(moment(start), 'minutes');
+  //remaining = moment(end).diff(moment(now), 'minutes');
+  if (started > 0){
     s   = moment(now).diff(moment(start), 'minutes')
     ns  = moment(start).add(s, 'minutes');
     start = ns;
-  } else if (started > 0 && remaining < limit_minutes) {
-    s   = moment(now).diff(moment(start), 'minutes')
-    ns  = moment(start).add(s, 'minutes');
-    start = ns;
-    end = moment(end).add(1, 'hour');
+    //if(remaining <= limit_min)
+    //  end = moment(end).add(1, 'hour');
+
+    //se eu conseguir saber se tem overlapped eu posso marcar sempre
+    //inicio como now e 1 hora pra depois no fim,
+    //e nao mais o quadrado
   }
   return [start, end];
 }
