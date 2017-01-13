@@ -343,6 +343,10 @@ function adaptStart(start, end) {
     start = ns;
     //if(remaining <= limit_min)
     //  end = moment(end).add(1, 'hour');
+
+    //se eu conseguir saber se tem overlapped eu posso marcar sempre
+    //inicio como now e 1 hora pra depois no fim,
+    //e nao mais o quadrado
   }
   return [start, end];
 }
