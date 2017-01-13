@@ -19,8 +19,8 @@
 
 # infra
 
-* install SSL certificates
-* tweak https config so that `fit-r2lab.inria.fr` points at `r2lab.inria.fr`
+* ~~install SSL certificates~~
+* ~~tweak https config so that `fit-r2lab.inria.fr` points at `r2lab.inria.fr`~~
 * set up **backups on r2labapi** including PLCAPI db
 
 # images
