@@ -4,7 +4,7 @@
 * obtained through digicert using DSI recommendation
 * see M. Vesin's emails
 
-[https://wiki.inria.fr/support/Demander_un_certificat_serveur]()
+[https://wiki.inria.fr/support/Demander_un_certificat_serveur](https://wiki.inria.fr/support/Demander_un_certificat_serveur)
 
 # r2labapi
 
@@ -54,3 +54,5 @@ then install in `/etc/planetlab` as usual, using `CAbundle.crt` as `api_ca_ssl.c
 
 # r2lab
 
+* install was rather straightforward
+* added certificates for `fit-r2lab` and `nepi-ng` to the mix
