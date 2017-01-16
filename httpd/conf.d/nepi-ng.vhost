@@ -1,0 +1,15 @@
+<VirtualHost *:80>
+    ServerName  nepi-ng.inria.fr
+    ServerAdmin thierry.parmentelat@inria.fr
+
+    DocumentRoot "/var/www/nepi-ng/"
+
+    Alias "/asynciojobs" "/var/www/nepi-ng/asynciojobs/sphinx/build/html"
+    Alias "/apssh" "/var/www/nepi-ng/apssh/sphinx/build/html"
+
+    <Directory /var/www/nepi-ng>
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Require all granted
+    </Directory>
+</VirtualHost>
