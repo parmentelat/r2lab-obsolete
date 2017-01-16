@@ -26,16 +26,8 @@ skip_header: True
 
 ### Entry point
 
-The temporary portal to register at R2lab is located at
+The portal to register at R2lab is located at
 [https://r2labapi.inria.fr/](https://r2labapi.inria.fr/).
-
-Because the working is in progress, a message advising security  SSL cerrificate
-and unsafe site will prompt in your browser. In **this special case**, ignore it.
-To do it:
-
-  1. On the page where you see a warning, click Details.
-  2. Click Visit this unsafe site.
-  3. The page will load.
 
 Once in the website, in order to sign up at the onelab portal:
 
@@ -65,7 +57,7 @@ However, you need a slice. Let's move to the [next tab](javascript:open_tab('SLI
 ### You need a slice
 
 **Slice** is a set of testbed resources on which you can conduct an
-experiment. You can request a new slice **sending us an email** (`thierry.parmentelat@inria.fr`) with the name
+experiment. You can request a new slice **sending us an email** (`mario.zancanaro@inria.fr`) with the name
 you wish for your slice.
 
 Your slice will have a composed name like:
