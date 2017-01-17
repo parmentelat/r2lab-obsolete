@@ -123,7 +123,7 @@ def main():
                         help="If set, only rx/tx data are animated")
     parser.add_argument('-p', '--phone-cycle', default=5, type=int,
                         help='send a random phone status every n cycles')
-    parser.add_argument('-s', '--socket-io-url', action='store', default=default_socket_io_url,
+    parser.add_argument('-u', '--socket-io-url', action='store', default=default_socket_io_url,
                         help="""Sends status data to this ws URL using socketio - use something like {}""".format(default_socket_io_url))
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
     args = parser.parse_args()
