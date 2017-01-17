@@ -167,7 +167,7 @@ skip_news: yes
 ### September 5
 * R2lab Platform Status : from today is possible follow the tech details of R2lab platform.
 
-* We are monitoring some informations from the nodes in the anechoic chamber.
+* We are monitoring some information from the nodes in the anechoic chamber.
 Have a look at [our status page](status.md#livemap) for details.
 
 ### July 9 2015
