@@ -137,7 +137,8 @@ using the [R2lab UI](http://r2lab.inria.fr/run.md).
 However, you must be logged in to see the reservation page.
 
 Once in private area, just drag and drop the slice into the day calendar
-(fig. 5, <fontcolor="red">**A**</font>) - (fig. 5, <font color="red">**B**</font>).
+(fig. 5, <font color="red">**A**</font>) - (fig. 5, <font color="red">**B**</font>).
+
 If you want dates in future, do the same action as described above but in the [complete
 calendar](http://r2lab.inria.fr/book.md).
 
