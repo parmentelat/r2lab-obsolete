@@ -62,7 +62,7 @@ you wish for your slice.
 
 Your slice will have a composed name like:
 
-*inria*_ **[the_name_you_have_asked]**
+**inria_**[the name you have asked]
 
 Note that you might have to **log out R2lab** and relog back in in order to see
 newly created slices.
