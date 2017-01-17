@@ -36,6 +36,6 @@ tags:
 
 ########## get rid of pdf's and the like
 files:
-	@git ls-files | egrep -v '\.(pdf|png|jpg|gif)'
+	@git ls-files | egrep -v '\.(pdf|png|jpg|gif|svg|ttf|otf)'
 
 .PHONY: files
