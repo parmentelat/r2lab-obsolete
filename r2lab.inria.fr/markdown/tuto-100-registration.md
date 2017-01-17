@@ -87,7 +87,7 @@ R2lab. For this, let's follow 3 steps.
 
     $ `ssh-keygen -t rsa`
 
-  - Once you have entered the `ssh-genkey` command, you will get a few more questions.
+  - Once you have entered the `ssh-keygen` command, you will get a few more questions.
     To simplify, you can press enter and use the given default values.
 
   - The entire key generation process looks like this:
