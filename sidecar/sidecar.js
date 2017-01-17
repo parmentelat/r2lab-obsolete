@@ -8,10 +8,13 @@
 // another major change is about sidecar only sending along CHANGES
 // as compared to its current known state
 
+// xxx : the option version (when run with -l) should probably
+// need to use http instead of https for devel mode..
+
 // dependencies
 var express_app = require('express')();
-var http = require('http').Server(express_app);
-var io = require('socket.io')(http);
+var https = require('https');
+var io = require('socket.io')(https);
 var fs = require('fs');
 var path = require('path');
 
@@ -49,6 +52,13 @@ function db_filename(name) {
 //////////
 var default_port_number = 999;
 var global_port_number = undefined;
+
+// from the installed SSL certis for r2lab as defined in httpd config
+// see file /etc/httpd/conf.d/r2lab.vhost
+var ssl_cert_options = {
+    key  : fs.readFileSync("/etc/pki/tls/private/r2lab.inria.fr.key"),
+    cert : fs.readFileSync("/etc/pki/tls/certs/r2lab_inria_fr.crt")
+};
 
 // use -v to turn on
 var verbose_flag = false;
@@ -323,7 +333,7 @@ function parse_args() {
     vdisplay("complete file for nodes = " + db_filename('node'));
 }
 
-// run http server
+// run https server
 function run_server() {
     process.on('SIGINT', function(){
 	display("Received SIGINT - exiting"); process.exit(1);});
@@ -334,15 +344,17 @@ function run_server() {
 	global_port_number = default_port_number;
 
     try {
-	http.listen(global_port_number, function(){
-	    display('listening on *:' + global_port_number);
-	    display('verbose flag is ' + verbose_flag);
-	    display('local flag is ' + local_flag);
-	    display('incremental mode is ' + incremental_flag);
-	});
+	https.createServer(ssl_cert_options, express_app)
+	    .listen(global_port_number, function(){
+		display('listening on *:' + global_port_number);
+		display('verbose flag is ' + verbose_flag);
+		display('local flag is ' + local_flag);
+		display('incremental mode is ' + incremental_flag);
+	    });
     } catch (err) {
 	console.log("Could not run http server on port " + global_port_number);
-	console.run("Need to sudo ?");
+	console.log("Need to sudo ?");
+	console.log(err);
     }
 }
 
