@@ -42,5 +42,9 @@
 <VirtualHost *:443>
     ServerName fit-r2lab.inria.fr
 
+    SSLCertificateFile "/etc/pki/tls/certs/fit-r2lab_inria_fr.crt"
+    SSLCertificateKeyFile "/etc/pki/tls/private/fit-r2lab.inria.fr.key"
+    SSLCertificateChainFile "/etc/pki/tls/certs/DigiCertCA.crt"
+
     Redirect permanent / https://r2lab.inria.fr/
 </VirtualHost>
