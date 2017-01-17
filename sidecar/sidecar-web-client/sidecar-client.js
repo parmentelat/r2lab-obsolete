@@ -4,8 +4,7 @@ var socket = undefined;
 var names = [ 'phones', 'nodes', 'leases'];
 
 //////////////////// global functions
-function connect_sidecar(hostname) {
-    var url = 'http://'+ hostname + ':999';
+function connect_sidecar(url) {
     console.log("Connecting to sidecar at " + url);
     socket = io.connect(url);
 
@@ -26,13 +25,13 @@ function connect_sidecar(hostname) {
     })
 }
 
-var set_hostname = function(e) {
-    var hostname = $('input#hostname').val();
-    if (hostname == "") {
-	hostname = "r2lab.inria.fr";
-	$('input#hostname').val(hostname);
+var set_url = function(e) {
+    var url = $('input#url').val();
+    if (url == "") {
+	url = "http://r2lab.inria.fr:999/";
+	$('input#url').val(url);
     }
-    connect_sidecar(hostname);
+    connect_sidecar(url);
 }
 
 var pause = function() {
@@ -148,6 +147,6 @@ function send(name, channel_prefix, widget_prefix) {
 var init = function() {
     populate();
     console.log('initing');
-    set_hostname();
+    set_url();
 }
 $(init);
