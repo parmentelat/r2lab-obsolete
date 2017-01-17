@@ -36,7 +36,7 @@ See also [TODO about r2lab.inria.fr](../r2lab.inria.fr/TODO.md)
 
 * run `animate.py` locally to simulate new random events cyclically
 
-* run `sudo sidecar.js -l` when running locally on a devel box; this will use json files in current directory as opposed to in `/var/lib/sidecar/`; also `sudo` is required to bind to privileged port `443`
+* run `sudo sidecar.js -l` when running locally on a devel box; this will use json files in current directory as opposed to in `/var/lib/sidecar/`; also `sudo` is required to bind to privileged port `999`
 
 * run `sudo sidecar.js -l -v` for verbose output
 

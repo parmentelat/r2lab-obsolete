@@ -47,7 +47,8 @@ function db_filename(name) {
 }
 	
 //////////
-var port_number = 443;
+var default_port_number = 999;
+var global_port_number = undefined;
 
 // use -v to turn on
 var verbose_flag = false;
@@ -292,21 +293,33 @@ function merge_news_into_complete(complete_infos, news_infos, filename) {
 }
 
 ////////////////////////////////////////
+var usage = "Usage: sidecar.js [-v] [-l] [-c] [-p port-number] \n\
+  -v: verbose mode \n\
+  -l: local mode for devel (create local logfile) \n\
+  -c: incremental mode (only publish differences instead of flooding with the whole data) \n\
+  -p: set port number - default is " + default_port_number + "\n";  
+
 function parse_args() {
     // very rough parsing of command line args - to set verbosity
     var argv = process.argv.slice(2);
-    argv.forEach(function (arg, index, array) {
-	console.log("scanning arg " + arg);
+    for (var index=0; index < argv.length; index++) {
+	var arg = argv[index];
+	if (arg == "-h") {
+	    console.log(usage);
+	    process.exit(1);
 	// verbose
-	if (arg == "-v") {
+	} else if (arg == "-v") {
 	    verbose_flag = true;
 	// local dev (use json files in .)
 	} else if (arg == "-l") {
 	    local_flag = true;
 	} else if (arg == "-c") {
 	    incremental_flag = false;
+	} else if (arg == "-p") {
+	    global_port_number = parseInt(argv[index+1]);
+	    index ++;
 	}
-    });
+    };
     vdisplay("complete file for nodes = " + db_filename('node'));
 }
 
@@ -317,15 +330,18 @@ function run_server() {
     process.on('SIGTERM', function(){
 	display("Received SIGTERM - exiting"); process.exit(1);});
 
+    if (global_port_number == undefined)
+	global_port_number = default_port_number;
+
     try {
-	http.listen(port_number, function(){
-	    display('listening on *:' + port_number);
+	http.listen(global_port_number, function(){
+	    display('listening on *:' + global_port_number);
 	    display('verbose flag is ' + verbose_flag);
 	    display('local flag is ' + local_flag);
 	    display('incremental mode is ' + incremental_flag);
 	});
     } catch (err) {
-	console.log("Could not run http server on port " + port_number);
+	console.log("Could not run http server on port " + global_port_number);
 	console.run("Need to sudo ?");
     }
 }

@@ -18,7 +18,7 @@ from socketIO_client import SocketIO, LoggingNamespace
 
 # globals
 hostname = 'r2lab.inria.fr'
-port = 443
+port = 999
 channel = "info:nodes"
 
 # check if run as 'available.py' or 'unavailable.py'

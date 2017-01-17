@@ -10,7 +10,7 @@ from socketIO_client import SocketIO, LoggingNamespace
 # in seconds
 default_cycle = 1
 default_runs = 0
-default_socket_io_url = "ws://localhost:443/"
+default_socket_io_url = "ws://localhost:999/"
 
 node_ids = range(1, 38)
 default_max_nodes_impacted = 10

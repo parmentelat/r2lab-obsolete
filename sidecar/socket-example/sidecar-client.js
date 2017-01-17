@@ -5,7 +5,7 @@ var names = [ 'phones', 'nodes', 'leases'];
 
 //////////////////// global functions
 function connect_sidecar(hostname) {
-    var url = 'http://'+ hostname + ':443';
+    var url = 'http://'+ hostname + ':999';
     console.log("Connecting to sidecar at " + url);
     socket = io.connect(url);
 

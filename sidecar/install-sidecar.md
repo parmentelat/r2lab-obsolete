@@ -31,8 +31,9 @@ After what
      
     # cd /root/r2lab/website/sidecar
     [root@r2lab sidecar]# node sidecar.js
-    listening on *:443	
+    listening on *:999	
     
-NOTE: when running a devel server: we use 443 as the port number for sidecar to increase chances that a firewall would let this traffic pass. In addition, logging into /var/log/sidecar.log is not a good idea, so you need to do
+NOTE: when running a devel server: as of Jan 2017 : we use 999 and not 443 any longer as the port number for sidecar, as r2lab.inria.fr runs on https
+In any case you need to run your devel instance of `sidecar.js` like as follows, option `-l` allows to log in a local file instead of `/var/log/sidecar.log`:
 
     $ sudo sidecar.js -l

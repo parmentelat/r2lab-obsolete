@@ -33,12 +33,12 @@
 //  var socket = io();
     // var hostname = "localhost";
     var hostname = "r2lab.inria.fr";
-    var url = 'http://'+ hostname + ':443';
+    var url = 'http://'+ hostname + ':999';
     console.log('connecting to ' + url);
     var socket = io.connect(url);
-    //  var socket = io.connect('http://r2lab.inria.fr:443/');
+    //  var socket = io.connect('http://r2lab.inria.fr:999/');
   $('#form-hostname').submit(function(){
-    var url = 'http://'+ $('#hostname').val()+ ':443';
+    var url = 'http://'+ $('#hostname').val()+ ':999';
     console.log('connecting to ' + url);
     socket = io.connect(url);
     });

@@ -10,16 +10,16 @@ def io_callback(*args, **kwds):
 print("Run this script with python -i")
 socketio = None
 
-def i(hostname='localhost', port=443):
+def i(hostname='localhost', port=999):
     global socketio
     socketio = SocketIO(hostname, port, LoggingNamespace)
     print("""---
     soketio connected to {}:{}""".format(hostname, port))
 
 def ir():
-    i('r2lab.inria.fr', 443)
+    i('r2lab.inria.fr')
 ir()
-print("Run i('localhost', 443) e.g. to create another connection")
+print("Run i('localhost', 999) e.g. to create another connection")
 print("Or just i() e.g. to use localhost")
 print("Or just ir() e.g. to connect to r2lab")
 

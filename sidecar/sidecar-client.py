@@ -19,7 +19,7 @@ from socketIO_client import SocketIO, LoggingNamespace
 
 # globals
 def_hostname = 'r2lab.inria.fr'
-def_port = 443
+def_port = 999
 
 glob_supported = {
     'node' : {
