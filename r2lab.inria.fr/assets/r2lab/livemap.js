@@ -648,7 +648,7 @@ function LiveMap() {
 	if ( ! sidecar_hostname)
 	    sidecar_hostname = 'localhost';
 	sidecar_hostname = 'r2lab.inria.fr'
-	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
+	var url = "https://" + sidecar_hostname + ":" + sidecar_port_number;
 	if (livemap_debug)
 	    console.log("livemap is connecting to sidecar server at " + url);
 	this.sidecar_socket = io(url);

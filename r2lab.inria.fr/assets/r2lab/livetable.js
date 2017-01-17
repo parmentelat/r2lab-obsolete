@@ -331,7 +331,7 @@ function LiveTable() {
 	if ( ! sidecar_hostname)
 	    sidecar_hostname = 'localhost';
 	sidecar_hostname = 'r2lab.inria.fr'
-	var url = "http://" + sidecar_hostname + ":" + sidecar_port_number;
+	var url = "https://" + sidecar_hostname + ":" + sidecar_port_number;
 	console.log("livetable is connecting to sidecar server at " + url);
 	this.sidecar_socket = io(url);
 	// what to do when receiving news from sidecar
