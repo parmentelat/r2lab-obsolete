@@ -13,8 +13,10 @@
 
 // dependencies
 var express_app = require('express')();
+var http = require('http');
 var https = require('https');
-var io = require('socket.io')(https);
+var io_http = require('socket.io')(http);
+var io_https = require('socket.io')(https);
 var fs = require('fs');
 var path = require('path');
 
@@ -53,12 +55,17 @@ function db_filename(name) {
 var default_port_number = 999;
 var global_port_number = undefined;
 
+var default_scheme = 'http';
+var global_scheme = undefined;
+
 // from the installed SSL certis for r2lab as defined in httpd config
 // see file /etc/httpd/conf.d/r2lab.vhost
-var ssl_cert_options = {
-    key  : fs.readFileSync("/etc/pki/tls/private/r2lab.inria.fr.key"),
-    cert : fs.readFileSync("/etc/pki/tls/certs/r2lab_inria_fr.crt")
-};
+function ssl_cert_options() {
+    return {
+	key  : fs.readFileSync("/etc/pki/tls/private/r2lab.inria.fr.key"),
+	cert : fs.readFileSync("/etc/pki/tls/certs/r2lab_inria_fr.crt")
+    }
+}
 
 // use -v to turn on
 var verbose_flag = false;
@@ -81,16 +88,16 @@ function vdisplay(args) {
 	display.apply(this, arguments);
 }
 
-// we don't honour anymore GET requests on /
-
-// remainings of a socket.io example; this is only
-// marginally helpful to check for the server sanity
-io.on('connection', function(socket){
-    display('user connect');
-    socket.on('disconnect', function(){
-	display('user disconnect');
+function arm_user_connect_events(io) {
+    // remainings of a socket.io example; this is only
+    // marginally helpful to check for the server sanity
+    io.on('connection', function(socket){
+	display('user connect');
+	socket.on('disconnect', function(){
+	    display('user disconnect');
+	});
     });
-});
+}
 
 // this code is common to the 2 channels associated
 // to persistent data (nodes and phones)
@@ -99,7 +106,7 @@ io.on('connection', function(socket){
 // * and then, according to incremental_mode, we:
 //   * either forward the news as-is if incremental_mode is off
 //   * or forward the smallest delta that describes the changes if it is on
-function prepare_persistent_channel(socket, name) {
+function prepare_persistent_channel(io, socket, name) {
     var info_channel = info_channel_name(name);
     var filename = db_filename(name);
     vdisplay("arming callback for channel " + info_channel);
@@ -135,7 +142,7 @@ function clean_dbfile(filename) {
 
 // non-persistent channels are simpler,
 // e.g. we always propagate a complete list of leases
-function prepare_non_persistent_channel(socket, name) {
+function prepare_non_persistent_channel(io, socket, name) {
     var info_channel = info_channel_name(name);
     vdisplay("arming callback for channel " + info_channel);
     socket.on(info_channel, function(infos){
@@ -153,17 +160,19 @@ function prepare_non_persistent_channel(socket, name) {
 }
 
 // arm callbacks for the channels we use
-io.on('connection', function(socket){
-    //////////////////// (nodes) status
-    prepare_persistent_channel(socket, 'nodes');
-
-    //////////////////// phones
-    prepare_persistent_channel(socket, 'phones');
-
-    //////////////////// leases
-    prepare_non_persistent_channel(socket, 'leases');
-
-});
+function arm_events(io) {
+    io.on('connection', function(socket){
+	//////////////////// (nodes) status
+	prepare_persistent_channel(io, socket, 'nodes');
+	
+	//////////////////// phones
+	prepare_persistent_channel(io, socket, 'phones');
+	
+	//////////////////// leases
+	prepare_non_persistent_channel(io, socket, 'leases');
+	
+    });
+}
 
 // convenience function to synchroneously read a file as a string
 function sync_read_file_as_string(filename){
@@ -303,32 +312,35 @@ function merge_news_into_complete(complete_infos, news_infos, filename) {
 }
 
 ////////////////////////////////////////
-var usage = "Usage: sidecar.js [-v] [-l] [-c] [-p port-number] \n\
+var usage = "Usage: sidecar.js [-v] [-l] [-c] [-p port-number] [-s http|https]\n\
   -v: verbose mode \n\
   -l: local mode for devel (create local logfile) \n\
-  -c: incremental mode (only publish differences instead of flooding with the whole data) \n\
-  -p: set port number - default is " + default_port_number + "\n";  
+  -c: complete mode  - default is to publish differences; complete floods with the whole data \n\
+  -p: set port number - default is " + default_port_number + "\n\
+  -s: set scheme to http or https - default is " + default_scheme + "\n";  
 
 function parse_args() {
     // very rough parsing of command line args - to set verbosity
     var argv = process.argv.slice(2);
     for (var index=0; index < argv.length; index++) {
 	var arg = argv[index];
-	if (arg == "-h") {
-	    console.log(usage);
-	    process.exit(1);
-	// verbose
-	} else if (arg == "-v") {
+	if (arg == "-v") {
 	    verbose_flag = true;
-	// local dev (use json files in .)
 	} else if (arg == "-l") {
+	    // local / devel  (use json files and logs in .)
 	    local_flag = true;
 	} else if (arg == "-c") {
 	    incremental_flag = false;
 	} else if (arg == "-p") {
 	    global_port_number = parseInt(argv[index+1]);
 	    index ++;
-	}
+	} else if (arg == "-s") {
+	    global_scheme = argv[index+1];
+	    index ++;
+	} else {
+	    console.log(usage);
+	    process.exit(1);
+	} 
     };
     vdisplay("complete file for nodes = " + db_filename('node'));
 }
@@ -343,14 +355,27 @@ function run_server() {
     if (global_port_number == undefined)
 	global_port_number = default_port_number;
 
+    if (global_scheme == undefined)
+	global_scheme = default_scheme;
+
     try {
-	https.createServer(ssl_cert_options, express_app)
-	    .listen(global_port_number, function(){
-		display('listening on *:' + global_port_number);
-		display('verbose flag is ' + verbose_flag);
-		display('local flag is ' + local_flag);
-		display('incremental mode is ' + incremental_flag);
-	    });
+	var server;
+	if (global_scheme == "https") {
+	    server = https.createServer(ssl_cert_options(), express_app);
+	    io = io_https;
+	} else {
+	    server = http.Server(express_app);
+	    io = io_http;
+	}
+	arm_user_connect_events(io);
+	arm_events(io);
+	server.listen(global_port_number, function(){
+	    display('listening on ' + global_scheme + '://*:' + global_port_number);
+	    display('verbose flag is ' + verbose_flag);
+	    display('local flag is ' + local_flag);
+	    display('incremental mode is ' + incremental_flag);
+	    
+	 });
     } catch (err) {
 	console.log("Could not run http server on port " + global_port_number);
 	console.log("Need to sudo ?");
