@@ -23,7 +23,7 @@ from apssh.formatters import CaptureFormatter
 from rhubarbe.monitor import ReconnectableSocketIO
 
 sidecar_hostname = "r2lab.inria.fr"
-sidecar_port = 443
+sidecar_port = 999
 sidecar_channel = 'info:phones'
 
 # should be in some JSON file somewhere

@@ -5,7 +5,7 @@ var channel = 'info:nodes';
 // (2) this one is used for triggering a broadcast of the complete status
 var signalling = 'request:nodes';
 // port number
-var sidecar_port_number = 443;
+var sidecar_port_number = 999;
 
 
 var fedora_badge = '<img src="/assets/img/fedora-logo.png">';

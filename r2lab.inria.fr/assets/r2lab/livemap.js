@@ -34,7 +34,7 @@ var chan_phones = 'info:phones';
 var chan_phones_request = 'request:phones';
 
 // port number
-var sidecar_port_number = 443;
+var sidecar_port_number = 999;
 
 ////////// status details
 // fields that this widget knows about concerning each node
