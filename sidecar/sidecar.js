@@ -11,11 +11,36 @@
 // xxx : the option version (when run with -l) should probably
 // need to use http instead of https for devel mode..
 
+var fs = require('fs');
+
+function ssl_cert_options() {
+    try {
+	// the production box
+	// load the installed SSL certs for r2lab as defined in httpd config
+	// see file /etc/httpd/conf.d/r2lab.vhost
+	return {
+	    key  : fs.readFileSync("/etc/pki/tls/private/r2lab.inria.fr.key"),
+	    cert : fs.readFileSync("/etc/pki/tls/certs/r2lab_inria_fr.crt")
+
+	}
+    } catch (err) {
+	// a devel box - hre's how to produce:
+	// $ openssl genrsa -out localhost.key 1024
+	// $ openssl req -new -key localhost.key -out localhost.csr
+	//   answer defaults except CN=localhost
+	// $ openssl x509 -req -days 1024 -in localhost.csr -signkey localhost.key -out localhost.crt	
+	return {
+	    key  : fs.readFileSync("localhost.key"),
+	    cert : fs.readFileSync("localhost.crt"),
+	}
+    }
+}
+
 // dependencies
 var express_app = require('express')();
 var http = require('http').Server(express_app);
+//var https = require('https').createServer(ssl_cert_options(), express_app);
 var io = require('socket.io')(http);
-var fs = require('fs');
 var path = require('path');
 const url = require('url');
 
@@ -53,15 +78,6 @@ function db_filename(name) {
 //////////
 var default_url = "https://r2lab.inria.fr:443/";
 var global_url = undefined;
-
-// from the installed SSL certis for r2lab as defined in httpd config
-// see file /etc/httpd/conf.d/r2lab.vhost
-function ssl_cert_options() {
-    return {
-	key  : fs.readFileSync("/etc/pki/tls/private/r2lab.inria.fr.key"),
-	cert : fs.readFileSync("/etc/pki/tls/certs/r2lab_inria_fr.crt")
-    }
-}
 
 // use -v to turn on
 var verbose_flag = false;
