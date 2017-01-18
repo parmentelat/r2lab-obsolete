@@ -4,8 +4,9 @@
 var channel = 'info:nodes';
 // (2) this one is used for triggering a broadcast of the complete status
 var signalling = 'request:nodes';
-// port number
-var sidecar_port_number = 999;
+
+// sidecar_url var is defined in template sidecar-url.js
+// from sidecar_url as defined in settings.py
 
 
 var fedora_badge = '<img src="/assets/img/fedora-logo.png">';
@@ -325,15 +326,8 @@ function LiveTable() {
     }
 
     this.init_sidecar_socket_io = function() {
-	// try to figure hostname to get in touch with
-	var sidecar_hostname = ""
-	sidecar_hostname = new URL(window.location.href).hostname;
-	if ( ! sidecar_hostname)
-	    sidecar_hostname = 'localhost';
-	sidecar_hostname = 'r2lab.inria.fr'
-	var url = "https://" + sidecar_hostname + ":" + sidecar_port_number;
-	console.log("livetable is connecting to sidecar server at " + url);
-	this.sidecar_socket = io(url);
+	console.log("livetable is connecting to sidecar server at " + sidecar_url);
+	this.sidecar_socket = io(sidecar_url);
 	// what to do when receiving news from sidecar
 	var lab = this;
 	this.sidecar_socket.on(channel, function(json){

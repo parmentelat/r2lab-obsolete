@@ -33,8 +33,8 @@ var chan_nodes_request = 'request:nodes';
 var chan_phones = 'info:phones';
 var chan_phones_request = 'request:phones';
 
-// port number
-var sidecar_port_number = 999;
+// sidecar_url var is defined in template sidecar-url.js
+// from sidecar_url as defined in settings.py
 
 ////////// status details
 // fields that this widget knows about concerning each node
@@ -642,16 +642,9 @@ function LiveMap() {
 
     //////////////////// socket.io business
     this.init_sidecar_socket_io = function() {
-	// try to figure hostname to get in touch with
-	var sidecar_hostname = ""
-	sidecar_hostname = new URL(window.location.href).hostname;
-	if ( ! sidecar_hostname)
-	    sidecar_hostname = 'localhost';
-	sidecar_hostname = 'r2lab.inria.fr'
-	var url = "https://" + sidecar_hostname + ":" + sidecar_port_number;
 	if (livemap_debug)
-	    console.log("livemap is connecting to sidecar server at " + url);
-	this.sidecar_socket = io(url);
+	    console.log("livemap is connecting to sidecar server at " + sidecar_url);
+	this.sidecar_socket = io(sidecar_url);
 	// what to do when receiving news from sidecar
 	var lab = this;
 	////////// nodes

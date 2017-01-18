@@ -164,6 +164,9 @@ STATICFILES_DIRS = [
 
 manifold_url = "https://portal.onelab.eu:7080/"
 
+# xxx this is to move to port 999
+sidecar_url = "http://r2lab.inria.fr:443/"
+
 # transitioning to plcauthbackend
 AUTHENTICATION_BACKENDS = (
     'plc.plcauthbackend.PlcAuthBackend',

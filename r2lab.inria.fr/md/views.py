@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.utils.safestring import mark_safe
 
 from django.conf import settings
-from r2lab.settings import logger
+from r2lab.settings import logger, sidecar_url
 
 """
 Initially a simple view to translate a .md into html on the fly
@@ -335,6 +335,7 @@ def markdown_page(request, markdown_file, extra_metavars={}):
         if not r2lab_context and 'require_login' in metavars:
                 return HttpResponseRedirect("/index.md")
         metavars['r2lab_context'] = r2lab_context
+        metavars['sidecar_url'] = sidecar_url
         metavars.update(extra_metavars)
         return render(request, 'r2lab/r2lab.html', metavars)
     except Exception as e:

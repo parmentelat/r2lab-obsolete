@@ -11,7 +11,10 @@ var color_pending       = '#000000';
 var color_removing      = '#000000';
 var keepOldEvent        = null;
 var theZombieLeases     = [];
-var socket              = io.connect("https://r2lab.inria.fr:999");
+
+// sidecar_url var is defined in template sidecar-url.js
+// from sidecar_url as defined in settings.py
+var socket              = io.connect(sidecar_url);
 var version             = '1.37';
 var refresh             = true;
 var currentTimezone     = 'local';
