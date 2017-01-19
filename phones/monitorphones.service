@@ -1,9 +1,0 @@
-# this is meant to be installed under /etc/systemd/system
-[Unit]
-Description=testbed phones probe - reports to sidecar using socketio
-
-[Service]
-ExecStart=/usr/bin/env python3 /root/r2lab/phones/monitorphones.py -v
-
-[Install]
-WantedBy=multi-user.target
