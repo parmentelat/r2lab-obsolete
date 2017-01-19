@@ -110,7 +110,6 @@ var walls_radius = 30;
 var pillar_radius = 16;
 
 var livemap_debug = false;
-    livemap_debug = true;
 
 //////////////////////////////////////// nodes
 // the overall room size

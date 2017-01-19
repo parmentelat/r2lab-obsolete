@@ -169,7 +169,7 @@ manifold_url = "https://portal.onelab.eu:7080/"
 # it means to use the same protocol as the one
 # used to reach the main service in the first place
 # xxx this is to move to port 999
-sidecar_url = "//r2lab.inria.fr:443/"
+sidecar_url = "//r2lab.inria.fr:999/"
 
 # transitioning to plcauthbackend
 AUTHENTICATION_BACKENDS = (

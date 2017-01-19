@@ -76,7 +76,7 @@ function db_filename(name) {
 }
 	
 //////////
-var default_url = "https://r2lab.inria.fr:443/";
+var default_url = "https://r2lab.inria.fr:999/";
 var global_url = undefined;
 
 // use -v to turn on
