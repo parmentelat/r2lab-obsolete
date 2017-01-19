@@ -542,14 +542,14 @@ function -do-first () {
     $command -l root $node
 }
 
-doc-selection ss "Enter first selected node using ssh\n\t\tWARNING: arg if present is taken as a node, not a command"
-alias ss="-do-first ssh"
+doc-selection ssh1n "Enter first selected node using ssh\n\t\tWARNING: arg if present is taken as a node, not a command"
+alias ssh1n="-do-first ssh"
 
-doc-selection ssx "Same as ss but with ssh -X"
-alias ssx="-do-first 'ssh -X'"
+doc-selection ssh1nx "Same as ss but with ssh -X"
+alias ssh1nx="-do-first 'ssh -X'"
 
-doc-admin tn "Enter first selected node using telnet - ditto"
-alias tn="-do-first telnet"
+doc-admin tln1n "Enter first selected node using telnet - ditto"
+alias tln1n="-do-first telnet"
 
 ####################
 alias nitos-gem-203="cd /var/lib/gems/1.9.1/gems/nitos_testbed_rc-2.0.3/lib/nitos_testbed_rc"
