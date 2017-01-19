@@ -10,7 +10,7 @@ require_login: true
         <a class="close" onclick="$('.alert').hide()">×</a>
       </div>
       <div id='loading' style="display: none" class="alert alert-info" role="alert">
-        <strong>Be patient!</strong> Loading informations from server...
+        <strong>Be patient!</strong> Loading information from server...
       </div>
     </div>
   </div>

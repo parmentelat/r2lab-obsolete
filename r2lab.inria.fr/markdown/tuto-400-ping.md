@@ -78,9 +78,9 @@ this (as usual, make sure to use **your slice name** instead of
 `your_slicename`)
 
 ```
-ssh -i ~/.ssh/onelab.private your_slicename@faraday.inria.fr
+ssh your_slicename@faraday.inria.fr
 ```
-
+*<h6>if by any chance your public key is not at its standard location, then place `-i` option in the command line and inform the path of it.</h6>*
 If this results in a `Permission denied` message, go [back to this
 page](tuto-100-registration.md#ACCESS) for troubleshooting your
 access, before you can proceed.

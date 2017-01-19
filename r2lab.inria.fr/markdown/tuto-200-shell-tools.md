@@ -27,8 +27,9 @@ Once you have [obtained a slice account on R2LAB
 (faraday)](tuto-100-registration.md#main), you can reach the R2lab
 gateway using ssh
 
-    $ ssh -i onelab.private your_slicename@faraday.inria.fr
+    $ ssh your_slicename@faraday.inria.fr
 
+    *<h6>if by any chance your public key is not at its standard location, then place `-i` option in the command line and inform the path of it.</h6>*
 ---
 
 ### Listing commands

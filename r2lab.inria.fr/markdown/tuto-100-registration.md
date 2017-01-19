@@ -56,18 +56,18 @@ However, you need a slice. Let's move to the [next tab](javascript:open_tab('SLI
 
 ### You need a slice
 
-**Slice** is a set of testbed resources on which you can conduct an
-experiment. You can request a new slice **sending us an email** (`mario.zancanaro@inria.fr`) with the name
+A **Slice** is a set of testbed resources on which you can conduct an
+experiment. You can request a new slice by **sending us an email** (`fit-r2lab-dev@inria.fr`) with the name
 you wish for your slice.
 
 Your slice will have a composed name like:
 
-*inria*_ **[the-name-you-have-asked]**
+**inria_**[the name you have asked]
 
 Note that you might have to **log out R2lab** and relog back in in order to see
 newly created slices.
 
-While your slice is created, please, inform us your **puclic SSH key**.
+While your slice is created, take that chance to inform us of your public SSH key **puclic SSH key**.
 We explain how to do it in the [next
 tab](javascript:open_tab('CREDENTIALS')).
 
@@ -78,17 +78,17 @@ tab](javascript:open_tab('CREDENTIALS')).
 
 ### Attaching your SSH key to R2lab
 
-Before you can use the entering R2lab platform, you need to **attach your SSH key** to
-R2lab. For this, let's folow 3 steps.
+Before start using R2lab platform, you'll need **attach your SSH key** to
+R2lab. For this, let's follow 3 steps.
 
 **1 - Generating the RSA key pair.**
 
   - Type in your terminal:
 
-    $> `ssh-keygen -t rsa`
+    $ `ssh-keygen -t rsa`
 
-  - Once you have entered the Gen Key command, you will get a few more questions.
-    To simplify, you can press enter here, saving the file to the user home with the defaul name **id_rsa**.
+  - Once you have entered the `ssh-keygen` command, you will get a few more questions.
+    To simplify, you can press enter and use the given default values.
 
   - The entire key generation process looks like this:
   <center>
@@ -98,26 +98,24 @@ R2lab. For this, let's folow 3 steps.
 
   - The public key is now located in /home/**user-home**/.ssh/id_rsa**.pub**
 
-  - The private key (identification) is now located in /home/demo/.ssh/id_rsa
+  - Finally, include the new key pair to the agent, typing:
 
-  - *In case you are using a macOS, do not forget to include the new key pair to the agent, typing:*
+    $ `ssh-add -K /path/of/private/key`
 
-    $> `ssh-add -K /path/of/private/key`
+**2 - Send us your public key.**
 
-**2 - Send to us.**
-
-  In order to send us your **public key**, point your browser to the [R2lab register](http://r2labapi.inria.fr/) site, then:
+  In order to send us your **public key**, point your browser at [R2lab register](http://r2labapi.inria.fr/) site, then:
 
   - log in your account using the *email* and the *password* you already created.
 
   - Once inside your account, click the link **my account** located at the left panel (fig 3, <font color="red">**A**</font>).
 
-  - The rigth panel will show your infos. Just below you will find a form to submit your public key (fig 3, <font color="red">**B**</font>). Click in **browser button**, find in your machine the key you already generated.
+  - The right panel will show your infos. Just below you will find a form to submit your public key (fig 3, <font color="red">**B**</font>). Click **browse** button and indicate the location of your public key in your filesystem.
 
     Note that, in general, the key pair is located under a hide folder (`../.ssh/`).
     In the browser view, after click *browse* button , enable the **hide file options view** to find it.
 
-  - Confirm in **updload key** button (fig 3, <font color="red">**C**</font>).
+  - Confirm with the **updload key** button (fig 3, <font color="red">**C**</font>).
 
   <center>
   ![register](/assets/img/register/new-3.png)<br/>
@@ -135,14 +133,14 @@ tab](javascript:open_tab('RESERVATION')) to book your slices in R2lab.
 ### Make the reservation
 
 In order to use R2lab, you must reserve the testbed. The right way to do this is
-using [R2lab UI](http://r2lab.inria.fr/run.md) (see http://r2lab.inria.fr/run.md).
+using the [R2lab UI](http://r2lab.inria.fr/run.md).
 However, you must be logged in to see the reservation page.
 
-Once in private area, click twice to select your slice (fig. 5, <font
-color="red">**A**</font>) and drag and drop into the day calendar
-(fig. 5, <font color="red">**B**</font>).
+Once in private area, just drag and drop the slice into the day calendar
+(fig. 5, <font color="red">**A**</font>) - (fig. 5, <font color="red">**B**</font>).
+
 If you want dates in future, do the same action as described above but in the [complete
-calendar](http://r2lab.inria.fr/book.md) (see http://r2lab.inria.fr/book.md).
+calendar](http://r2lab.inria.fr/book.md).
 
 Other actions you can do in the calendar:
 
@@ -182,7 +180,9 @@ For example, in this tutorial we have used the following names:
 
 At this point you should reach R2lab platform typing in your terminal:
 
-$> `ssh -i `**your_slicename**`@faraday.inria.fr`
+$ `ssh` **your_slicename**`@faraday.inria.fr`
+
+*<h6>if by any chance your public key is not at its standard location, then place `-i` option in the command line and inform the path of it.</h6>*
 
 Once this command works for you, proceed to the next tutorial), where [we see in more details the available tools
 for manipulating the nodes](tuto-200-shell-tools.md).
@@ -190,9 +190,7 @@ for manipulating the nodes](tuto-200-shell-tools.md).
 ### Problems?
 
 Feel free to contact us on [the R2lab users mailinglist
-fit-r2lab-user@inria.fr](mailto:fit-r2lab-user@inria.fr) if you cannot
-reach the point where you cannot reach correctlly R2lab, run your experiments,
-and/or none of those hints are helpful.
+fit-r2lab-user@inria.fr](mailto:fit-r2lab-user@inria.fr) if you experience trouble with ssh-logging into the R2lab gateway at `faraday.inria.fr`, or with running your experiments, and/or none of those hints are helpful.
 
 </div>
 
