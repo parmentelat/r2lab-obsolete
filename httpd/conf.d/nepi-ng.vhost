@@ -1,6 +1,35 @@
 <VirtualHost *:80>
     ServerName  nepi-ng.inria.fr
-    ServerAdmin thierry.parmentelat@inria.fr
+    ServerAdmin fit-r2lab-dev@inria.fr
+
+    DocumentRoot "/var/www/nepi-ng/"
+
+    Alias "/asynciojobs" "/var/www/nepi-ng/asynciojobs/sphinx/build/html"
+    Alias "/apssh" "/var/www/nepi-ng/apssh/sphinx/build/html"
+
+    <Directory /var/www/nepi-ng>
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName  nepi-ng.inria.fr
+    ServerAdmin fit-r2lab-dev@inria.fr
+
+    SSLEngine on
+    <IfModule mod_ssl.c>
+      ErrorLog /var/log/httpd/ssl_log
+      LogLevel debug
+    </IfModule>
+    # 
+    # Beware the filenaming scheme is unchanged  from the certificate
+    # provisioning workflow but is not exactly consistent
+    # 
+    SSLCertificateFile "/etc/pki/tls/certs/nepi-ng_inria_fr.crt"
+    SSLCertificateKeyFile "/etc/pki/tls/private/nepi-ng.inria.fr.key"
+    SSLCertificateChainFile "/etc/pki/tls/certs/DigiCertCA.crt"
 
     DocumentRoot "/var/www/nepi-ng/"
 

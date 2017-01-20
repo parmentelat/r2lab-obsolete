@@ -1,6 +1,10 @@
+# always use 443
+# even if showing up from 80
+
 #################### the actual config is SSL on 443
 <VirtualHost *:443>
     ServerName  r2lab.inria.fr
+    ServerAdmin fit-r2lab-dev@inria.fr
 
     SSLEngine on
     <IfModule mod_ssl.c>
@@ -15,8 +19,6 @@
     SSLCertificateKeyFile "/etc/pki/tls/private/r2lab.inria.fr.key"
     SSLCertificateChainFile "/etc/pki/tls/certs/DigiCertCA.crt"
 
-    ServerAdmin thierry.parmentelat@inria.fr
-
     WSGIProcessGroup  r2labssl
     WSGIDaemonProcess r2labssl python-path=/var/www/r2lab.inria.fr
     WSGIScriptAlias /                      /var/www/r2lab.inria.fr/r2lab/wsgi.py
@@ -28,6 +30,18 @@
     </Directory>
 </VirtualHost>
 
+#################### redirect https://fit-r2lab.inria.fr -> https://r2lab.inria.fr/
+<VirtualHost *:443>
+    ServerName fit-r2lab.inria.fr
+    ServerAdmin fit-r2lab-dev@inria.fr
+
+    SSLCertificateFile "/etc/pki/tls/certs/fit-r2lab_inria_fr.crt"
+    SSLCertificateKeyFile "/etc/pki/tls/private/fit-r2lab.inria.fr.key"
+    SSLCertificateChainFile "/etc/pki/tls/certs/DigiCertCA.crt"
+
+    Redirect permanent / https://r2lab.inria.fr/
+</VirtualHost>
+
 #################### redirect http to https
 <VirtualHost *:80>
     ServerName  r2lab.inria.fr
@@ -36,15 +50,3 @@
     Redirect permanent / https://r2lab.inria.fr/
 </VirtualHost>
 
-#################### redirect https://fit-r2lab.inria.fr
-# xxx does not seem to work as expected
-# would require a dedicated SSL certificate...
-<VirtualHost *:443>
-    ServerName fit-r2lab.inria.fr
-
-    SSLCertificateFile "/etc/pki/tls/certs/fit-r2lab_inria_fr.crt"
-    SSLCertificateKeyFile "/etc/pki/tls/private/fit-r2lab.inria.fr.key"
-    SSLCertificateChainFile "/etc/pki/tls/certs/DigiCertCA.crt"
-
-    Redirect permanent / https://r2lab.inria.fr/
-</VirtualHost>
