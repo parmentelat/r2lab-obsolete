@@ -695,7 +695,7 @@ doc-admin maintenance "run nightly routine | nightly -N all | nightly -N <nodes>
 function nightly () {
   read -p "run nightly? (y/n)" CONT
   if [ "$CONT" = "y" ]; then
-    python /root/r2lab/nodes/nightly.py "$@"
+    python /root/r2lab/nightly/nightly.py "$@"
   fi
 }
 
