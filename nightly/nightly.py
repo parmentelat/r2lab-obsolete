@@ -443,7 +443,7 @@ def set_node_status(nodes, status='ok'):
     """ Inform status page in r2lab.inria.fr the nodes with problem """
     from socketIO_client import SocketIO, LoggingNamespace
     hostname = 'r2lab.inria.fr'
-    port     = 443
+    port     = 999
 
     infos = [{'id': arg, 'available' : status} for arg in nodes]
 
