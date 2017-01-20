@@ -17,8 +17,8 @@ widget_login_template: r2lab/widget_login.html
     <div class="col-lg-4">
       <span style="font-size:6em;" class="glyphicon glyphicon-signal" aria-hidden="true"></span>
       <h2>Open Platform</h2>
-      <p>Create your account through the OneLab portal, or login if you already have an account.</p>
-      <p><a class="btn btn-default in_blue" href="http://portal.onelab.eu/" target="_blank" role="button">get started »</a></p>
+      <p>Create your account through the R2lab portal, or login if you already have an account.</p>
+      <p><a class="btn btn-default in_blue" href="https://r2labapi.inria.fr/" target="_blank" role="button">get started »</a></p>
     </div><!-- /.col-lg-4 -->
     <div class="col-lg-4">
       <span style="font-size:6em;" class="glyphicon glyphicon-search" aria-hidden="true"></span>
@@ -45,7 +45,7 @@ widget_login_template: r2lab/widget_login.html
   <div class="row">
   <div class="col-md-3">
     <h4>1. Subscribe in the portal</h4>
-    <p>Create your account through OneLab interface,
+    <p>Create your account through R2lab interface,
     schedule your experiments and manage the resources through the dashboard control
     </p></div>
     <div class="col-md-3">

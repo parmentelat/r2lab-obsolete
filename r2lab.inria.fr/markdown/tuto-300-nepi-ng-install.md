@@ -19,7 +19,7 @@ skip_header: True
 <!------------ INSTALL ------------>
 <div id="INSTALL" class="tab-pane fade in active" markdown="1">
 
-# What is `nepi-ng` ? 
+# What is `nepi-ng` ?
 The commands that we have seen in the previous tutorial are useful for
 making quick changes on the testbed.
 
@@ -140,15 +140,12 @@ command - at least on unix-based systems.
     ~/.ssh $ ssh-add -l
     1024 SHA256:KNm0U4SgFV9bY957hJAIRR68n5AZHQ6e1gbiXrGHuOA /Users/parmentelat/.ssh/id_rsa (RSA)
 
-    # actually add the onelab key 
-    ~/.ssh $ ssh-add onelab.private
-    Enter passphrase for onelab.private:
-    Identity added: onelab.private (onelab.private)
-    
+    # if the key is not present in the list, just add it
+    ~/.ssh $ ssh-add path/to/the/key/id_rsa.pub
+
     # check for the addition
     ~/.ssh $ ssh-add -l
     1024 SHA256:KNm0U4SgFV9bY957hJAIRR68n5AZHQ6e1gbiXrGHuOA /Users/parmentelat/.ssh/id_rsa (RSA)
-    2048 SHA256:WvCdpP+FHBTnkwbkqYl43GVgwEK2iYdwRaNm+fCc+Xg onelab.private (RSA)
 
 ### ssh-agent lifespan
 

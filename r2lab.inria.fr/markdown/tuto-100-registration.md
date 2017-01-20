@@ -29,7 +29,7 @@ skip_header: True
 The portal to register at R2lab is located at
 [https://r2labapi.inria.fr/](https://r2labapi.inria.fr/).
 
-Once in the website, in order to sign up at the onelab portal:
+Once in the website, in order to sign up at the R2lab portal:
 
 **1 -** Click in **Create an account** link (fig 1, <font color="red">**A**</font>).
 
