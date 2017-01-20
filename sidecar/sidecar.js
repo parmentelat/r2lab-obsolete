@@ -31,7 +31,7 @@ var local_flag = false;
 // news string gets emitted
 var incremental_flag = true;
 
-var default_url = "https://r2lab.inria.fr:999/";
+var default_url = "http://r2lab.inria.fr:999/";
 var global_url = undefined;
 
 var default_ssl_key = "/etc/pki/tls/private/r2lab.inria.fr.key";
