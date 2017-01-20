@@ -691,7 +691,7 @@ function macphone() {
 doc-selection-sep "See also help-alt for other commands"
 
 ########################################
-doc-admin maintenance "run nightly routine | nightly -N all | nightly -N <nodes> -e <email result> -a <avoid nodes>"
+doc-admin nightly "run nightly routine | nightly -N all | nightly -N <nodes> -e <email result> -a <avoid nodes>"
 function nightly () {
   read -p "run nightly? (y/n)" CONT
   if [ "$CONT" = "y" ]; then
