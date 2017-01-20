@@ -68,9 +68,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 # third party stuff
-    # we call the markdown library ourselves, no need for this django app yet
+    ### we call the markdown library ourselves, no need for this django app yet
     #'markdown_deux',
+    ### for running a https devel server
+    # pip3 install django-sslserver
+    # uncomment sslserver line below, and then run with
+    # manage.py runsslserver --certificate ../sidecar/localhost.crt --key ../sidecar/localhost.key
+    # 'sslserver',
 # local stuff
+    ###
     # md is our own brew for displaying web pages written in markdown
     # it will serve http://<>/md/foo{,.md,.html} by searching for markdown/foo.md
     'md.apps.MdConfig',
