@@ -33,7 +33,7 @@ Once in the website, in order to sign up at the R2lab portal:
 
 **1 -** Click in **Create an account** link (fig 1, <font color="red">**A**</font>).
 
-**2 -** Fill the form with the requested info(fig 1, <font color="red">**B**</font>).
+**2 -** Fill the form with the requested info (fig 1, <font color="red">**B**</font>).
 Special attention for the last field which must be selected as **INRIA** (fig 1, <font color="red">**C**</font>).
 
 <center>

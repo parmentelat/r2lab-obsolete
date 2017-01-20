@@ -29,7 +29,7 @@ tutorial pages.
 
 ### Infrastructure
 
-#### [Sign up for a OneLab account](tuto-100-registration.md)
+#### [Sign up for a R2lab account](tuto-100-registration.md)
 
 *  All information about how to register and schedule a node
 
@@ -38,7 +38,7 @@ tutorial pages.
 *  Discover how to do basic control of the nodes by logging in at the
   `faraday.inria.fr` gateway from a regular `ssh` session :
 * how to check for the nodes status, leases, images, and phones even.
-  
+
 ### Examples of experimentation scripts with `nepi-ng`
 
 #### [`nepi-ng`: install](tuto-300-nepi-ng-install.md)
@@ -58,7 +58,7 @@ tutorial pages.
 
 *  A few more pings to see how one can initialize and configure wireless links
 * [B1](tuto-500-wireless.md#B1) : like A5, but on a wireless ad hoc network
-* [B2](tuto-500-wireless.md#B2) : same scenario, simplified by using `r2lab-id` 
+* [B2](tuto-500-wireless.md#B2) : same scenario, simplified by using `r2lab-id`
 * [B3](tuto-500-wireless.md#B3) : same scenario, but extract all the shell code in a single external file
 * [B4](tuto-500-wireless.md#B4) : add an infinite loop that prints out TICK every second
 
@@ -71,7 +71,7 @@ tutorial pages.
 * [C4](tuto-600-files.md#C4) : this extended version knows how to load images on the nodes before running C3.
 * [C2bis](tuto-600-files.md#C2bis) : a variant on C2, that deals with a service that is started and stopped in sync with another job
 
-#### Guidelines for [troubleshooting a `nepi-ng` script](tuto-700-troubleshooting.md) 
+#### Guidelines for [troubleshooting a `nepi-ng` script](tuto-700-troubleshooting.md)
 
 * [COMMON_MISTAKES](tuto-700-troubleshooting.md#COMMON_MISTAKES) how to check for common mistakes
 * [CODE_UPDATE](tuto-700-troubleshooting.md#CODE_UPDATE) how to check your software environment
