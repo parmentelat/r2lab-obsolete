@@ -8,11 +8,13 @@
     <link type="text/css" rel="stylesheet" href="sidecar-client.css"/>
   </head>
   <body>
-    <div class="allpage"><span class="header">sidecar url</span>
-    <input id="url"/>
+    <div class="allpage" id="url">
+    <span id="connection_status"></span> <br/><br/>
+    <span class="header">sidecar url</span>
+    <input class="wider" id="url"/>
     <button id="connect" onclick="set_url()">Apply/Reconnect</button>
     <button id="disconnect" onclick="pause()">Pause/Disconnect</button>
-    <button onclick="clear_contents()">Clear</button>
+    <hr>
     </div>
 
     <div id='requests'></div>

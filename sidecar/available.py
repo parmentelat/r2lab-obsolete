@@ -11,15 +11,14 @@ to instruct it that some nodes are available or not
 #             to maintain the same status over there
 
 
-from argparse import ArgumentParser
 import json
+from argparse import ArgumentParser
 
-from socketIO_client import SocketIO, LoggingNamespace
+from sidecar_client import connect_url
 
 # globals
-hostname = 'r2lab.inria.fr'
-port = 999
 channel = "info:nodes"
+default_sidecar_url = "http://r2lab.inria.fr:999/"
 
 # check if run as 'available.py' or 'unavailable.py'
 import sys
@@ -28,6 +27,10 @@ available_value = 'ko' if 'un' in sys.argv[0] else 'ok'
 # parse args
 parser = ArgumentParser()
 parser.add_argument("nodes", nargs='+', type=int)
+parser.add_argument("-u", "--sidecar-url", dest="sidecar_url",
+                    default=default_sidecar_url,
+                    help="url for thesidecar server (default={})"
+                    .format(default_sidecar_url))
 args = parser.parse_args()
 
 def check_valid(node):
@@ -40,11 +43,8 @@ if invalid_nodes:
 
 infos = [{'id': node, 'available' : available_value} for node in args.nodes]
 
-
-socketio = SocketIO(hostname, port, LoggingNamespace)
-print("Sending {infos} onto {hostname}:{port} on channel {channel}".format(**locals()))
+url = args.sidecar_url
+print("Connecting to sidecar at {}".format(url))
+socketio = connect_url(url)
+print("Sending {infos} onto {url} on channel {channel}".format(**locals()))
 socketio.emit(channel, json.dumps(infos), None)
-
-
-
-

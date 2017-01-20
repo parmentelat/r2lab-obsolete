@@ -11,38 +11,50 @@
 // xxx : the option version (when run with -l) should probably
 // need to use http instead of https for devel mode..
 
-var fs = require('fs');
+// dependencies
+const fs = require('fs');
+const path = require('path');
+const url = require('url');
+const express = require('express');
+const http = require('http');
+const https = require('https');
+const socketio = require('socket.io');
 
+
+////////// globals
+// use -v to turn on
+var verbose_flag = false;
+// use -l to turn on
+var local_flag = false;
+// default is to be incremental - i.e. emit only differences
+// use -c (--complete) to go back to the mode where the complete
+// news string gets emitted
+var incremental_flag = true;
+
+var default_url = "https://r2lab.inria.fr:999/";
+var global_url = undefined;
+
+var default_ssl_key = "/etc/pki/tls/private/r2lab.inria.fr.key";
+var global_ssl_key = undefined;
+
+var default_ssl_cert = "/etc/pki/tls/certs/r2lab_inria_fr.crt";
+var global_ssl_cert = undefined;
+
+// locate and load certificates
 function ssl_cert_options() {
     try {
 	// the production box
 	// load the installed SSL certs for r2lab as defined in httpd config
 	// see file /etc/httpd/conf.d/r2lab.vhost
 	return {
-	    key  : fs.readFileSync("/etc/pki/tls/private/r2lab.inria.fr.key"),
-	    cert : fs.readFileSync("/etc/pki/tls/certs/r2lab_inria_fr.crt")
-
+	    key  : fs.readFileSync(global_ssl_key),
+	    cert : fs.readFileSync(global_ssl_cert),
 	}
     } catch (err) {
-	// a devel box - hre's how to produce:
-	// $ openssl genrsa -out localhost.key 1024
-	// $ openssl req -new -key localhost.key -out localhost.csr
-	//   answer defaults except CN=localhost
-	// $ openssl x509 -req -days 1024 -in localhost.csr -signkey localhost.key -out localhost.crt	
-	return {
-	    key  : fs.readFileSync("localhost.key"),
-	    cert : fs.readFileSync("localhost.crt"),
-	}
+	console.log("Could not load SSL material : " + err);
+	process.exit(1);
     }
 }
-
-// dependencies
-var express_app = require('express')();
-var http = require('http').Server(express_app);
-//var https = require('https').createServer(ssl_cert_options(), express_app);
-var io = require('socket.io')(http);
-var path = require('path');
-const url = require('url');
 
 //////// names for the channels used are
 // info:nodes
@@ -60,6 +72,18 @@ const url = require('url');
 // in local mode (for devel) these files are in current directory
 
 
+// always display
+function display(args) {
+    for (var i in arguments) {
+       console.log(new Date() + " sidecar " + arguments[i]);
+    }
+}
+// display only if in verbose mode
+function vdisplay(args) {
+    if (verbose_flag)
+	display.apply(this, arguments);
+}
+
 // in the following, name = 'nodes' or 'phones' or 'leases' 
 function info_channel_name(name) {
     return "info:" + name;
@@ -74,34 +98,16 @@ function db_filename(name) {
 	return "./" + name + ".json";
     }
 }
-	
-//////////
-var default_url = "https://r2lab.inria.fr:999/";
-var global_url = undefined;
 
-// use -v to turn on
-var verbose_flag = false;
-// use -l to turn on
-var local_flag = false;
-// default is to be incremental - i.e. emit only differences
-// use -c (--complete) to go back to the mode where the complete
-// news string gets emitted
-var incremental_flag = true;
-
-// always display
-function display(args) {
-    for (var i in arguments) {
-       console.log(new Date() + " sidecar " + arguments[i]);
-    }
-}
-// display only if in verbose mode
-function vdisplay(args) {
-    if (verbose_flag)
-	display.apply(this, arguments);
+////////////////////
+function clean_dbfile(filename) {
+    sync_save_dbfile(filename, []);
 }
 
-// we don't honour anymore GET requests on /
 
+
+function initialize_socketio(io) {
+    
 // remainings of a socket.io example; this is only
 // marginally helpful to check for the server sanity
 io.on('connection', function(socket){
@@ -144,12 +150,8 @@ function prepare_persistent_channel(socket, name) {
 	if (msg.indexOf('CLEAR') != -1) {
 	    clean_dbfile(filename);
 	} 
-	emit_file(filename, info_channel);
+	emit_file(io, filename, info_channel);
     });
-}
-
-function clean_dbfile(filename) {
-    sync_save_dbfile(filename, []);
 }
 
 // non-persistent channels are simpler,
@@ -184,6 +186,8 @@ io.on('connection', function(socket){
 
 });
 
+}
+
 // convenience function to synchroneously read a file as a string
 function sync_read_file_as_string(filename){
     try {
@@ -216,7 +220,7 @@ function sync_read_file_as_infos(filename) {
 }
 
 // utility to open a file and broadcast its contents on channel
-function emit_file(filename, channel){
+function emit_file(io, filename, channel){
     var complete_string = sync_read_file_as_string(filename);
     if (complete_string) {
 	//vdisplay("emit_file: sending on channel " + channel + ":" + complete_string);
@@ -322,11 +326,15 @@ function merge_news_into_complete(complete_infos, news_infos, filename) {
 }
 
 ////////////////////////////////////////
-var usage = "Usage: sidecar.js [-v] [-l] [-c] [-u (http|https)://hostname:port/]\n\
+var usage = "Usage: sidecar.js [options][-v] [-l] [-c] [-u (http|https)://hostname:port/]\n\
   -v: verbose mode \n\
-  -l: local mode for devel (create local logfile) \n\
-  -c: complete mode  - default is to publish differences; complete floods with the whole data \n\
-  -u: set url - default is " + default_url + "\n";  
+  -l: local mode for devel : create local logfile, and change SSL defaults \n\
+  -c: complete mode - default is to incremental mode, i.e. publish differences;\n\
+      complete floods with the whole data \n\
+  -u: (http|https)://hostname:port/\n\
+      set url (hostname ignored)  - def is " + default_url + "\n\
+  -C: path for the local SSL cert - def is " + default_ssl_cert + "\n\
+  -K: path for the local SSL key  - def is " + default_ssl_key;  
 
 function parse_args() {
     // very rough parsing of command line args - to set verbosity
@@ -338,17 +346,36 @@ function parse_args() {
 	} else if (arg == "-l") {
 	    // local / devel  (use json files and logs in .)
 	    local_flag = true;
+	    default_ssl_cert = "localhost.crt";
+	    default_ssl_key  = "localhost.key";
 	} else if (arg == "-c") {
 	    incremental_flag = false;
 	} else if (arg == "-u") {
 	    global_url = argv[index+1];
+	    index ++;
+	} else if (arg == "-C") {
+	    global_ssl_cert = argv[index+1];
+	    index ++;
+	} else if (arg == "-K") {
+	    global_ssl_key = argv[index+1];
 	    index ++;
 	} else {
 	    console.log(usage);
 	    process.exit(1);
 	} 
     };
+    global_url = (global_url || default_url);
+    global_ssl_cert = (global_ssl_cert || default_ssl_cert);
+    global_ssl_key = (global_ssl_key || default_ssl_key);
+    
+    vdisplay("======== using URL = " + global_url);
+    vdisplay("==========");
+    vdisplay("SSL cert file = " + global_ssl_cert);
+    vdisplay("SSL cert key = " + global_ssl_key);
+    vdisplay("==========");
     vdisplay("complete file for nodes = " + db_filename('node'));
+    vdisplay("complete file for phones = " + db_filename('phone'));
+    
 }
 
 // run http server
@@ -358,18 +385,34 @@ function run_server() {
     process.on('SIGTERM', function(){
 	display("Received SIGTERM - exiting"); process.exit(1);});
 
-    global_url = (global_url || default_url);
 
     // https://nodejs.org/docs/latest/api/url.html
     var url_obj = url.parse(global_url);
     var scheme = url_obj.protocol || 'http:' ;      // "http:" or "https:"
     var hostname = url_obj.hostname || 'localhost';
     var port = url_obj.port || '80';
-    
+    port = parseInt(port);
+    vdisplay("scheme = " + scheme + ", hostname = " + hostname + ", port = " + port);
+
+    var express_app = express();
+    if (scheme == 'https:') {
+	vdisplay("using https stack");
+	var server_https = https.createServer(ssl_cert_options(), express_app);
+	server = server_https;
+    } else {
+	vdisplay("using http stack");
+	var server_http = http.Server(express_app);
+	server = server_http;
+    }
+
+    process.on('uncaughtException',
+	       function(err) {console.log("async. execption ->", err); })
+
     try {
-	port = parseInt(port);
-	http.listen(port, function(){
-	    display('listening on ' + scheme + '//' + hostname + ':' + port);
+	var io = socketio(server);
+	initialize_socketio(io);
+	server.listen(port, function(){
+	    display('listening on ' + global_url);
 	    display('verbose flag is ' + verbose_flag);
 	    display('local flag is ' + local_flag);
 	    display('incremental mode is ' + incremental_flag);

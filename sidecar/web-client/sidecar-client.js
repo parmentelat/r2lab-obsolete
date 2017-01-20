@@ -1,13 +1,42 @@
 // the socketio instance
+
+//var default_url = "http://r2lab.inria.fr:999/";
+//var default_url = "http://localhost:10000/";
+var default_url = "https://localhost:10001/";
+
 var socket = undefined;
 
 var names = [ 'phones', 'nodes', 'leases'];
 
 //////////////////// global functions
+function show_connected(url) {
+    $("#connection_status").css("background-color", "green");
+    $("#connection_status").html("connected to " + url);
+}
+function show_disconnected() {
+    $("#connection_status").css("background-color", "gray");
+    $("#connection_status").html("idle");
+}
+function show_failed_connection(url) {
+    $("#connection_status").css("background-color", "red");
+    $("#connection_status").html("connection failed to " + url);
+}    
+
 function connect_sidecar(url) {
+    if (socket) {
+	pause();
+    }
     console.log("Connecting to sidecar at " + url);
     socket = io.connect(url);
+// this 'connected' thing probably is asynchroneous..
+//    if ( ! socket.connected) {
+//	show_failed_connection(url);
+//	socket = undefined;
+//	return;
+//    } 
 
+    show_connected(url);
+    
     names.forEach(function(name) {
 	// behaviour for the apply buttons
 	$('div#request-' + name + '>button').click(function(e){
@@ -28,7 +57,7 @@ function connect_sidecar(url) {
 var set_url = function(e) {
     var url = $('input#url').val();
     if (url == "") {
-	url = "http://r2lab.inria.fr:999/";
+	url = default_url;
 	$('input#url').val(url);
     }
     connect_sidecar(url);
@@ -42,6 +71,7 @@ var pause = function() {
     }
     socket.disconnect();
     socket = undefined;
+    show_disconnected();
 }
 
 //////////////////// the 3 channels
@@ -112,7 +142,7 @@ var populate = function() {
 	    '<input id="' + name + '"/><button>Request update</button></div>';
 	$("#requests").append(html);
 	html = '<div class="allpage" id="send-' + name + '"><span class="header">send raw (json) line as ' + name + '</span>' +
-	    '<input id="' + name + '"/><button>Send raw line</button></div>';
+	    '<input class="wider" id="' + name + '"/><button>Send raw line</button></div>';
 	$("#requests").append(html);
 	// create div for the received contents
 	html = '<div class="contents" id=contents-"' + name + '">' +
@@ -128,11 +158,6 @@ var populate = function() {
     $("div#request-leases>input").val('REQUEST');
 };
 
-var clear_contents = function() {
-    console.log("Clearing");
-    $("div#contents>div.contents>ul").html("")
-}	
-
 // channel_prefix is typically 'info:' or 'request:'
 // widget_prefix is either 'send-' or 'request-'
 function send(name, channel_prefix, widget_prefix) {
@@ -146,7 +171,6 @@ function send(name, channel_prefix, widget_prefix) {
 ////////////////////
 var init = function() {
     populate();
-    console.log('initing');
     set_url();
 }
 $(init);

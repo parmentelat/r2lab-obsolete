@@ -14,12 +14,12 @@ to instruct it that some nodes are available or not
 from argparse import ArgumentParser
 import json
 import traceback
+from urllib.parse import urlparse
 
 from socketIO_client import SocketIO, LoggingNamespace
 
 # globals
-def_hostname = 'r2lab.inria.fr'
-def_port = 999
+default_sidecar_url = 'http://r2lab.inria.fr:999/'
 
 glob_supported = {
     'node' : {
@@ -35,6 +35,25 @@ glob_supported = {
 
 def channel_name(type, prefix):
     return "{}:{}s".format(prefix, type)
+
+def connect_url(url):
+    parsed = urlparse(url)
+    scheme, hostname, port \
+            = parsed.scheme, parsed.hostname, parsed.port or 80
+    if scheme not in ('http', 'https'):
+        print("unsupported scheme {} - malformed socketio URL: {}"
+              .format(scheme, url))
+    if scheme == 'http':
+        host_part = hostname
+        extras = {}
+    else:
+        host_part = "https://{}".format(hostname)
+        extras = {'verify' : False}
+#        extras = {}
+    print("host_part = {}".format(host_part))
+    return SocketIO(host_part, port, LoggingNamespace, **extras)
+    
+    
 
 def set_in_obj(socketio, type, channel, id, attribute, value):
     if id not in glob_supported[type]['__range__']:
@@ -61,11 +80,14 @@ def main():
     parser.add_argument("set_triples", nargs='+',
                         metavar='node:attribute=value',
                         help="set value=attribute on given obj. id - additive")
+    parser.add_argument("-u", "--sidecar-url", dest="sidecar_url",
+                        default=default_sidecar_url,
+                        help="url for thesidecar server (default={})"
+                        .format(default_sidecar_url))
     args = parser.parse_args()
 
-    print("Opening socketio connection to {}:{}"
-          .format(def_hostname, def_port))
-    socketio = SocketIO(def_hostname, def_port, LoggingNamespace)
+    print("Opening socketio connection to {}".format(args.sidecar_url))
+    socketio = connect_url(args.sidecar_url)
 
     channel = channel_name(args.type, "info")
     for set_triple in args.set_triples:
@@ -77,6 +99,7 @@ def main():
         except Exception as e:
             traceback.print_exc()
             exit(1)
-    
-main()
+
+if __name__ == '__main__':
+    main()
 
