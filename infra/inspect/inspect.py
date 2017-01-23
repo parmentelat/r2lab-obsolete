@@ -43,7 +43,7 @@ def inspect_branch():
     """ check some services/services
         just append RESULTS hash
     """
-    command = "cd /home/mzancana/Documents/inria/r2lab/; git branch;"
+    command = "cd /root/r2lab/; git branch;"
     ans_cmd = run(command)
     if not ans_cmd['status'] or ans_cmd['output'] != '* public':
         RESULTS.append({'service' : 'faraday branch', 'ans': '---', 'details': ans_cmd['output'], 'bug': True})
