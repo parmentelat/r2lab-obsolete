@@ -94,7 +94,7 @@ def send_email():
     # f.close()
     for res in RESULTS:
         if res['bug']:
-            fire_email("root@faraday.inria.fr", SEND_RESULTS_TO title, body)
+            fire_email("root@faraday.inria.fr", SEND_RESULTS_TO, title, body)
 
 
 def run(command, std=True):
