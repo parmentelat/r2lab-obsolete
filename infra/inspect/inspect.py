@@ -11,8 +11,9 @@ import re
 import json
 
 #GLOBALS PARAMS
-INSPECT_SITES   = [ 'https://r2lab.inria.fr', 'https://r2labapi.inria.fr',
-                    'https://r2labapi.inria.fr:443/PLCAPI/', 'https://r2lab.inria.fr:999/',
+INSPECT_SITES   = [ 'https://r2lab.inria.fr', 'http://r2lab.inria.fr',
+                    'https://r2labapi.inria.fr:443/PLCAPI/', 'http://r2labapi.inria.fr:443/PLCAPI/',
+                    'https://r2labapi.inria.fr', 'http://r2lab.inria.fr:999/',
                     'https://onelab.eu/'
                   ]
 SEND_RESULTS_TO = ['mario.zancanaro@inria.fr']
