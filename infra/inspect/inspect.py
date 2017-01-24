@@ -126,7 +126,7 @@ def send_email():
             send = True
             break
     if send:
-        pass#fire_email("root@faraday.inria.fr", SEND_RESULTS_TO, title, body)
+        fire_email("root@faraday.inria.fr", SEND_RESULTS_TO, title, body)
 
 
 def run(command, std=True):
