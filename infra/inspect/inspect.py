@@ -117,9 +117,9 @@ def send_email():
     body = body.replace("[THE CONTENT]", content())
     title = 'Inspect Routine of {}'.format(date('%d/%m/%Y - %HH'))
 
-    f = open('/user/mzancana/home/Documents/inria/check.html', 'w')
-    f.write(body)
-    f.close()
+    # f = open('/user/mzancana/home/Documents/inria/check.html', 'w')
+    # f.write(body)
+    # f.close()
     send = False
     for res in RESULTS:
         if res['bug']:
