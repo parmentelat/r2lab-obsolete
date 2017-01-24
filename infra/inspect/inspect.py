@@ -9,11 +9,12 @@ import subprocess
 from subprocess import Popen
 import re
 import json
+from socketIO_client import SocketIO, LoggingNamespace, BaseNamespace
+from urllib.parse import urlparse
 
 #GLOBALS PARAMS
-INSPECT_SITES   = [ 'https://r2lab.inria.fr', 'http://r2lab.inria.fr',
-                    'https://r2labapi.inria.fr:443/PLCAPI/', 'http://r2labapi.inria.fr:443/PLCAPI/',
-                    'https://r2labapi.inria.fr', 'http://r2lab.inria.fr:999/',
+INSPECT_SITES   = [ 'https://r2lab.inria.fr', 'http://r2lab.inria.fr', 'https://r2labapi.inria.fr',
+                    'https://r2labapi.inria.fr:443/PLCAPI', 'http://r2labapi.inria.fr:443/PLCAPI',
                     'https://onelab.eu/'
                   ]
 SEND_RESULTS_TO = ['mario.zancanaro@inria.fr']
@@ -22,7 +23,7 @@ SEND_RESULTS_TO = ['mario.zancanaro@inria.fr']
 RESULTS = []
 
 def inspect_sites():
-    """ check some services/sites """
+    """ check some URL  """
     sites = INSPECT_SITES
     for site in sites:
         try:
@@ -40,13 +41,39 @@ def inspect_sites():
         RESULTS.append({'service' : site, 'ans': ans, 'details': dt, 'bug': bug})
 
 
-def inspect_branch():
-    """ check some services/services
-        just append RESULTS hash
-    """
-    command = "cd /root/r2lab/; git branch;"
+def sidecar_socket():
+    """ check if a socket is answering in domain : port """
+    import socket
+    port = 999
+    ip   = 'r2lab.inria.fr'
+    s    = socket.socket()
+    try:
+        s.connect((ip, port))
+        RESULTS.append({'service' : 'sidecar in {} port {}'.format(ip, port), 'ans': 'UP', 'details': '', 'bug': False})
+    except Exception as e:
+        RESULTS.append({'service' : 'sidecar in {} port {}'.format(ip, port), 'ans': '---', 'details': e, 'bug': True})
+    finally:
+        s.close()
+
+
+def sidecar_connect(nodes, status='ko'):
+    """ check if we can exhange messages with sidecar """
+    from socketIO_client import SocketIO, LoggingNamespace
+    ip   = 'r2lab.inria.fr'
+    port = 999
+
+    infos = [{'id': arg, 'available' : status} for arg in nodes]
+
+    socketio = SocketIO(ip, port, LoggingNamespace)
+    socketio.emit('info:nodes', json.dumps(infos), None)
+
+
+def branch_set_in_faraday():
+    """ check if the branch setted in faraday is PUBLIC """
+    command = "cd /root/r2lab/; git branch | grep \* | cut -d ' ' -f2"
+    # command = "cd /home/mzancana/Documents/inria/r2lab/; git branch | grep \* | cut -d ' ' -f2"
     ans_cmd = run(command)
-    if not ans_cmd['status'] or ans_cmd['output'] != '* public':
+    if not ans_cmd['status'] or ans_cmd['output'] != 'public':
         RESULTS.append({'service' : 'faraday branch', 'ans': '---', 'details': ans_cmd['output'], 'bug': True})
     else:
         RESULTS.append({'service' : 'faraday branch', 'ans': ans_cmd['output'], 'details': '', 'bug': False})
@@ -70,7 +97,7 @@ def content():
                         <td style="font:12px Arial, Tahoma, Sans-serif; text-align: left;"><b>{}</b><br>error: {}</td>\n \
                         <td></td>\n \
                     </tr>\
-                    '.format(map_color(res['ans']), map_color(res['ans']), res['ans'], res['service'], res['details'])
+                    '.format(map_color(str(res['ans'])), map_color(str(res['ans'])), res['ans'], res['service'], res['details'])
         else:
             line  = '\
                     <tr>\n \
@@ -79,7 +106,7 @@ def content():
                         <td style="font:12px Arial, Tahoma, Sans-serif; text-align: left;">{}</td>\n \
                         <td></td>\n \
                     </tr>\
-                    '.format(map_color(res['ans']), map_color(res['ans']), res['ans'], res['service'])
+                    '.format(map_color(str(res['ans'])), map_color(str(res['ans'])), res['ans'], res['service'])
         content += line
     return header+content
 
@@ -90,12 +117,16 @@ def send_email():
     body = body.replace("[THE CONTENT]", content())
     title = 'Inspect Routine of {}'.format(date('%d/%m/%Y - %HH'))
 
-    # f = open('/user/mzancana/home/Documents/inria/check.html', 'w')
-    # f.write(body)
-    # f.close()
+    f = open('/user/mzancana/home/Documents/inria/check.html', 'w')
+    f.write(body)
+    f.close()
+    send = False
     for res in RESULTS:
         if res['bug']:
-            fire_email("root@faraday.inria.fr", SEND_RESULTS_TO, title, body)
+            send = True
+            break
+    if send:
+        pass#fire_email("root@faraday.inria.fr", SEND_RESULTS_TO, title, body)
 
 
 def run(command, std=True):
@@ -117,11 +148,11 @@ def map_color(code):
     "set color for an answer"
     color = 'green'
 
-    if code == 302:
+    if code[0] == '3':
         color = '#ed7a1c'
-    elif code == 200 or code == 'OK':
+    elif code == '200' or code == 'OK':
         color = 'green'
-    elif code == 404 or code == '---':
+    elif code[0] == '4' or code == '---':
         color = 'red'
     return color
 
@@ -178,5 +209,7 @@ def date(format='%Y-%m-%d'):
 
 if __name__ == "__main__":
     inspect_sites()
-    inspect_branch()
+    # sidecar_connect([15])
+    branch_set_in_faraday()
+    sidecar_socket()
     send_email()
