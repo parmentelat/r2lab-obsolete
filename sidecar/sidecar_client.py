@@ -19,7 +19,7 @@ from urllib.parse import urlparse
 from socketIO_client import SocketIO, LoggingNamespace
 
 # globals
-default_sidecar_url = 'http://r2lab.inria.fr:999/'
+default_sidecar_url = 'https://r2lab.inria.fr:999/'
 
 glob_supported = {
     'node' : {

@@ -18,7 +18,7 @@ from sidecar_client import connect_url
 
 # globals
 channel = "info:nodes"
-default_sidecar_url = "http://r2lab.inria.fr:999/"
+default_sidecar_url = "https://r2lab.inria.fr:999/"
 
 # check if run as 'available.py' or 'unavailable.py'
 import sys

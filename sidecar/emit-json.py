@@ -10,6 +10,7 @@ def io_callback(*args, **kwds):
 print("Run this script with python -i")
 socketio = None
 
+# xxx would need to import sidecar_client instead
 def i(hostname='localhost', port=999):
     global socketio
     socketio = SocketIO(hostname, port, LoggingNamespace)

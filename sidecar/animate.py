@@ -5,12 +5,12 @@ import json
 import time
 
 from argparse import ArgumentParser
-from socketIO_client import SocketIO, LoggingNamespace
+from sidecar_client import connect_url
 
 # in seconds
 default_cycle = 1
 default_runs = 0
-default_socket_io_url = "ws://localhost:999/"
+default_sidecar_url = "https://r2lab.inria.fr:999/"
 
 node_ids = range(1, 38)
 default_max_nodes_impacted = 10
@@ -123,8 +123,10 @@ def main():
                         help="If set, only rx/tx data are animated")
     parser.add_argument('-p', '--phone-cycle', default=5, type=int,
                         help='send a random phone status every n cycles')
-    parser.add_argument('-u', '--socket-io-url', action='store', default=default_socket_io_url,
-                        help="""Sends status data to this ws URL using socketio - use something like {}""".format(default_socket_io_url))
+    parser.add_argument("-u", "--sidecar-url", dest="sidecar_url",
+                        default=default_sidecar_url,
+                        help="url for thesidecar server (default={})"
+                        .format(default_sidecar_url))
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
     args = parser.parse_args()
 
@@ -138,20 +140,9 @@ def main():
     if args.verbose:
         print("Using cycle {}s".format(cycle))
 
-    from urllib.parse import urlparse
-    try:
-        hostname, port = urlparse(args.socket_io_url).netloc.split(':')
-        port = int(port)
-        if args.verbose:
-            print("Sending to sidecar at {hostname} on {port}".format(**locals()))
-    except:
-        print("Could not parse websocket URL {}".format(args.socket_io_url))
-        import traceback
-        traceback.print_exc()
-        exit(1)
-        
-    socketIO = SocketIO(hostname, port, LoggingNamespace)
-    def io_callback(*args, **kwds): print('on socketIO response', *args, **kwds)
+    url = args.sidecar_url
+    print("Connecting to sidecar at {}".format(url))
+    socketio = connect_url(url)
 
     counter = 0
     while True:
@@ -162,18 +153,18 @@ def main():
                   .format(counter, len(news_infos),
                           [ (info['id'], len(info)-1) for info in news_infos]))
             print(news_infos[0])
-        socketIO.emit('info:nodes', json.dumps(news_infos), io_callback)
+        socketio.emit('info:nodes', json.dumps(news_infos), None)
 
         # only one phone
         if counter % args.phone_cycle == 0:
             phone_infos = [ random_phone_status(id) for id in [1]]
             if args.verbose:
                 print("phone: emitting {}".format(phone_infos[0]))
-            socketIO.emit('info:phones', json.dumps(phone_infos), io_callback)
+            socketio.emit('info:phones', json.dumps(phone_infos), None)
 
         leases = get_leases()
         if leases:
-            socketIO.emit('info:leases', json.dumps(leases), io_callback)
+            socketio.emit('info:leases', json.dumps(leases), None)
         counter += 1
         if args.runs and counter >= args.runs:
             break

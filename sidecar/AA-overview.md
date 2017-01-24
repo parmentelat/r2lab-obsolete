@@ -36,7 +36,9 @@ See also [TODO about r2lab.inria.fr](../r2lab.inria.fr/TODO.md)
 
 * run `animate.py` locally to simulate new random events cyclically
 
-* run `sudo sidecar.js -l` when running locally on a devel box; this will use json files in current directory as opposed to in `/var/lib/sidecar/`; also `sudo` is required to bind to privileged port `999`
+* run `sudo sidecar.js -l` when running locally on a devel box; this will use json files in current directory as opposed to in `/var/lib/sidecar/`; also `sudo` is required to bind to privileged port `999`; 
+
+* note that you can also use the -u option to use either http or https, or to run on another port number; when running the django server locally you can specify the sidecar URL in `settings.py`; sudo won't be necessary if you run on a port > 1024
 
 * run `sudo sidecar.js -l -v` for verbose output
 

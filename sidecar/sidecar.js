@@ -412,7 +412,7 @@ function run_server() {
 	var io = socketio(server);
 	initialize_socketio(io);
 	server.listen(port, function(){
-	    display('listening on ' + global_url);
+	    display('listening on ' + global_url + " (hostname ignored)");
 	    display('verbose flag is ' + verbose_flag);
 	    display('local flag is ' + local_flag);
 	    display('incremental mode is ' + incremental_flag);
