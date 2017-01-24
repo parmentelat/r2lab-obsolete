@@ -19,8 +19,30 @@ INSPECT_SITES   = [ 'https://r2lab.inria.fr', 'http://r2lab.inria.fr', 'https://
                   ]
 SEND_RESULTS_TO = ['mario.zancanaro@inria.fr']
 
+#DEFAUULTS
+IP              = 'r2lab.inria.fr'
+PORT            = 999
+PROTOCOL        = 'https'
+
 #GLOBALS
 RESULTS = []
+
+
+#TO DEAL WITH NO ANSWER AFTER x SECONDS TRYING CONNECT SIDECAR
+import signal
+class timeout:
+    def __init__(self, seconds=1, error_message='Timeout'):
+        self.seconds = seconds
+        self.error_message = error_message
+    def handle_timeout(self, signum, frame):
+        raise TimeoutError(self.error_message)
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self.handle_timeout)
+        signal.alarm(self.seconds)
+    def __exit__(self, type, value, traceback):
+        signal.alarm(0)
+
+
 
 def inspect_sites():
     """ check some URL  """
@@ -41,31 +63,41 @@ def inspect_sites():
         RESULTS.append({'service' : site, 'ans': ans, 'details': dt, 'bug': bug})
 
 
-def sidecar_socket():
+
+def sidecar_socket(ip=IP, port=PORT):
     """ check if a socket is answering in domain : port """
     import socket
-    port = 999
-    ip   = 'r2lab.inria.fr'
-    s    = socket.socket()
+    s = socket.socket()
+    try_emit = True
     try:
-        s.connect((ip, port))
-        RESULTS.append({'service' : 'sidecar in {} port {}'.format(ip, port), 'ans': 'UP', 'details': '', 'bug': False})
+        a = s.connect((ip, port))
+        RESULTS.append({'service' : 'sidecar in <b>{}</b> port <b>{}</b>'.format(ip, port), 'ans': 'UP', 'details': '', 'bug': False})
     except Exception as e:
-        RESULTS.append({'service' : 'sidecar in {} port {}'.format(ip, port), 'ans': '---', 'details': e, 'bug': True})
+        try_emit = False
+        RESULTS.append({'service' : 'sidecar in <b>{}</b> port <b>{}</b>'.format(ip, port), 'ans': '---', 'details': e, 'bug': True})
     finally:
         s.close()
 
 
-def sidecar_connect(nodes, status='ko'):
+
+def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
     """ check if we can exhange messages with sidecar """
-    from socketIO_client import SocketIO, LoggingNamespace
-    ip   = 'r2lab.inria.fr'
-    port = 999
+    url = "{}://{}:{}/".format(protocol,ip,port)
+    channel = 'info:nodes'
+    sys.path.insert(0, r'../../sidecar/')
+    from sidecar_client import connect_url
 
-    infos = [{'id': arg, 'available' : status} for arg in nodes]
+    infos = {'id': 0, 'available' : 'ok'}
+    try:
+        with timeout(seconds=5):
+            print('INFO: trying connect...')
+            socketio = connect_url(url)
+            socketio.emit(channel, json.dumps(infos), None)
+            RESULTS.append({'service' : 'messages emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': 'UP', 'details': '', 'bug': False})
+    except Exception as e:
+        print('INFO: NO connection...')
+        RESULTS.append({'service' : 'messages emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': '---', 'details': e, 'bug': True})
 
-    socketio = SocketIO(ip, port, LoggingNamespace)
-    socketio.emit('info:nodes', json.dumps(infos), None)
 
 
 def branch_set_in_faraday():
@@ -111,22 +143,22 @@ def content():
     return header+content
 
 
-def send_email():
+def send_email(send=True):
     body = email_body()
     body = body.replace("[THE DATE]", date('%d/%m/%Y - %HH'))
     body = body.replace("[THE CONTENT]", content())
     title = 'Inspect Routine of {}'.format(date('%d/%m/%Y - %HH'))
 
-    # f = open('/user/mzancana/home/Documents/inria/check.html', 'w')
-    # f.write(body)
-    # f.close()
-    send = False
-    for res in RESULTS:
-        if res['bug']:
-            send = True
-            break
+    try:
+        #try a copy of the email
+        f = open('inspect.html', 'w')
+        f.write(body)
+        f.close()
+    except Exception as e:
+        pass
     if send:
         fire_email("root@faraday.inria.fr", SEND_RESULTS_TO, title, body)
+
 
 
 def run(command, std=True):
@@ -209,7 +241,15 @@ def date(format='%Y-%m-%d'):
 
 if __name__ == "__main__":
     inspect_sites()
-    # sidecar_connect([15])
+    sidecar_socket(IP, PORT)
+    sidecar_emit(IP, PORT, 'http')
+    sidecar_emit(IP, PORT, 'https')
     branch_set_in_faraday()
-    sidecar_socket()
-    send_email()
+
+    send = False
+    for res in RESULTS:
+        if res['bug']:
+            send = True
+            break
+    if send:
+        send_email(False)

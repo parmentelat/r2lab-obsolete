@@ -441,16 +441,14 @@ def send_email(sender, receiver, title, content):
 
 def set_node_status(nodes, status='ok'):
     """ Inform status page in r2lab.inria.fr the nodes with problem """
-    from socketIO_client import SocketIO, LoggingNamespace
-    hostname = 'r2lab.inria.fr'
-    port     = 999
+    url = "https://r2lab.inria.fr:999/"
+    channel = 'info:nodes'
+    sys.path.insert(0, r'../sidecar/')
+    from sidecar_client import connect_url
 
     infos = [{'id': arg, 'available' : status} for arg in nodes]
-
-    socketio = SocketIO(hostname, port, LoggingNamespace)
-    # print("Sending {infos} onto {hostname}:{port}".format(**locals()))
-    socketio.emit('info:nodes', json.dumps(infos), None)
-
+    socketio = connect_url(url)
+    socketio.emit(channel, json.dumps(infos), None)
 
 
 
