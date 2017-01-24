@@ -252,4 +252,4 @@ if __name__ == "__main__":
             send = True
             break
     if send:
-        send_email(False)
+        send_email(True)
