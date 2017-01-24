@@ -84,7 +84,8 @@ def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
     """ check if we can exhange messages with sidecar """
     url = "{}://{}:{}/".format(protocol,ip,port)
     channel = 'info:nodes'
-    sys.path.insert(0, r'../../sidecar/')
+    #sys.path.insert(0, r'../../sidecar/')
+    sys.path.insert(0, r'/root/r2lab/sidecar/')
     from sidecar_client import connect_url
 
     infos = {'id': 0, 'available' : 'ok'}
