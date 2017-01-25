@@ -114,9 +114,10 @@ def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
     url = "{}://{}:{}/".format(protocol,ip,port)
     channel = 'info:nodes'
     try:
-        sys.path.insert(0, r'../../sidecar/')
+        sys.path.insert(0, r'/home/mzancana/Documents/inria/r2lab/sidecar/')
     except Exception as e:
         sys.path.insert(0, r'/root/r2lab/sidecar/')
+        
     from sidecar_client import connect_url
 
     infos = {'id': 0, 'available' : 'ok'}
