@@ -24,10 +24,23 @@ skip_header: True
 <!------------ REGISTER ------------>
 <div id="REGISTER" class="tab-pane fade in active" markdown="1">
 
+### Introduction
+
+First of all, welcome to R2lab.
+
+For the time being, R2lab’s operations rely on 2 separate websites:
+
+* **Reservation Portal** (r2lab.inria.fr): is the one used for daily operations, like getting a reservation, and live monitoring of nodes status
+
+* **Register Portal** (r2labapi.inria.fr) : is the backend that manages accounts and similar, so you will be requested to interact with this site for initial tasks like uploading your ssh public key
+
+Both sites share the same *email*/*password* credentials.
+
+Until we merge them we will guide you in use both in the process of getting all set.
+
 ### Entry point
 
-The portal to register at R2lab is located at
-[https://r2labapi.inria.fr/](https://r2labapi.inria.fr/).
+Start your registration process at R2lab through our [Register Portal](https://r2labapi.inria.fr/).
 
 Once in the website, in order to sign up at the R2lab portal:
 
@@ -46,7 +59,7 @@ Fig. 1 - Register
   at the link present** in the email confirmation and wait for the
   manager in your organization to **validate your request**.
 
-From that point you can login into the [portal](http://r2lab.inria.fr/index.md).
+From that point you can login into the [Reservation Portal](http://r2lab.inria.fr/index.md).
 However, you need a slice. Let's move to the [next tab](javascript:open_tab('SLICE')) to create one.
 
 </div>
@@ -64,7 +77,7 @@ Your slice will have a composed name like:
 
 **inria_**[the name you have asked]
 
-Note that you might have to **log out R2lab** and relog back in in order to see
+Note that you might have to **log out Reservation Portal** and relog back in in order to see
 newly created slices.
 
 While your slice is created, take that chance to inform us of your public SSH key **puclic SSH key**.
@@ -104,9 +117,9 @@ R2lab. For this, let's follow 3 steps.
 
 **2 - Send us your public key.**
 
-  In order to send us your **public key**, point your browser at [R2lab register](http://r2labapi.inria.fr/) site, then:
+  In order to send us your **public key**, point your browser once again at [Register Portal](http://r2labapi.inria.fr/) site, then:
 
-  - log in your account using the *email* and the *password* you already created.
+  - log in your account using the *email*/*password*  you already created.
 
   - Once inside your account, click the link **my account** located at the left panel (fig 3, <font color="red">**A**</font>).
 
@@ -133,14 +146,13 @@ tab](javascript:open_tab('RESERVATION')) to book your slices in R2lab.
 ### Make the reservation
 
 In order to use R2lab, you must reserve the testbed. The right way to do this is
-using the [R2lab UI](http://r2lab.inria.fr/run.md).
+using our [Reservation Portal - UI](http://r2lab.inria.fr/run.md).
 However, you must be logged in to see the reservation page.
 
 Once in private area, just drag and drop the slice into the day calendar
 (fig. 5, <font color="red">**A**</font>) - (fig. 5, <font color="red">**B**</font>).
 
-If you want dates in future, do the same action as described above but in the [complete
-calendar](http://r2lab.inria.fr/book.md).
+If you want dates in future, do the same action as described above but in the [Reservation Portal - Calendar](http://r2lab.inria.fr/book.md).
 
 Other actions you can do in the calendar:
 
@@ -189,8 +201,7 @@ for manipulating the nodes](tuto-200-shell-tools.md).
 
 ### Problems?
 
-Feel free to contact us on [the R2lab users mailinglist
-fit-r2lab-user@inria.fr](mailto:fit-r2lab-user@inria.fr) if you experience trouble with ssh-logging into the R2lab gateway at `faraday.inria.fr`, or with running your experiments, and/or none of those hints are helpful.
+Feel free to contact us on the **R2lab users mailinglist** [fit-r2lab-user@inria.fr](mailto:fit-r2lab-user@inria.fr) if you experience trouble with ssh-logging into the R2lab gateway at `faraday.inria.fr`, or with running your experiments, and/or none of those hints are helpful.
 
 </div>
 
