@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 
 #GLOBALS PARAMS
 INSPECT_DOAMINS = [ 'https://r2lab.inria.fr', 'http://r2lab.inria.fr', 'https://r2labapi.inria.fr',
-                    'https://r2labapi.inria.fr:443/PLCAPI', 'http://r2labapi.inria.fr:443/PLCAPI',
+                    'https://r2labapi.inria.fr:443/PLCAPI',
                     'https://onelab.eu/'
                   ]
 SEND_RESULTS_TO = ['mario.zancanaro@inria.fr']
@@ -114,7 +114,7 @@ def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
     url = "{}://{}:{}/".format(protocol,ip,port)
     channel = 'info:nodes'
     #sys.path.insert(0, r'/home/mzancana/Documents/inria/r2lab/sidecar/')
-    sys.path.insert(0, r'/root/r2lab/sidecar/')    
+    sys.path.insert(0, r'/root/r2lab/sidecar/')
     from sidecar_client import connect_url
 
     infos = {'id': 0, 'available' : 'ok'}
