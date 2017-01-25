@@ -77,7 +77,7 @@ Your slice will have a composed name like:
 
 **inria_**[the name you have asked]
 
-Note that you might have to **log out Reservation Portal** and relog back in in order to see
+Note that you might have to **log out** [Reservation Portal](http://r2lab.inria.fr/index.md) and relog back in order to see
 newly created slices.
 
 While your slice is created, take that chance to inform us of your public SSH key **puclic SSH key**.
