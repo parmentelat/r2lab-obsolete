@@ -133,7 +133,7 @@ main()
 EOF
 }
 
-doc-admin snap "to be completed"
+doc-admin snap "create a snapshot of the r2lab chamber state"
 function snap () {
   python3 /root/r2lab/nodes/snap.py "$@"
 }
@@ -697,6 +697,11 @@ function nightly () {
   if [ "$CONT" = "y" ]; then
     python /root/r2lab/nightly/nightly.py "$@"
   fi
+}
+
+doc-admin inspect "check the status of a default domain list and some other customized services"
+function inspect () {
+  python3 /root/r2lab/infra/inspect/inspect.py "$@"
 }
 
 doc-admin maintenance "update a json file which contains information about nodes maintenance | maitenance -i|r <node> -m <the message>"

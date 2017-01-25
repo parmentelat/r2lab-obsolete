@@ -13,7 +13,7 @@ from socketIO_client import SocketIO, LoggingNamespace, BaseNamespace
 from urllib.parse import urlparse
 
 #GLOBALS PARAMS
-INSPECT_SITES   = [ 'https://r2lab.inria.fr', 'http://r2lab.inria.fr', 'https://r2labapi.inria.fr',
+INSPECT_DOAMINS = [ 'https://r2lab.inria.fr', 'http://r2lab.inria.fr', 'https://r2labapi.inria.fr',
                     'https://r2labapi.inria.fr:443/PLCAPI', 'http://r2labapi.inria.fr:443/PLCAPI',
                     'https://onelab.eu/'
                   ]
@@ -27,6 +27,19 @@ PROTOCOL        = 'https'
 #GLOBALS
 RESULTS = []
 
+#PARAMS
+parser = ArgumentParser()
+parser.add_argument("-e", "--email", default=SEND_RESULTS_TO, dest="send_to", nargs='+',
+                    help="Email to receive the execution results")
+parser.add_argument("-fe", "--force_email", dest="force_email", nargs='+',
+                    help="If not present the email will send only in errors are detected")
+parser.add_argument("-D", "--domains", default=INSPECT_DOAMINS, dest="domains", nargs='+',
+                    help="List of domains to check the answer header. Ex.: https://domain1.com http://domain2.com ...")
+
+args    = parser.parse_args()
+send_to = args.send_to
+domains = args.domains
+force_e = args.force_email
 
 #TO DEAL WITH NO ANSWER AFTER x SECONDS TRYING CONNECT SIDECAR
 import signal
@@ -44,23 +57,39 @@ class timeout:
 
 
 
-def inspect_sites():
+def main():
+    inspect_sites(domains)
+
+    #CUSTOMIZED TESTS
+    sidecar_socket(IP, PORT)
+    sidecar_emit(IP, PORT, 'https')
+    # branch_set_in_faraday()
+    #----------------------
+
+    send = False
+    for res in RESULTS:
+        if res['bug'] or force_e:
+            send = True
+            break
+    if send:
+        send_email(send_to, send)
+
+
+
+def inspect_sites(domains):
     """ check some URL  """
-    sites = INSPECT_SITES
-    for site in sites:
+    for domain in domains:
+        bug = False
         try:
-            r   = requests.head(site)
+            r   = requests.head(domain)
             ans = r.status_code
             dt  = None
-            if ans == 400 or ans == 404:
+            if str(ans)[0] == '4' or str(ans)[0] == '5':
                 bug = True
-            else:
-                bug = False
         except Exception as e:
             ans = '---'
             dt  = e
-            bug = True
-        RESULTS.append({'service' : site, 'ans': ans, 'details': dt, 'bug': bug})
+        RESULTS.append({'service' : domain, 'ans': ans, 'details': dt, 'bug': bug})
 
 
 
@@ -84,8 +113,10 @@ def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
     """ check if we can exhange messages with sidecar """
     url = "{}://{}:{}/".format(protocol,ip,port)
     channel = 'info:nodes'
-    #sys.path.insert(0, r'../../sidecar/')
-    sys.path.insert(0, r'/root/r2lab/sidecar/')
+    try:
+        sys.path.insert(0, r'../../sidecar/')
+    except Exception as e:
+        sys.path.insert(0, r'/root/r2lab/sidecar/')
     from sidecar_client import connect_url
 
     infos = {'id': 0, 'available' : 'ok'}
@@ -110,6 +141,7 @@ def branch_set_in_faraday():
         RESULTS.append({'service' : 'faraday branch', 'ans': '---', 'details': ans_cmd['output'], 'bug': True})
     else:
         RESULTS.append({'service' : 'faraday branch', 'ans': ans_cmd['output'], 'details': '', 'bug': False})
+
 
 
 def content():
@@ -144,7 +176,8 @@ def content():
     return header+content
 
 
-def send_email(send=True):
+
+def send_email(emails, send=True):
     body = email_body()
     body = body.replace("[THE DATE]", date('%d/%m/%Y - %HH'))
     body = body.replace("[THE CONTENT]", content())
@@ -158,7 +191,7 @@ def send_email(send=True):
     except Exception as e:
         pass
     if send:
-        fire_email("root@faraday.inria.fr", SEND_RESULTS_TO, title, body)
+        fire_email("root@faraday.inria.fr", emails, title, body)
 
 
 
@@ -177,6 +210,7 @@ def run(command, std=True):
     return dict({'output': out, 'error': err, 'status': ret})
 
 
+
 def map_color(code):
     "set color for an answer"
     color = 'green'
@@ -188,6 +222,7 @@ def map_color(code):
     elif code[0] == '4' or code == '---':
         color = 'red'
     return color
+
 
 
 def fire_email(sender, receiver, title, content):
@@ -206,6 +241,7 @@ def fire_email(sender, receiver, title, content):
     s = smtplib.SMTP('localhost')
     s.sendmail(sender, receiver, msg.as_string())
     s.quit()
+
 
 
 def email_body():
@@ -235,22 +271,12 @@ def email_body():
     return body
 
 
+
 def date(format='%Y-%m-%d'):
     """ Current date (2016-04-06)"""
     return datetime.now().strftime(format)
 
 
-if __name__ == "__main__":
-    inspect_sites()
-    sidecar_socket(IP, PORT)
-    sidecar_emit(IP, PORT, 'http')
-    sidecar_emit(IP, PORT, 'https')
-    branch_set_in_faraday()
 
-    send = False
-    for res in RESULTS:
-        if res['bug']:
-            send = True
-            break
-    if send:
-        send_email(True)
+if __name__ == "__main__":
+    main()

@@ -443,7 +443,7 @@ def set_node_status(nodes, status='ok'):
     """ Inform status page in r2lab.inria.fr the nodes with problem """
     url = "https://r2lab.inria.fr:999/"
     channel = 'info:nodes'
-    sys.path.insert(0, r'../sidecar/')
+    sys.path.insert(0, r'/root/r2lab/sidecar/')
     from sidecar_client import connect_url
 
     infos = [{'id': arg, 'available' : status} for arg in nodes]
