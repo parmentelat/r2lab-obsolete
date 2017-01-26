@@ -5,6 +5,7 @@
 """
 The nightly script used to monitor all the R2lab on a nightly basis
 and outline the ones that are not reliable
+Nightly runs in python2. Sidecar in 3. Need include there: from urlparse import urlparse
 """
 
 from argparse import ArgumentParser
@@ -448,6 +449,7 @@ def set_node_status(nodes, status='ok'):
     infos = [{'id': arg, 'available' : status} for arg in nodes]
     socketio = connect_url(url)
     socketio.emit(channel, json.dumps(infos), None)
+
 
 
 
