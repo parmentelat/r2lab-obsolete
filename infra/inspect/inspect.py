@@ -62,7 +62,7 @@ def main():
 
     #CUSTOMIZED TESTS
     sidecar_socket(IP, PORT)
-    sidecar_emit(IP, PORT, 'https')
+    sidecar_emit(IP, PORT, 'http')
     branch_set_in_faraday()
     #----------------------
 
@@ -100,10 +100,10 @@ def sidecar_socket(ip=IP, port=PORT):
     try_emit = True
     try:
         s.connect((ip, port))
-        RESULTS.append({'service' : 'sidecar in <b>{}</b> port <b>{}</b>'.format(ip, port), 'ans': 'UP', 'details': '', 'bug': False})
+        RESULTS.append({'service' : 'try socket in <b>{}</b> port <b>{}</b>'.format(ip, port), 'ans': 'UP', 'details': '', 'bug': False})
     except Exception as e:
         try_emit = False
-        RESULTS.append({'service' : 'sidecar in <b>{}</b> port <b>{}</b>'.format(ip, port), 'ans': '---', 'details': e, 'bug': True})
+        RESULTS.append({'service' : 'try socket in <b>{}</b> port <b>{}</b>'.format(ip, port), 'ans': '---', 'details': e, 'bug': True})
     finally:
         s.close()
 
@@ -113,20 +113,20 @@ def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
     """ check if we can exhange messages with sidecar """
     url = "{}://{}:{}/".format(protocol,ip,port)
     channel = 'info:nodes'
-    # sys.path.insert(0, r'/home/mzancana/Documents/inria/r2lab/sidecar/')
+    #sys.path.insert(0, r'/home/mzancana/Documents/inria/r2lab/sidecar/')
     sys.path.insert(0, r'/root/r2lab/sidecar/')
     from sidecar_client import connect_url
 
     infos = {'id': 0, 'available' : 'ok'}
     try:
-        with timeout(seconds=10):
+        with timeout(seconds=5):
             print('INFO: trying connect...')
             socketio = connect_url(url)
             socketio.emit(channel, json.dumps(infos), None)
-            RESULTS.append({'service' : 'messages emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': 'UP', 'details': '', 'bug': False})
+            RESULTS.append({'service' : 'try socket.io emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': 'UP', 'details': '', 'bug': False})
     except Exception as e:
         print('INFO: NO connection...')
-        RESULTS.append({'service' : 'messages emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': '---', 'details': e, 'bug': True})
+        RESULTS.append({'service' : 'try socket.io emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': '---', 'details': e, 'bug': True})
 
 
 
