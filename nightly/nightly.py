@@ -445,7 +445,6 @@ def set_node_status(nodes, status='ok'):
     channel = 'info:nodes'
     sys.path.insert(0, r'/root/r2lab/sidecar/')
     from sidecar_client import connect_url
-
     infos = [{'id': arg, 'available' : status} for arg in nodes]
     socketio = connect_url(url)
     socketio.emit(channel, json.dumps(infos), None)

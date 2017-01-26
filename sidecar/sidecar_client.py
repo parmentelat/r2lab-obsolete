@@ -3,7 +3,7 @@
 """
 This script emits messages to the sidecar server on faraday
 to instruct it that some nodes are available or not
-(use available.py or unavailable.py) 
+(use available.py or unavailable.py)
 """
 
 # xxx todo1 - if needed we could add options too to chose between available and unavailable
@@ -14,7 +14,10 @@ to instruct it that some nodes are available or not
 from argparse import ArgumentParser
 import json
 import traceback
-from urllib.parse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+     from urlparse import urlparse
 
 from socketIO_client import SocketIO, LoggingNamespace
 
@@ -52,8 +55,8 @@ def connect_url(url):
 #        extras = {}
     print("host_part = {}".format(host_part))
     return SocketIO(host_part, port, LoggingNamespace, **extras)
-    
-    
+
+
 
 def set_in_obj(socketio, type, channel, id, attribute, value):
     if id not in glob_supported[type]['__range__']:
@@ -71,7 +74,7 @@ def set_in_obj(socketio, type, channel, id, attribute, value):
     infos = [{'id': id, attribute: value}]
     print("Sending {infos} on channel {channel}".format(**locals()))
     socketio.emit(channel, json.dumps(infos), None)
-    
+
 
 def main():
     parser = ArgumentParser()
@@ -102,4 +105,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
