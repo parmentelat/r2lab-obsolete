@@ -13,7 +13,7 @@ from socketIO_client import SocketIO, LoggingNamespace, BaseNamespace
 from urllib.parse import urlparse
 
 #GLOBALS PARAMS
-INSPECT_DOAMINS = [ 'https://r2lab.inria.fr', 'http://r2lab.inria.fr', 'https://r2labapi.inria.fr',
+INSPECT_DOAMINS = [ 'https://r2lab.inria.fr', 'https://r2labapi.inria.fr',
                     'https://r2labapi.inria.fr:443/PLCAPI',
                     'https://onelab.eu/'
                   ]
