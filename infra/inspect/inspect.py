@@ -31,7 +31,7 @@ RESULTS = []
 parser = ArgumentParser()
 parser.add_argument("-e", "--email", default=SEND_RESULTS_TO, dest="send_to", nargs='+',
                     help="Email to receive the execution results")
-parser.add_argument("-fe", "--force_email", dest="force_email", nargs='+',
+parser.add_argument("-fe", "--force_email", dest="force_email", action='store_true',
                     help="If not present the email will send only in errors are detected")
 parser.add_argument("-D", "--domains", default=INSPECT_DOAMINS, dest="domains", nargs='+',
                     help="List of domains to check the answer header. Ex.: https://domain1.com http://domain2.com ...")
@@ -111,10 +111,15 @@ def sidecar_socket(ip=IP, port=PORT):
 
 def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
     """ check if we can exhange messages with sidecar """
+    FILEDIR = "/root/r2lab/sidecar/"
+    try:
+        os.listdir(FILEDIR)
+    except Exception as e:
+        FILEDIR = "/home/mzancana/Documents/inria/r2lab/sidecar/"
     url = "{}://{}:{}/".format(protocol,ip,port)
     channel = 'info:nodes'
-    #sys.path.insert(0, r'/home/mzancana/Documents/inria/r2lab/sidecar/')
-    sys.path.insert(0, r'/root/r2lab/sidecar/')
+    sys.path.insert(0, r'{}'.format(FILEDIR))
+
     from sidecar_client import connect_url
 
     infos = {'id': 0, 'available' : 'ok'}
@@ -132,10 +137,11 @@ def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
 
 def branch_set_in_faraday():
     """ check if the branch setted in faraday is PUBLIC """
+    BRANCH_SHOULD_BE = 'public'
     command = "cd /root/r2lab/; git branch | grep \* | cut -d ' ' -f2"
     # command = "cd /home/mzancana/Documents/inria/r2lab/; git branch | grep \* | cut -d ' ' -f2"
     ans_cmd = run(command)
-    if not ans_cmd['status'] or ans_cmd['output'] != 'public':
+    if not ans_cmd['status'] or ans_cmd['output'] != BRANCH_SHOULD_BE:
         RESULTS.append({'service' : 'faraday branch', 'ans': '---', 'details': ans_cmd['output'], 'bug': True})
     else:
         RESULTS.append({'service' : 'faraday branch', 'ans': ans_cmd['output'], 'details': '', 'bug': False})
