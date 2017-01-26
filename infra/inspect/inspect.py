@@ -62,7 +62,7 @@ def main():
 
     #CUSTOMIZED TESTS
     sidecar_socket(IP, PORT)
-    sidecar_emit(IP, PORT, 'http')
+    sidecar_emit(IP, PORT, 'https')
     branch_set_in_faraday()
     #----------------------
 
