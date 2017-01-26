@@ -63,7 +63,7 @@ def main():
     #CUSTOMIZED TESTS
     sidecar_socket(IP, PORT)
     sidecar_emit(IP, PORT, 'https')
-    # branch_set_in_faraday()
+    branch_set_in_faraday()
     #----------------------
 
     send = False
@@ -72,7 +72,7 @@ def main():
             send = True
             break
     if send:
-        send_email(send_to, send)
+        send_email(send_to, False)
 
 
 
@@ -99,7 +99,7 @@ def sidecar_socket(ip=IP, port=PORT):
     s = socket.socket()
     try_emit = True
     try:
-        a = s.connect((ip, port))
+        s.connect((ip, port))
         RESULTS.append({'service' : 'sidecar in <b>{}</b> port <b>{}</b>'.format(ip, port), 'ans': 'UP', 'details': '', 'bug': False})
     except Exception as e:
         try_emit = False
@@ -113,13 +113,13 @@ def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
     """ check if we can exhange messages with sidecar """
     url = "{}://{}:{}/".format(protocol,ip,port)
     channel = 'info:nodes'
-    #sys.path.insert(0, r'/home/mzancana/Documents/inria/r2lab/sidecar/')
-    sys.path.insert(0, r'/root/r2lab/sidecar/')
+    sys.path.insert(0, r'/home/mzancana/Documents/inria/r2lab/sidecar/')
+    #sys.path.insert(0, r'/root/r2lab/sidecar/')
     from sidecar_client import connect_url
 
     infos = {'id': 0, 'available' : 'ok'}
     try:
-        with timeout(seconds=5):
+        with timeout(seconds=10):
             print('INFO: trying connect...')
             socketio = connect_url(url)
             socketio.emit(channel, json.dumps(infos), None)
