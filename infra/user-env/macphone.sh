@@ -51,10 +51,14 @@ function phone-on() {
     $adb shell "settings put global airplane_mode_on 0; am broadcast -a android.intent.action.AIRPLANE_MODE --ez state false"
 }
 
-doc-phone phone-off "turn off airplane mode"
+doc-phone phone-off "turn off airplane mode - does not touch wifi settings"
 function phone-off() {
-    # also turn off wifi while we're at it
-    phone-wifi-off
+    # in a first version we attempted to turn off the wifi interface
+    # however this feature happens to be unreliable at this point
+    # most likely the constants used above are not right, or depend on the phone
+    # and to actually sometimes turn it ON instead of OFF !!
+    # so let's have the caller decide to turn off wifi or not
+    # phone-wifi-off
     echo "Turning OFF phone : turning on airplane mode"
     $adb shell "settings put global airplane_mode_on 1; am broadcast -a android.intent.action.AIRPLANE_MODE --ez state true"
 }
