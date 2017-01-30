@@ -149,11 +149,11 @@ $(document).ready(function() {
               newLease.title = pendingName(event.title);
               newLease.textColor = color_pending;
               newLease.editable = false;
-              newLease.id = getLocalId(event.title, newLease.start, newLease.end),
+              newLease.selectable = false;
+              newLease.id = getLocalId(event.title+'new', newLease.start, newLease.end),
               console.log(newLease);
-              removeElementFromCalendar(newLease.id);
-              updateLeases('addLease', newLease);
-              //updateLeases('editLease', newLease);
+              //removeElementFromCalendar(newLease.id);
+              updateLeases('editLease', newLease);
             } else {
               removeElementFromCalendar(event.id);
               addElementToCalendar(newLease);
