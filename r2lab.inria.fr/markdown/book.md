@@ -69,8 +69,7 @@ require_login: true
 <div class="alert alert-danger" role="alert" markdown="1">
 <strong>Important note!</strong>
 <br/>
-R2lab platform is reset every <strong>Wednesday</strong> and every <strong>Sunday</strong> night. A time slot from <strong>3 a.m.</strong> until
-<strong>4 a.m.</strong> is reserved to execute this job.
+R2lab platform is reset every time a <strong>nightly</strong> slice is found in the calendar. A time slot of one hour is reserved to execute this job.
 <br/>
 All times on this website are expressed wrt the <strong>CET timezone</strong>, which is UTC+1 in winter, and UTC+2 in summer.
 <br/>
