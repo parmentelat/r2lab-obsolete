@@ -172,7 +172,7 @@ $(document).ready(function() {
               newLease = createLease(event);
               now = new Date();
               started = moment(now).diff(moment(event.start), 'minutes');
-              if(started >= 1){
+              if(started >= 10){
                 newLease.start = moment(event.start);
                 newLease.end = moment(event.start).add(started, 'minutes');
                 newLease.title = removingName(event.title);
