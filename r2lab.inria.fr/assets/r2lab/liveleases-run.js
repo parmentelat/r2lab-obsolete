@@ -141,22 +141,16 @@ $(document).ready(function() {
             if (!confirm("Confirm removing?")) {
                 revertFunc();
             }
-            now = new Date();
-            started = moment(now).diff(moment(event.start), 'minutes');
             if(started >= 1){
-              eventData = {
-                title: event.title,
-                start: moment(event.start),
-                end: moment(now).add(5, 'seconds'),
-                overlap: false,
-                editable: false,
-                selectable: false,
-                color: event.color,
-                textColor: color_pending,
-                id: event.id,
-              };
+              newLease = createLease(event);
+              now = new Date();
+              started = moment(now).diff(moment(newLease.start), 'minutes');
+              newLease.end = moment(now).add(5, 'seconds');
+              newLease.editable = false;
+              console.log(newLease);
               removeElementFromCalendar(event.id);
-              updateLeases('addLease', eventData);
+              addElementToCalendar(newLease);
+              updateLeases('addLease', newLease);
             } else {
               removeElementFromCalendar(event.id);
               addElementToCalendar(newLease);
