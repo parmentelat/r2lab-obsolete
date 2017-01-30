@@ -755,7 +755,10 @@ function parseLeases(data){
     newLease.end = lease.valid_until;
     newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);
     newLease.color = getColorLease(newLease.title);
-    newLease.editable = isMySlice(newLease.title);
+    if(isMySlice(newLease.title) && !isPastDate(newLease.end))
+      newLease.editable = true;
+    else
+      newLease.editable = false;
     newLease.overlap = false;
 
     // //HARD CODE TO SET SPECIAL ATTR to nightly routine

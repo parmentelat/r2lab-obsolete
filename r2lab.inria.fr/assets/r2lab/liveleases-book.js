@@ -158,7 +158,7 @@ $(document).ready(function() {
         var view = $('#calendar').fullCalendar('getView').type;
         if(view != 'month'){
           element.bind('dblclick', function() {
-            if (/*isMySlice(event.title) &&*/ event.editable == true ) {
+            if (isMySlice(event.title) && event.editable == true ) {
               if (!confirm("Confirm removing?")) {
                   revertFunc();
               }
