@@ -146,11 +146,14 @@ $(document).ready(function() {
             if(started >= 1){
               newLease = createLease(event);
               newLease.end = moment(now).add(5, 'seconds');
+              newLease.title = pendingName(event.title);
+              newLease.textColor = color_pending;
               newLease.editable = false;
-              console.log(newLease);
-              removeElementFromCalendar(event.id);
-              //addElementToCalendar(newLease);
-              updateLeases('addLease', newLease);
+
+              console.log(newLease);  
+              removeElementFromCalendar(newLease.id);
+              updateLeases('editLease', newLease);
+
             } else {
               removeElementFromCalendar(event.id);
               addElementToCalendar(newLease);
