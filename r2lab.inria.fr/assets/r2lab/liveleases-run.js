@@ -149,7 +149,7 @@ $(document).ready(function() {
             if(started >= 1){
               newLease.start = moment(event.start);
               newLease.end = moment(now).add(5, 'seconds');
-              //removeElementFromCalendar(event.id);
+              removeElementFromCalendar(event.id);
               updateLeases('editLease', newLease);
             } else {
               removeElementFromCalendar(event.id);
