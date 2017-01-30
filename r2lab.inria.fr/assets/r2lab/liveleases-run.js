@@ -149,7 +149,7 @@ $(document).ready(function() {
               newLease.editable = false;
               console.log(newLease);
               removeElementFromCalendar(event.id);
-              addElementToCalendar(newLease);
+              //addElementToCalendar(newLease);
               updateLeases('addLease', newLease);
             } else {
               removeElementFromCalendar(event.id);
