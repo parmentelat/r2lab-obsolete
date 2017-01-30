@@ -145,6 +145,7 @@ $(document).ready(function() {
             newLease.title = removingName(event.title);
             newLease.textColor = color_removing;
             newLease.editable = false;
+            now = new Date();
             started = moment(now).diff(moment(event.start), 'minutes');
             if(started >= 1){
               newLease.start = moment(event.start);
