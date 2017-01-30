@@ -141,25 +141,21 @@ $(document).ready(function() {
             if (!confirm("Confirm removing?")) {
                 revertFunc();
             }
-            newLease = createLease(event);
-            newLease.title = removingName(event.title);
-            newLease.textColor = color_removing;
-            newLease.editable = false;
             now = new Date();
             started = moment(now).diff(moment(event.start), 'minutes');
             if(started >= 1){
-              removeElementFromCalendar(newLease.id);
               eventData = {
-                title: pendingName(my_title),
+                title: event.title,
                 start: moment(event.start),
                 end: moment(now).add(5, 'seconds'),
                 overlap: false,
                 editable: false,
                 selectable: false,
-                color: getCurrentSliceColor(),
+                color: event.color,
                 textColor: color_pending,
-                id: newLease.id,
+                id: event.id,
               };
+              removeElementFromCalendar(event.id);
               updateLeases('addLease', eventData);
             } else {
               removeElementFromCalendar(event.id);
