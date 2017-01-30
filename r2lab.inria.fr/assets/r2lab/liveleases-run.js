@@ -151,7 +151,7 @@ $(document).ready(function() {
               newLease.start = moment(event.start);
               newLease.end = moment(now).add(5, 'seconds');
               removeElementFromCalendar(newLease.id);
-              updateLeases('editLease', newLease);
+              updateLeases('addLease', newLease);
             } else {
               removeElementFromCalendar(event.id);
               addElementToCalendar(newLease);
