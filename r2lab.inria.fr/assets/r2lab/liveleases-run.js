@@ -48,7 +48,7 @@ $(document).ready(function() {
         var adapt = adaptStart(start, end);
         start = adapt[0];
         end   = adapt[1];
-        
+
         if (my_title) {
           eventData = {
             title: pendingName(my_title),
@@ -145,9 +145,17 @@ $(document).ready(function() {
             newLease.title = removingName(event.title);
             newLease.textColor = color_removing;
             newLease.editable = false;
-            removeElementFromCalendar(event.id);
-            addElementToCalendar(newLease);
-            updateLeases('delLease', newLease);
+            started = moment(now).diff(moment(event.start), 'minutes');
+            if(started >= 1){
+              newLease.start = moment(event.start);
+              newLease.end = moment(now).add(5, 'seconds');
+              //removeElementFromCalendar(event.id);
+              updateLeases('editLease', newLease);
+            } else {
+              removeElementFromCalendar(event.id);
+              addElementToCalendar(newLease);
+              updateLeases('delLease', newLease);
+            }
           }
           if (isMySlice(event.title) && isPending(event.title)) {
             if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
