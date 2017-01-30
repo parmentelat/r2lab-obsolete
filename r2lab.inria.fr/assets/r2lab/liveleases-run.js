@@ -148,10 +148,19 @@ $(document).ready(function() {
             now = new Date();
             started = moment(now).diff(moment(event.start), 'minutes');
             if(started >= 1){
-              newLease.start = moment(event.start);
-              newLease.end = moment(now).add(5, 'seconds');
-              //removeElementFromCalendar(newLease.id);
-              updateLeases('editLease', newLease);
+              removeElementFromCalendar(newLease.id);
+              eventData = {
+                title: pendingName(my_title),
+                start: moment(event.start),
+                end: moment(now).add(5, 'seconds'),
+                overlap: false,
+                editable: false,
+                selectable: false,
+                color: getCurrentSliceColor(),
+                textColor: color_pending,
+                id: newLease.id,
+              };
+              updateLeases('addLease', eventData);
             } else {
               removeElementFromCalendar(event.id);
               addElementToCalendar(newLease);
