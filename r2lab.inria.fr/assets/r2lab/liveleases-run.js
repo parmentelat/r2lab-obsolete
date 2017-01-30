@@ -141,10 +141,10 @@ $(document).ready(function() {
             if (!confirm("Confirm removing?")) {
                 revertFunc();
             }
+            now = new Date();
+            started = moment(now).diff(moment(newLease.start), 'minutes');
             if(started >= 1){
               newLease = createLease(event);
-              now = new Date();
-              started = moment(now).diff(moment(newLease.start), 'minutes');
               newLease.end = moment(now).add(5, 'seconds');
               newLease.editable = false;
               console.log(newLease);
