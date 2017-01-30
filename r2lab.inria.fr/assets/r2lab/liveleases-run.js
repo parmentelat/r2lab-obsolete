@@ -141,24 +141,13 @@ $(document).ready(function() {
             if (!confirm("Confirm removing?")) {
                 revertFunc();
             }
-            now = new Date();
-            started = moment(now).diff(moment(newLease.start), 'minutes');
-            if(started >= 1){
-              newLease = createLease(event);
-              newLease.end = moment(now).add(5, 'seconds');
-              newLease.title = pendingName(event.title);
-              newLease.textColor = color_pending;
-              newLease.editable = false;
-              newLease.selectable = false;
-              newLease.id = getLocalId(event.title+'new', newLease.start, newLease.end),
-              console.log(newLease);
-              //removeElementFromCalendar(newLease.id);
-              updateLeases('editLease', newLease);
-            } else {
-              removeElementFromCalendar(event.id);
-              addElementToCalendar(newLease);
-              updateLeases('delLease', newLease);
-            }
+            newLease = createLease(event);
+            newLease.title = removingName(event.title);
+            newLease.textColor = color_removing;
+            newLease.editable = false;
+            removeElementFromCalendar(event.id);
+            addElementToCalendar(newLease);
+            updateLeases('delLease', newLease);
           }
           if (isMySlice(event.title) && isPending(event.title)) {
             if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
