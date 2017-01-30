@@ -34,7 +34,7 @@ $(document).ready(function() {
             dblclick: false,
         }
       },
-      defaultTimedEventDuration: '01:00:00',
+      defaultTimedEventDuration: '00:01:00',
       slotDuration: "01:00:00",
       forceEventDuration: true,
       defaultView: 'agendaThreeDay',
@@ -63,7 +63,7 @@ $(document).ready(function() {
         var adapt = adaptStart(start, end);
         start = adapt[0];
         end   = adapt[1];
-        
+
         if (my_title) {
           eventData = {
             title: pendingName(my_title),
@@ -158,17 +158,35 @@ $(document).ready(function() {
         var view = $('#calendar').fullCalendar('getView').type;
         if(view != 'month'){
           element.bind('dblclick', function() {
-            if (isMySlice(event.title) && event.editable == true ) {
+            if (/*isMySlice(event.title) &&*/ event.editable == true ) {
               if (!confirm("Confirm removing?")) {
                   revertFunc();
               }
+              // newLease = createLease(event);
+              // newLease.title = removingName(event.title);
+              // newLease.textColor = color_removing;
+              // newLease.editable = false;
+              //removeElementFromCalendar(event.id);
+              //addElementToCalendar(newLease);
+              //updateLeases('delLease', newLease);
               newLease = createLease(event);
-              newLease.title = removingName(event.title);
-              newLease.textColor = color_removing;
-              newLease.editable = false;
-              removeElementFromCalendar(event.id);
-              addElementToCalendar(newLease);
-              updateLeases('delLease', newLease);
+              now = new Date();
+              started = moment(now).diff(moment(event.start), 'minutes');
+              if(started >= 1){
+                newLease.start = moment(event.start);
+                newLease.end = moment(event.start).add(started, 'minutes');
+                newLease.title = removingName(event.title);
+                newLease.textColor = color_removing;
+                newLease.editable = false;
+                newLease.selectable = false;
+                newLease.id = getLocalId(event.title+'new', newLease.start, newLease.end),
+                removeElementFromCalendar(newLease.id);
+                updateLeases('editLease', newLease);
+              } else {
+                removeElementFromCalendar(event.id);
+                addElementToCalendar(newLease);
+                updateLeases('delLease', newLease);
+              }
             }
             if (isMySlice(event.title) && isPending(event.title)) {
               if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
