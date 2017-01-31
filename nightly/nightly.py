@@ -441,14 +441,35 @@ def send_email(sender, receiver, title, content):
 
 
 def set_node_status(nodes, status='ok'):
+    from time import sleep
     """ Inform status page in r2lab.inria.fr the nodes with problem """
     url = "https://r2lab.inria.fr:999/"
     channel = 'info:nodes'
+    #sys.path.insert(0, r'/home/mzancana/Documents/inria/r2lab/sidecar/')
     sys.path.insert(0, r'/root/r2lab/sidecar/')
     from sidecar_client import connect_url
+
     infos = [{'id': arg, 'available' : status} for arg in nodes]
-    socketio = connect_url(url)
-    socketio.emit(channel, json.dumps(infos), None)
+    str_error = True
+    for x in range(0, 10):
+        print 'INFO: attempt {}'.format(x+1)
+        try:
+            socketio = connect_url(url)
+            socketio.emit(channel, json.dumps(infos), None)
+            str_error = None
+        except Exception as str_error:
+            print(str_error)
+        if str_error:
+            from random import randrange, uniform
+            sec = randrange(3, 10)
+            print 'INFO: backing off for {} seconds...'.format(sec)
+            sleep(sec)
+        else:
+            print 'INFO: done, data sent'
+            break
+    if str_error:
+        print 'ERROR: all attempts made. Exiting...'
+        exit(1)
 
 
 
