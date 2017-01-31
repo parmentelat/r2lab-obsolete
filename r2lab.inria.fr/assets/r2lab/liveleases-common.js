@@ -7,8 +7,8 @@ var actionsQueued       = [];
 var current_slice_name  = current_slice.name;
 var current_slice_color = '#DDD';
 var current_leases      = null;
-var color_pending       = '#000000';
-var color_removing      = '#000000';
+var color_pending       = '#FFFFFF';
+var color_removing      = '#FFFFFF';
 var keepOldEvent        = null;
 var theZombieLeases     = [];
 

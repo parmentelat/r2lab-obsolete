@@ -59,9 +59,9 @@ $(document).ready(function() {
         }
         var my_title = getCurrentSliceName();
         var eventData;
-
         var adapt = adaptStart(start, end);
         start = adapt[0];
+        start = moment(start).floor(10, 'minutes');
         end   = adapt[1];
 
         if (my_title) {

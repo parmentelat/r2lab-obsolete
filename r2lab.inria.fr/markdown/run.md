@@ -35,6 +35,7 @@ require_login: true
     <div class="col-md-3 personal_col">
       <div id="calendar"></div>
       <script type="text/javascript" src="/assets/js/moment.min.js"></script>
+      <script type="text/javascript" src="/assets/js/moment-round.js"></script>
       <script type="text/javascript" src="/assets/js/jquery-ui.fullcalendar-custom.min.js"></script>
       <script type="text/javascript" src="/assets/js/fullcalendar.min.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
