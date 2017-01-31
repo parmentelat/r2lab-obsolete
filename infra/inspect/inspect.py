@@ -119,19 +119,31 @@ def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
     url = "{}://{}:{}/".format(protocol,ip,port)
     channel = 'info:nodes'
     sys.path.insert(0, r'{}'.format(FILEDIR))
-
+    from time import sleep
     from sidecar_client import connect_url
-
     infos = {'id': 0, 'available' : 'ok'}
-    try:
-        with timeout(seconds=5):
-            print('INFO: trying connect...')
+    str_error = True
+    for x in range(0, 10):
+        print('INFO: attempt {}'.format(x+1))
+        try:
             socketio = connect_url(url)
             socketio.emit(channel, json.dumps(infos), None)
-            RESULTS.append({'service' : 'try socket.io emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': 'UP', 'details': '', 'bug': False})
-    except Exception as e:
-        print('INFO: NO connection...')
-        RESULTS.append({'service' : 'try socket.io emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': '---', 'details': e, 'bug': True})
+            str_error = None
+        except Exception as e:
+            str_error = e
+        if str_error:
+            from random import randrange, uniform
+            sec = randrange(3, 10)
+            print('INFO: backing off for {} seconds...'.format(sec))
+            sleep(sec)
+        else:
+            print('INFO: done, data sent')
+            break
+    if str_error:
+        print('ERROR: all attempts made. Exiting...')
+        RESULTS.append({'service' : 'try socket.io emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': '---', 'details': str_error, 'bug': True})
+    else:
+        RESULTS.append({'service' : 'try socket.io emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': 'UP', 'details': '', 'bug': False})
 
 
 
