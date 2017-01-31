@@ -13,7 +13,8 @@ from socketIO_client import SocketIO, LoggingNamespace, BaseNamespace
 from urllib.parse import urlparse
 
 #GLOBALS PARAMS
-INSPECT_DOAMINS = [ 'https://r2lab.inria.fr', 'https://r2labapi.inria.fr',
+INSPECT_DOAMINS = [ 'http://r2lab.inria.fr', 'https://r2lab.inria.fr',
+                    'http://r2labapi.inria.fr', 'https://r2labapi.inria.fr',
                     'https://r2labapi.inria.fr:443/PLCAPI',
                     'https://onelab.eu/'
                   ]
@@ -81,7 +82,7 @@ def inspect_sites(domains):
     for domain in domains:
         bug = False
         try:
-            r   = requests.head(domain)
+            r = requests.get(domain)
             ans = r.status_code
             dt  = None
             if str(ans)[0] == '4' or str(ans)[0] == '5':
