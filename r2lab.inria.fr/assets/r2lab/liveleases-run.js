@@ -47,6 +47,7 @@ $(document).ready(function() {
         var eventData;
         var adapt = adaptStart(start, end);
         start = adapt[0];
+        start = moment(start).floor(10, 'minutes');
         end   = adapt[1];
 
         if (my_title) {
@@ -80,6 +81,7 @@ $(document).ready(function() {
 
         var adapt = adaptStart(start, end);
         start = adapt[0];
+        start = moment(start).floor(10, 'minutes');
         end   = adapt[1];
 
         var my_title = getCurrentSliceName();
