@@ -18,13 +18,15 @@ augment-help-with nodes
 unalias ls 2> /dev/null
 
 ##########
-doc-nodes git-pull-r2lab "updates /root/r2lab from git repo (as well as OAI repos if found)"
-git_repos="/root/r2lab /root/openair-cn /root/openairinterface5g"
-function git-pull-r2lab() {
+git_repos="/root/r2lab 
+doc-nodes git-pull-r2lab "updates /root/r2lab from git repo"
+function git-pull-r2lab() { -git-pull-repos /root/r2lab; }
+
+function -git-pull-repos() {
+    local repos="$@"
     local repo
-    [[ -n "$@" ]] && repos="$@" || repos="$git_repos"
     for repo in $repos; do
-	[ -d $repo ] || continue;
+	[ -d $repo ] || { echo "WARNING: cannot git pull in $repo - not found"; continue; }
 	echo "========== Updating $repo"
 	cd $repo
 	git reset --hard HEAD

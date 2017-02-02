@@ -12,6 +12,10 @@ oai_ifname=data
 oai_subnet=2
 
 ####################
+doc-nodes git-pull-oai "updates OAI repos /root/openair-cn /root/openairinterface5g from git"
+function git-pull-oai() { -git-pull-repos /root/openair-cn /root/openairinterface5g; }
+
+####################
 function run-in-log() {
     local log=$1; shift
     local command="$@"

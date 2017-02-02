@@ -74,6 +74,7 @@ doc-nodes base "the script to install base software on top of a raw image"
 function base() {
 
     git-pull-r2lab
+    git-pull-oai
     # apt-get requirements
     apt-get update
     apt-get install -y $base_packages
@@ -120,6 +121,7 @@ doc-nodes deps "builds hss and epc and installs dependencies"
 function deps() {
     
     git-pull-r2lab
+    git-pull-oai
     cd $run_dir
     echo "========== Building HSS"
     run-in-log  build-hss-deps.log ./build_hss -c -i -F
@@ -180,6 +182,7 @@ function run-epc() { run-all epc "$@"; }
 doc-nodes init "sync clock from NTP, checks /etc/hosts, and tweaks MTU's"
 function init() {
 
+    git-pull-r2lab   # calls to git-pull-oai should be explicit from the caller if desired
     # clock
     init-ntp-clock
     # data interface if relevant

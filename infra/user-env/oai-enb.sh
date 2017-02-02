@@ -52,10 +52,11 @@ texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsf
  i7z
 "
 
-doc-nodes base "the script to ins<tall base software on top of a raw image" 
+doc-nodes base "the script to install base software on top of a raw image" 
 function base() {
 
     git-pull-r2lab
+    git-pull-oai
 
     # apt-get requirements
     apt-get update
@@ -89,6 +90,7 @@ function deps() {
     # arg1 should be uhd-ettus or uhd-oai
     
     git-pull-r2lab
+    git-pull-oai
     case $1 in
 	uhd-ettus)
 	    echo Building UHD with ETTUS recipe
@@ -124,6 +126,7 @@ function build-uhd-ettus() {
 doc-nodes build-uhd-oai "build UHD using the OAI recipe" 
 function build-uhd-oai() {
     git-pull-r2lab
+    git-pull-oai
     cd /root/openairinterface5g/cmake_targets
     run-in-log build-uhd.log ./build_oai -I --install-optional-packages -w USRP
 }
@@ -132,6 +135,7 @@ doc-nodes build "builds oai5g for an oai image"
 function build() {
 
     git-pull-r2lab
+    git-pull-oai
 
     cd
     echo Building OAI5G - see $HOME/build-oai5g.log
@@ -214,7 +218,7 @@ add-to-datas "/root/data-${oai_role}.pcap"
 doc-nodes init "initializes clock after NTP, and tweaks MTU's"
 function init() {
 
-    git-pull-r2lab
+    git-pull-r2lab   # calls to git-pull-oai should be explicit from the caller if desired
     # clock
     init-ntp-clock
     # data interface if relevant
@@ -240,7 +244,7 @@ function configure-enb() {
     [ -z "$gw_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
     echo "ENB: Using gateway (EPC) on $gw_id"
 
-    git-pull-r2lab
+    git-pull-r2lab   # calls to git-pull-oai should be explicit from the caller if desired
     id=$(r2lab-id)
     fitid=fit$id
     cd $conf_dir
