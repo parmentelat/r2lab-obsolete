@@ -18,7 +18,6 @@ augment-help-with nodes
 unalias ls 2> /dev/null
 
 ##########
-git_repos="/root/r2lab 
 doc-nodes git-pull-r2lab "updates /root/r2lab from git repo"
 function git-pull-r2lab() { -git-pull-repos /root/r2lab; }
 
