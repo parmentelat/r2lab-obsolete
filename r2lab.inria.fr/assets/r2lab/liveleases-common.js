@@ -335,7 +335,7 @@ function isPastDate(end){
 }
 
 
-function adaptStart(start, end) {
+function adaptStartEnd(start, end) {
   now = new Date();0
   started = moment(now).diff(moment(start), 'minutes');
   if (started > 0){

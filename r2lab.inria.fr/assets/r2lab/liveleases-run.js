@@ -45,7 +45,7 @@ $(document).ready(function() {
         }
         var my_title = getCurrentSliceName();
         var eventData;
-        var adapt = adaptStart(start, end);
+        var adapt = adaptStartEnd(start, end);
         start = adapt[0];
         end   = adapt[1];
 
@@ -78,7 +78,7 @@ $(document).ready(function() {
 
         setSlice($(this))
 
-        var adapt = adaptStart(start, end);
+        var adapt = adaptStartEnd(start, end);
         start = adapt[0];
         end   = adapt[1];
 
