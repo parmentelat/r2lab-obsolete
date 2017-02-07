@@ -344,6 +344,8 @@ function adaptStart(start, end) {
     start = ns;
     //end = moment(end).add(1, 'hour');
   }
+  //round to not wait
+  started = moment(started).floor(10, 'minutes');
   return [start, end];
 }
 
