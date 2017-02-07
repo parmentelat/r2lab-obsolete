@@ -342,7 +342,7 @@ function adaptStart(start, end) {
     s   = moment(now).diff(moment(start), 'minutes')
     ns  = moment(start).add(s, 'minutes');
     start = ns;
-    end = moment(end).add(1, 'hour');
+    //end = moment(end).add(1, 'hour');
   }
   return [start, end];
 }
