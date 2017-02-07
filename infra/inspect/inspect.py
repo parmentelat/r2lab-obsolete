@@ -77,23 +77,6 @@ def main():
 
 
 
-def inspect_sites(domains):
-    """ check some URL  """
-    for domain in domains:
-        bug = False
-        try:
-            r = requests.get(domain)
-            ans = r.status_code
-            dt  = None
-            if str(ans)[0] == '4' or str(ans)[0] == '5':
-                bug = True
-        except Exception as e:
-            ans = '---'
-            dt  = e
-        RESULTS.append({'service' : domain, 'ans': ans, 'details': dt, 'bug': bug})
-
-
-
 def sidecar_socket(ip=IP, port=PORT):
     """ check if a socket is answering in domain : port """
     import socket
@@ -145,6 +128,23 @@ def sidecar_emit(ip=IP, port=PORT, protocol=PROTOCOL):
         RESULTS.append({'service' : 'try socket.io emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': '---', 'details': str_error, 'bug': True})
     else:
         RESULTS.append({'service' : 'try socket.io emit in <b>{}</b> on <b>{}</b>'.format(channel, url), 'ans': 'UP', 'details': '', 'bug': False})
+
+
+
+def inspect_sites(domains):
+    """ check some URL  """
+    for domain in domains:
+        bug = False
+        try:
+            r = requests.get(domain)
+            ans = r.status_code
+            dt  = None
+            if str(ans)[0] == '4' or str(ans)[0] == '5':
+                bug = True
+        except Exception as e:
+            ans = '---'
+            dt  = e
+        RESULTS.append({'service' : domain, 'ans': ans, 'details': dt, 'bug': bug})
 
 
 
