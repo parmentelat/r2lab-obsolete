@@ -32,10 +32,10 @@ The `pxefrisbee` image does not contain the required drivers to be able to write
 ## How to remap nodes in R2lab
 
 When a node is broken, you want to replace it with another spare node.
-This requires root access on faraday and bemol, and can be achived like this:
+This requires root access on faraday and preplab, and can be achived like this:
 
 * Of course perform the physical replacement
-* Then to apply changes, do the following on your laptop (this is where you need to have rights to run `ssh root@faraday` and `ssh root@bemol`)
+* Then to apply changes, do the following on your laptop (this is where you need to have rights to run `ssh root@faraday` and `ssh root@preplab`)
 
 ```
 cd r2lab/inventory
@@ -90,15 +90,15 @@ On faraday the list of all nodes is **always** `1-37`; this is by design, so tha
 #### In the preplab
 
 * in L102B, things are different, the only labelling that we will have is `04` written on the node, so we can talk to that node using `192.138.x.4` on all 3 subnets
-* which means that in the user's point of view, the set of all nodes from bemol should be `4,38-41` and not `38-42` 
+* which means that in the user's point of view, the set of all nodes from preplab should be `4,38-41` and not `38-42` 
 
 #### Epilogue
 
-So to summarize, after `make remap` everything works fine in the faraday landscape. However for bemol, there is a need to tweak the list of all nodes, so that `rhubarbe -a` does the right thing.
+So to summarize, after `make remap` everything works fine in the faraday landscape. However for preplab, there is a need to tweak the list of all nodes, so that `rhubarbe -a` does the right thing.
 
 `make remap` does the right thing (i.e. it changes )
 
-For now, this is done on bemol in `/etc/rhubarbe/rhubarbe.conf`; and because the pip-install of rhubarbe is a little basic, it is best to reflect the change right into the `rhubarbe` git repo, so that a subsequent `pip install --upgrade` won't override the change.
+For now, this is done on preplab in `/etc/rhubarbe/rhubarbe.conf`; and because the pip-install of rhubarbe is a little basic, it is best to reflect the change right into the `rhubarbe` git repo, so that a subsequent `pip install --upgrade` won't override the change.
 
 It's no big deal if this is not done properly though, because the impact is so low.
 
