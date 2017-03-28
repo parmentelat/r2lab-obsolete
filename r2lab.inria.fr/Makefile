@@ -39,3 +39,7 @@ files:
 	@git ls-files | egrep -v '\.(pdf|png|jpg|gif|svg|ttf|otf)'
 
 .PHONY: files
+
+##########
+nepi-ng:
+	rsync -av nepi-ng-index.html root@nepi-ng.inria.fr:/var/www/nepi-ng/index.html

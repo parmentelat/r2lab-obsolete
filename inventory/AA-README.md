@@ -75,18 +75,18 @@ for deploying this on faraday you can just run
 * the last operation is optional because, since late 2015 the omf-sfa config only exposes a single node (named `37nodes`) upstream to the portal, so that reservation is simpler; the consequence of this is that the omf-sfa configuration does not change very often any more, if at all.
 * also the nagios thing is probably not very useful anymore, now that we have our own decent monitoring system in place.
 
-## bemol (preplab)
+## preplab (preplab)
 
-In the preplab, there is no notion of a physical location, of course. So a node labeled `fit23` or `fit42` will always we accessible as `fit23` or `fit42` resp., regardless of the `room slot` column in `r2lab.map`. So in this particular example no change is required on bemol.
+In the preplab, there is no notion of a physical location, of course. So a node labeled `fit23` or `fit42` will always we accessible as `fit23` or `fit42` resp., regardless of the `room slot` column in `r2lab.map`. So in this particular example no change is required on preplab.
 
-Regardless, the following targets are available when targetting `bemol` instead; the `bemol-` prefix can be replaced with `prep-` 
+Regardless, the following targets are available when targetting `preplab` instead; the `preplab-` prefix can be replaced with `prep-` 
 
-* `make bemol-configure` 
-* `make bemol-json` 
-* `make bemol-infra` 
+* `make preplab-configure` 
+* `make preplab-json` 
+* `make preplab-infra` 
 
 ## Miscell
 
 * `make tools` lets you update utilities like `display-db.py` and others
 
-* `make bemol-tools` does what you expect
+* `make preplab-tools` does what you expect
