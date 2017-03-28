@@ -52,8 +52,11 @@ class PlcApiView(TestbedApiView):
     # but this is attached to main thread, it's not usable in this context
     # xxx we might need to do some cleanup on loops at some point 
     def init_plcapi_proxy(self):
+        if hasattr(self, 'plcapi_proxy'):
+            return self.plcapi_proxy
         self.plcapi_proxy = init_plcapi_proxy()
         self._unique_component_name = None
+        return self.plcapi_proxy
 
     def unique_component_name(self):
         if not self._unique_component_name:
