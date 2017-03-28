@@ -39,7 +39,7 @@ class UsersProxy(PlcApiView):
 
     def user_with_accounts(self, plc_person, slices_index):
         """
-        given a person record as retrned by plc
+        given a person record as returned by plc
         and a hash of slices hashed on their slice_id
         we rebuild a record that looks like what omf used to return
         """

@@ -15,7 +15,7 @@ from plc.plcapiview import PlcApiView
 
 class SlicesProxy(PlcApiView):
     """
-    The view that receives /slices/ URLs when running agains a PlCAPI
+    The view that receives /slices/ URLs when running against a PLCAPI
     """
 
     @method_decorator(csrf_protect)

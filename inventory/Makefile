@@ -115,7 +115,7 @@ tools:
 # purpose is to tweak /etc/rhubarbe/rhubarbe.conf
 # on preplab only
 # to reflect the actual spare nodes 
-RC = /etc/rhubarbe/rhubarbe.conf
+RC = /etc/rhubarbe/rhubarbe.conf.local
 all-spares = $(shell cat r2lab-prep.spare-nodes)
 
 spare-nodes: r2lab-prep.spare-nodes
@@ -140,7 +140,7 @@ endef
 
 $(foreach target,$(PREPLAB-TARGETS),$(eval $(call preplab-target,$(target))))
 
-preplab: force $(foreach target,$(PREPLAB-TARGETS), preplab-$(target))
+preplab: force $(foreach target,$(PREPLAB-TARGETS), preplab-$(target)) all-spares
 
 force:
 
