@@ -23,11 +23,13 @@ require_login: true
   <div class="row" id="all">
     <div class="col-md-2 no_padding" >
       <div id="wrap">
-        <div id="manage_slices">
-          <button type="button" data-toggle="modal" data-target="#slice_modal" class="fc-button fc-state-default fc-corner-left fc-corner-right sd">manage your slices</button>
+        <div id="manage_slices_keys">
+          <button type="button" data-toggle="modal" data-target="#slices_keys_modal"
+	          class="fc-button fc-state-default fc-corner-left fc-corner-right sd">
+		  <span class='fa fa-gear'></span> slices & keys</button>
         </div>
         <div id="my-slices">
-          <h4 align="center">drag & drop booking</h4>
+          <h4 align="center">drag & drop to book</h4>
         </div>
         <div style="clear:both"></div>
       </div>
@@ -49,7 +51,8 @@ require_login: true
       <div id="current-slice" data-current-slice-color="#000"></div>
     </div>
     <div class="col-md-7">
-    <div id="livemap_container">Click a node for more details; see also <a href="status.md#livemap:legend">this page for a legend</a></div>
+    <div id="livemap_container">Click a node for more details;
+    see also <a href="status.md#livemap:legend">this page for a legend</a></div>
     <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
     <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
     <script>
@@ -86,61 +89,8 @@ require_login: true
   </div>    
 </div>
 
-<!-- PARTIAL MODAL FOR SLICES - USED IN RUN OR BOOK -->
-<script type="text/javascript" src="/assets/r2lab/liveslices.js"></script>
-<style type="text/css"> @import url("/assets/r2lab/liveslices.css"); </style>
-<div class="modal fade" id="slice_modal" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	  <span aria-hidden="true">&times;</span>
-	</button>
-        <h4 class="modal-title" id="myModalSlice">Manage Slices</h4>
-      </div>
-      <div class="modal-body" id="list-slices">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- defines slices_keys_modal -->
+<< include r2lab/slices-keys-modal.html >>
 
-
-<!-- PARTIAL MODAL FOR NODES DETAILS - USED IN RUN OR STATUS -->
-
-<script type='text/javascript' src='/assets/js/ug/ug-common-libraries.js'></script>
-<script type='text/javascript' src='/assets/js/ug/ug-functions.js'></script>
-<script type='text/javascript' src='/assets/js/ug/ug-slider.js'></script>
-<script type='text/javascript' src='/assets/js/ug/ug-sliderassets.js'></script>
-<script type='text/javascript' src='/assets/js/ug/ug-touchslider.js'></script>
-<script type='text/javascript' src='/assets/js/ug/ug-zoomslider.js'></script>
-<script type='text/javascript' src='/assets/js/ug/ug-video.js'></script>
-<script type='text/javascript' src='/assets/js/ug/ug-gallery.js'></script>
-<script type='text/javascript' src='/assets/js/ug/ug-carousel.js'></script>
-<script type='text/javascript' src='/assets/js/ug/ug-api.js'></script>
-<link rel='stylesheet' href='/assets/css/ug/unite-gallery.css' type='text/css' />
-<script type='text/javascript' src='/assets/js/ug/ug-theme-slider.js'></script>
-<link rel='stylesheet' href='/assets/css/ug/ug-theme-default.css' type='text/css' />
-
-
-<script type="text/javascript" src="/assets/r2lab/info-nodes.js"></script>
-<div class="modal fade" id="node_details" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-	  <span aria-hidden="true">&times;</span>
-	</button>
-        <h4 class="modal-title" id="node_details_title">Technical Details</h4>
-      </div>
-      <div class="modal-body" id="node_details_content">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- defines node_details_modal -->
+<< include r2lab/nodes-details-modal.html >>

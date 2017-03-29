@@ -50,7 +50,7 @@ $(document).ready(function() {
                     <div class='col-md-4'>Expiration Date</div>\
                     <div class='col-md-2'>&nbsp;</div>\
                   </div>");
-	$.each( names, function( index, value ){
+	$.each(names, function(index, value){
 
 	    var request = {};
 	    request['names'] = [value];
@@ -62,7 +62,7 @@ $(document).ready(function() {
 
 		    var slice_manage_invitation = '\
 One or more of your slices has expired. \
-<a href="#" data-toggle="modal" data-target="#slice_modal">\
+<a href="#" data-toggle="modal" data-target="#slices_keys_modal">\
 Click here to renew it!</a>';
 		    if (responses.length > 0) {
         		for (i = 0; i < responses.length; i++) {
