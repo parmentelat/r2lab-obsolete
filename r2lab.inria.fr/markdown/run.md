@@ -126,7 +126,7 @@ require_login: true
 <link rel='stylesheet' href='/assets/css/ug/ug-theme-default.css' type='text/css' />
 
 
-<script type="text/javascript" src="/assets/r2lab/info_nodes.js"></script>
+<script type="text/javascript" src="/assets/r2lab/info-nodes.js"></script>
 <div class="modal fade" id="node_details" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">

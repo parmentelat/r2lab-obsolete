@@ -47,48 +47,48 @@ var chan_phones_request = 'request:phones';
 
 ////////// nodes positions - originally output from livemap-prep.py
 mapnode_specs = [
-{ id: 1, i:0, j:4 },
-{ id: 2, i:0, j:3 },
-{ id: 3, i:0, j:2 },
-{ id: 4, i:0, j:1 },
-{ id: 5, i:0, j:0 },
-{ id: 6, i:1, j:4 },
-{ id: 7, i:1, j:3 },
-{ id: 8, i:1, j:2 },
-{ id: 9, i:1, j:1 },
-{ id: 10, i:1, j:0 },
-{ id: 11, i:2, j:4 },
-{ id: 12, i:2, j:3 },
-{ id: 13, i:2, j:2 },
-{ id: 14, i:2, j:1 },
-{ id: 15, i:2, j:0 },
-{ id: 16, i:3, j:4 },
-{ id: 17, i:3, j:2 },
-{ id: 18, i:3, j:1 },
-{ id: 19, i:4, j:4 },
-{ id: 20, i:4, j:3 },
-{ id: 21, i:4, j:2 },
-{ id: 22, i:4, j:1 },
-{ id: 23, i:5, j:4 },
-{ id: 24, i:5, j:2 },
-{ id: 25, i:5, j:1 },
-{ id: 26, i:6, j:4 },
-{ id: 27, i:6, j:3 },
-{ id: 28, i:6, j:2 },
-{ id: 29, i:6, j:1 },
-{ id: 30, i:6, j:0 },
-{ id: 31, i:7, j:4 },
-{ id: 32, i:7, j:3 },
-{ id: 33, i:7, j:2 },
-{ id: 34, i:7, j:1 },
-{ id: 35, i:7, j:0 },
-{ id: 36, i:8, j:1 },
-{ id: 37, i:8, j:0 },
+    { id: 1, i:0, j:4 },
+    { id: 2, i:0, j:3 },
+    { id: 3, i:0, j:2 },
+    { id: 4, i:0, j:1 },
+    { id: 5, i:0, j:0 },
+    { id: 6, i:1, j:4 },
+    { id: 7, i:1, j:3 },
+    { id: 8, i:1, j:2 },
+    { id: 9, i:1, j:1 },
+    { id: 10, i:1, j:0 },
+    { id: 11, i:2, j:4 },
+    { id: 12, i:2, j:3 },
+    { id: 13, i:2, j:2 },
+    { id: 14, i:2, j:1 },
+    { id: 15, i:2, j:0 },
+    { id: 16, i:3, j:4 },
+    { id: 17, i:3, j:2 },
+    { id: 18, i:3, j:1 },
+    { id: 19, i:4, j:4 },
+    { id: 20, i:4, j:3 },
+    { id: 21, i:4, j:2 },
+    { id: 22, i:4, j:1 },
+    { id: 23, i:5, j:4 },
+    { id: 24, i:5, j:2 },
+    { id: 25, i:5, j:1 },
+    { id: 26, i:6, j:4 },
+    { id: 27, i:6, j:3 },
+    { id: 28, i:6, j:2 },
+    { id: 29, i:6, j:1 },
+    { id: 30, i:6, j:0 },
+    { id: 31, i:7, j:4 },
+    { id: 32, i:7, j:3 },
+    { id: 33, i:7, j:2 },
+    { id: 34, i:7, j:1 },
+    { id: 35, i:7, j:0 },
+    { id: 36, i:8, j:1 },
+    { id: 37, i:8, j:0 },
 ];
 ////////// the  two pillars - this is manual
 var pillar_specs = [
-{ id: 'left', i:3, j:3 },
-{ id: 'right', i:5, j:3 },
+    { id: 'left', i:3, j:3 },
+    { id: 'right', i:5, j:3 },
 ];
 
 var mapphone_specs = [
@@ -488,7 +488,7 @@ function LiveMap() {
 	    .attr('cx', function(node){return node.x;})
 	    .attr('cy', function(node){return node.y;})
 	    .on('click', function() {
-		// call an external function (located in info_nodes.js) to show de nodes details
+		// call an external function (located in info-nodes.js) to show de nodes details
 		info_nodes(this.id)
 	    })
 	;
@@ -509,7 +509,7 @@ function LiveMap() {
 	    .attr('y', function(node){return node.y;})
 	    .attr('id', function(node){return node.id;})
 	    .on('click', function() {
-		//call a externa function (located in info_nodes.js) to show de nodes details
+		//call a externa function (located in info-nodes.js) to show de nodes details
 		info_nodes(this.id)
 	    })
 	;
@@ -531,7 +531,7 @@ function LiveMap() {
 	    .attr('cy', function(node){return node.y;})
 	    .attr('r', function(node){return livemap_radius_unavailable;})
 	    .on('click', function() {
-		//call a externa function (located in info_nodes.js) to show de nodes details
+		//call a externa function (located in info-nodes.js) to show de nodes details
 		info_nodes(this.id)
 	    })
 	;

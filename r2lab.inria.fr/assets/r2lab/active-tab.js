@@ -9,7 +9,7 @@
  * id="tab-status"  (fixed in page.html)
  * tab="{{tab}}" - as per the page's metadata, 
  * that is to say a line in the header that says tab:tutorials
-#
+ *
  * so all that is left to do here is to set class 'active' on elements
  * (*) that have an id of the form
  *    id == tab-<foo>
@@ -34,4 +34,4 @@
     })
 })(jQuery);
 
- 
+

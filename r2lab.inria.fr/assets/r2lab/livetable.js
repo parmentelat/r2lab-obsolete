@@ -61,9 +61,9 @@ var TableNode = function (id) {
     // nodes worth being followed when clicking on the table banner
     this.is_worth = function() {
 	return (   this.cmc_on_off == 'on'
-		|| this.usrp_on_off == 'on'
-		|| this.control_ping == 'on'
-		|| this.control_ssh == 'on' )
+		   || this.usrp_on_off == 'on'
+		   || this.control_ping == 'on'
+		   || this.control_ssh == 'on' )
 	    && this.available != 'ko';
     }
 
@@ -319,8 +319,8 @@ function LiveTable() {
 	    this.animate_changes(node_infos);
 	} catch(err) {
 	    if (json != "") {
-	    console.log("Could not apply news - ignored  - JSON has " + json.length + " chars");
-	    console.log(err.stack);
+		console.log("Could not apply news - ignored  - JSON has " + json.length + " chars");
+		console.log(err.stack);
 	    }
 	}
     }

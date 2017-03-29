@@ -141,7 +141,7 @@ class FilesProxy(View):
 
     def build_node_info(self, node):
         """
-        find the node info throught the files already saved
+        find the node info through the files already saved
         """
         directory = os.path.dirname(os.path.abspath(__file__))
         directory = directory+'/nodes/'

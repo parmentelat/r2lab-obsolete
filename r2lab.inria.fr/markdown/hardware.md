@@ -143,8 +143,8 @@ tab: platform
     <div class="col-md-12 new_pad">
       <h3>Nodes detailed information</h3>
       <!-- DyNAMIC TABLE CREATED BY CMD line in faraday-->
-      <style type="text/css"> @import url("/assets/r2lab/table_nodes.css"); </style>
-      <script type="text/javascript" src="/assets/r2lab/table_nodes.js"></script>
+      <style type="text/css"> @import url("/assets/r2lab/table-nodes.css"); </style>
+      <script type="text/javascript" src="/assets/r2lab/table-nodes.js"></script>
       <table id="comparative" class="table table-condensed dt_table">
         <thead><tr><th>&nbsp;</th></tr></thead>
         <tbody><tr><td>no info available yet</td></tr></tbody>
@@ -197,7 +197,7 @@ tab: platform
 <script type='text/javascript' src='/assets/js/ug/ug-theme-slider.js'></script>
 <link rel='stylesheet' href='/assets/css/ug/ug-theme-default.css' type='text/css' />
 <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
-<script type="text/javascript" src="/assets/r2lab/info_nodes.js"></script>
+<script type="text/javascript" src="/assets/r2lab/info-nodes.js"></script>
 <div class="modal fade" id="node_details" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">

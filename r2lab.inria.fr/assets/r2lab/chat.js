@@ -18,5 +18,5 @@ $(function() {
     new R2labChat(r2lab_user.email
 		  .replace("@", "_at_")
 		  .replace(".", "_"))
-		  .init();
+	.init();
 })
