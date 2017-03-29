@@ -61,7 +61,10 @@ class KeysProxy(PlcApiView):
         self.init_plcapi_proxy()
         person_id = self.get_person_id(email)
         plc_filter = {'person_id' : person_id}
-        keys = self.plcapi_proxy.GetKeys(plc_filter)
+        plc_keys = self.plcapi_proxy.GetKeys(plc_filter)
+        keys = [ {'uuid' : plc_key['key_id'],
+                  'ssh_key' : plc_key['key']} for plc_key in plc_keys ]
+        
         return self.http_response_from_struct(keys)
 
     def add_key(self, record, email):

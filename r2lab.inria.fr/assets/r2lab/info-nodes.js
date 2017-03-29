@@ -1,4 +1,4 @@
-panel_name = 'node_details'
+panel_name = 'nodes_details_modal'
 var api;
 function pad(str){
     max = 2

@@ -153,7 +153,6 @@ tab: platform
   </div>
 </div>
 
-<!-- Latest compiled and minified JavaScript -->
 <div class="modal fade" id="big_photo" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
   <div class="modal-dialog modal-dialog-custom modal-lg" role="document">
     <div class="modal-content">
@@ -182,5 +181,5 @@ tab: platform
 
 
 <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
-<!-- defines node_details -->
+<!-- defines nodes_details_modal -->
 << include r2lab/nodes-details-modal.html >>

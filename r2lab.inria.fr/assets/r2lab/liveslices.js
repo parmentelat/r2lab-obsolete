@@ -45,7 +45,7 @@ $(document).ready(function() {
 
     var get_slices = function(id, names) {
 	var body = "#"+id;
-	$(body).html("<div class='row slice_header'>\
+	$(body).html("<div class='row slice-header'>\
                     <div class='col-md-6'>Name</div>\
                     <div class='col-md-4'>Expiration Date</div>\
                     <div class='col-md-2'>&nbsp;</div>\
@@ -73,7 +73,7 @@ Click here to renew it!</a>';
 			    var closed     = response['closed_at'];
 			    //var expiration = '2016-01-22T09:25:31Z';
 
-			    var s_class   = 'in_green';
+			    var s_class   = 'in-green';
 			    var s_message = 'valid';
 			    var s_icon = "<a href='#' rel='tooltip' title='renew'>\
                          <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+idFormat(slicename)+"','"+slicename+"');></span>\
@@ -86,7 +86,7 @@ Click here to renew it!</a>';
 				    the_date  = moment(closed).format("YYYY-MM-DD HH:mm");
 				}
 
-				s_class   = 'in_red';
+				s_class   = 'in-red';
 				s_message = 'expired';
 			    }
 
@@ -100,24 +100,6 @@ Click here to renew it!</a>';
 			    $('a').tooltip();
 			}
 		    }
-		    // This else will send messages when the slice is not attached in portal.onelab.eu or something went wrong (disable for now)
-		    // else {
-		    //   sendMessage(slice_manage_invitation, 'attention');
-		    //
-		    //   s_message = "slice not available or does not exist";
-		    //   s_class   = 'in_red';
-		    //   s_icon = "<a href='#' rel='popover' title='"+s_message+"'>\
-		    //              <span class='glyphicon glyphicon-exclamation-sign "+s_class+"'></span>\
-		    //            </a>";
-		    //   $(body).append("<div class='row'>\
-		    //                     <div class='col-md-6 "+s_class+"'>"+value+"</div>\
-		    //                     <div class='col-md-4' id='datetime_expiration_v"+index+"'>\
-		    //                       <span class="+s_class+"><span>\
-		    //                     </div>\
-		    //                     <div class='col-md-2' id='icon_v_"+index+"'>"+s_icon+"</div>\
-		    //                   </div>");
-		    //     $('a').tooltip();
-		    // }
 		}
 
 	    });
@@ -146,8 +128,8 @@ var renew_slice = function(element, slicename) {
 	    var answer = JSON.parse(xhttp.responseText);
 	    console.log(answer);
 
-	    $('#datetime_expiration'+element).removeClass('in_red');
-	    $('#datetime_expiration'+element).addClass('in_green');
+	    $('#datetime_expiration'+element).removeClass('in-red');
+	    $('#datetime_expiration'+element).addClass('in-green');
 	    $('#datetime_expiration'+element).toggle("pulsate").toggle("highlight");
 	    $('#datetime_expiration'+element).html(moment(answer['valid_until']).format("YYYY-MM-DD HH:mm"));
 	    // $('#icon_'+element).html('');

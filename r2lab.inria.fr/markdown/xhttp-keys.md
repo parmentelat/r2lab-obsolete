@@ -28,7 +28,7 @@ var get_keys = function() {
 	    // decoding
 	    var keys = JSON.parse(xhttp.responseText);
 	    keys.forEach(function(key){
-	       rendered_keys += "<li>[id=" + key['key_id'] + "]<br/>" + key['key'] + "</li>";
+	       rendered_keys += "<li>[id=" + key['uuid'] + "]<br/>" + key['ssh_key'] + "</li>";
 	    })
             $("#get-keys").html(rendered_keys);
 	    

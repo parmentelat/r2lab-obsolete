@@ -2,16 +2,13 @@
   color:red;
 }
 
-.in-green {
-  color:green;
-}
-
-#list-slices {
-  text-align: left;
-}
-
-div.slice-header {
+div.key-header {
   /*margin: 8px;*/
   font-weight: bold;
   font-size: large;
+}
+
+.key-detail {
+    font-size: x-small;
+    word-wrap: break-word;
 }

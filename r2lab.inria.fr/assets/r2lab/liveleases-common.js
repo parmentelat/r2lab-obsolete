@@ -677,7 +677,7 @@ var knew_slices = [];
 function buildInitialSlicesBox(leases){
     setColorLeases();
     var slices = $("#my-slices");
-    slices.html('<h4 align="center">drag & drop booking</h4>');
+    slices.html('<h4 align="center">drag & drop to book</h4>');
 
     $.each(leases, function(key,val){
 	val = shortName(val);
