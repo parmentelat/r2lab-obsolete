@@ -142,10 +142,18 @@ R2lab. For this, let's follow 2 steps.
 
   <center>
   ![register](/assets/img/register/new-3.png)<br/>
-  Fig. 2 - Uploading the SSH key
+  Fig. 3 - Uploading your SSH key
   </center>
 
-Once this is done, you can [move to the next
+Once this is done, you should see something like on fig. 4 below
+
+  <center>
+  ![register](/assets/img/register/new-4.png)<br/>
+  Fig. 4 - An uploaded SSH key
+  </center>
+
+
+You can then [move to the next
 tab](javascript:open_tab('RESERVATION')) to book your slices in R2lab.
 
 </div>
