@@ -2,7 +2,6 @@ $(function() {
     var R2labChat = function(chat_username) {
 	this.username = chat_username;
 	this.init = function() {
-	    console.log($("#chat-container"));
 	    $("#chat-container").html(
 		'<a class="chat-on-off btn btn-primary btn-large">Join chat room #r2lab at freenode (on and off)</a>'
 		    + '<iframe style="display:none" class="chat-body" src="https://webchat.freenode.net?nick='

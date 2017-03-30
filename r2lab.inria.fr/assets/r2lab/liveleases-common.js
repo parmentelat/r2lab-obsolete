@@ -15,7 +15,6 @@ var theZombieLeases     = [];
 // sidecar_url var is defined in template sidecar-url.js
 // from sidecar_url as defined in settings.py
 var socket              = io.connect(sidecar_url);
-var version             = '1.37';
 var refresh             = true;
 var currentTimezone     = 'local';
 var nigthly_slice_name  = 'inria_r2lab.nightly'
@@ -406,7 +405,6 @@ function showImmediate(action, event) {
     if (liveleases_debug) console.log("showImmediate");
     if (action == 'add'){
 	var lease  = createLease(event);
-	console.log("adding lease "+lease);
 	$('#calendar').fullCalendar('renderEvent', lease, true );
     } else if (action == 'edit'){
 	var lease  = createLease(event);
@@ -462,24 +460,21 @@ function setActionsQueue(action, data){
 	    "valid_until": data.end._d.toISOString()
 	};
 	actionsQueue.push(data.id);
-    }
-    else if (action == 'edit'){
+    } else if (action == 'edit'){
 	verb = 'update';
 	request = {
 	    "uuid" : data.uuid,
 	    "valid_from" : data.start._d.toISOString(),
 	    "valid_until": data.end._d.toISOString()
 	};
-    }
-    else if (action == 'del'){
+    } else if (action == 'del'){
 	verb = 'delete';
 	request = {
 	    "uuid" : data.uuid,
 	};
 	delActionQueue(data.id);
-    }
-    else {
-	console.log('Someting went wrong in map actions.');
+    } else {
+	console.log('Something went wrong in map actions.');
 	return false;
     }
     // xxx replace this with some more sensible code for showing errors
@@ -807,5 +802,3 @@ function parseLeases(data){
     }
     return leases;
 }
-
-console.log("liveleases common version " + version);

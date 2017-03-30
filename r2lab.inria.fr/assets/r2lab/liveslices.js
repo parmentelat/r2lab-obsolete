@@ -1,12 +1,11 @@
 $(document).ready(function() {
-    var version = '1.36';
-
 
     function normalize_id(name){
 	var new_name = name;
 	new_name = name.replace(/[_\s]/g, '-').replace(/[^a-z0-9-\s]/gi, '');
 	return new_name
     }
+
 
     function send_message(msg, type){
 	var cls   = 'danger';
@@ -104,13 +103,13 @@ Click here to renew it!</a>';
 
 
     var renew_slice = function(element, slicename) {
-	console.log("renew_slice " + slicename);
 	var request = {
 	    "name" : slicename,
 	};
 	post_xhttp_django('/slices/renew', request, function(xhttp) {
 	    if (xhttp.readyState == 4 && xhttp.status == 200) {
 		var answer = JSON.parse(xhttp.responseText);
+		console.log("answer from /slices/renew");
 		console.log(answer);
 		
 		$('#timestamp-expire'+element).removeClass('in-red');
@@ -123,7 +122,6 @@ Click here to renew it!</a>';
 
 
     function main(){
-	console.log("liveslices version " + version);
 	var slicenames = r2lab_accounts.map(
 	    function(account){return account['name'];});
 	get_slices("liveslices-container", slicenames);

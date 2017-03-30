@@ -1,5 +1,4 @@
 $(document).ready(function() {
-    var version = '2.0';
     var now = moment();
     var sharedData = null
 
@@ -36,7 +35,7 @@ $(document).ready(function() {
 	$.each(c, function (cc, vc) {
 	    $.each(l, function (ll, vl) {
 		n++;
-		$.inArray(String(cc+','+ll), holes) > -1 ? n-- : map.push({'id': n, 'c':vc, 'l':vl});
+		$.inArray(String(cc+','+ll), holes) > -1 ? n-- : map.push({'id': n, 'c': vc, 'l': vl});
 	    });
 	});
 	return map;
@@ -58,8 +57,12 @@ $(document).ready(function() {
 
 
     var serie_color = function(week) {
-	var l_color = ['rgba(243,39,26,.7)', 'rgba(31, 54, 177, 0.7)', 'rgba(194,111,225,.7)', 'rgba(13,113,75,.7)', 'rgba(158,196,16,.7)', 'rgba(28, 255, 0, 0.7)']; //zero collor is for complete series
-	var b_color = ['rgba(243,39,26,.6)', 'rgba(31, 54, 177, 0.6)', 'rgba(194,111,225,.6)', 'rgba(13,113,75,.6)', 'rgba(158,196,16,.6)', 'rgba(28, 255, 0, 0.6)']; //zero collor is for complete series
+	var l_color = ['rgba(243,39,26,.7)', 'rgba(31, 54, 177, 0.7)',
+		       'rgba(194,111,225,.7)', 'rgba(13,113,75,.7)',
+		       'rgba(158,196,16,.7)', 'rgba(28, 255, 0, 0.7)']; //zero color is for complete series
+	var b_color = ['rgba(243,39,26,.6)', 'rgba(31, 54, 177, 0.6)',
+		       'rgba(194,111,225,.6)', 'rgba(13,113,75,.6)',
+		       'rgba(158,196,16,.6)', 'rgba(28, 255, 0, 0.6)']; //zero color is for complete series
 
 	if(week){
 	    try {
@@ -174,7 +177,9 @@ $(document).ready(function() {
 	$.each(chartData.datasets, function (index, value) {
 	    if(index > 0){
 		$.each(chartData.datasets[index].data, function (i, v) {
-		    chartData.datasets[index].data[i] = chartData.datasets[index].data[i] + chartData.datasets[index-1].data[i]
+		    chartData.datasets[index].data[i] =
+			chartData.datasets[index].data[i]
+			+ chartData.datasets[index-1].data[i]
 		});
 	    }
 	});
@@ -249,7 +254,8 @@ $(document).ready(function() {
 		else
 		    diff = '';
 
-		var box = "<div class=\"box\" style=\"background-color:"+bcolor+"; display:inline\"></div>&nbsp;"
+		var box = "<div class='box' style='background-color:"
+		    + bcolor + "; display:inline'></div>&nbsp;"
 		innerHtml.push(box + label + value + diff +'<br>');
             });
 
@@ -335,7 +341,8 @@ $(document).ready(function() {
 	$.each(nodes, function (index, value) {
 	    node = index + 1;
 
-	    var doughnut = '<div class="n'+node+'"><canvas id="chart-area'+node+'" width="70" height="70"></canvas></div>';
+	    var doughnut = '<div class="n' + node + '"><canvas id="chart-area' + node
+		+ '" width="70" height="70"></canvas></div>';
 	    $("#doughnut_container").append(doughnut);
 
 	    var ctx = document.getElementById("chart-area"+node).getContext("2d");
@@ -344,7 +351,8 @@ $(document).ready(function() {
 		data: {
 		    datasets: [{
 			data: parse_each_type_issue(data, node),
-			backgroundColor: ['rgba(255, 161, 0, 0.7)', 'rgba(31, 54, 177, 0.7)', 'rgba(194,111,225,.7)', 'rgba(28, 255, 0, 0.7)'],
+			backgroundColor: ['rgba(255, 161, 0, 0.7)', 'rgba(31, 54, 177, 0.7)',
+					  'rgba(194,111,225,.7)', 'rgba(28, 255, 0, 0.7)'],
 			label: 'dataset 1'
 		    }],
 		    labels: ["start","load","zombie","no issues"]
@@ -458,7 +466,10 @@ $(document).ready(function() {
 
 
     var randomColor = function() {
-	return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',.7)';
+	return 'rgba('
+	    + randomColorFactor() + ','
+	    + randomColorFactor() + ','
+	    + randomColorFactor() + ',.7)';
     };
 
 
@@ -484,7 +495,6 @@ $(document).ready(function() {
 
 
     var main = function() {
-	console.log("statistics version " + version);
 	// gets the json file from nigthly routine
 	var request = {"file" : 'nigthly'};
 	post_request('/files/get', request, function(xhttp) {

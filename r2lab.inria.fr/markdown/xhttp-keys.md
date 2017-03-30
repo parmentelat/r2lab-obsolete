@@ -23,7 +23,6 @@ var get_keys = function() {
     }
     post_xhttp_django('/keys/get/', request, function(xhttp) {
         if (xhttp.readyState == 4 && xhttp.status == 200) {
-            console.log(xhttp.responseText);
 	    var rendered_keys = "<ul>";
 	    // decoding
 	    var keys = JSON.parse(xhttp.responseText);
@@ -32,7 +31,6 @@ var get_keys = function() {
 	    })
             $("#get-keys").html(rendered_keys);
 	    
-	    console.log("answer=" + xhttp.responseText);
       }});
 }
 $(function(){$('#get-key').click(get_keys);})
@@ -69,7 +67,6 @@ var add_key = function(key) {
             document.getElementById("add-response").innerHTML = xhttp.responseText;
 	    // decoding
 	    var answer = JSON.parse(xhttp.responseText);
-	    console.log("answer=" + answer);
 	    added_key_uuid = answer['uuid'];
 	}})
 }
@@ -79,7 +76,6 @@ function add_key_from_file(e) {
     console.log("add_key_from_file - missed");
     return;
   }
-  console.log("add_key_from_file");
   var reader = new FileReader();
   reader.onload = function(e) {
     var key = e.target.result;
@@ -109,7 +105,6 @@ var delete_key = function() {
           document.getElementById("delete-response").innerHTML = xhttp.responseText;
 	  // decoding
 	  var answer = JSON.parse(xhttp.responseText);
-	  console.log(answer);
       }});
 }
 $(function(){$('#delete-key').click(delete_key);})

@@ -390,7 +390,6 @@ function LiveMap() {
 	.call(walls_style)
     ;
 
-    console.log('inside pillar_specs =', pillar_specs);
     pillar_specs.forEach(function(spec) {
 	var coords = grid_to_canvas(spec.i, spec.j);
 	svg.append('rect')

@@ -2,7 +2,6 @@
 // this requires xhttp-django.js and liveleases-common.js
 
 $(document).ready(function() {
-    var version = '1.33';
 
     function buildCalendar(theEvents) {
 	var today  = moment().format("YYYY-MM-DD");
@@ -242,7 +241,6 @@ $(document).ready(function() {
 
 
     function main (){
-	console.log("liveleases book version " + version);
 	saveSomeColors();
 	getLastSlice();
 

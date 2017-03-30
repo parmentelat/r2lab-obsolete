@@ -28,7 +28,6 @@ var add_lease = function() {
           document.getElementById("add-response").innerHTML = xhttp.responseText;
 	  // decoding
 	  var answer = JSON.parse(xhttp.responseText);
-	  console.log(answer);
 	  added_lease_uuid = answer['uuid'];
 	  console.log("stored uuid = " + added_lease_uuid);
       }});

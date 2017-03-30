@@ -1,8 +1,6 @@
 $(document).ready(function() {
-  var version = '1.0';
 
-
-  function sortObject(o) {
+  function sort_object(o) {
     //console.log(Object.keys(o).map(Number).sort((a,b)=>a-b));
     // console.log(Object.keys(o).sort().reduce((r, k) => (r[k] = o[k], r), {}));
     // return Object.keys(o).sort().reduce((r, k) => (r[k] = o[k], r), {});
@@ -70,7 +68,7 @@ $(document).ready(function() {
 
   function show(infos) {
     var thead = []
-    var order = sortObject(infos);
+    var order = sort_object(infos);
     var table = ''
     var head  = ''
     var body  = ''
@@ -129,7 +127,6 @@ $(document).ready(function() {
 
 
   function main() {
-    console.log("get nodes details version " + version);
     get_detail();
   }
 
