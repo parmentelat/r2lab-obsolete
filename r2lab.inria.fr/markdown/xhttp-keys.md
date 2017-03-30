@@ -42,8 +42,8 @@ $(function(){$('#get-key').click(get_keys);})
 
 <h1>Add</h1>
 
-<label class="btn btn-primary" for="my-file-selector">
-    <input id="my-file-selector"
+<label class="btn btn-primary" for="key-file-selector">
+    <input id="key-file-selector"
     type="file" style="display:none;" onchange="$('#upload-file-info').html($(this).val());">
     Select public key file 
 </label>
@@ -73,13 +73,13 @@ var add_key = function(key) {
 	    added_key_uuid = answer['uuid'];
 	}})
 }
-function addKeyFromFile(e) {
+function add_key_from_file(e) {
   var file = e.target.files[0];
   if (!file) {
-    console.log("addKeyFromFile - missed");
+    console.log("add_key_from_file - missed");
     return;
   }
-  console.log("addKeyFromFile");
+  console.log("add_key_from_file");
   var reader = new FileReader();
   reader.onload = function(e) {
     var key = e.target.result;
@@ -87,7 +87,7 @@ function addKeyFromFile(e) {
   };
   reader.readAsText(file);
 }
-$(function(){document.getElementById('my-file-selector').addEventListener('change', addKeyFromFile, false)});
+$(function(){document.getElementById('key-file-selector').addEventListener('change', add_key_from_file, false)});
 </script>
 
 

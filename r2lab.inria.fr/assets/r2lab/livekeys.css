@@ -12,3 +12,8 @@ div.key-header {
     font-size: x-small;
     word-wrap: break-word;
 }
+
+.add-key-area {
+    text-align: center;
+    margin-top: 20px; 
+}

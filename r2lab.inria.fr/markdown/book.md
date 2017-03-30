@@ -21,7 +21,7 @@ require_login: true
         <div id="manage_slices_keys">
           <button type="button" data-toggle="modal" data-target="#slices_keys_modal"
 	          class="fc-button fc-state-default fc-corner-left fc-corner-right sd">
-		  <span class='fa fa-gear'></span> slices & keys <span class='fa fa-gear'></span>
+		  slices & keys <span class='fa fa-gear'></span>
 	  </button>
         </div>
         <div id="my-slices"></div>
@@ -54,11 +54,15 @@ require_login: true
 <div class="alert alert-danger" role="alert" markdown="1">
 <strong>Important note!</strong>
 <br/>
-R2lab platform is reset every time a <strong>nightly</strong> slice is found in the calendar. A time slot of one hour is reserved to execute this job.
+R2lab platform is reset every time a <strong>nightly</strong> slice is found in the calendar,
+which occurs a couple times a week on average.
+As part of this verification routine, the testbed will be thoroughly reset and <strong>all data will be lost</strong>.
 <br/>
-All times on this website are expressed wrt the <strong>CET timezone</strong>, which is UTC+1 in winter, and UTC+2 in summer.
+In any case, please make sure to save your experiments once you are done,
+as the next user will probably reload an image on your nodes.
 <br/>
-In any case, please make sure to save your experiments once you are done, as the next user will probably reload an image on your nodes.
+All times on this website are expressed wrt the <strong>CET timezone</strong>,
+which is UTC+1 in winter, and UTC+2 in summer.
 </div>
 
 </div>

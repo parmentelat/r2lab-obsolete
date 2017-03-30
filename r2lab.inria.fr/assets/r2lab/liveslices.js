@@ -1,18 +1,14 @@
 $(document).ready(function() {
     var version = '1.36';
 
-    function partial(){
-	$('#partial_slices').load('slices.md');
-    }
 
-
-    function idFormat(name){
+    function normalize_id(name){
 	var new_name = name;
 	new_name = name.replace(/[_\s]/g, '-').replace(/[^a-z0-9-\s]/gi, '');
 	return new_name
     }
 
-    function sendMessage(msg, type){
+    function send_message(msg, type){
 	var cls   = 'danger';
 	var title = 'Ooops!'
 	if(type == 'info'){
@@ -27,14 +23,14 @@ $(document).ready(function() {
 	    cls   = 'success';
 	    title = 'Yep!'
 	}
-	$('html,body').animate({'scrollTop' : 0},400);
+	$('html,body').animate({'scrollTop' : 0}, 400);
 	$('#messages').removeClass().addClass('alert alert-'+cls);
-	$('#messages').html("<strong>"+title+"</strong> "+msg);
+	$('#messages').html("<strong>" + title + "</strong> " + msg);
 	$('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
     }
 
 
-    function isPastDate(date){
+    function is_past_date(date){
 	var past = false;
 	if(moment().diff(date, 'minutes') > 0 && date != null){
 	    past = true;
@@ -44,12 +40,12 @@ $(document).ready(function() {
 
 
     var get_slices = function(id, names) {
-	var body = "#"+id;
-	$(body).html("<div class='row slice-header'>\
-                    <div class='col-md-6'>Name</div>\
-                    <div class='col-md-4'>Expiration Date</div>\
-                    <div class='col-md-2'>&nbsp;</div>\
-                  </div>");
+	var body = $("#"+id);
+	body.html("<div class='row slice-header'>"
+		  + "<div class='col-md-6'>Name</div>"
+		  + "<div class='col-md-4'>Expiration Date</div>"
+		  + "<div class='col-md-2'>&nbsp;</div>"
+		  + "</div>");
 	$.each(names, function(index, value){
 
 	    var request = {};
@@ -69,20 +65,21 @@ Click here to renew it!</a>';
 
 			    var response   = responses[i];
 			    var slicename  = response['name'];
+			    var normal_id  = normalize_id(slicename);
 			    var expiration = response['valid_until'];
 			    var closed     = response['closed_at'];
 			    //var expiration = '2016-01-22T09:25:31Z';
 
 			    var s_class   = 'in-green';
 			    var s_message = 'valid';
-			    var s_icon = "<a href='#' rel='tooltip' title='renew'>\
-                         <span class='glyphicon glyphicon-refresh' onClick=renew_slice('"+idFormat(slicename)+"','"+slicename+"');></span>\
-                       </a>";
+			    var s_id = "renew-slice-" + normal_id;
+			    var s_icon = "<span class='fa fa-refresh in-blue' data-toggle='tooltip' title='renew'"
+				+ " id='" + s_id + "'>";
 			    var the_date  = moment(expiration).format("YYYY-MM-DD HH:mm");
-			    if (isPastDate(expiration) || isPastDate(closed)){
-				sendMessage(slice_manage_invitation, 'attention');
+			    if (is_past_date(expiration) || is_past_date(closed)){
+				send_message(slice_manage_invitation, 'attention');
 
-				if (isPastDate(closed)){
+				if (is_past_date(closed)){
 				    the_date  = moment(closed).format("YYYY-MM-DD HH:mm");
 				}
 
@@ -90,49 +87,49 @@ Click here to renew it!</a>';
 				s_message = 'expired';
 			    }
 
-			    $(body).append("<div class='row'>\
-                                <div class='col-md-6'>"+slicename+"</div>\
-                                <div class='col-md-4' id='datetime_expiration"+idFormat(slicename)+"'>\
-                                  <span class="+s_class+">"+the_date+"<span>\
-                                </div>\
-                                <div class='col-md-2' id='icon_"+idFormat(slicename)+"'>"+s_icon+"</div>\
-                              </div>");
-			    $('a').tooltip();
+			    $(body).append("<div class='row'>"
+					   + "<div class='col-md-6'>" + slicename + "</div>"
+					   + "<div class='col-md-4' id='timestamp-expire" + normal_id + "'>"
+					   + "<span class=" + s_class + ">" + the_date + "</span>"
+					   + "</div>"
+					   + "<div class='col-md-2'>" + s_icon + "</div>");
+			    $("#"+s_id).click(function() {renew_slice(normalize_id(slicename), slicename)});
 			}
 		    }
 		}
-
+		$('[data-toggle="tooltip"]').tooltip();   
 	    });
 	});
     }
 
+
+    var renew_slice = function(element, slicename) {
+	console.log("renew_slice " + slicename);
+	var request = {
+	    "name" : slicename,
+	};
+	post_xhttp_django('/slices/renew', request, function(xhttp) {
+	    if (xhttp.readyState == 4 && xhttp.status == 200) {
+		var answer = JSON.parse(xhttp.responseText);
+		console.log(answer);
+		
+		$('#timestamp-expire'+element).removeClass('in-red');
+		$('#timestamp-expire'+element).addClass('in-green');
+		$('#timestamp-expire'+element).toggle("pulsate").toggle("highlight");
+		$('#timestamp-expire'+element).html(moment(answer['valid_until']).format("YYYY-MM-DD HH:mm"));
+	    }
+	});
+    };
+
+
     function main(){
 	console.log("liveslices version " + version);
-	partial();
 	var slicenames = r2lab_accounts.map(
 	    function(account){return account['name'];});
-	get_slices("list-slices", slicenames);
+	get_slices("liveslices-container", slicenames);
     }
+
 
     main();
 });
 
-//STOLEN FROM THIERRY EXAMPLES
-// an example of how to renew a slice
-var renew_slice = function(element, slicename) {
-    var request = {
-	"name" : slicename,
-    };
-    post_xhttp_django('/slices/renew', request, function(xhttp) {
-	if (xhttp.readyState == 4 && xhttp.status == 200) {
-	    var answer = JSON.parse(xhttp.responseText);
-	    console.log(answer);
-
-	    $('#datetime_expiration'+element).removeClass('in-red');
-	    $('#datetime_expiration'+element).addClass('in-green');
-	    $('#datetime_expiration'+element).toggle("pulsate").toggle("highlight");
-	    $('#datetime_expiration'+element).html(moment(answer['valid_until']).format("YYYY-MM-DD HH:mm"));
-	    // $('#icon_'+element).html('');
-	}
-    });
-}

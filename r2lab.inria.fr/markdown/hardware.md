@@ -153,7 +153,7 @@ tab: platform
   </div>
 </div>
 
-<div class="modal fade" id="big_photo" tabindex="-1" role="dialog" aria-labelledby="myModalSlice">
+<div class="modal fade" id="big_photo" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-custom modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">

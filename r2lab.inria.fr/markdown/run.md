@@ -26,7 +26,7 @@ require_login: true
         <div id="manage_slices_keys">
           <button type="button" data-toggle="modal" data-target="#slices_keys_modal"
 	          class="fc-button fc-state-default fc-corner-left fc-corner-right sd">
-		  <span class='fa fa-gear'></span> slices & keys <span class='fa fa-gear'></span>
+		  slices & keys <span class='fa fa-gear'></span>
 	  </button>
         </div>
         <div id="my-slices"></div>

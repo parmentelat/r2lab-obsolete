@@ -1,17 +1,20 @@
 .in-red {
-  color:red;
+    color: red;
 }
 
 .in-green {
-  color:green;
+    color: green;
 }
 
-#list-slices {
-  text-align: left;
+.in-blue {
+    color: #0F8DC8;
+}
+
+#liveslices-container {
+    text-align: left;
 }
 
 div.slice-header {
-  /*margin: 8px;*/
-  font-weight: bold;
-  font-size: large;
+    font-weight: bold;
+    font-size: large;
 }
