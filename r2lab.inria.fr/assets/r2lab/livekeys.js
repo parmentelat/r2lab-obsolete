@@ -28,7 +28,7 @@ $(document).ready(function() {
 	post_xhttp_django('/keys/get', {}, function(xhttp) {
 	    if (xhttp.readyState == 4 && xhttp.status == 200) {
 		var keys = JSON.parse(xhttp.responseText);
-		if (keys) {
+		if (keys.length) {
 		    keys.forEach(function(key){
 			var ssh_key = key['ssh_key'];
 			var uuid = key['uuid'];
@@ -42,7 +42,7 @@ $(document).ready(function() {
 			$("#"+delete_id).click(function() { delete_key(uuid);});
 		    })
 		} else {
-		    div_list.append("<div class='row in-red'>No known key for now !</div>");
+		    div_list.append("<div class='row in-red'>You have no known key yet, please upload one !</div>");
 		}
 	    }
 	    $('[data-toggle="tooltip"]').tooltip();
@@ -51,13 +51,13 @@ $(document).ready(function() {
 
 
     var delete_key = function(key_uuid) {
-	console.log("in delete_key : " + key_uuid);
 	var request = { "uuid" : key_uuid };
 	post_xhttp_django('/keys/delete', request, function(xhttp) {
 	    if (xhttp.readyState == 4 && xhttp.status == 200) {
 		display_keys("livekeys-container");
 		// decoding
 		var answer = JSON.parse(xhttp.responseText);
+		console.log("answer from /keys/delete");
 		console.log(answer);
 	    }});
     }
@@ -68,7 +68,6 @@ $(document).ready(function() {
 	    console.log("add_key_from_file - missed");
 	    return;
 	}
-	console.log("add_key_from_file");
 	var reader = new FileReader();
 	reader.onload = function(e) {
 	    var key = e.target.result;
@@ -84,8 +83,8 @@ $(document).ready(function() {
 		display_keys("livekeys-container");
 		// decoding
 		var answer = JSON.parse(xhttp.responseText);
-		console.log("answer=" + answer);
-		added_key_uuid = answer['uuid'];
+		console.log("answer from /keys/add");
+		console.log(answer);
 	    }})
     }
 
