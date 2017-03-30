@@ -10,8 +10,10 @@
 
     // set at background tag the image returned by getOneImage function
     placeImage = function() {
-	// var imagesList = ["back.jpg", "back_1.jpg", "back_2.jpg"];
-	var imagesList = ["back_2.jpg"];
+	var imagesList = ["banner-1.png", "banner-2.png",
+			  "banner-3.png", "banner-4.png",
+			  "banner-5.png", "banner-6.png",
+			 ];
 
   	$('#background').css("background-image", "url("+getOneImage(imagesList)+")");
     }

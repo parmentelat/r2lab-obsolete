@@ -7,15 +7,15 @@ skip_header: yes
   <div class="row">
     <div class="col-lg-4">
       <p>Left Tour</p>
-      <a href="#" id="img_left"><img src="/assets/img/right.png" width="100%"></a>
+      <a href="#" id="img_left"><img src="/assets/img/tour-right.png" width="100%"></a>
     </div>
     <div class="col-lg-4">
       <p>Center Tour</p>
-      <a href="#" id="img_center"><img src="/assets/img/center.png" width="100%"></a>
+      <a href="#" id="img_center"><img src="/assets/img/tour-center.png" width="100%"></a>
     </div>
     <div class="col-lg-4">
       <p>Right Tour</p>
-      <a href="#" id="img_right"><img src="/assets/img/left.png" width="100%"></a>
+      <a href="#" id="img_right"><img src="/assets/img/tour-left.png" width="100%"></a>
     </div>
   </div>
 </div>

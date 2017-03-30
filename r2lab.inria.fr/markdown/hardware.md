@@ -82,7 +82,7 @@ tab: platform
     </div>
     <div class="col-md-4">
       <br>
-      <img src="/assets/img/node_interface_3.png" width="300px">
+      <img src="/assets/img/hardware-node.png" class='fit-width'>
       <center>Fig. 1 - Icarus Nodes in the testbed</center>
     </div>
   </div>
@@ -107,7 +107,7 @@ tab: platform
     </div>
     <div class="col-md-4">
       <br><br>
-      <img src="/assets/img/icarus6i.png" width="300px">
+      <img src="/assets/img/hardware-icarus.png"  class='fit-width'>
       <center>Fig. 2 - Icarus node standalone</center>
     </div>
   </div>
@@ -131,7 +131,7 @@ tab: platform
     </div>
     <div class="col-md-4">
       <br><br>
-      <img src="/assets/img/macphone.png" width="300px">
+      <img src="/assets/img/macphone.png"  class='fit-width'>
       <center>Fig. 3 - Commercial phone</center>
     </div>
   </div>

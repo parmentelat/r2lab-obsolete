@@ -103,7 +103,7 @@ The nodes are arranged in a grid with ≈1.0m (vertical) and ≈1.15m (horizonta
 
 <a name="accurate-layout">
 <center>
-	<img src="/assets/img/status.png" style="width:950px; height:592px;"/><br>
+	<img src="/assets/img/status-chamber.png" style="width:950px; height:592px;"/><br>
 	<!-- <center> Fig. 1 - Resources status</center> -->
 </center>
 </a>

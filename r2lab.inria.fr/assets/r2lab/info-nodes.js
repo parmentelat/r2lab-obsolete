@@ -58,11 +58,7 @@ function create_slider(tab_file, tab_name) {
 	imgs = imgs + '<img data-image="'+ path + file +'">'
     });
 
-    var tab_body = '\
-  <div id="gallery" style="display:none;">\
-  '+ imgs +'\
-  </div>\
-  ';
+    var tab_body = '<div id="gallery" style="display:none;">' + imgs + '</div>';
 
     $('#nodes_tabs').append('<li class="active"><a data-toggle="tab" href="#tab_gal">'
 			    + tab_name +'</a></li>');

@@ -59,7 +59,7 @@ unless your organization appears in the list already.
   manager in your organization to **validate your request**.
 
 <center>
-![register](/assets/img/register/new-1.png)<br/>
+![register](/assets/img/tuto-register-1.png)<br/>
 Fig. 1 - Register
 </center>
 
@@ -110,7 +110,7 @@ R2lab. For this, let's follow 2 steps.
 
   - The entire key generation process looks like this:
   <center>
-  ![register](/assets/img/register/new-2.png)<br/>
+  ![register](/assets/img/tuto-register-2.png)<br/>
   Fig. 2 - Generating a key pair
   </center>
 
@@ -141,14 +141,14 @@ R2lab. For this, let's follow 2 steps.
     standard format.
 
   <center>
-  ![register](/assets/img/register/new-3.png)<br/>
+  ![register](/assets/img/tuto-register-3.png)<br/>
   Fig. 3 - Uploading your SSH key
   </center>
 
 Once this is done, you should see something like on fig. 4 below
 
   <center>
-  ![register](/assets/img/register/new-4.png)<br/>
+  ![register](/assets/img/tuto-register-4.png)<br/>
   Fig. 4 - An uploaded SSH key
   </center>
 
@@ -183,7 +183,7 @@ the slice already booked;
 just click and drag in the tiny line placed on the botton of each slice.
 <br/>
 <center>
-![dashboard](/assets/img/schedule_details_1.png)<br/>
+![dashboard](/assets/img/tuto-reservation.png)<br/>
 fig. 5 - Booking a slice in R2lab
 </center>
 
