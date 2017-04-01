@@ -110,6 +110,7 @@ var walls_radius = 30;
 var pillar_radius = 16;
 
 var livemap_debug = false;
+//var livemap_debug = true;
 
 //////////////////////////////////////// nodes
 // the overall room size
@@ -429,14 +430,16 @@ function LiveMap() {
     //////////////////// nodes
     this.handle_nodes_json = function(json) {
 	var livemap = this;
-	return this.handle_incoming_json("node", this.nodes, json,
-					 function() { livemap.animate_nodes_changes();});
+	return this.handle_incoming_json(
+	    "node", this.nodes, json,
+	    function() { livemap.animate_nodes_changes();});
     }
 
     this.handle_phones_json = function(json) {
 	var livemap = this;
-	return this.handle_incoming_json("phone", this.phones, json,
-					 function() { livemap.animate_phones_changes();});
+	return this.handle_incoming_json(
+	    "phone", this.phones, json,
+	    function() { livemap.animate_phones_changes();});
     }
 
     //////////////////// generic way to handle incoming json
@@ -451,7 +454,8 @@ function LiveMap() {
 	try {
 	    var infos = JSON.parse(json);
 	    if (livemap_debug) {
-		console.log("*** " + new Date() + " DBG Received info about " + infos.length + " " + type + "(s)");
+		console.log("*** " + new Date() + " DBG Received info about "
+			    + infos.length + " " + type + "(s)");
 		console.log(infos);
 		console.log("*** DBG end");
 	    }
@@ -463,11 +467,13 @@ function LiveMap() {
 		if (obj != undefined)
 		    update_obj_from_info(obj, info);
 		else
-		    console.log("livemap: could not locate " + type + " id " + id + " - ignored");
+		    console.log("livemap: could not locate " + type
+				+ " id " + id + " - ignored");
 	    });
 	    callback();
 	} catch(err) {
-	    console.log("*** Could not handle news for " + type + " - ignored JSON has " + json.length + " chars");
+	    console.log("*** Could not handle news for " + type
+			+ " - ignored JSON has " + json.length + " chars");
 	    console.log(err.stack);
 	    console.log("***");
 	}
@@ -593,6 +599,7 @@ function LiveMap() {
 
     //////////////////// phones graphical layout
     this.animate_phones_changes = function() {
+	if (livemap_debug) console.log("in animate_phones_changes");
 	var svg = d3.select('div#livemap_container svg');
 	var animation_duration = 850;
 
