@@ -262,19 +262,25 @@ function LiveTable() {
 	}
     }
 
+    // this code uses d3 nested selections
+    // I had to tweak it when adopting d3-v4 as per 
+    // http://stackoverflow.com/questions/39861603/d3-js-v4-nested-selections
+    // not that I have understood the bottom of it, but it works again..
     this.animate_changes = function(nodes_info) {
 	var tbody = d3.select("tbody.livetable_body");
 	// row update selection
 	var rows = tbody.selectAll('tr')
 	    .data(this.nodes, get_node_id);
 	////////// create rows as needed
-	rows.enter()
+	rowsenter = rows.enter()
 	    .append('tr')
 	    .attr('id', function(node){ return 'row'+node.id;})
 	;
 	// this is a nested selection like in http://bost.ocks.org/mike/nest/
-	var cells = rows.selectAll('td')
-	    .data(get_node_data);
+	var cells =
+	    rows.merge(rowsenter)
+	      .selectAll('td')
+	        .data(get_node_data);
 	// in this context d is the 'datum' attached to a <td> which
 	// however this will be the DOM element
 	cells.enter()
