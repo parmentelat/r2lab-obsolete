@@ -631,11 +631,14 @@ function LiveMap() {
 	    .attr('font-size', h*1)
 	    .attr('textLength', w*.8)
 	    .attr('lengthAdjust', 'spacingAndGlyphs')
-	;
-	texts.transition()
+          .merge(texts)
 	    .text(function(phone){ return phone.text();})
 	;
 
+	texts
+	    .transition()
+	    .text(function(phone){ return phone.text();})
+	;
     }
 
     //////////////////// socket.io business
