@@ -29,6 +29,7 @@ function span_html(text, klass) {
 }
 
 var livetable_debug = false;
+//var livetable_debug = true;
 
 //////////////////////////////
 var nb_nodes = 37;
@@ -74,14 +75,23 @@ var TableNode = function (id) {
     this.update_from_news = function(node_info) {
 	var modified = false;
 	for (var prop in node_info) {
-	    if (livetable_debug) 
-		console.log("node_info['" + prop + "'] = " + node_info[prop]);
 	    if (node_info[prop] != this[prop]) {
 		this[prop] = node_info[prop];
 		modified = true;
+		if (livetable_debug) {
+		    // console.log("node_info['" + prop + "'] = " + node_info[prop]);
+		}
 	    }
 	}
-	if (! modified) return;
+	if (! modified) {
+	    if (livetable_debug) console.log("no change on " + node_info['id'] + " - exiting");
+	    return;
+	} else {
+	    if (livetable_debug) {
+		console.log("id = " + node_info['id'] + " -> ", node_info);
+	    }
+	    
+	}
 	// then rewrite actual representation in cells_data
 	// that will contain a list of ( html_text, class )
 	// used by the d3 mechanism to update the <td> elements in the row
@@ -117,20 +127,23 @@ var TableNode = function (id) {
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_rx_rate);
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_tx_rate);
 	}
-	if (livetable_debug)
-	    console.log("after update_from_news on id=" + node_info['id'] + " -> " + this.cells_data);
+	if (livetable_debug) {
+	    console.log("after update_from_news on id=" + node_info['id'] + " -> ", this.cells_data);
+	}
     }
 
     this.usrp_cell = function() {
 	var alt_text = "";
-	alt_text += (this.gnuradio_release) ? "gnuradio_release = " + this.gnuradio_release : "no gnuradio installed";
+	alt_text += (this.gnuradio_release) ? "gnuradio_release = "
+	    + this.gnuradio_release : "no gnuradio installed";
 	var text = this.usrp_type || 'none';
 	text += ' ';
 	text += (this.usrp_on_off == 'on')
 	    ? span_html('', 'fa fa-toggle-on')
 	    : span_html('', 'fa fa-toggle-off') ;
 	var cell = '<span title="' + alt_text + '">' + text + '</span>';
-	var klass = (this.usrp_on_off == 'on') ? 'ok' : (this.usrp_on_off == 'off') ? 'ko' : 'error';
+	var klass = (this.usrp_on_off == 'on') ? 'ok'
+	    : (this.usrp_on_off == 'off') ? 'ko' : 'error';
 	return [cell, klass];
     }
 
@@ -184,7 +197,7 @@ var TableNode = function (id) {
     }
 
     this.set_display = function(display) {
-	var selector = '#livetable_container #row'+this.id;
+	var selector = '#livetable_container #row' + this.id;
 	display ? $(selector).show() : $(selector).hide();
     }
 
@@ -267,6 +280,7 @@ function LiveTable() {
     // http://stackoverflow.com/questions/39861603/d3-js-v4-nested-selections
     // not that I have understood the bottom of it, but it works again..
     this.animate_changes = function(nodes_info) {
+	if (livetable_debug) console.log("animate_changes");
 	var tbody = d3.select("tbody.livetable_body");
 	// row update selection
 	var rows = tbody.selectAll('tr')
@@ -311,7 +325,8 @@ function LiveTable() {
 	}
 	try {
 	    var node_infos = JSON.parse(json);
-	    if (livetable_debug) console.log("handle_json_status - incoming " + node_infos.length + " node infos");
+	    if (livetable_debug) console.log("handle_json_status - incoming "
+					     + node_infos.length + " node infos");
 	    // first we write this data into the TableNode structures
 	    for (var i=0; i < node_infos.length; i++) {
 		var node_info = node_infos[i];
@@ -332,11 +347,12 @@ function LiveTable() {
     }
 
     this.init_sidecar_socket_io = function() {
-	console.log("livetable is connecting to sidecar server at " + sidecar_url);
+	if (livetable_debug) console.log("livetable is connecting to sidecar server at " + sidecar_url);
 	this.sidecar_socket = io(sidecar_url);
 	// what to do when receiving news from sidecar
 	var lab = this;
 	this.sidecar_socket.on(channel, function(json){
+	    if (livetable_debug) console.log("livetable is receiving on " + channel);
             lab.handle_json_status(json);
 	});
 	this.request_complete_from_sidecar();
