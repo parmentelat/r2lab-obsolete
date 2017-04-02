@@ -482,31 +482,36 @@ function LiveMap() {
     //////////////////// the nodes graphical layout
     this.animate_nodes_changes = function() {
 	var svg = d3.select('div#livemap_container svg');
-	var animation_duration = 850;
+	var animation_duration = 750;
 	var circles = svg.selectAll('circle.node-status')
 	    .data(this.nodes, get_obj_id);
 	// circles show the overall status of the node
-	circles.enter()
+	circles
+	  .enter()
 	    .append('circle')
 	    .attr('class', 'node-status')
 	    .attr('id', function(node){return node.id;})
 	    .attr('cx', function(node){return node.x;})
 	    .attr('cy', function(node){return node.y;})
 	    .on('click', function() {
-		// call an external function (located in info-nodes.js) to show de nodes details
+		// call an external function (located in info-nodes.js)
+		// to show de nodes details
 		info_nodes(this.id)
 	    })
-	;
-	circles.transition()
+          .merge(circles)
+	    .transition()
 	    .duration(animation_duration)
 	    .attr('r', function(node){return node.node_status_radius();})
 	    .attr('fill', function(node){return node.node_status_color();})
 	    .attr('filter', function(node){return node.node_status_filter();})
 	;
+
 	// labels show the nodes numbers
 	var labels = svg.selectAll('text')
 	    .data(this.nodes, get_obj_id);
-	labels.enter()
+
+	labels
+	  .enter()
 	    .append('text')
 	    .attr('class', 'node-label')
 	    .text(get_obj_id)
@@ -514,11 +519,12 @@ function LiveMap() {
 	    .attr('y', function(node){return node.y;})
 	    .attr('id', function(node){return node.id;})
 	    .on('click', function() {
-		//call a externa function (located in info-nodes.js) to show de nodes details
+		//call a external function (located in info-nodes.js)
+		// to show de nodes details
 		info_nodes(this.id)
 	    })
-	;
-	labels.transition()
+	  .merge(labels)
+	    .transition()
 	    .duration(animation_duration)
 	    .attr('fill', function(node){return node.text_color();})
 	    .attr('x', function(node){return node.text_x();})
@@ -528,7 +534,8 @@ function LiveMap() {
 	// how to display unavailable nodes
 	var unavailables = svg.selectAll('circle.unavailable')
 	    .data(this.nodes, get_obj_id);
-	unavailables.enter()
+	unavailables
+	  .enter()
 	    .append('circle')
 	    .attr('class', 'unavailable')
 	    .attr('cx', function(node){return node.x;})
@@ -536,13 +543,15 @@ function LiveMap() {
 	    .attr('cy', function(node){return node.y;})
 	    .attr('r', function(node){return livemap_radius_unavailable;})
 	    .on('click', function() {
-		//call a externa function (located in info-nodes.js) to show de nodes details
+		//call a external function (located in info-nodes.js)
+		// to show de nodes details
 		info_nodes(this.id)
 	    })
-	;
-	unavailables.transition()
+	  .merge(unavailables)
+	    .transition()
 	    .duration(animation_duration)
-	    .attr('display', function(node){return node.unavailable_display();})
+	    .attr('display', function(node){
+		return node.unavailable_display();})
 	;
 
 	// these rectangles are placeholders for the various icons
@@ -553,13 +562,16 @@ function LiveMap() {
 	usrp_offset_y = 10;
 	var usrp_rects = svg.selectAll('rect.usrp-status')
 	    .data(this.nodes, get_obj_id);
-	usrp_rects.enter()
+	usrp_rects
+	  .enter()
 	    .append('rect')
 	    .attr('class', 'usrp-status')
 	    .attr('id', function(node){return node.id;})
 	    .attr('stroke-width', '1px')
-	;
-	usrp_rects.transition()
+	    .attr('x', function(node){return node.usrp_x();})
+	    .attr('y', function(node){return node.usrp_y();})
+	  .merge(usrp_rects)
+	    .transition()
 	    .duration(animation_duration)
 	    .attr('display', function(node){return node.usrp_status_display();})
 	    .attr('filter', function(node){return node.usrp_status_filter();})
@@ -609,7 +621,8 @@ function LiveMap() {
 	var squares = svg.selectAll('rect.phone-status')
 	    .data(this.phones, get_obj_id);
 	// simple square repr. for now, with an airplane in the middle
-	squares.enter()
+	squares
+	  .enter()
 	    .append('rect')
 	    .attr('class', 'phone-status')
 	    .attr('id', function(phone){return phone.id;})
@@ -628,7 +641,8 @@ function LiveMap() {
 	var texts = svg.selectAll('text.phone-status')
 	    .data(this.phones, get_obj_id);
 
-	texts.enter()
+	texts
+	  .enter()
 	    .append('text')
 	    .attr('class', 'phone-status')
 	    .attr('x', function(phone){return phone.x;})
@@ -639,13 +653,11 @@ function LiveMap() {
 	    .attr('textLength', w*.8)
 	    .attr('lengthAdjust', 'spacingAndGlyphs')
           .merge(texts)
+	    .transition()
+	    .duration(.5)
 	    .text(function(phone){ return phone.text();})
 	;
 
-	texts
-	    .transition()
-	    .text(function(phone){ return phone.text();})
-	;
     }
 
     //////////////////// socket.io business

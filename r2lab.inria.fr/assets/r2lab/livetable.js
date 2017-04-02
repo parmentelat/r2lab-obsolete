@@ -128,7 +128,8 @@ var TableNode = function (id) {
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_tx_rate);
 	}
 	if (livetable_debug) {
-	    console.log("after update_from_news on id=" + node_info['id'] + " -> ", this.cells_data);
+	    console.log("after update_from_news on id=" + node_info['id'] + " -> ",
+			this.cells_data);
 	}
     }
 
@@ -288,32 +289,31 @@ function LiveTable() {
 	////////// create rows as needed
 	rowsenter = rows.enter()
 	    .append('tr')
-	    .attr('id', function(node){ return 'row'+node.id;})
+	    .attr('id', function(node){ return 'row' + node.id;})
 	;
-	// this is a nested selection like in http://bost.ocks.org/mike/nest/
+	// the magic here is to pass rowsenter to the merge method
+	// instead of rows
 	var cells =
 	    rows.merge(rowsenter)
 	      .selectAll('td')
 	        .data(get_node_data);
-	// in this context d is the 'datum' attached to a <td> which
-	// however this will be the DOM element
-	cells.enter()
+
+	cells
+	  .enter()
 	    .append('td')
-	// attach a click event on the first column only
+	    // attach a click event on the first column only
 	    .each(function(d, i) {
 		if (i==0) {
 		    // I'm using DOM/jquery here because the datum d here
-		    //  is a tuple (html,class) so this is useless
+		    //  is a tuple (html, class) so this is useless
 		    $(this).click(function() {
 			$(this).parent().attr('style', 'display:none');
 		    })
 		}
 	    })
-	;
-	////////// update existing ones from cells_data
-	cells.html(get_html)
-	    .attr('class', get_class)
-	return;
+	  .merge(cells)
+	    .html(get_html)
+	    .attr('class', get_class);
     }
 
     ////////// socket.io business
@@ -335,19 +335,22 @@ function LiveTable() {
 		if (node != undefined)
 		    node.update_from_news(node_info);
 		else
-		    console.log("livetable: could not locate node id " + id + " - ignored");
+		    console.log("livetable: could not locate node id "
+				+ id + " - ignored");
 	    }
 	    this.animate_changes(node_infos);
 	} catch(err) {
 	    if (json != "") {
-		console.log("Could not apply news - ignored  - JSON has " + json.length + " chars");
+		console.log("Could not apply news - ignored  - JSON has "
+			    + json.length + " chars");
 		console.log(err.stack);
 	    }
 	}
     }
 
     this.init_sidecar_socket_io = function() {
-	if (livetable_debug) console.log("livetable is connecting to sidecar server at " + sidecar_url);
+	if (livetable_debug)
+	    console.log("livetable is connecting to sidecar server at " + sidecar_url);
 	this.sidecar_socket = io(sidecar_url);
 	// what to do when receiving news from sidecar
 	var lab = this;
