@@ -1,4 +1,4 @@
-#/usr/bin/env python3
+#!/usr/bin/env python3
 #
 # Author file: Mario Zancanaro <mario.zancanaro@inria.fr>
 #
@@ -16,7 +16,7 @@ import os.path
 import uuid
 import asyncio
 from argparse import ArgumentParser
-from rhubarbe.omfsfaproxy import OmfSfaProxy
+#from rhubarbe.omfsfaproxy import OmfSfaProxy
 from datetime import datetime, timedelta
 import time
 from itertools import islice

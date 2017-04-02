@@ -2,6 +2,7 @@
 #
 # Author file: Mario Zancanaro <mario.zancanaro@inria.fr>
 #
+
 """
 The nightly-fetch script will search for occurrences of nightly leases
 already schedule in the r2lab UI and launch the nightly routine
