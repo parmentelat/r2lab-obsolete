@@ -5,15 +5,29 @@ $(function() {
 	    r2lab_user.email
 	    .replace("@", "_at_")
 	    .replace(".", "_");
-	$("#chat-container").html(
-	    '<span id="chat-hide-show" class="fa"></span>'
-		+ '<iframe id="chat-body" src="https://webchat.freenode.net?nick='
-		+ username
-		+ '&channels=%23r2lab&uio=MTY9dHJ1ZSY5PXRydWUmMTE9MzA572"'
-		+ ' width="100%" height="450"></iframe>');
-	$("#chat-hide-show").click(function(){
-	    $("#chat-body").toggle("slow", update_hide_show);
-	})
+	$("#chat-container")
+	    .append($("<span />")
+		    .attr("id", "chat-hide-show")
+		    .addClass("fa")
+		    .click(hide_show))
+	    .append($("<span />")
+		    .attr("id", "chat-hide-legend")
+		    .addClass("chat-legend")
+		    .html("Click to hide (but stay connected)")
+		    .click(hide_show))
+	    .append($("<span />")
+		    .attr("id", "chat-show-legend")
+		    .addClass("chat-legend")
+		    .html("Click to show IRC chatroom")
+		    .click(hide_show))
+	    .append($("<iframe />")
+		    .attr("id", "chat-body")
+		    .attr("src",
+			  "https://webchat.freenode.net?nick="
+			  + username
+			  + "&channels=%23r2lab&uio=MTY9dHJ1ZSY5PXRydWUmMTE9MzA572")
+		    .attr("width", "100%")
+		    .attr("height", "450"));
 	update_hide_show();
     }
 
@@ -21,17 +35,24 @@ $(function() {
 	$("#chat-container").html('');
     }
 
+    var hide_show = function() {
+	$("#chat-body").toggle(200, update_hide_show);
+    }
+			  
     var update_hide_show = function() {
-	classes = [ 'fa-window-minimize', 'fa-window-restore'];
-	var add = $("#chat-body").is(":visible") ? 0 : 1;
+	var classes = [ 'fa-caret-down', 'fa-caret-right'];
+	var visible = $("#chat-body").is(":visible");
+	var add = visible ? 0 : 1;
 	var rem = 1 - add;
 	$("#chat-hide-show")
 	    .addClass(classes[add])
 	    .removeClass(classes[rem]);
+	$("#chat-hide-legend").toggle(visible);
+	$("#chat-show-legend").toggle(!visible);
     }
     
     var update_button = function() {
-	classes = [ 'fa-close', 'fa-user-circle-o'];
+	classes = [ 'fa-close', 'fa-user-o'];
 	messages = [ 'leave IRC', 'join IRC'];
 	var add = $("#chat-container").html() ? 0 : 1;
 	var rem = 1 - add;

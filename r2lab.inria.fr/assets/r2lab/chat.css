@@ -7,3 +7,11 @@
     position: absolute;
     right: 10px;
 }
+
+.chat-legend {
+    margin-left: 20px;
+}
+
+#chat-body {
+    margin-top: 10px;
+}
