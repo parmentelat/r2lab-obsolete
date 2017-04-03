@@ -10,7 +10,10 @@ from sidecar_client import connect_url
 # in seconds
 default_cycle = 1
 default_runs = 0
-default_sidecar_url = "https://r2lab.inria.fr:999/"
+
+# should maybe default to this official one, but mostly it's firewalled
+# default_sidecar_url = "https://r2lab.inria.fr:999/"
+default_sidecar_url = "http://localhost:10000/"
 
 node_ids = range(1, 38)
 default_max_nodes_impacted = 10

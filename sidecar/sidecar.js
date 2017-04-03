@@ -32,6 +32,7 @@ var local_flag = false;
 var incremental_flag = true;
 
 var default_url = "https://r2lab.inria.fr:999/";
+var default_devel_url = "http://localhost:10000/";
 var global_url = undefined;
 
 var default_ssl_key = "/etc/pki/tls/private/r2lab.inria.fr.key";
@@ -348,6 +349,7 @@ function parse_args() {
 	    local_flag = true;
 	    default_ssl_cert = "localhost.crt";
 	    default_ssl_key  = "localhost.key";
+	    default_url = default_devel_url;
 	} else if (arg == "-c") {
 	    incremental_flag = false;
 	} else if (arg == "-u") {
