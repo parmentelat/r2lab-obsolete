@@ -1,4 +1,9 @@
-a.chat-on-off {
+#chat-hide-show {
     border-radius: 12px;
     font-size: large;
+}
+
+#chat-button {
+    position: absolute;
+    right: 10px;
 }

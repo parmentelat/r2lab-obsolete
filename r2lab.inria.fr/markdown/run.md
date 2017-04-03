@@ -3,10 +3,13 @@ tab: run
 skip_header: yes
 require_login: true
 
-<!-- turn it off because freenode is down and that causes the page to hang -->
-<!--<div id="chat-container"></div>-->
+<!-- in a first implementation, we were creating the webchat iframe upon page load
+     it was suboptimal though, as e.g. freenode being down would cause our page to hang
+     so now the chat plugin comes in 2 parts, one for the actual chat area,
+     and one for the button to enable it -->
 <script type="text/javascript" src="/assets/r2lab/chat.js"></script>
 <style type="text/css"> @import url("/assets/r2lab/chat.css"); </style>
+<div id="chat-container"></div>
 
 <div class="container">
   <div class="row">
@@ -51,7 +54,8 @@ require_login: true
     </div>
     <div class="col-md-7">
     <div id="livemap_container">Click a node for more details;
-    see also <a href="status.md#livemap:legend">this page for a legend</a></div>
+    see also <a href="status.md#livemap:legend">this page for a legend</a>
+    <span id="chat-button"></span></div>
     <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
     <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
     <script>
