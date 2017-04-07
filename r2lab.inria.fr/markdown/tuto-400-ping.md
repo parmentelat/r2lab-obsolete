@@ -464,6 +464,10 @@ Here is what deserves to be outlined in the code below
     fit01:rtt min/avg/max/mdev = 0.244/0.244/0.244/0.000 ms
     OK
 
+### Next
+
+We can now [wrap up this A-series](javascript:open_tab('WRAPUP')).
+
 </div>
 
 <!------------ WRAPUP ------------>
@@ -499,4 +503,3 @@ transfers to and from `SshNode`s.
 </div>
 
 </div> <!-- end div contents -->
-.

@@ -3,7 +3,7 @@ function open_tab(name) {
     /* add initial sharp sign if not provided */
     if (name[0] != '#')
 	name = '#' + name;
-    $('.nav-tabs a[href=' + name + ']').tab('show');
+    $('.nav-tabs a[href="' + name + '"]').tab('show');
 }
 
 $(function () {
