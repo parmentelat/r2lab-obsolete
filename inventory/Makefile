@@ -20,9 +20,9 @@ all: configure
 # xxx todo : edit /etc/rhubarbe/rhubarbe.conf on preplab to reflect the scope of rhubarbe -a
 # xxx todo : tweak faraday.sh so that it gets the default all-nodes from rhubarbe.conf
 # for now I do this manually each time
-remap: all publish preplab spare-nodes
+production remap: all publish
 
-.PHONY: remap
+.PHONY: remap production
 
 ####################
 # march 2016 : no need to redo omf anymore, one single node that never changes
@@ -47,7 +47,7 @@ $(PRODUCTS) r2lab-nagios-nodes.cfg r2lab-nagios-groups.cfg: $(SCRIPT) $(SOURCE)
 	python $(SCRIPT) $(SOURCE)
 
 $(PREPLAB-PRODUCTS): $(SCRIPT) $(SOURCE)
-	python $(SCRIPT) -p $(SOURCE)
+	python $(SCRIPT) --prep-lab $(SOURCE)
 preplab-configure: $(PREPLAB-PRODUCTS)
 
 .PHONY: configure
@@ -140,7 +140,7 @@ endef
 
 $(foreach target,$(PREPLAB-TARGETS),$(eval $(call preplab-target,$(target))))
 
-preplab: force $(foreach target,$(PREPLAB-TARGETS), preplab-$(target)) all-spares
+preplab: force $(foreach target,$(PREPLAB-TARGETS), preplab-$(target)) spare-nodes
 
 force:
 
