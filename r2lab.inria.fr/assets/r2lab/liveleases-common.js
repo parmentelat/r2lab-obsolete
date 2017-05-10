@@ -1,30 +1,32 @@
 // -*- js-indent-level:4 -*-
+"use strict";
 
-var my_slices_name      = r2lab_accounts.map(function(account){return account['name'];}) // a list of slice hrns
-var my_slices_color     = [];
-var actionsQueue        = [];
-var actionsQueued       = [];
-var current_slice_name  = current_slice.name;
-var current_slice_color = '#DDD';
-var current_leases      = null;
-var color_pending       = '#FFFFFF';
-var color_removing      = '#FFFFFF';
-var keepOldEvent        = null;
-var theZombieLeases     = [];
-
-// sidecar_url var is defined in template sidecar-url.js
+// the sidecar_url var is defined in template sidecar-url.js
 // from sidecar_url as defined in settings.py
-var socket              = io.connect(sidecar_url);
-var refresh             = true;
-var currentTimezone     = 'local';
-var nigthly_slice_name  = 'inria_r2lab.nightly'
-var nigthly_slice_color = '#000000';
 
-var liveleases_debug = false;
+let my_slices_name      = r2lab_accounts.map(function(account){return account['name'];}) // a list of slice hrns
+let my_slices_color     = [];
+let actionsQueue        = [];
+let actionsQueued       = [];
+let current_slice_name  = current_slice.name;
+let current_slice_color = '#DDD';
+let current_leases      = null;
+let color_pending       = '#FFFFFF';
+let color_removing      = '#FFFFFF';
+let keepOldEvent        = null;
+let theZombieLeases     = [];
+
+let socket              = io.connect(sidecar_url);
+let refresh             = true;
+let currentTimezone     = 'local';
+let nigthly_slice_name  = 'inria_r2lab.nightly'
+let nigthly_slice_color = '#000000';
+
+let liveleases_debug = false;
 
 function setSlice(element){
-    var element_color = element.css("background-color");
-    var element_name  = $.trim(element.text());
+    let element_color = element.css("background-color");
+    let element_name  = $.trim(element.text());
     setCurrentSliceBox(element_name)
     setCurrentSliceColor(element_color);
     setCurrentSliceName(element_name);
@@ -33,7 +35,7 @@ function setSlice(element){
 
 
 function setCurrentSliceBox(element){
-    id = idFormat(element);
+    let id = idFormat(element);
     $(".noactive").removeClass('sactive');
     $("#"+id).addClass('sactive');
 }
@@ -57,7 +59,7 @@ function setLastSlice(){
 
 
 function idFormat(id){
-    new_id = id.replace(/\./g, '');
+    let new_id = id.replace(/\./g, '');
     return new_id;
 }
 
@@ -73,7 +75,7 @@ function getCurrentSliceColor(){
 
 
 function shortName(name){
-    var new_name = name;
+    let new_name = name;
     new_name = name.replace('onelab.', '');
     return new_name
 }
@@ -85,7 +87,7 @@ function getMySlicesName(){
 
 
 function getMySlicesinShortName(){
-    var new_short_names = [];
+    let new_short_names = [];
     $.each(getMySlicesName(), function(key,val){
 	new_short_names.push(shortName(val));
     });
@@ -99,21 +101,21 @@ function getMySlicesColor(){
 
 
 function pendingName(name){
-    var new_name = name;
+    let new_name = name;
     new_name = resetName(name) + ' (pending)';
     return new_name
 }
 
 
 function removingName(name){
-    var new_name = name;
+    let new_name = name;
     new_name = resetName(name) + ' (removing)';
     return new_name
 }
 
 
 function resetName(name){
-    var new_name = name;
+    let new_name = name;
     new_name = name.replace(' (pending)', '');
     new_name = new_name.replace(' (removing)', '');
     new_name = new_name.replace(' * failed *', '');
@@ -122,17 +124,17 @@ function resetName(name){
 
 
 function failedName(name){
-    var new_name = name;
+    let new_name = name;
     new_name = resetName(name) + ' * failed *';
     return new_name
 }
 
 
 function getRandomColor() {
-    var reserved_colors = ["#A1A1A1", "#D0D0D0", "#FF0000", "#000000", "#FFE5E5", "#616161"];
-    var letters = '0123456789ABCDEF'.split('');
-    var color = '#';
-    for (var i = 0; i < 6; i++ ) {
+    let reserved_colors = ["#A1A1A1", "#D0D0D0", "#FF0000", "#000000", "#FFE5E5", "#616161"];
+    let letters = '0123456789ABCDEF'.split('');
+    let color = '#';
+    for (let i = 0; i < 6; i++ ) {
 	color += letters[Math.round(Math.random() * 15)];
     }
     if ($.inArray(color.toUpperCase(), reserved_colors) > -1){
@@ -149,7 +151,7 @@ function fullName(name){
 
 
 function failedLease(lease){
-    newLease = new Object();
+    let newLease = new Object();
     newLease.title = failedName(lease.title);
     newLease.id = lease.id;
     newLease.start = lease.start;
@@ -180,19 +182,19 @@ function removeElementFromCalendar(id){
 
 
 function diffArrays(first, second){
-    var diff_array = null;
+    let diff_array = null;
     diff_array = $(first).not(second).get()
     return diff_array;
 }
 
 
 function getLocalId(title, start, end){
-    var id = null;
-    var m_start = moment(start)._d.toISOString();
-    var m_end   = moment(end)._d.toISOString();
+    let id = null;
+    let m_start = moment(start)._d.toISOString();
+    let m_end   = moment(end)._d.toISOString();
     String.prototype.hash = function() {
-	var self = this, range = Array(this.length);
-	for(var i = 0; i < this.length; i++) {
+	let self = this, range = Array(this.length);
+	for(let i = 0; i < this.length; i++) {
 	    range[i] = i;
 	}
 	return Array.prototype.map.call(range, function(i) {
@@ -210,7 +212,7 @@ function getActionsQueue(){
 
 
 function isRemoving(title){
-    var removing = true;
+    let removing = true;
     if(title.indexOf('(removing)') == -1){
 	removing = false;
     }
@@ -219,7 +221,7 @@ function isRemoving(title){
 
 
 function isPending(title){
-    var pending = true;
+    let pending = true;
     if(title.indexOf('(pending)') == -1){
 	pending = false;
     }
@@ -228,7 +230,7 @@ function isPending(title){
 
 
 function isNightly(title){
-    var nightly = false;
+    let nightly = false;
     if (title){
 	if(title.indexOf('nightly routine') > -1){
 	    nightly = true;
@@ -239,7 +241,7 @@ function isNightly(title){
 
 
 function isFailed(title){
-    var failed = true;
+    let failed = true;
     if(title.indexOf('* failed *') == -1){
 	failed = false;
     }
@@ -263,7 +265,7 @@ function getActionsQueued(){
 
 
 function queueAction(title, start, end){
-    var local_id = null;
+    let local_id = null;
     local_id = getLocalId(title, start, end);
     actionsQueued.push(local_id);
 }
@@ -280,7 +282,7 @@ function getCurrentLeases(){
 
 
 function setNightlyAndPast(){
-    var notAllowedEvents = []
+    let notAllowedEvents = []
     //Nightly routine fixed in each nigth from 3AM to 5PM
     // newEvent = new Object();
     // newEvent.title = "nightly routine";
@@ -294,7 +296,7 @@ function setNightlyAndPast(){
     // notAllowedEvents.push(newEvent);
 
     //Past dates
-    newEvent = new Object();
+    let newEvent = new Object();
     newEvent.id = "pastDate";
     newEvent.start = moment().format("YYYY-01-01T00:00:00Z");
     newEvent.end   = moment().format("YYYY-MM-DD");
@@ -326,7 +328,7 @@ function createLease(lease){
 
 
 function isPastDate(end){
-    var past = false;
+    let past = false;
     if(moment().diff(end, 'minutes') > 0){
 	past = true;
     }
@@ -350,7 +352,7 @@ function adaptStartEnd(start, end) {
 
 
 function isR2lab(name){
-    var r2lab = false;
+    let r2lab = false;
     if (name.substring(0, 13) == 'inria_'){
 	r2lab = true;
     }
@@ -359,8 +361,8 @@ function isR2lab(name){
 
 
 function sendMessage(msg, type){
-    var cls   = 'danger';
-    var title = 'Ooops!'
+    let cls   = 'danger';
+    let title = 'Ooops!'
     if(type == 'info'){
 	cls   = 'info';
 	title = 'Info:'
@@ -381,7 +383,7 @@ function sendMessage(msg, type){
 function isZombie(obj){
     return false;
 
-    var is_zombie = false;
+    let is_zombie = false;
     if(obj.resource_type == 'lease' && obj.status == 'pending' && isMySlice(shortName(obj.slicename))){
 	is_zombie = true;
     }
@@ -394,7 +396,7 @@ function isZombie(obj){
 // of course it must be called *after* the actual API call
 // via django
 function refreshLeases(){
-    var msg = "INIT";
+    let msg = "INIT";
     if (liveleases_debug)
 	console.log("sending on request:leases -> " + msg);
     socket.emit('request:leases', msg);
@@ -404,14 +406,14 @@ function refreshLeases(){
 function showImmediate(action, event) {
     if (liveleases_debug) console.log("showImmediate");
     if (action == 'add'){
-	var lease  = createLease(event);
+	let lease  = createLease(event);
 	$('#calendar').fullCalendar('renderEvent', lease, true );
     } else if (action == 'edit'){
-	var lease  = createLease(event);
+	let lease  = createLease(event);
 	removeElementFromCalendar(lease.id);
 	$('#calendar').fullCalendar('renderEvent', lease, true );
     } else if (action == 'del'){
-	var lease  = createLease(event);
+	let lease  = createLease(event);
 	removeElementFromCalendar(lease.id);
 	$('#calendar').fullCalendar('renderEvent', lease, true );
     }
@@ -422,8 +424,8 @@ function listenLeases(){
 	if (liveleases_debug) console.log("incoming info:leases");
 	setCurrentLeases(msg);
 	resetActionsQueue();
-	var leases = getCurrentLeases();
-	var leasesbooked = parseLeases(leases);
+	let leases = getCurrentLeases();
+	let leasesbooked = parseLeases(leases);
 	refreshCalendar(leasesbooked);
 	setCurrentSliceBox(getCurrentSliceName());
     });
@@ -449,8 +451,8 @@ function updateLeases(action, event){
 
 
 function setActionsQueue(action, data){
-    var verb = null;
-    var request = null;
+    let verb = null;
+    let request = null;
 
     if(action == 'add'){
 	verb = 'add';
@@ -478,7 +480,7 @@ function setActionsQueue(action, data){
 	return false;
     }
     // xxx replace this with some more sensible code for showing errors
-    var display_error_message = alert;
+    let display_error_message = alert;
     post_xhttp_django("/leases/"+verb, request, function(xhttp) {
 	if (xhttp.readyState == 4) {
 	    // this triggers a refresh of the leases once the sidecar server answers back
@@ -496,7 +498,7 @@ function setActionsQueue(action, data){
 		// the http POST has been successful, but a lot can happen still
 		// for starters, are we getting a JSON string ?
 		try {
-		    var obj = $.parseJSON(xhttp.responseText);
+		    let obj = $.parseJSON(xhttp.responseText);
 		    if (obj['error']) {
 			if (obj['error']['exception']) {
 			    if (obj['error']['exception']['reason']) {
@@ -520,7 +522,7 @@ function setActionsQueue(action, data){
 
 
 function setColorLeases(){
-    var some_colors = $.cookie("some-colors-data")
+    let some_colors = $.cookie("some-colors-data")
     $.each(my_slices_name, function(key,obj){
 	my_slices_color[key] = some_colors[key];
     });
@@ -535,8 +537,8 @@ function range(start, end) {
 
 function saveSomeColors(){
     $.cookie.json = true;
-    var local_colors = ["#F3537D", "#5EAE10", "#481A88", "#2B15CC", "#8E34FA", "#A41987", "#1B5DF8", "#7AAD82", "#8D72E4", "#323C89"]
-    var some_colors = $.cookie("some-colors-data")
+    let local_colors = ["#F3537D", "#5EAE10", "#481A88", "#2B15CC", "#8E34FA", "#A41987", "#1B5DF8", "#7AAD82", "#8D72E4", "#323C89"]
+    let some_colors = $.cookie("some-colors-data")
 
     if (! some_colors){
 	some_colors = 0
@@ -548,7 +550,7 @@ function saveSomeColors(){
 	if (some_colors.length >= my_slices_name.length) {
 	    ;
 	}else {
-	    var lack_colors = my_slices_name.length - local_colors.length;
+	    let lack_colors = my_slices_name.length - local_colors.length;
 	    $.each(range(0,lack_colors), function(key,obj){
 		local_colors.push(getRandomColor());
 	    });
@@ -559,7 +561,7 @@ function saveSomeColors(){
 
 
 function getColorLease(slice_title){
-    var lease_color = '#A1A1A1';
+    let lease_color = '#A1A1A1';
     if ($.inArray(fullName(slice_title), getMySlicesName()) > -1){
 	lease_color = my_slices_color[my_slices_name.indexOf(fullName(slice_title))];
     }
@@ -568,7 +570,7 @@ function getColorLease(slice_title){
 
 
 function delActionQueue(id){
-    var idx = actionsQueue.indexOf(id);
+    let idx = actionsQueue.indexOf(id);
     actionsQueue.splice(idx,1);
 }
 
@@ -590,7 +592,7 @@ function resetCalendar(){
 
 function getLastSlice(){
     $.cookie.json = true;
-    var last_slice = $.cookie("last-slice-data")
+    let last_slice = $.cookie("last-slice-data")
 
     if ($.inArray(fullName(last_slice), getMySlicesName()) > -1){
 	setCurrentSliceName(last_slice);
@@ -603,7 +605,7 @@ function getLastSlice(){
 
 
 function isMySlice(slice){
-    var is_my = false;
+    let is_my = false;
     if ($.inArray(fullName(resetName(slice)), getMySlicesName()) > -1){
 	is_my = true;
     }
@@ -612,7 +614,7 @@ function isMySlice(slice){
 
 
 function isPresent(element, list){
-    var present = false;
+    let present = false;
 
     if ($.inArray(element, list) > -1){
 	present = true;
@@ -627,8 +629,8 @@ function getNightlyColor(){
 
 
 function buildSlicesBox(leases){
-    // var knew_slices = getMySlicesinShortName();
-    var slices = $("#my-slices");
+    // let knew_slices = getMySlicesinShortName();
+    let slices = $("#my-slices");
 
     $.each(leases, function(key,val){
 	if ($.inArray(val.title, knew_slices) === -1) { //already present?
@@ -668,15 +670,15 @@ function buildSlicesBox(leases){
 }
 
 
-var knew_slices = [];
+let knew_slices = [];
 function buildInitialSlicesBox(leases){
     setColorLeases();
-    var slices = $("#my-slices");
+    let slices = $("#my-slices");
     slices.html('<h4 align="center">drag & drop to book</h4>');
 
     $.each(leases, function(key,val){
 	val = shortName(val);
-	var color = getColorLease(val);
+	let color = getColorLease(val);
 	if ($.inArray(val, knew_slices) === -1) { //removgin nightly routine and slices already present?
 	    if (isMySlice(val)) {
 		if(val === nigthly_slice_name){
@@ -724,7 +726,7 @@ function refreshCalendar(events){
 	    $('#calendar').fullCalendar('renderEvent', event, true);
 	});
 
-	var each_removing = $("#calendar").fullCalendar( 'clientEvents' );
+	let each_removing = $("#calendar").fullCalendar( 'clientEvents' );
 	$.each(each_removing, function(k,obj){
 	    //when click in month view all 'thousands' of nightly comes.
 	    //Maybe reset when comeback from month view (not implemented)
@@ -744,7 +746,7 @@ function refreshCalendar(events){
 	    }
 	});
 
-	var failedEvents = [];
+	let failedEvents = [];
 	$.each(theZombieLeases, function(k,obj){
 	    failedEvents.push(zombieLease(obj));
 	});
@@ -757,12 +759,12 @@ function refreshCalendar(events){
 
 
 function parseLeases(data){
-    var parsedData = $.parseJSON(data);
-    var leases = [];
+    let parsedData = $.parseJSON(data);
+    let leases = [];
     resetZombieLeases();
 
     parsedData.forEach(function(lease){
-	newLease = new Object();
+	let newLease = new Object();
 	newLease.title = shortName(lease.slicename);
 	newLease.uuid = String(lease.uuid);
 	newLease.start = lease.valid_from;
@@ -782,7 +784,7 @@ function parseLeases(data){
 
 	if(isZombie(lease)){
 	    theZombieLeases.push(newLease);
-	    var request = {"uuid" : newLease.uuid};
+	    let request = {"uuid" : newLease.uuid};
 	    post_xhttp_django('/leases/delete', request, function(xhttp) {
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
 		    if (liveleases_debug) console.log("return from /leases/delete");
