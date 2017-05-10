@@ -202,6 +202,8 @@ function getLocalId(title, start, end){
 	}).join('');
     }
     id = (title+m_start+m_end).hash();
+    if (liveleases_debug)
+	console.log(`title = ${title} -> ${id}`);
     return id;
 }
 
@@ -398,13 +400,14 @@ function isZombie(obj){
 function refreshLeases(){
     let msg = "INIT";
     if (liveleases_debug)
-	console.log("sending on request:leases -> " + msg);
+	console.log("sending on request:leases -> ", msg);
     socket.emit('request:leases', msg);
 }
 
 // show action immediately before it becomes confirmed
 function showImmediate(action, event) {
-    if (liveleases_debug) console.log("showImmediate");
+    if (liveleases_debug)
+	console.log("showImmediate");
     if (action == 'add'){
 	let lease  = createLease(event);
 	$('#calendar').fullCalendar('renderEvent', lease, true );
@@ -421,11 +424,12 @@ function showImmediate(action, event) {
 
 function listenLeases(){
     socket.on('info:leases', function(msg){
-	if (liveleases_debug) console.log("incoming info:leases");
 	setCurrentLeases(msg);
 	resetActionsQueue();
 	let leases = getCurrentLeases();
 	let leasesbooked = parseLeases(leases);
+	if (liveleases_debug)
+	    console.log(`incoming on info:leases ${leasesbooked.length} leases`, msg);
 	refreshCalendar(leasesbooked);
 	setCurrentSliceBox(getCurrentSliceName());
     });
@@ -488,7 +492,8 @@ function setActionsQueue(action, data){
 	    ////////// temporary
 	    // in all cases, show the results in console, in case we'd need to improve this
 	    // logic further on in the future
-	    if (liveleases_debug) console.log("upon ajax POST: xhttp.status = " + xhttp.status);
+	    if (liveleases_debug)
+		console.log("upon ajax POST: xhttp.status = " + xhttp.status);
 	    ////////// what should remain
 	    if (xhttp.status != 200) {
 		// this typically is a 500 error inside django
@@ -720,8 +725,9 @@ function refreshCalendar(events){
     if(refresh){
 
 	$.each(events, function(key, event){
-	    if (liveleases_debug) console.log("refreshCalendar : lease = "+ event.title + ":" +
-					      event.start + " .. " + event.end);
+	    if (liveleases_debug)
+		console.log("refreshCalendar : lease = "+ event.title + ":" +
+			    event.start + " .. " + event.end);
 	    removeElementFromCalendar(event.id);
 	    $('#calendar').fullCalendar('renderEvent', event, true);
 	});
@@ -763,6 +769,9 @@ function parseLeases(data){
     let leases = [];
     resetZombieLeases();
 
+    if (liveleases_debug)
+	console.log("parseLeases", data);
+    
     parsedData.forEach(function(lease){
 	let newLease = new Object();
 	newLease.title = shortName(lease.slicename);
@@ -787,8 +796,8 @@ function parseLeases(data){
 	    let request = {"uuid" : newLease.uuid};
 	    post_xhttp_django('/leases/delete', request, function(xhttp) {
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
-		    if (liveleases_debug) console.log("return from /leases/delete");
-		    if (liveleases_debug) console.log(request);
+		    if (liveleases_debug) 
+			console.log("return from /leases/delete", request);
 		}
 	    });
 	}
