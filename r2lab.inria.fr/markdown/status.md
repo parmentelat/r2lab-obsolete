@@ -18,10 +18,15 @@ For more details about each node, please click in the node number or badge.
   <div class="col-lg-10">
     <div id="livemap_container"></div>
     <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
-    <script>
-    //livemap_show_rxtx_rates = true;
-    </script>
     <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
+    <script>
+    // override livemap default settings 
+    Object.assign(livemap_options, {
+        usrp_width : 15,
+    	usrp_height : 26,
+//    debug : true,
+   });
+    </script>
   </div>
 </div>
 
@@ -66,7 +71,10 @@ In addition, you will find the following symbols close to some nodes
     <table class="table table-condensed" id='livetable_container'> </table>
     <script type="text/javascript" src="/assets/r2lab/livetable.js"></script>
     <script>
-    //livetable_show_rxtx_rates = true;
+    // override livetable default settings 
+    Object.assign(livetable_options, {
+//    debug : true,
+   });
     </script>
     <style type="text/css"> @import url("/assets/r2lab/livetable.css"); </style>
   </div>

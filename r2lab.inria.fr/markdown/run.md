@@ -59,18 +59,21 @@ require_login: true
     <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
     <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
     <script>
-//    livemap_show_rxtx_rates = true;
-    livemap_space_x = 72;
-    livemap_space_y = 87;
-    livemap_radius_unavailable = 21;
-    livemap_radius_ok = 16;
-    livemap_radius_pinging = 10;
-    livemap_radius_warming = 4;
-    livemap_radius_ko = 0;
-    livemap_margin_x = 5;
-    livemap_margin_y = 20;
-    livemap_padding_x = 35;
-    livemap_padding_y = 35;
+    // override livemap default settings 
+    Object.assign(livemap_options, {
+      space_x : 72,
+      space_y : 87,
+      radius_unavailable : 21,
+      radius_ok : 16,
+      radius_pinging : 10,
+      radius_warming : 4,
+      radius_ko : 0,
+      margin_x : 5,
+      margin_y : 20,
+      padding_x : 35,
+      padding_y : 35,
+//      debug : true,
+   });
     </script>
     <div id="actions"></div>
     </div>
@@ -84,9 +87,12 @@ require_login: true
       <br/>
       <table class="table table-condensed" id='livetable_container'> </table>
       <script type="text/javascript" src="/assets/r2lab/livetable.js"></script>
-      <script>
-      //livetable_show_rxtx_rates = true;
-      </script>
+    <script>
+    // override livetable default settings 
+    Object.assign(livetable_options, {
+//      debug : true,
+   });
+    </script>
       <style type="text/css"> @import url("/assets/r2lab/livetable.css"); </style>
     </div>
   </div>    

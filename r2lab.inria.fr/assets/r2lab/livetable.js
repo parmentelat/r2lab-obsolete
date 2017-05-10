@@ -1,42 +1,46 @@
-////////// must be in sync with r2lab-sidecar.js
-// the 2 socket.io channels that are used
-// (1) this is where actual JSON status is sent
-var channel = 'info:nodes';
-// (2) this one is used for triggering a broadcast of the complete status
-var signalling = 'request:nodes';
+"use strict";
 
-// sidecar_url var is defined in template sidecar-url.js
+// sidecar_url global variable is defined in template sidecar-url.js
 // from sidecar_url as defined in settings.py
 
+//global - mostly for debugging and convenience
+let the_livetable;
 
-var fedora_badge = '<img src="/assets/img/fedora-logo.png">';
-var ubuntu_badge = '<img src="/assets/img/ubuntu-logo.png">';
-var other_badge = '<img src="/assets/img/other-logo.png">';
+////////// configurable
+let livetable_options = {
 
-// ready to fly as soon as the data comes in from monitor
-var livetable_show_rxtx_rates = false;
+    nb_nodes : 37,
+    
+    fedora_badge : '<img src="/assets/img/fedora-logo.png">',
+    ubuntu_badge : '<img src="/assets/img/ubuntu-logo.png">',
+    other_badge : '<img src="/assets/img/other-logo.png">',
+
+    ////////// must be in sync with r2lab-sidecar.js
+    // the 2 socket.io channels that are used
+    channels : {
+	chan_nodes : 'info:nodes',
+	chan_nodes_request : 'request:nodes',
+    },
+
+    // obsolete
+    livetable_show_rxtx_rates : false,
+
+    debug : false,
+}
 
 
 // quick'n dirty helper to create <span> tags inside the <td>
 // d3 should allow us to do that more nicely but I could not figure it out yet
-function span_html(text, klass) {
-    var res = "<span";
-    if (klass) res += " class='" + klass + "'";
-    res += '>';
-    res += text;
-    res += "</span>";
-    return res;
+function span_html(text, cls) {
+    let tag = cls ? ` class='${cls}'` : "";
+    return `<span${tag}>${text}</span>`;
 }
 
-var livetable_debug = false;
-//var livetable_debug = true;
 
 //////////////////////////////
-var nb_nodes = 37;
-
 // nodes are dynamic
 // their table row and cells get created through d3 enter mechanism
-var TableNode = function (id) {
+let TableNode = function (id) {
     this.id = id;
 
     this.cells_data = [
@@ -69,33 +73,34 @@ var TableNode = function (id) {
     }
 
     // node_info is a dict coming through socket.io in JSON
-    // simply copy the fieds present in this dict in the local object
+    // simply copy the fields present in this dict in the local object
     // for further usage in animate_changes
     // don't bother if no change is detected
     this.update_from_news = function(node_info) {
-	var modified = false;
-	for (var prop in node_info) {
+	let modified = false;
+	for (let prop in node_info) {
 	    if (node_info[prop] != this[prop]) {
 		this[prop] = node_info[prop];
 		modified = true;
-		if (livetable_debug) {
-		    // console.log("node_info['" + prop + "'] = " + node_info[prop]);
+		if (livetable_options.debug) {
+		    console.log(`node_info[${prop}] = ${node_info[prop]}`);
 		}
 	    }
 	}
 	if (! modified) {
-	    if (livetable_debug) console.log("no change on " + node_info['id'] + " - exiting");
+	    if (livetable_options.debug)
+		console.log(`no change on ${node_info.id} - exiting`);
 	    return;
 	} else {
-	    if (livetable_debug) {
-		console.log("id = " + node_info['id'] + " -> ", node_info);
+	    if (livetable_options.debug) {
+		console.log(`id = ${node_info.id} ->`, node_info);
 	    }
 	    
 	}
 	// then rewrite actual representation in cells_data
 	// that will contain a list of ( html_text, class )
 	// used by the d3 mechanism to update the <td> elements in the row
-	var col = 1
+	let col = 1
 	// available
 	this.cells_data[col++] =
 	    (this.available == 'ko') ?
@@ -121,44 +126,44 @@ var TableNode = function (id) {
 	this.cells_data[col++] = this.uname_cell(this.uname);
 	this.cells_data[col++] = this.image_cell(this.image_radical);
 	// optional
-	if (livetable_show_rxtx_rates) {
+	if (livetable_options.show_rxtx_rates) {
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan0_rx_rate);
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan0_tx_rate);
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_rx_rate);
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_tx_rate);
 	}
-	if (livetable_debug) {
-	    console.log("after update_from_news on id=" + node_info['id'] + " -> ",
+	if (livetable_options.debug) {
+	    console.log(`after update_from_news on id=${node_info.id} -> `,
 			this.cells_data);
 	}
     }
 
     this.usrp_cell = function() {
-	var alt_text = "";
+	let alt_text = "";
 	alt_text += (this.gnuradio_release) ? "gnuradio_release = "
 	    + this.gnuradio_release : "no gnuradio installed";
-	var text = this.usrp_type || 'none';
+	let text = this.usrp_type || 'none';
 	text += ' ';
 	text += (this.usrp_on_off == 'on')
 	    ? span_html('', 'fa fa-toggle-on')
 	    : span_html('', 'fa fa-toggle-off') ;
-	var cell = '<span title="' + alt_text + '">' + text + '</span>';
-	var klass = (this.usrp_on_off == 'on') ? 'ok'
+	let cell = '<span title="' + alt_text + '">' + text + '</span>';
+	let klass = (this.usrp_on_off == 'on') ? 'ok'
 	    : (this.usrp_on_off == 'off') ? 'ko' : 'error';
 	return [cell, klass];
     }
 
     this.release_cell = function(os_release) {
 	// use a single css class for now
-	var klass = 'os';
+	let klass = 'os';
 	if (os_release == undefined)
 	    return [ "n/a", klass ];
 	if (os_release.startsWith('fedora'))
-	    return [ fedora_badge + ' ' + os_release + ' ', klass ];
+	    return [ livetable_options.fedora_badge + ' ' + os_release + ' ', klass ];
 	else if (os_release.startsWith('ubuntu'))
-	    return [ ubuntu_badge + ' ' + os_release + ' ', klass ];
+	    return [ livetable_options.ubuntu_badge + ' ' + os_release + ' ', klass ];
 	else if (os_release == 'other')
-	    return [ other_badge + ' (ssh OK)', klass ];
+	    return [ livetable_options.other_badge + ' (ssh OK)', klass ];
 	else
 	    return [ 'N/A', klass ];
     }
@@ -168,7 +173,7 @@ var TableNode = function (id) {
     }
 
     this.image_cell = function(image_radical) {
-	var klass = 'image';
+	let klass = 'image';
 	if (image_radical == undefined)
 	    return [ "n/a", klass ];
 	return [ image_radical, klass ];
@@ -176,13 +181,13 @@ var TableNode = function (id) {
 
     // raw data is bits/s
     this.rxtx_cell = function(value) {
-	var klass = 'rxtx';
+	let klass = 'rxtx';
 	// forget about nodes that are not fully operational
 	if ((value == undefined) || (! this.is_alive()))
 	    return ["-", klass] ;
 	// we need to format this into kbps, Mbps, etc..
-	var raw = Number(value);
-	var number, unit;
+	let raw = Number(value);
+	let number, unit;
 	if (raw/1000 < 1.) {
 	    number = raw;
 	    unit = "bps";
@@ -193,23 +198,23 @@ var TableNode = function (id) {
 	    number = raw/1000000;
 	    unit = "Mbps";
 	}
-	var nice = number.toLocaleString() + " " + unit;
+	let nice = number.toLocaleString() + " " + unit;
 	return [ nice, klass ];
     }
 
     this.set_display = function(display) {
-	var selector = '#livetable_container #row' + this.id;
+	let selector = '#livetable_container #row' + this.id;
 	display ? $(selector).show() : $(selector).hide();
     }
 
 }
 
-var ident = function(d) { return d; };
-var get_node_id = function(node){return node.id;}
-var get_node_data = function(node){return node.cells_data;}
+let ident = function(d) { return d; };
+let get_node_id = function(node){return node.id;}
+let get_node_data = function(node){return node.cells_data;}
 // rewriting info should happen in update_from_news
-var get_html = function(tuple) {return (tuple === undefined) ? 'n/a' : tuple[0];}
-var get_class = function(tuple) {return (tuple === undefined) ? '' : tuple[1];}
+let get_html = function(tuple) {return (tuple === undefined) ? 'n/a' : tuple[0];}
+let get_class = function(tuple) {return (tuple === undefined) ? '' : tuple[1];}
 
 //////////////////////////////
 function LiveTable() {
@@ -223,13 +228,13 @@ function LiveTable() {
     }
 
     this.init_dom = function () {
-	var containers = d3.selectAll('#livetable_container');
-	var head = containers.append('thead').attr('class', 'livetable_header');
-	var body = containers.append('tbody').attr('class', 'livetable_body');
-	var foot = containers.append('tfoot').attr('class', 'livetable_header');
+	let containers = d3.selectAll('#livetable_container');
+	let head = containers.append('thead').attr('class', 'livetable_header');
+	let body = containers.append('tbody').attr('class', 'livetable_body');
+	let foot = containers.append('tfoot').attr('class', 'livetable_header');
 
-	var self = this;
-	var header_rows = d3.selectAll('.livetable_header').append('tr')
+	let self = this;
+	let header_rows = d3.selectAll('.livetable_header').append('tr')
 	    .attr('class', 'all')
 	    .on('click', function(){self.toggle_view_mode();})
 	;
@@ -242,7 +247,7 @@ function LiveTable() {
 	header_rows.append('th').html('last O.S.');
 	header_rows.append('th').html('last uname');
 	header_rows.append('th').html('last image');
-	if (livetable_show_rxtx_rates) {
+	if (livetable_options.show_rxtx_rates) {
 	    header_rows.append('th').html('w0-rx').attr('class','rxtx');
 	    header_rows.append('th').html('w0-tx').attr('class','rxtx');
 	    header_rows.append('th').html('w1-rx').attr('class','rxtx');
@@ -252,7 +257,7 @@ function LiveTable() {
     }
 
     this.init_nodes = function () {
-	for (var i=0; i < nb_nodes; i++) {
+	for (let i=0; i < livetable_options.nb_nodes; i++) {
 	    this.nodes[i] = new TableNode(i+1);
 	}
     }
@@ -269,9 +274,9 @@ function LiveTable() {
 	$(".livetable_header tr").toggleClass('all');
     }
     this.display_nodes = function(mode) {
-	for (var i in this.nodes) {
-	    var node=this.nodes[i];
-	    var display = (mode=='all') ? true : (node.is_worth());
+	for (let i in this.nodes) {
+	    let node=this.nodes[i];
+	    let display = (mode=='all') ? true : (node.is_worth());
 	    node.set_display(display);
 	}
     }
@@ -281,19 +286,19 @@ function LiveTable() {
     // http://stackoverflow.com/questions/39861603/d3-js-v4-nested-selections
     // not that I have understood the bottom of it, but it works again..
     this.animate_changes = function(nodes_info) {
-	if (livetable_debug) console.log("animate_changes");
-	var tbody = d3.select("tbody.livetable_body");
+	if (livetable_options.debug) console.log("animate_changes");
+	let tbody = d3.select("tbody.livetable_body");
 	// row update selection
-	var rows = tbody.selectAll('tr')
+	let rows = tbody.selectAll('tr')
 	    .data(this.nodes, get_node_id);
 	////////// create rows as needed
-	rowsenter = rows.enter()
+	let rowsenter = rows.enter()
 	    .append('tr')
 	    .attr('id', function(node){ return 'row' + node.id;})
 	;
 	// the magic here is to pass rowsenter to the merge method
 	// instead of rows
-	var cells =
+	let cells =
 	    rows.merge(rowsenter)
 	      .selectAll('td')
 	        .data(get_node_data);
@@ -324,38 +329,38 @@ function LiveTable() {
 	    return;
 	}
 	try {
-	    var node_infos = JSON.parse(json);
-	    if (livetable_debug) console.log("handle_json_status - incoming "
-					     + node_infos.length + " node infos");
+	    let node_infos = JSON.parse(json);
+	    if (livetable_options.debug)
+		console.log(`handle_json_status - incoming ${node_infos.length} node infos`);
 	    // first we write this data into the TableNode structures
-	    for (var i=0; i < node_infos.length; i++) {
-		var node_info = node_infos[i];
-		var id = node_info['id'];
-		var node = this.locate_node_by_id(id);
+	    for (let i=0; i < node_infos.length; i++) {
+		let node_info = node_infos[i];
+		let id = node_info['id'];
+		let node = this.locate_node_by_id(id);
 		if (node != undefined)
 		    node.update_from_news(node_info);
 		else
-		    console.log("livetable: could not locate node id "
-				+ id + " - ignored");
+		    console.log(`livetable: could not locate node id ${id} - ignored`);
 	    }
 	    this.animate_changes(node_infos);
 	} catch(err) {
 	    if (json != "") {
-		console.log("Could not apply news - ignored  - JSON has "
-			    + json.length + " chars");
+		console.log(`Could not apply news - ignored  - JSON has ${json.length} chars`);
 		console.log(err.stack);
 	    }
 	}
     }
 
     this.init_sidecar_socket_io = function() {
-	if (livetable_debug)
-	    console.log("livetable is connecting to sidecar server at " + sidecar_url);
+	if (livetable_options.debug)
+	    console.log(`livetable is connecting to sidecar server at ${sidecar_url}`);
 	this.sidecar_socket = io(sidecar_url);
 	// what to do when receiving news from sidecar
-	var lab = this;
-	this.sidecar_socket.on(channel, function(json){
-	    if (livetable_debug) console.log("livetable is receiving on " + channel);
+	let { chan_nodes } = livetable_options.channels;
+	let lab = this;
+	this.sidecar_socket.on(chan_nodes, function(json){
+	    if (livetable_options.debug)
+		console.log(`livetable is receiving on ${chan_nodes}`);
             lab.handle_json_status(json);
 	});
 	this.request_complete_from_sidecar();
@@ -365,7 +370,8 @@ function LiveTable() {
     // content is not actually used by sidecar server
     // could maybe send some client id instead
     this.request_complete_from_sidecar = function() {
-	this.sidecar_socket.emit(signalling, 'INIT');
+	let { chan_nodes_request } = livetable_options.channels;
+	this.sidecar_socket.emit(chan_nodes_request, 'INIT');
     }
 
 }
