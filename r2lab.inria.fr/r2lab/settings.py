@@ -174,8 +174,16 @@ manifold_url = "https://portal.onelab.eu:7080/"
 # not specifying either http: or https: here is the right thing to do
 # it means to use the same protocol as the one
 # used to reach the main service in the first place
-# xxx this is to move to port 999
 sidecar_url = "//r2lab.inria.fr:999/"
+
+if not PRODUCTION:
+    # use remote sidecar, unless SIDECAR is defined
+    # it can be either the actual sidecar_url,
+    # or e.g. 'local', to use the default hardwired in sidecar.js
+    SIDECAR = os.getenv('SIDECAR')
+    if SIDECAR is not None:
+        sidecar_url = SIDECAR if 'http' in SIDECAR else "http://localhost:10000/"
+        print("Using sidecar_url = {sidecar_url}".format(**locals()))
 
 # transitioning to plcauthbackend
 AUTHENTICATION_BACKENDS = (
