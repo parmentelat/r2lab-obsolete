@@ -375,7 +375,7 @@ function sendMessage(msg, type){
     }
     $('html,body').animate({'scrollTop' : 0},400);
     $('#messages').removeClass().addClass('alert alert-'+cls);
-    $('#messages').html("<strong>"+title+"</strong> "+msg);
+    $('#messages').html(`<strong>${title}</strong> ${msg}`);
     $('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
     $('#messages').delay(30000).fadeOut();
 }
@@ -485,7 +485,7 @@ function setActionsQueue(action, data){
     }
     // xxx replace this with some more sensible code for showing errors
     let display_error_message = alert;
-    post_xhttp_django("/leases/"+verb, request, function(xhttp) {
+    post_xhttp_django(`/leases/${verb}`, request, function(xhttp) {
 	if (xhttp.readyState == 4) {
 	    // this triggers a refresh of the leases once the sidecar server answers back
 	    refreshLeases();
@@ -493,12 +493,12 @@ function setActionsQueue(action, data){
 	    // in all cases, show the results in console, in case we'd need to improve this
 	    // logic further on in the future
 	    if (liveleases_debug)
-		console.log("upon ajax POST: xhttp.status = " + xhttp.status);
+		console.log(`upon ajax POST: xhttp.status = ${xhttp.status}`);
 	    ////////// what should remain
 	    if (xhttp.status != 200) {
 		// this typically is a 500 error inside django
 		// hard to know what to expect..
-		sendMessage("Something went wrong when managing leases with code " + xhttp.status);
+		sendMessage(`Something went wrong when managing leases with code ${xhttp.status}`);
 	    } else {
 		// the http POST has been successful, but a lot can happen still
 		// for starters, are we getting a JSON string ?
@@ -518,7 +518,7 @@ function setActionsQueue(action, data){
 			;//sendMessage(obj);
 		    }
 		} catch(err) {
-		    sendMessage("unexpected error while anayzing django answer " + err);
+		    sendMessage(`unexpected error while anayzing django answer ${err}`);
 		}
 	    }
 	}
@@ -542,7 +542,8 @@ function range(start, end) {
 
 function saveSomeColors(){
     $.cookie.json = true;
-    let local_colors = ["#F3537D", "#5EAE10", "#481A88", "#2B15CC", "#8E34FA", "#A41987", "#1B5DF8", "#7AAD82", "#8D72E4", "#323C89"]
+    let local_colors = ["#F3537D", "#5EAE10", "#481A88", "#2B15CC", "#8E34FA",
+			"#A41987", "#1B5DF8", "#7AAD82", "#8D72E4", "#323C89"]
     let some_colors = $.cookie("some-colors-data")
 
     if (! some_colors){
@@ -649,7 +650,7 @@ function buildSlicesBox(leases){
 		}
 		slices.append($("<div />")
 			      .addClass('fc-event')
-			      .attr("style", "background-color: "+ val.color +"")
+			      .attr("style", `background-color: ${val.color}`)
 			      .text(val.title))
 		    .append($("<div />")
 			    .attr("id", idFormat(val.title))
@@ -658,7 +659,7 @@ function buildSlicesBox(leases){
 	    // else {
 	    //   slices.append($("<div />")
 	    //	.addClass('fc-event-not-mine')
-	    //  .attr("style", "background-color: "+ val.color +"")
+	    //  .attr("style", `background-color: ${val.color}`)
 	    //  .text(val.title));
 	    // }
 	    knew_slices.push(val.title);
@@ -695,7 +696,7 @@ function buildInitialSlicesBox(leases){
 		}
 		slices.append($("<div />")
 			      .addClass('fc-event')
-			      .attr("style", "background-color: "+ color +"")
+			      .attr("style", `background-color: ${color}`)
 			      .text(val))
 		    .append($("<div />")
 			    .attr("id", idFormat(val))
@@ -704,7 +705,7 @@ function buildInitialSlicesBox(leases){
 	    // else {
 	    //   slices.append($("<div />")
 	    //                 .addClass('fc-event-not-mine')
-	    //		       .attr("style", "background-color: "+ color +"")
+	    //		       .attr("style", `background-color: ${color}`)
 	    //		       .text(val));
 	    // }
 	    knew_slices.push(val);
@@ -726,8 +727,7 @@ function refreshCalendar(events){
 
 	$.each(events, function(key, event){
 	    if (liveleases_debug)
-		console.log("refreshCalendar : lease = "+ event.title + ":" +
-			    event.start + " .. " + event.end);
+		console.log(`refreshCalendar : lease = ${event.title}: ${event.start} .. ${event.end}`);
 	    removeElementFromCalendar(event.id);
 	    $('#calendar').fullCalendar('renderEvent', event, true);
 	});
