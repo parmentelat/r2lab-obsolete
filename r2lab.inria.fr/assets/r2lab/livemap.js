@@ -62,6 +62,11 @@ let livemap_options = {
     debug : false,
 }
 
+function livemap_debug(...args) {
+    if (livemap_options.debug)
+	console.log(...args);
+}
+
 // sidecar_url var is defined in template sidecar-url.js
 // from sidecar_url as defined in settings.py
 
@@ -481,10 +486,8 @@ function LiveMap() {
 	}
 	try {
 	    let infos = JSON.parse(json);
-	    if (livemap_options.debug) {
-		console.log(`*** ${new Date()} Received info about ${infos.length} ${type}(s)`,
-			    infos)
-	    }
+	    livemap_debug(`*** ${new Date()} Received info about ${infos.length} ${type}(s)`,
+			  infos)
 	    // first we write this data into the MapNode structures
 	    let livemap = this;
 	    infos.forEach(function(info) {
@@ -631,7 +634,7 @@ function LiveMap() {
 
     //////////////////// phones graphical layout
     this.animate_phones_changes = function() {
-	if (livemap_options.debug) console.log("in animate_phones_changes");
+	livemap_debug("in animate_phones_changes");
 	let svg = d3.select('div#livemap_container svg');
 	let animation_duration = 850;
 
@@ -682,32 +685,27 @@ function LiveMap() {
 
     //////////////////// socket.io business
     this.init_sidecar_socket_io = function() {
-	if (livemap_options.debug)
-	    console.log(`livemap is connecting to sidecar server at ${sidecar_url}`);
+	livemap_debug(`livemap is connecting to sidecar server at ${sidecar_url}`);
 	this.sidecar_socket = io(sidecar_url);
 	// what to do when receiving news from sidecar
 	let { chan_nodes, chan_nodes_request,
 	      chan_phones, chan_phones_request} = livemap_options.channels;
 	let lab = this;
 	////////// nodes
-	if (livemap_options.debug)
-	    console.log(`arming callback on channel ${chan_nodes}`);
+	livemap_debug(`arming callback on channel ${chan_nodes}`);
 	this.sidecar_socket.on(chan_nodes, function(json){
             lab.handle_nodes_json(json);
 	});
 	// request the first complete copy of the sidecar db
-	if (livemap_options.debug)
-	    console.log(`requesting complete status on channel ${chan_nodes_request}`);
+	livemap_debug(`requesting complete status on channel ${chan_nodes_request}`);
 	this.sidecar_socket.emit(chan_nodes_request, 'INIT');
 	////////// phones
-	if (livemap_options.debug)
-	    console.log(`arming callback on channel ${chan_phones}`);
+	livemap_debug(`arming callback on channel ${chan_phones}`);
 	this.sidecar_socket.on(chan_phones, function(json){
             lab.handle_phones_json(json);
 	});
 	// request the first complete copy of the sidecar db
-	if (livemap_options.debug)
-	    console.log(`requesting complete status on channel ${chan_phones_request}`);
+	livemap_debug(`requesting complete status on channel ${chan_phones_request}`);
 	this.sidecar_socket.emit(chan_phones_request, 'INIT');
     }
 

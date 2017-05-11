@@ -29,6 +29,11 @@ let livetable_options = {
 }
 
 
+function livetable_debug(...args) {
+    if (livetable_options.debug)
+	console.log(...args);
+}
+
 // quick'n dirty helper to create <span> tags inside the <td>
 // d3 should allow us to do that more nicely but I could not figure it out yet
 function span_html(text, cls) {
@@ -82,21 +87,17 @@ let TableNode = function (id) {
 	    if (node_info[prop] != this[prop]) {
 		this[prop] = node_info[prop];
 		modified = true;
-		if (livetable_options.debug) {
-		    console.log(`node_info[${prop}] = ${node_info[prop]}`);
-		}
+		livetable_debug(`node_info[${prop}] = ${node_info[prop]}`);
 	    }
 	}
+
 	if (! modified) {
-	    if (livetable_options.debug)
-		console.log(`no change on ${node_info.id} - exiting`);
+	    // livetable_debug(`no change on ${node_info.id} - exiting`);
 	    return;
 	} else {
-	    if (livetable_options.debug) {
-		console.log(`id = ${node_info.id} ->`, node_info);
-	    }
-	    
+	    livetable_debug(`id = ${node_info.id} ->`, node_info);
 	}
+
 	// then rewrite actual representation in cells_data
 	// that will contain a list of ( html_text, class )
 	// used by the d3 mechanism to update the <td> elements in the row
@@ -132,10 +133,8 @@ let TableNode = function (id) {
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_rx_rate);
 	    this.cells_data[col++] = this.rxtx_cell(this.wlan1_tx_rate);
 	}
-	if (livetable_options.debug) {
-	    console.log(`after update_from_news on id=${node_info.id} -> `,
+	livetable_debug(`after update_from_news on id=${node_info.id} -> `,
 			this.cells_data);
-	}
     }
 
     this.usrp_cell = function() {
@@ -286,7 +285,7 @@ function LiveTable() {
     // http://stackoverflow.com/questions/39861603/d3-js-v4-nested-selections
     // not that I have understood the bottom of it, but it works again..
     this.animate_changes = function(nodes_info) {
-	if (livetable_options.debug) console.log("animate_changes");
+	livetable_debug("animate_changes");
 	let tbody = d3.select("tbody.livetable_body");
 	// row update selection
 	let rows = tbody.selectAll('tr')
@@ -330,8 +329,7 @@ function LiveTable() {
 	}
 	try {
 	    let node_infos = JSON.parse(json);
-	    if (livetable_options.debug)
-		console.log(`handle_json_status - incoming ${node_infos.length} node infos`);
+	    livetable_debug(`handle_json_status - incoming ${node_infos.length} node infos`);
 	    // first we write this data into the TableNode structures
 	    for (let i=0; i < node_infos.length; i++) {
 		let node_info = node_infos[i];
@@ -352,15 +350,13 @@ function LiveTable() {
     }
 
     this.init_sidecar_socket_io = function() {
-	if (livetable_options.debug)
-	    console.log(`livetable is connecting to sidecar server at ${sidecar_url}`);
+	livetable_debug(`livetable is connecting to sidecar server at ${sidecar_url}`);
 	this.sidecar_socket = io(sidecar_url);
 	// what to do when receiving news from sidecar
 	let { chan_nodes } = livetable_options.channels;
 	let lab = this;
 	this.sidecar_socket.on(chan_nodes, function(json){
-	    if (livetable_options.debug)
-		console.log(`livetable is receiving on ${chan_nodes}`);
+	    livetable_debug(`livetable is receiving on ${chan_nodes}`);
             lab.handle_json_status(json);
 	});
 	this.request_complete_from_sidecar();
