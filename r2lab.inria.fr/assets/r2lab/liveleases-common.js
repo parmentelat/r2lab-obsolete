@@ -503,7 +503,7 @@ function setActionsQueue(action, data){
 		// the http POST has been successful, but a lot can happen still
 		// for starters, are we getting a JSON string ?
 		try {
-		    let obj = $.parseJSON(xhttp.responseText);
+		    let obj = JSON.parse(xhttp.responseText);
 		    if (obj['error']) {
 			if (obj['error']['exception']) {
 			    if (obj['error']['exception']['reason']) {
@@ -765,7 +765,7 @@ function refreshCalendar(events){
 
 
 function parseLeases(data){
-    let parsedData = $.parseJSON(data);
+    let parsedData = JSON.parse(data);
     let leases = [];
     resetZombieLeases();
 
