@@ -313,7 +313,7 @@ function setNightlyAndPast(){
 
 
 function createLease(lease){
-    newLease             = new Object();
+    let newLease             = new Object();
     newLease.id          = lease.id
     newLease.uuid        = lease.uuid
     newLease.title       = lease.title
@@ -339,11 +339,11 @@ function isPastDate(end){
 
 
 function adaptStartEnd(start, end) {
-    now = new Date();0
-    started = moment(now).diff(moment(start), 'minutes');
+    let now = new Date();0
+    let started = moment(now).diff(moment(start), 'minutes');
     if (started > 0){
-	s   = moment(now).diff(moment(start), 'minutes')
-	ns  = moment(start).add(s, 'minutes');
+	let s   = moment(now).diff(moment(start), 'minutes')
+	let ns  = moment(start).add(s, 'minutes');
 	start = ns;
 	//end = moment(end).add(1, 'hour');
     }
