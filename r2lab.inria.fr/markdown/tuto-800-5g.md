@@ -95,6 +95,7 @@ Another way to control the phone is through VNC, or equivalently the *Screen Sha
 <img src="/assets/img/screen-sharing.png" width='500px'>
 
 For this you will need the following information:
+
 * VNC endpoint : `faraday.inria.fr` on port 5900 - this port is forwarded to `macphone` on same port
 * login credentials in `macphone` : `tester` / `tester++` 
 
