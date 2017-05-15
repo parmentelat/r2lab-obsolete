@@ -69,6 +69,7 @@ In addition, you will find the following symbols close to some nodes
 <div class="row" id="all">
   <div class="col-lg-12">
     <table class="table table-condensed" id='livetable_container'> </table>
+    <script type="text/javascript" src="/assets/r2lab/livecolumns.js"></script>
     <script type="text/javascript" src="/assets/r2lab/livetable.js"></script>
     <script>
     // override livetable default settings 
@@ -76,6 +77,7 @@ In addition, you will find the following symbols close to some nodes
 //    debug : true,
    });
     </script>
+    <style type="text/css"> @import url("/assets/r2lab/livecolumns.css"); </style>
     <style type="text/css"> @import url("/assets/r2lab/livetable.css"); </style>
   </div>
 </div>

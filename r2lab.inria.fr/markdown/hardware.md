@@ -94,19 +94,14 @@ tab: platform
       <h3>USRP nodes</h3>
       Some nodes are equipped with USRP devices from <a href="http://www.ettus.com" target="_blank">ETTUS</a> to run SDR-based experiments such as spectrum analyzer or 4G/5G OpenAirInterface scenarios. All these devices can be remotely-controlled through ust/uon/uoff utilities. 
       <br>
-      Currently the following USRP devices are deployed:
-      <ul>
-        <li>Five <a href="http://www.ettus.com/product/details/UB210-KIT" target="_blank">USRP B210</a> on nodes 6, 11, 16, 19 and 23,
-        </li>
-        <li>One <a href="http://www.ettus.com/product/details/UN210-KIT" target="_blank">USRP N210</a> on node 12, 
-        </li>
-        <li>One old <a href="http://files.ettus.com/manual/page_usrp2.html" target="_blank">USRP 2</a> on node 13, and
-        </li>
-        <li>One old <a href="https://www.ettus.com/product/details/USRPPKG" target="_blank">USRP 1</a> on node 28.
-        </li>
+      Currently, our deployment features the following types of USRP devices :
+      <a href="http://www.ettus.com/product/details/UB210-KIT" target="_blank">USRP B210</a>,
+      <a href="http://www.ettus.com/product/details/UN210-KIT" target="_blank">USRP N210</a>, 
+      <a href="http://files.ettus.com/manual/page_usrp2.html" target="_blank">USRP 2</a>, and
+      <a href="https://www.ettus.com/product/details/USRPPKG" target="_blank">USRP 1</a> (see detailed mapping in the table below).
     </div>
     <div class="col-md-4">
-      <br><br>
+      <br>
       <img src="/assets/img/hardware-icarus.png"  class='fit-width'>
       <center>Fig. 2 - Icarus node standalone</center>
     </div>
@@ -142,13 +137,17 @@ tab: platform
   <div class="row" markdown="1">
     <div class="col-md-12 new_pad">
       <h3>Nodes detailed information</h3>
-      <!-- DyNAMIC TABLE CREATED BY CMD line in faraday-->
-      <style type="text/css"> @import url("/assets/r2lab/table-nodes.css"); </style>
-      <script type="text/javascript" src="/assets/r2lab/table-nodes.js"></script>
-      <table id="comparative" class="table table-condensed dt_table">
-        <thead><tr><th>&nbsp;</th></tr></thead>
-        <tbody><tr><td>no info available yet</td></tr></tbody>
-      </table>
+      <table class="table table-condensed" id='livehardware_container'> </table>
+      <script type="text/javascript" src="/assets/r2lab/livecolumns.js"></script>
+      <script type="text/javascript" src="/assets/r2lab/livehardware.js"></script>
+    <script>
+    // override livehardware default settings 
+    Object.assign(livehardware_options, {
+//      debug : true,
+   });
+    </script>
+      <style type="text/css"> @import url("/assets/r2lab/livecolumns.css"); </style>
+      <style type="text/css"> @import url("/assets/r2lab/livehardware.css"); </style>
     </div>
   </div>
 </div>

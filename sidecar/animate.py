@@ -28,8 +28,6 @@ def drange(start, stop, step):
         r += step
     return result
 
-wlan_rates_range = drange(0., 20. * 10**6, 6. * 10**5)
-
 ######## valid values for initializing
 nodes_field_possible_values = {
     'available' : [ None, 'ko'] + 3*['ok'],
@@ -42,16 +40,15 @@ nodes_field_possible_values = {
     'image_radical' : [ 'ubuntu-15.04', 'oai-scrambler', '', None ],
     'usrp_type' : 12 * [ None ] + [ 'b210', 'n210', 'usrp1', 'usrp2'],
     'usrp_on_off' : 3 * ['on'] + ['off'],
-#    'wlan0_rx_rate' : wlan_rates_range,
-#    'wlan0_tx_rate' : wlan_rates_range,
-#    'wlan1_rx_rate' : wlan_rates_range,
-#    'wlan1_tx_rate' : wlan_rates_range,
+    'usrp_duplexer' : ['none', 'for eNB', 'for UE'],
+    'images_usrp' : [ [], ['usrp1.png'], ['usrp1.png', 'usrp2.jpg']],
+    'images_wifi' : [ [], ['wifi1.png'], ['wifi1.png', 'wifi2.jpg']],
 }
 
 phones_field_possible_values = {
     'wifi_on_off' : [ 'on', 'off' ],
     'airplane_mode' : [ 'on', 'off'],
-    }
+}
 
 ####################    
 def random_ids(max_nodes_impacted):

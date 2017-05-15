@@ -86,13 +86,15 @@ require_login: true
     <div class="col-md-12">
       <br/>
       <table class="table table-condensed" id='livetable_container'> </table>
+      <script type="text/javascript" src="/assets/r2lab/livecolumns.js"></script>
       <script type="text/javascript" src="/assets/r2lab/livetable.js"></script>
     <script>
     // override livetable default settings 
     Object.assign(livetable_options, {
-//      debug : true,
-   });
+    //      debug : true,
+    });
     </script>
+      <style type="text/css"> @import url("/assets/r2lab/livecolumns.css"); </style>
       <style type="text/css"> @import url("/assets/r2lab/livetable.css"); </style>
     </div>
   </div>    

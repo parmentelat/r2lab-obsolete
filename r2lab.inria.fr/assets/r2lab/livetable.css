@@ -1,76 +1,12 @@
-#livetable_container th, #livetable_container td {
-    text-align: left;
-    font-size: .9em;
-    font-family: "Source Sans Pro", sans-serif;
-    color: #404042;
-    vertical-align: middle;
-}
-
-/* headers */
-#livetable_container th {
-  color: #404042;
-  font-size: 1.0em;
-  font-family: "Source Sans Pro", sans-serif;
-  font-style: bold;
-  vertical-align: middle;
-}
-
-/* body - except for the id column */
-#livetable_container td:not(.badge) {
-/*    font-size: 20px; */
-    font-family: "Source Sans Pro", sans-serif;
-    color: grey;
-}
-
-
-#livetable_container td.ok {
-    color: #5EAE10;
-}
-#livetable_container td.ko {
-    color: #ababab;
-}
-#livetable_container td.error {
-    color: red;
-}
-
-#livetable_container td.os {
-  font-size: .9em;
-  font-family: "Source Sans Pro", sans-serif;
-  color:	navy;
-  text-align:	middle;
-  vertical-align: middle;
-}
-
-#livetable_container td.image {
-  font-size: .9em;
-  font-family: "Source Sans Pro", sans-serif;
-  color:	 navy;
-  text-align:	 middle;
-  vertical-align: middle;
-}
-
-
-#livetable_container td.os img {
+/* some space for the OS badges */
+.livecolumns_body td.os img {
     height : 20px;
 }
 
-#livetable_container th.rxtx {
-    font-size: medium;
-}
-#livetable_container td.rxtx {
-    font-size: small;
-}
-
-.livetable_header tr.all {
-    background-color: rgba(204, 199, 205, 0.63);
+/* last OS, last uname & last image */
+.livecolumns_body td.os, .livecolumns_body td.image {
+    color: navy;
+    font-size: 0.9em;
 }
 
-.livetable_header tr:not(.all) {
-    background-color: rgba(0, 200, 73, 0.26);
-}
-
-.pointer {
-    cursor: pointer;
-    font-weight: normal;
-}
 
