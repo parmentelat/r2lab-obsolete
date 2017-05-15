@@ -1,11 +1,12 @@
 // -*- js-indent-level:4 -*-
 // this requires xhttp-django.js and liveleases-common.js
+"use strict";
 
-$(document).ready(function() {
+$(function() {
 
     function buildCalendar(theEvents) {
-	var today  = moment().format("YYYY-MM-DD");
-	var showAt = moment().subtract(1, 'hour').format("HH:mm");
+	let today  = moment().format("YYYY-MM-DD");
+	let showAt = moment().subtract(1, 'hour').format("HH:mm");
 
 	//Create the calendar
 	$('#calendar').fullCalendar({
@@ -42,9 +43,9 @@ $(document).ready(function() {
 		    sendMessage('This timeslot is in the past!');
 		    return false;
 		}
-		var my_title = getCurrentSliceName();
-		var eventData;
-		var adapt = adaptStartEnd(start, end);
+		let my_title = getCurrentSliceName();
+		let eventData;
+		let adapt = adaptStartEnd(start, end);
 		start = adapt[0];
 		end   = adapt[1];
 
@@ -67,8 +68,8 @@ $(document).ready(function() {
 
 	    // this allows things to be dropped onto the calendar
 	    drop: function(date, event, view) {
-		var start = date;
-		var end   = moment(date).add(60, 'minutes');
+		let start = date;
+		let end   = moment(date).add(60, 'minutes');
 		if (isPastDate(end)) {
 		    $('#calendar').fullCalendar('unselect');
 		    sendMessage('This timeslot is in the past!');
@@ -77,12 +78,12 @@ $(document).ready(function() {
 
 		setSlice($(this))
 
-		var adapt = adaptStartEnd(start, end);
+		let adapt = adaptStartEnd(start, end);
 		start = adapt[0];
 		end   = adapt[1];
 
-		var my_title = getCurrentSliceName();
-		var eventData;
+		let my_title = getCurrentSliceName();
+		let eventData;
 		if (my_title) {
 		    eventData = {
 			title: pendingName(my_title),
@@ -101,7 +102,7 @@ $(document).ready(function() {
 
 	    // this happens when the event is dragged moved and dropped
 	    eventDrop: function(event, delta, revertFunc) {
-		if (!confirm("Confirm this change?")) {
+		if (!confirm("Confirm this change ?")) {
 		    revertFunc();
 		}
 		else {
@@ -138,7 +139,7 @@ $(document).ready(function() {
 
 		element.bind('dblclick', function() {
 		    if (isMySlice(event.title) && event.editable == true ) {
-			if (!confirm("Confirm removing?")) {
+			if (!confirm("Confirm removing ?")) {
 			    revertFunc();
 			}
 			// newLease = createLease(event);
@@ -198,7 +199,7 @@ $(document).ready(function() {
 
 	    // this is fired when an event is resized
 	    eventResize: function(event, jsEvent, ui, view, revertFunc) {
-		if (!confirm("Confirm this change?")) {
+		if (!confirm("Confirm this change ?")) {
 		    //some bug in revertFunc
 		    //must take the last date time and set manually
 		    return;
@@ -234,7 +235,7 @@ $(document).ready(function() {
 
 	$('.fc-day-header').html('today');
 
-	var slice = $('#my-slices .fc-event');
+	let slice = $('#my-slices .fc-event');
 	slice.dblclick(function() {
 	    setSlice($(this));
 	});
