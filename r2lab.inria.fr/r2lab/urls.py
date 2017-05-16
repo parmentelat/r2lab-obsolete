@@ -1,4 +1,4 @@
-"""r2lab URL Configuration
+"""R2lab URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.9/topics/http/urls/
@@ -48,5 +48,4 @@ urlpatterns = [
     + static( '/raw/', document_root=settings.BASE_DIR+'/raw/') \
     + static( '/files/nodes/images/', document_root=settings.BASE_DIR+'/files/nodes/images/') \
     + static( '/files/nodes/images_dt/', document_root=settings.BASE_DIR+'/files/nodes/images_dt/') \
-    + static( '/code/', document_root=settings.BASE_DIR+'/code/') \
-    + static( '/assets/vendor/', document_root=settings.BASE_DIR+'/assets/vendor/')
+    + static( '/code/', document_root=settings.BASE_DIR+'/code/') 

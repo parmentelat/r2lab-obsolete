@@ -57,7 +57,7 @@ class FilesProxy(View):
             return self.get_info(node)
         else:
             return self.http_response_from_struct(
-                { 'error' : "File not found or not alowed" })
+                { 'error' : "File not found or not allowed" })
 
     def get_detail(self):
         """
@@ -134,7 +134,6 @@ class FilesProxy(View):
                     except Exception as e:
                         pass
                 elif ftype.lower() in images:
-                    # img_tag     = '<img src="files/nodes/{}" alt="" style="cursor: pointer;" alt="click to enlarge" width="60" onclick=show_image("files/nodes/{}");>'.format(file, file)
                     img_tag     = '<a href="javascript: return();" alt="click to enlarge" onclick=show_image("files/nodes/{}");><span class="glyphicon glyphicon-camera" style="font-size: 1.3em;"  aria-hidden="true"></span></a>'.format(file, file)
                     d['value']  = img_tag
         return new_data
