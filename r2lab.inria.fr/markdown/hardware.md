@@ -137,7 +137,7 @@ tab: platform
   <div class="row" markdown="1">
     <div class="col-md-12 new_pad">
       <h3>Nodes detailed information</h3>
-      <p>Clicking in the header will focus on nodes that hve a USRP device</p>
+      <p>Clicking in the header will focus on nodes that have a USRP device</p>
       <table class="table table-condensed" id='livehardware_container'> </table>
       <script type="text/javascript" src="/assets/r2lab/livecolumns.js"></script>
       <script type="text/javascript" src="/assets/r2lab/livehardware.js"></script>

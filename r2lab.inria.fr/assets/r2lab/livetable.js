@@ -38,7 +38,11 @@ LiveTableNode.prototype.__proto__ = LiveColumnsNode.prototype;
 
 // nodes worth being followed when clicking on the table banner
 LiveTableNode.prototype.is_worth = function() {
-    return (   (this.usrp_type || 'none') != 'none');
+    return (   this.cmc_on_off == 'on'
+	       || this.usrp_on_off == 'on'
+	       || this.control_ping == 'on'
+	       || this.control_ssh == 'on' )
+	&& this.available != 'ko';
 }
 
 
@@ -98,7 +102,7 @@ LiveTableNode.prototype.cell_image = function(image_radical) {
 //////////////////////////////
 function LiveTable(domid) {
 
-    this.nodes = [];
+    LiveColumns.prototype.constructor(this);
     this.domid = domid;
 }
 

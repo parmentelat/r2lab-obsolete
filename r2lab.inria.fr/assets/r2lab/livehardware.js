@@ -33,9 +33,7 @@ LiveHardwareNode.prototype.__proto__ = LiveColumnsNode.prototype;
 
 // nodes worth being followed when clicking on the hardware banner
 LiveHardwareNode.prototype.is_worth = function() {
-    return (   this.cmc_on_off == 'on'
-	       || this.usrp_on_off == 'on' )
- 	&& this.available != 'ko';
+    return (   (this.usrp_type || 'none') != 'none');
 }
 
 // after the internal properties are updated from the incoming JSON message
@@ -90,7 +88,7 @@ LiveHardwareNode.prototype.cell_wifi_antennas = function() {
 //////////////////////////////
 function LiveHardware(domid) {
 
-    this.nodes = [];
+    LiveColumns.prototype.constructor(this);
     this.domid = domid;
 }
 

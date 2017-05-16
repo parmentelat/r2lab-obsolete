@@ -97,8 +97,12 @@ LiveColumnsNode.prototype.cell_usrp = function() {
     return [cell, klass];
 }
 
+LiveColumnsNode.prototype.is_worth = function() {
+    return true;
+}
+
 LiveColumnsNode.prototype.set_display = function(display) {
-    let selector = '#livecolumns_container #row' + this.id;
+    let selector = 'tbody.livecolumns_body #row' + this.id;
     display ? $(selector).show() : $(selector).hide();
 }
 
@@ -151,8 +155,7 @@ LiveColumns.prototype.toggle_view_mode = function () {
 }
 
 LiveColumns.prototype.display_nodes = function(mode) {
-    for (let i in this.nodes) {
-	let node = this.nodes[i];
+    for (let node of this.nodes) {
 	let display = (mode=='all') ? true : (node.is_worth());
 	node.set_display(display);
     }
