@@ -5,7 +5,7 @@ import json
 import time
 import datetime
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from sidecar_client import connect_url
 
 # in seconds
@@ -112,15 +112,15 @@ def get_leases():
     ]
 
 def main():
-    parser = ArgumentParser()
+    parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('-c', '--cycle', dest='cycle', default=default_cycle,
                         type=float,
-                        help="Cycle duration in seconds (default={})".format(default_cycle))
+                        help="Cycle duration in seconds")
     parser.add_argument('-r', '--runs', dest='runs', default=default_runs,
                         type=int,
-                        help="How many runs (default={}; 0 means forever)".format(default_runs))
-    parser.add_argument('-n', '--nodes', dest='max_nodes_impacted', default=default_max_nodes_impacted,
-                        type=int,
+                        help="How many runs - means forever")
+    parser.add_argument('-n', '--nodes', dest='max_nodes_impacted',
+                        default=default_max_nodes_impacted, type=int,
                         help="Maximum number of nodes impacted by each cycle")
     parser.add_argument('-l', '--live', dest='live', action='store_true', default=False,
                         help="If set, only rx/tx data are animated")
@@ -128,8 +128,7 @@ def main():
                         help='send a random phone status every n cycles')
     parser.add_argument("-u", "--sidecar-url", dest="sidecar_url",
                         default=default_sidecar_url,
-                        help="url for thesidecar server (default={})"
-                        .format(default_sidecar_url))
+                        help="url for the sidecar server")
     parser.add_argument('-v', '--verbose', action='store_true', default=False)
     args = parser.parse_args()
 
