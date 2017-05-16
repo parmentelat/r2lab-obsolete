@@ -53,7 +53,8 @@ def connect_url(url):
         host_part = "https://{}".format(hostname)
         extras = {'verify' : False}
 #        extras = {}
-    print("host_part = {}".format(host_part))
+    print("url = {} -> host_part = {}, port = {}"
+          .format(url, host_part, port))
     return SocketIO(host_part, port, LoggingNamespace, **extras)
 
 

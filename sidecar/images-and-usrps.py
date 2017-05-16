@@ -40,7 +40,7 @@ infos = [
 hash = { info['id']: info for info in infos }
 for id in range(1, 38):
     if id not in hash:
-        info = dict(id=id)
+        info = dict(id=id, usrp_type='none', usrp_duplexer=None)
         infos.append(info)
         hash[id] = info
 
@@ -67,7 +67,7 @@ def send_infos(infos, sidecar_url):
     channel = channel_name('node', 'info')
     
     print("connection to channel {} @ {}".format(channel, sidecar_url))
-    socketio = connect_url(default_sidecar_url)
+    socketio = connect_url(sidecar_url)
     
     socketio.emit(channel, json.dumps(infos), None)
 
@@ -76,10 +76,13 @@ parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
 parser.add_argument("-u", "--sidecar-url", dest="sidecar_url",
                     default=default_sidecar_url,
                     help="url for the sidecar server")
+parser.add_argument("-v", "--verbose")
 args = parser.parse_args()
+print(args)
 
 scan_images(infos)
-print(json.dumps(infos, indent=4))
+if args.verbose:
+    print(json.dumps(infos, indent=4))
 send_infos(infos, args.sidecar_url)
 
 
