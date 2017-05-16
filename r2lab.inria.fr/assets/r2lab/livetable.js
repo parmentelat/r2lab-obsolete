@@ -38,11 +38,7 @@ LiveTableNode.prototype.__proto__ = LiveColumnsNode.prototype;
 
 // nodes worth being followed when clicking on the table banner
 LiveTableNode.prototype.is_worth = function() {
-    return (   this.cmc_on_off == 'on'
-	       || this.usrp_on_off == 'on'
-	       || this.control_ping == 'on'
-	       || this.control_ssh == 'on' )
-	&& this.available != 'ko';
+    return (   (this.usrp_type || 'none') != 'none');
 }
 
 
