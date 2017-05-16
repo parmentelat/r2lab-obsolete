@@ -63,19 +63,19 @@ LiveHardwareNode.prototype.cell_duplexer = function() {
     return [ html, "" ];
 }
 
-LiveHardwareNode.prototype.file_link = function(img) {
+LiveHardwareNode.prototype.image_link = function(img) {
     // xxx where to store those files exactly ?
     let icon = span_html('', 'fa fa-camera');
     // something like ${this.id:02d} 
-    let str_id = (this.id <= 9) ? `0${this.id}` : `${this.id}`;
-    return `<a href="assets/node_images/${str_id}/${img}">${icon}</a>`;
+    // let str_id = (this.id <= 9) ? `0${this.id}` : `${this.id}`;
+    return `<a class='image-link' alt="click to see image" onclick='show_image("/raw/node-images/${img}")'>${icon}</a>`;
 }
 
 LiveHardwareNode.prototype.cell_usrp_antennas = function() {
     if ((!('images_usrp' in this)) || (this.images_usrp.length == 0)) {
 	return '-';
     }
-    let html = this.images_usrp.map( (name) => this.file_link(name)).join(" -- ");
+    let html = this.images_usrp.map( (name) => this.image_link(name)).join(" / ");
     return [html, "image-links"]
 }
 
@@ -83,7 +83,7 @@ LiveHardwareNode.prototype.cell_wifi_antennas = function() {
     if ((!('images_wifi' in this)) || (this.images_wifi.length == 0)) {
 	return '-';
     }
-    let html = this.images_wifi.map( (name) => this.file_link(name)).join(" -- ");
+    let html = this.images_wifi.map( (name) => this.image_link(name)).join(" / ");
     return [html, "image-links"]
 }
 
@@ -119,3 +119,10 @@ $(function() {
     the_livehardware = new LiveHardware("livehardware_container");
     the_livehardware.init();
 })
+
+// helpers
+function show_image(img) {
+    $('#big_image_content').html('<img src="'+img+'" class="max-img" >');
+    $('#big_photo').modal('toggle');
+}
+

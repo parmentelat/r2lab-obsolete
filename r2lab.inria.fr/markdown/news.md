@@ -25,12 +25,12 @@ skip_news: yes
 
 * Slides available below:
 
-  * [Keynote by Max Ott](../assets/files/2016-11-opening-keynote-max-ott.pdf)
-  * [FIT Equipex, by Éric FLeury](../assets/files/2016-11-opening-fit-eric-fleury.pdf)
-  * [FIT/CortexLab, by Tanguy Risset](../assets/files/2016-11-opening-cortexlab-tanguy-risset.pdf)
-  * [FIT/R2lab, by Walid Dabbous](../assets/files/2016-11-opening-r2lab-walid-dabbous.pdf)
-  * [OpenAirInterface, by Raymond Knopp](../assets/files/2016-11-opening-openairinterface-raymond-knopp.pdf)
-  * [Demo on R2lab: setting up a 4G network in 3mn, by Thierry Parmentelat](../assets/files/2016-11-opening-r2lab-demo-thierry-parmentelat.pdf)
+  * [Keynote by Max Ott](/raw/slides/2016-11-opening-keynote-max-ott.pdf)
+  * [FIT Equipex, by Éric FLeury](/raw/slides/2016-11-opening-fit-eric-fleury.pdf)
+  * [FIT/CortexLab, by Tanguy Risset](/raw/slides/2016-11-opening-cortexlab-tanguy-risset.pdf)
+  * [FIT/R2lab, by Walid Dabbous](/raw/slides/2016-11-opening-r2lab-walid-dabbous.pdf)
+  * [OpenAirInterface, by Raymond Knopp](/raw/slides/2016-11-opening-openairinterface-raymond-knopp.pdf)
+  * [Demo on R2lab: setting up a 4G network in 3mn, by Thierry Parmentelat](/raw/slides/2016-11-opening-r2lab-demo-thierry-parmentelat.pdf)
 
 
 ### November 4
