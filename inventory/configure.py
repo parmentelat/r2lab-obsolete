@@ -230,10 +230,10 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
 # the interfaces in the gateway on the various networks
-192.168.1.100   rhubarbe-reboot
-192.168.2.100   rhubarbe-data
-192.168.3.100   rhubarbe-control
-192.168.4.100   rhubarbe-switches
+192.168.1.100   rhubarbe-reboot faraday1
+192.168.2.100   rhubarbe-data faraday2
+192.168.3.100   rhubarbe-control faraday3
+192.168.4.100   rhubarbe-switches faraday4
 # actual switches on the production deployment
 192.168.4.101   switch-reboot
 192.168.4.102   switch-data
