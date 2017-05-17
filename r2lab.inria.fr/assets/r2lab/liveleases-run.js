@@ -144,7 +144,7 @@ $(function() {
 			}
 			let newLease = createLease(event);
 			let now = new Date();
-			started = moment(now).diff(moment(event.start), 'minutes');
+			let started = moment(now).diff(moment(event.start), 'minutes');
 			if(started >= 10){
 			    newLease.start = moment(event.start);
 			    newLease.end = moment(event.start).add(started, 'minutes');
