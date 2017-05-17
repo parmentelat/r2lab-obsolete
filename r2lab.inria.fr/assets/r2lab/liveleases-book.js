@@ -123,7 +123,7 @@ $(function() {
 			revertFunc();
 			sendMessage('This timeslot is in the past!');
 		    } else {
-			newLease = createLease(event);
+			let newLease = createLease(event);
 			newLease.title = pendingName(event.title);
 			newLease.editable = false;
 			newLease.textColor = color_pending;
@@ -159,14 +159,7 @@ $(function() {
 			    if (!confirm("Confirm removing?")) {
 				revertFunc();
 			    }
-			    // newLease = createLease(event);
-			    // newLease.title = removingName(event.title);
-			    // newLease.textColor = color_removing;
-			    // newLease.editable = false;
-			    //removeElementFromCalendar(event.id);
-			    //addElementToCalendar(newLease);
-			    //updateLeases('delLease', newLease);
-			    newLease = createLease(event);
+			    let newLease = createLease(event);
 			    now = new Date();
 			    started = moment(now).diff(moment(event.start), 'minutes');
 			    if(started >= 10){
@@ -187,7 +180,7 @@ $(function() {
 			}
 			if (isMySlice(event.title) && isPending(event.title)) {
 			    if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
-				newLease = createLease(event);
+				let newLease = createLease(event);
 				newLease.title = removingName(event.title);
 				newLease.textColor = color_removing;
 				newLease.editable = false;
@@ -222,7 +215,7 @@ $(function() {
 		    return;
 		} else {
 		    if (isMySlice(event.title)) {
-			newLease = createLease(event);
+			let newLease = createLease(event);
 			newLease.title = pendingName(event.title);
 			newLease.textColor = color_pending;
 			newLease.editable = false;
