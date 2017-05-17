@@ -143,7 +143,7 @@ $(function() {
 			    revertFunc();
 			}
 			let newLease = createLease(event);
-			now = new Date();
+			let now = new Date();
 			started = moment(now).diff(moment(event.start), 'minutes');
 			if(started >= 10){
 			    newLease.start = moment(event.start);
