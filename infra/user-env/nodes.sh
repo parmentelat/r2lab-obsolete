@@ -347,7 +347,7 @@ function capture-all() {
     echo "capture-all: output = $output"
     [ -z "$output" ] && { echo usage: capture-all output; return; }
     local allfiles="$(ls-logs) $(ls-configs) $(ls-datas)"
-    localoutpath=$HOME/$output.tgz
+    local outpath=$HOME/$output.tgz
     tar -czf $outpath $allfiles
     echo "Captured in $outpath the following files:"
     ls -l $allfiles
