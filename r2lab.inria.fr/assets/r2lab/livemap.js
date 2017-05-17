@@ -343,13 +343,16 @@ let MapNode = function (node_spec) {
     }
 
     ////////// show an icon only if usrp_type is defined
+    this.has_usrp = function() {
+	return (this.usrp_type || 'none') != 'none';
+    }
     this.usrp_status_display = function() {
-	return (this.usrp_type) ? "on" : "none";
+	return (this.has_usrp()) ? "on" : "none";
     }
 
     this.usrp_status_filter = function() {
 	let filter_name;
-	if ( ! this.usrp_type )
+	if ( ! this.has_usrp() )
 	    return undefined;
 	else if (this.usrp_on_off == 'on')
 	    filter_name = 'gnuradio-logo-icon-green';
