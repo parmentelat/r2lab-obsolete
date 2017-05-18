@@ -39,7 +39,7 @@ function span_html(text, cls) {
 //////////////////////////////
 // nodes are dynamic
 // their table row and cells get created through d3 enter mechanism
-function LiveColumnsNode () {
+function LiveColumnsNode (id) {
     this.id = id;
 }
 

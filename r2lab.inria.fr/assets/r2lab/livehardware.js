@@ -16,7 +16,7 @@ let livehardware_options = {
 // their hardware row and cells get created through d3 enter mechanism
 let LiveHardwareNode = function (id) {
 
-    this.id = id;
+    LiveColumnsNode.prototype.constructor(id);
 
     this.cells_data = [
 	[ span_html(id, 'badge pointer'), '' ],	// id

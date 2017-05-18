@@ -20,6 +20,7 @@ let livetable_options = {
 // their table row and cells get created through d3 enter mechanism
 let LiveTableNode = function (id) {
 
+    LiveColumnsNode.prototype.constructor(id);
     this.cells_data = [
 	[ span_html(id, 'badge pointer'), '' ],	// id
 	undefined,				// avail
