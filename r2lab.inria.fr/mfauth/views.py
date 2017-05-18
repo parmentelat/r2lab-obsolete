@@ -58,7 +58,8 @@ class Login(View):
             login(request, user)
             env['login_message'] = "Logged in as user {}".format(user)
             env['r2lab_context'] = request.session['r2lab_context']
-            return md.views.markdown_page(request, 'run', env)
+            return HttpResponseRedirect("/run.md")
+        #return md.views.markdown_page(request, 'run', env)
 
     def http_method_not_allowed(self, request):
         env = {'login_message': 'HTTP method not allowed'}
@@ -76,7 +77,7 @@ class Logout(View):
             return md.views.markdown_page(request, 'index', env)
         logout(request)
         env['login_message'] = 'logged out'
-        return md.views.markdown_page(request, 'index', env)
+        return HttpResponseRedirect("/")
 
     def http_method_not_allowed(self, request):
         env = {'login_message': 'HTTP method not allowed'}
