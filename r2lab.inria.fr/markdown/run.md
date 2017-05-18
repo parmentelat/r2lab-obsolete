@@ -37,7 +37,7 @@ require_login: true
       </div>
     </div>
     <div class="col-md-3 personal_col">
-      <div id="calendar"></div>
+      <div id="liveleases_container"></div>
       <script type="text/javascript" src="/assets/js/moment.min.js"></script>
       <script type="text/javascript" src="/assets/js/moment-round.js"></script>
       <script type="text/javascript" src="/assets/js/jquery-ui.fullcalendar-custom.min.js"></script>
@@ -49,7 +49,7 @@ require_login: true
       <style type="text/css"> @import url("/assets/r2lab/liveleases-run.css"); </style>
       <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
       <script type="text/javascript" src="/assets/r2lab/liveleases-common.js"></script>      
-      <script type="text/javascript" src="/assets/r2lab/liveleases-run.js"></script>
+      <script type="text/javascript" src="/assets/r2lab/liveleases.js"></script>
       <div id="current-slice" data-current-slice-color="#000"></div>
     </div>
     <div class="col-md-7">

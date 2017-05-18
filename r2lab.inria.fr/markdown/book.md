@@ -29,7 +29,7 @@ require_login: true
       </div>
     </div>
     <div class="col-md-10">
-      <div id="calendar"></div>
+      <div id="liveleases_container"></div>
       <script type="text/javascript" src="/assets/js/moment.min.js"></script>
       <script type="text/javascript" src="/assets/js/moment-round.js"></script>
       <script type="text/javascript" src="/assets/js/jquery-ui.fullcalendar-custom.min.js"></script>
@@ -41,7 +41,14 @@ require_login: true
       <style type="text/css"> @import url("/assets/r2lab/liveleases-book.css"); </style>
       <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
       <script type="text/javascript" src="/assets/r2lab/liveleases-common.js"></script>
-      <script type="text/javascript" src="/assets/r2lab/liveleases-book.js"></script>
+      <script type="text/javascript" src="/assets/r2lab/liveleases.js"></script>
+      <script>
+      // override liveleases default settings 
+      Object.assign(liveleases_options, {
+        mode : 'book',
+//      debug : true,
+      });
+      </script>
       <div id="current-slice" data-current-slice-color="#000"></div>
     </div>
   </div>

@@ -22,7 +22,7 @@ let currentTimezone     = 'local';
 let nigthly_slice_name  = 'inria_r2lab.nightly'
 let nigthly_slice_color = '#000000';
 
-let liveleases_debug = false;
+let xxxdomid = '#liveleases_container';
 
 function setSlice(element){
     let element_color = element.css("background-color");
@@ -177,7 +177,7 @@ function zombieLease(lease){
 
 
 function removeElementFromCalendar(id){
-    $('#calendar').fullCalendar('removeEvents', id );
+    $(xxxdomid).fullCalendar('removeEvents', id );
 }
 
 
@@ -202,8 +202,7 @@ function getLocalId(title, start, end){
 	}).join('');
     }
     id = (title+m_start+m_end).hash();
-    if (liveleases_debug)
-	console.log(`title = ${title} -> ${id}`);
+    liveleases_debug(`title = ${title} -> ${id}`);
     return id;
 }
 
@@ -252,7 +251,7 @@ function isFailed(title){
 
 
 function addElementToCalendar(element){
-    $('#calendar').fullCalendar('renderEvent', element, true );
+    $(xxxdomid).fullCalendar('renderEvent', element, true );
 }
 
 
@@ -399,26 +398,24 @@ function isZombie(obj){
 // via django
 function refreshLeases(){
     let msg = "INIT";
-    if (liveleases_debug)
-	console.log("sending on request:leases -> ", msg);
+    liveleases_debug("sending on request:leases -> ", msg);
     socket.emit('request:leases', msg);
 }
 
 // show action immediately before it becomes confirmed
 function showImmediate(action, event) {
-    if (liveleases_debug)
-	console.log("showImmediate");
+    liveleases_debug("showImmediate", action);
     if (action == 'add'){
 	let lease  = createLease(event);
-	$('#calendar').fullCalendar('renderEvent', lease, true );
+	$(xxxdomid).fullCalendar('renderEvent', lease, true );
     } else if (action == 'edit'){
 	let lease  = createLease(event);
 	removeElementFromCalendar(lease.id);
-	$('#calendar').fullCalendar('renderEvent', lease, true );
+	$(xxxdomid).fullCalendar('renderEvent', lease, true );
     } else if (action == 'del'){
 	let lease  = createLease(event);
 	removeElementFromCalendar(lease.id);
-	$('#calendar').fullCalendar('renderEvent', lease, true );
+	$(xxxdomid).fullCalendar('renderEvent', lease, true );
     }
 }
 
@@ -428,8 +425,7 @@ function listenLeases(){
 	resetActionsQueue();
 	let leases = getCurrentLeases();
 	let leasesbooked = parseLeases(leases);
-	if (liveleases_debug)
-	    console.log(`incoming on info:leases ${leasesbooked.length} leases`, msg);
+	liveleases_debug(`incoming on info:leases ${leasesbooked.length} leases`, msg);
 	refreshCalendar(leasesbooked);
 	setCurrentSliceBox(getCurrentSliceName());
     });
@@ -492,8 +488,7 @@ function setActionsQueue(action, data){
 	    ////////// temporary
 	    // in all cases, show the results in console, in case we'd need to improve this
 	    // logic further on in the future
-	    if (liveleases_debug)
-		console.log(`upon ajax POST: xhttp.status = ${xhttp.status}`);
+	    liveleases_debug(`upon ajax POST: xhttp.status = ${xhttp.status}`);
 	    ////////// what should remain
 	    if (xhttp.status != 200) {
 		// this typically is a 500 error inside django
@@ -592,7 +587,7 @@ function resetActionQueue(){
 
 
 function resetCalendar(){
-    $('#calendar').fullCalendar('removeEvents');
+    $(xxxdomid).fullCalendar('removeEvents');
 }
 
 
@@ -726,13 +721,12 @@ function refreshCalendar(events){
     if(refresh){
 
 	$.each(events, function(key, event){
-	    if (liveleases_debug)
-		console.log(`refreshCalendar : lease = ${event.title}: ${event.start} .. ${event.end}`);
+	    liveleases_debug(`refreshCalendar : lease = ${event.title}: ${event.start} .. ${event.end}`);
 	    removeElementFromCalendar(event.id);
-	    $('#calendar').fullCalendar('renderEvent', event, true);
+	    $(xxxdomid).fullCalendar('renderEvent', event, true);
 	});
 
-	let each_removing = $("#calendar").fullCalendar( 'clientEvents' );
+	let each_removing = $("xxxdomid").fullCalendar( 'clientEvents' );
 	$.each(each_removing, function(k,obj){
 	    //when click in month view all 'thousands' of nightly comes.
 	    //Maybe reset when comeback from month view (not implemented)
@@ -757,7 +751,7 @@ function refreshCalendar(events){
 	    failedEvents.push(zombieLease(obj));
 	});
 	resetZombieLeases();
-	$('#calendar').fullCalendar('addEventSource', failedEvents);
+	$(xxxdomid).fullCalendar('addEventSource', failedEvents);
 
 	resetActionQueue();
     }
@@ -769,8 +763,7 @@ function parseLeases(data){
     let leases = [];
     resetZombieLeases();
 
-    if (liveleases_debug)
-	console.log("parseLeases", data);
+    liveleases_debug("parseLeases", data);
     
     parsedData.forEach(function(lease){
 	let newLease = new Object();
@@ -796,8 +789,7 @@ function parseLeases(data){
 	    let request = {"uuid" : newLease.uuid};
 	    post_xhttp_django('/leases/delete', request, function(xhttp) {
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
-		    if (liveleases_debug) 
-			console.log("return from /leases/delete", request);
+		    liveleases_debug("return from /leases/delete", request);
 		}
 	    });
 	}
