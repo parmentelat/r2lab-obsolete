@@ -72,7 +72,7 @@ LiveLeases.prototype.buildCalendar = function(theEvents) {
 	    }
 	},
 	defaultView: run_mode ? 'agendaDay' : 'agendaThreeDay',
-	height: run_mode ? 455 : 515,
+	height: run_mode ? 455 : 600,
 	////////////////////
 	defaultTimedEventDuration: '00:01:00',
 	slotDuration: "01:00:00",
@@ -987,7 +987,7 @@ let knew_slices = [];
 function buildInitialSlicesBox(leases){
     setColorLeases();
     let slices = $("#my-slices");
-    slices.html('<h4 align="center">drag & drop to book</h4>');
+    slices.html('<h4 align="center" data-toggle="tooltip" title="Double click in slice to select default">drag & drop to book</h4>');
 
     $.each(leases, function(key,val){
 	val = shortName(val);
