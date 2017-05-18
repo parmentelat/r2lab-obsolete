@@ -16,11 +16,11 @@ require_login: true
   </div>
   <br />
   <div class="row" id="all">
-    <div class="col-md-2 no_padding">
+    <div class="col-md-2 no-padding">
       <div id="wrap">
         <div id="manage-slices-keys" class="book">
           <button type="button" data-toggle="modal" data-target="#slices_keys_modal"
-	          class="fc-button fc-state-default fc-corner-left fc-corner-right sd">
+	          class="fc-button fc-state-default fc-corner-left fc-corner-right slices-keys">
 		  slices & keys <span class='fa fa-gear'></span>
 	  </button>
         </div>

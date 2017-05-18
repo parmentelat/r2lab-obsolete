@@ -394,8 +394,8 @@ function setSlice(element){
 
 function setCurrentSliceBox(element){
     let id = idFormat(element);
-    $(".noactive").removeClass('sactive');
-    $("#"+id).addClass('sactive');
+    $(".noactive").removeClass('slice-active');
+    $("#"+id).addClass('slice-active');
 }
 
 
@@ -969,12 +969,6 @@ function buildSlicesBox(leases){
 			    .attr("id", idFormat(val.title))
 			    .addClass('noactive'));
 	    }
-	    // else {
-	    //   slices.append($("<div />")
-	    //	.addClass('fc-event-not-mine')
-	    //  .attr("style", `background-color: ${val.color}`)
-	    //  .text(val.title));
-	    // }
 	    knew_slices.push(val.title);
 	}
     });
@@ -998,7 +992,7 @@ function buildInitialSlicesBox(leases){
     $.each(leases, function(key,val){
 	val = shortName(val);
 	let color = getColorLease(val);
-	if ($.inArray(val, knew_slices) === -1) { //removgin nightly routine and slices already present?
+	if ($.inArray(val, knew_slices) === -1) { //removing nightly routine and slices already present?
 	    if (isMySlice(val)) {
 		if(val === nigthly_slice_name){
 		    color = getNightlyColor();
@@ -1015,12 +1009,6 @@ function buildInitialSlicesBox(leases){
 			    .attr("id", idFormat(val))
 			    .addClass('noactive'));
 	    }
-	    // else {
-	    //   slices.append($("<div />")
-	    //                 .addClass('fc-event-not-mine')
-	    //		       .attr("style", `background-color: ${color}`)
-	    //		       .text(val));
-	    // }
 	    knew_slices.push(val);
 	}
     });
