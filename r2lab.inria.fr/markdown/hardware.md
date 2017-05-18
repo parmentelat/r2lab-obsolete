@@ -96,8 +96,8 @@ Currently, our deployment features the following types of USRP devices :
 
 **NOTES**
 
- * nodes that are equipped with a USRP n210 have this Ethernet interface wired into the USRP device.
- * when using a USRP B210 board, a duplexer band 7<a href="/raw/docs/duplexer-band7-specifications.pdf" target="_blank">[specs]</a> <a href="/raw/docs/duplexer-band7.png" target="_blank">[pict]</a> may be needed for good experimental conditions if the board is used for both sending and receiving; this is the case because the distance between the RX and TX antenna SMA connectors on the USRP B210 board is such that the TX antenna generates too much interferences to the RX channel; the actual configuration of duplexers can be found in the table below.
+ * nodes equipped with a **USRP n210** do **not have** a `data` Ethernet interface, as the hardware interface is wired into the USRP device.
+ * when using a **USRP B210** board, a **duplexer band 7**<a href="/raw/docs/duplexer-band7-specifications.pdf" target="_blank">[specs]</a> <a href="/raw/docs/duplexer-band7.png" target="_blank">[pict]</a> may be needed for good experimental conditions if the board is used for both sending and receiving; this is the case because the distance between the RX and TX antenna SMA connectors on the USRP B210 board is such that the TX antenna generates too much interferences to the RX channel; the actual configuration of duplexers can be found in the table below.
   </div>
   <div class="col-md-4">
     <br/>
