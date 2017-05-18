@@ -26,18 +26,18 @@ require_login: true
   <div class="row" id="all">
     <div class="col-md-2 no_padding" >
       <div id="wrap">
-        <div id="manage_slices_keys">
+        <div id="manage-slices-keys" class="run">
           <button type="button" data-toggle="modal" data-target="#slices_keys_modal"
 	          class="fc-button fc-state-default fc-corner-left fc-corner-right sd">
 		  slices & keys <span class='fa fa-gear'></span>
 	  </button>
         </div>
-        <div id="my-slices"></div>
+        <div id="my-slices" class="run"></div>
         <div style="clear:both"></div>
       </div>
     </div>
-    <div class="col-md-3 personal_col">
-      <div id="liveleases_container"></div>
+    <div class="col-md-3 leases-run-width">
+      <div id="liveleases_container" class="run"></div>
       <script type="text/javascript" src="/assets/js/moment.min.js"></script>
       <script type="text/javascript" src="/assets/js/moment-round.js"></script>
       <script type="text/javascript" src="/assets/js/jquery-ui.fullcalendar-custom.min.js"></script>
@@ -45,10 +45,8 @@ require_login: true
       <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
       <style type="text/css"> @import url("/assets/css/fullcalendar.css"); </style>
 
-      <style type="text/css"> @import url("/assets/r2lab/liveleases-common.css"); </style>
-      <style type="text/css"> @import url("/assets/r2lab/liveleases-run.css"); </style>
+      <style type="text/css"> @import url("/assets/r2lab/liveleases.css"); </style>
       <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
-      <script type="text/javascript" src="/assets/r2lab/liveleases-common.js"></script>      
       <script type="text/javascript" src="/assets/r2lab/liveleases.js"></script>
       <div id="current-slice" data-current-slice-color="#000"></div>
     </div>
