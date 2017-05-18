@@ -11,6 +11,7 @@ skip_header: True
 <ul class="nav nav-tabs">
   <li class="active"> <a href="#AOA">Angle of Arrival</a> </li>
   <li> <a href="#OAI">OpenAirInterface</a></li>
+  <li> <a href="#OAI-NG">OpenAirInterface (2)</a></li>
 
   << include r2lab/tutos-index.html >>
 </ul>
@@ -50,6 +51,25 @@ Later on, we use yet another node as a scrambling device to terminate the call.
 
 <object width="854" height="480"
 data="https://www.youtube.com/embed/FpZo6uqTosQ">
+</object>
+
+</div>
+
+<!------------ OAI-NG ------------>
+<div id="OAI-NG" class="tab-pane fade" markdown="1">
+
+### Set up a 5G network in 5 minutes
+
+The purpose is vry similar to the previous one; here again we leverage OpenAirInterface in order to
+
+* create a standalone 5G infrastructure inside R2Lab,
+* deploy a base station on one of the nodes,
+* connect the dedicated phone inside the chamber,
+* measure bandwidth to the outside Internet with speedtest.net,
+* and visualize downlink and uplink spectrum.
+
+<object width="854" height="480"
+data="https://www.youtube.com/embed/N1nl_PqWlKw">
 </object>
 
 </div>
