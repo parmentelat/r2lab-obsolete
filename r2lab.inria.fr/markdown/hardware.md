@@ -7,7 +7,7 @@ tab: platform
       <p>
         <b>Thirty-seven</b> nodes are available in R2lab to provide a modern testbed infra structure.
         The nodes are distributed in a grid layout and are customizable, allowing great variety of experimentation scenarios.
-        <h2 class="text-center" style="color:green;" >
+        <h2 class="text-center" style="color:green;">
           Full control and access to bare metal
           <br>
           <span class="text-muted lead">
@@ -51,78 +51,74 @@ tab: platform
   </div>
 </div>
 
-<br>
+<br/>
 
-<div class="container">
-  <div class="row" markdown="1">
+<div class="container" markdown="1">
+  <div class="row">
     <div class="col-md-8 new_pad">
-      <h3>All nodes</h3>
-      All 37 nodes are based on <a href="http://nitlab.inf.uth.gr/NITlab/" target="_blank">Nitos X50</a> and feature
-      <ul>
-        <li>State of the art motherboard
-          <ul>
-            <li>CPU Intel Core i7-2600 processor</li>
-            <li>4Gb RAM</li>
-            <li>240 Gb SSD</li>
-          </ul>
-        <li>2 Wireless Interfaces, dedicated to experimentation, 3 antennas each&nbsp;:
-          <ul>
-            <li>Atheros 802.11 93xx a/b/g/n</li>
-            <li>and/or Intel 5300</li>
-          </ul>
-        </li>
-        <li> 3 wired interfaces used for&nbsp;:
-          <ul>
-            <li>Remote power and reset management</li>
-            <li>Control, used by the testbed management framework for providing access - 192.168.3.<b><font color="red">nn</font></b>, where <b><font color="red">nn</font></b> is the node number</li>
-            <li>Data, dedicated to experimentation - 192.168.2.<b><font color="red">nn</font></b></li>
-          </ul>
-        </li>
-      </ul>  
+### All nodes
+
+All 37 nodes are based on <a href="http://nitlab.inf.uth.gr/NITlab/" target="_blank">Nitos X50</a> and feature
+
+* State of the art motherboard
+  * CPU Intel Core i7-2600 processor
+  * 4Gb RAM
+  * 240 Gb SSD
+* 2 Wireless Interfaces, dedicated to experimentation, 3 antennas each&nbsp;:
+  * one Atheros 802.11 93xx a/b/g/n
+  * and one Intel 5300
+* 3 wired interfaces used for&nbsp;:
+  * remote power and reset management,
+  * `control`, used by the testbed management framework for providing access - 192.168.3.`nn`, where `nn` is the node number
+  * `data`, dedicated to experimentation - 192.168.2.`nn`.
+
     </div>
     <div class="col-md-4">
-      <br>
+      <br/>
       <img src="/assets/img/hardware-node.png" class='fit-width'>
       <center>Fig. 1 - Icarus Nodes in the testbed</center>
     </div>
   </div>
 </div>
 
-<div class="container">
-  <div class="row" markdown="1">
-    <div class="col-md-8 new_pad">
-      <h3>USRP nodes</h3>
-      Some nodes are equipped with USRP devices from <a href="http://www.ettus.com" target="_blank">ETTUS</a> to run SDR-based experiments such as spectrum analyzer or 4G/5G OpenAirInterface scenarios. All these devices can be remotely-controlled through ust/uon/uoff utilities. 
-      <br>
-      Currently, our deployment features the following types of USRP devices :
-      <a href="http://www.ettus.com/product/details/UB210-KIT" target="_blank">USRP B210</a>,
-      <a href="http://www.ettus.com/product/details/UN210-KIT" target="_blank">USRP N210</a>, 
-      <a href="http://files.ettus.com/manual/page_usrp2.html" target="_blank">USRP 2</a>, and
-      <a href="https://www.ettus.com/product/details/USRPPKG" target="_blank">USRP 1</a> (see detailed mapping in the table below).
-    </div>
-    <div class="col-md-4">
-      <br>
-      <img src="/assets/img/hardware-icarus.png"  class='fit-width'>
-      <center>Fig. 2 - Icarus node standalone</center>
-    </div>
+<div class="container" markdown="1">
+ <div class="row">
+  <div class="col-md-8 new_pad">
+### USRP nodes
+
+Some nodes are equipped with USRP devices from <a href="http://www.ettus.com" target="_blank">ETTUS</a> to run SDR-based experiments such as spectrum analyzer or 4G/5G OpenAirInterface scenarios. All these devices can be remotely-controlled through the `ust`/`uon`/`uoff` utilities. 
+
+Currently, our deployment features the following types of USRP devices :
+  <a href="http://www.ettus.com/product/details/UB210-KIT" target="_blank">USRP B210</a>,
+  <a href="http://www.ettus.com/product/details/UN210-KIT" target="_blank">USRP N210</a>, 
+  <a href="http://files.ettus.com/manual/page_usrp2.html" target="_blank">USRP 2</a>, and
+  <a href="https://www.ettus.com/product/details/USRPPKG" target="_blank">USRP 1</a> (see detailed mapping in the table below).
+
+**NOTES**
+
+ * nodes that are equipped with a USRP n210 have this Ethernet interface wired into the USRP device.
+ * when using a USRP B210 board, a duplexer band 7<a href="/raw/docs/duplexer-band7-specifications.pdf" target="_blank">[specs]</a> <a href="/raw/docs/duplexer-band7.png" target="_blank">[pict]</a> may be needed for good experimental conditions if the board is used for both sending and receiving; this is the case because the distance between the RX and TX antenna SMA connectors on the USRP B210 board is such that the TX antenna generates too much interferences to the RX channel; the actual configuration of duplexers can be found in the table below.
   </div>
+  <div class="col-md-4">
+    <br/>
+  <img src="/assets/img/hardware-icarus.png"  class='fit-width'>
+  <center>Fig. 2 - Icarus node standalone</center>
+  </div>
+ </div>
 </div>
 
-<div class="container">
-  <div class="row" markdown="1">
+<div class="container" markdown="1">
+  <div class="row">
     <div class="col-md-8 new_pad">
-      <h3>Commercial 4G Phone</h3>
-      A Nexus 5 phone is available right inside the chamber:
-      <ul>
-        <li>It is reachable through a Mac (that also sits in the room)
-        that has its wireless card physically disabled, and that has a USB cable to the phone
-        <li>The Mac can be reached from the gateway as <code>ssh tester@macphone</code> (or the <code>macphone</code> convenience shell shortcut)
-        </li>
-        <li>Once logged in the Mac you can use convenience helpers to manage the phone (type <code>help</code> for details), or use <code>adb</code> manually.
-        </li>
-        <li>The mac can also be managed using apple screen sharing tools (VNC-compliant), pointing directly at <code>faraday.inria.fr</code>
-        </li>
-      </ul>
+###Commercial 4G Phone
+
+A Nexus 5 phone is available right inside the chamber:
+
+* It is reachable through a Mac (that also sits in the room) that has its wireless card physically disabled, and that has a USB cable to the phone
+* The Mac can be reached from the gateway as `ssh tester@macphone` (or the <code>macphone</code> convenience shell shortcut)
+* Once logged in the Mac you can use convenience helpers to manage the phone (type <code>help</code> for details), or use <code>adb</code> manually.
+* The mac can also be managed using apple screen sharing tools (VNC-compliant), pointing directly at <code>faraday.inria.fr</code>
+* You will find more details about controlling the phone [in the tutorials section](/tuto-800-5g.md#PHONE).
     </div>
     <div class="col-md-4">
       <br><br>
