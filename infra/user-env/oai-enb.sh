@@ -99,7 +99,7 @@ function deps() {
 	    echo Building UHD with OAI recipe
 	    build-uhd-oai ;;
 	*)
-	    echo unkwown argument to deps
+	    echo unkwown argument $1 to deps
 	    exit 1 ;;
     esac
 }
@@ -128,7 +128,8 @@ function build-uhd-oai() {
     git-pull-r2lab
     git-pull-oai
     cd /root/openairinterface5g/cmake_targets
-    run-in-log build-uhd.log ./build_oai -I --install-optional-packages -w USRP
+#    run-in-log build-uhd.log ./build_oai -I --install-optional-packages -w USRP
+    run-in-log build-uhd.log ./build_oai -I -w USRP
 }
 
 doc-nodes build "builds oai5g for an oai image"
@@ -180,8 +181,8 @@ EOF
     # xxx l'original avait une seule ligne :
     echo Building in $(pwd) - see 'build*log'
     run-in-log build-oai-1.log ./build_oai -I -w USRP
-    run-in-log build-oai-2.log ./build_oai --eNB -c -w USRP
-    [ -n "$oscillo" ] && run-in-log build-oai-3.log ./build_oai -x
+    run-in-log build-oai-2.log ./build_oai --eNB -c -w USRP $oscillo
+#    [ -n "$oscillo" ] && run-in-log build-oai-3.log ./build_oai -x
 
 }
 

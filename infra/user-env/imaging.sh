@@ -63,13 +63,18 @@ http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/linux-image-4.7.0-040700-lowl
 # it works fine on top of both ubuntu 14 and ubuntu 16
 function ubuntu-k48-lowlatency() {
 
-    -dpkg-is-installed linux-image-4.8.0-21-lowlatency && return
+    local k48_ver="4.8.0-52"
+    local k48_sub="55"
     
+    -dpkg-is-installed linux-image-${k48_ver}-lowlatency && return
+    
+    local k48_lon="${k48_ver}.${k48_sub}"
+
     urls="
-http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-4.8.0-21_4.8.0-21.23_all.deb
-http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-4.8.0-21-lowlatency_4.8.0-21.23_amd64.deb
-http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-4.8.0-21-generic_4.8.0-21.23_amd64.deb
-http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-image-4.8.0-21-lowlatency_4.8.0-21.23_amd64.deb
+http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-${k48_ver}_${k48_lon}_all.deb
+http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-${k48_ver}-lowlatency_${k48_lon}_amd64.deb
+http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-headers-${k48_ver}-generic_${k48_lon}_amd64.deb
+http://fr.archive.ubuntu.com/ubuntu/pool/main/l/linux/linux-image-${k48_ver}-lowlatency_${k48_lon}_amd64.deb
 "
 
     -dpkg-from-urls $urls

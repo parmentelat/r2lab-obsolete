@@ -17,19 +17,43 @@ augment-help-with nodes
 ####################
 unalias ls 2> /dev/null
 
+####helper to parse git-pull arguments
+# repo_branch repo /root/r2lab       -> /root/r2lab
+# repo_branch branch /root/r2lab     -> 
+# repo_branch repo /root/r2lab@foo   -> /root/r2lab
+# repo_branch branch /root/r2lab@foo -> foo
+function split_repo_branch () {
+    python3 - "$@" << EOF
+import sys
+what, tosplit=sys.argv[1:3]
+i = {'repo' : 0, 'branch' : 1}[what]
+try:
+    print(tosplit.split('@')[int(i)])
+except:
+    print("")
+EOF
+    }
+    
 ##########
 doc-nodes git-pull-r2lab "updates /root/r2lab from git repo"
-function git-pull-r2lab() { -git-pull-repos /root/r2lab; }
+function git-pull-r2lab() { -git-pull-repos /root/r2lab@public; }
 
+# branches MUST be specified
 function -git-pull-repos() {
-    local repos="$@"
-    local repo
-    for repo in $repos; do
+    local repo_branches="$@"
+    local repo_branch
+    for repo_branch in $repo_branches; do
+	local repo=$(split_repo_branch repo $repo_branch)
+	local branch=$(split_repo_branch branch $repo_branch)
 	[ -d $repo ] || { echo "WARNING: cannot git pull in $repo - not found"; continue; }
 	echo "========== Updating $repo"
 	cd $repo
+	# always undo any local change
 	git reset --hard HEAD
-	git pull 
+	# fetch everything
+	git fetch -a
+	git checkout $branch
+	git pull origin $branch
 	cd - >& /dev/null
     done
 }
@@ -85,8 +109,8 @@ function update-apt-get-packages () {
 doc-nodes init-ntp-clock "Sets date from ntp"
 function init-ntp-clock() {
     if type ntpdate >& /dev/null; then
-	echo "Running ntpdate faraday3"
-	ntpdate faraday3
+	echo "Running ntpdate rhubarbe-control"
+	ntpdate rhubarbe-control
     else
 	echo "ERROR: cannot init clock - ntpdate not found"
 	return 1
@@ -506,7 +530,7 @@ function enable-nat-data() {
 }
 
 ####################
-doc-nodes usrp-reset "Reset the URSP attached to this node"
+doc-nodes usrp-reset "Reset the USRP attached to this node"
 function usrp-reset() {
     local id=$(r2lab-id)
     # WARNING this might not work on a node that

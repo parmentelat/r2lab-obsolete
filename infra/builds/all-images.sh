@@ -21,6 +21,8 @@ function bim () {
     $command --silent "$@"
 }
 
+DATE=$(date +"%Y-%m-%d")
+
 # when run with an arg : just print the command to run manually
 [[ -n "$@" ]] && { bim --help; exit; }
 
@@ -52,16 +54,15 @@ enb_options="
     -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt
     -l /root/openairinterface5g/cmake_targets/build-oai-1.log
     -l /root/openairinterface5g/cmake_targets/build-oai-2.log
-    -l /root/openairinterface5g/cmake_targets/build-oai-3.log
     -b uhd_find_devices
     -b /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-softmodem
 "
 
 function u16-48() {
-    #bim 1 ubuntu-16.04-v5-ntp == "imaging.sh common-setup-user-env"
-    #bim 2 ubuntu-16.04-v5-ntp u16-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
-    bim $gw_options  1 u16-lowlat48 u16.48-oai-gw "oai-gw.sh image"
-    bim $enb_options 2 u16-lowlat48 u16.48-oai-enb "oai-enb.sh image"
+    bim 2 ubuntu-16.04 u16.04-$DATE "nodes.sh apt-upgrade-all" 
+    bim 3 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" 
+    bim $gw_options  6 u16-lowlat48-$DATE u16.48-oai-gw-$DATE  "oai-gw.sh  image"
+    bim $enb_options 7 u16-lowlat48-$DATE u16.48-oai-enb-$DATE "oai-enb.sh image uhd-oai"
 }
 
 function u16-47() {
@@ -155,13 +156,11 @@ function  update-v11() {
 # seems to have worked except for nodes
 # 1 : ubuntu-16.04-v10-wireless-names.log - which is odd because it seemed to have worked manually
 # 8 : gnuradio-3.7.10.1-v11-os-packages.log
-update-v11
 
 ### running apt-upgrade-all in unattended mode currently won't work
 # and requires more work
 # try to run apt-upgrade-all on ubuntu-16
 # bim fit06 ubuntu-16.04 u16-upgrade "nodes.sh apt-upgrade-all"
-
 
 ####################
 # same on ubuntu-14.04 + node-env
@@ -179,3 +178,5 @@ update-v11
 #0#  "nodes.sh git-pull-r2lab"
 
 #bim 37 fedora-23-v4-ntp == "nodes.sh common-setup-user-env"
+
+u16-48
