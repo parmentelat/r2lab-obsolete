@@ -137,9 +137,9 @@ doc-imaging ubuntu-atheros-noreg "patch the atheros driver to turn off regulator
 function ubuntu-atheros-noreg() {
 
     # create space
-    local root=/root/r2lab-kernel
-    mkdir -p $root
-    cd $root
+    local kroot=/root/kernel-build
+    mkdir -p $kroot
+    cd $kroot
 
     # need to turn on the deb-src clauses in /etc/apt/sources.list
     sed -i -e 's,^# *deb-src,deb-src,' /etc/apt/sources.list
@@ -163,7 +163,20 @@ function ubuntu-atheros-noreg() {
 	diff $file.bkp $file
     done
 
-    # xxx - tmp - need to rebuild from there
+    # moving to this howto
+    # https://wiki.ubuntu.com/Kernel/BuildYourOwnKernel
+    debian/rules clean
+    debian/rules binary-headers
+    # xxx
+    # --- need to answer 'y' manually ---
+    # had to answer 'y' to the only question regarding config
+    #   Do not enforce EEPROM regulatory restrictions (ATH_USER_REGD) [N/y] (NEW) y
+    # ---
+    # fakeroot was causing wierd issues, so I took it out of the way
+    # xxx
+    return
+    debian/rules binary-generic
+    debian/rules binary-perarch
     
 }
 
