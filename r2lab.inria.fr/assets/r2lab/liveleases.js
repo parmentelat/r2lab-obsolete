@@ -75,7 +75,7 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 	    }
 	},
 	defaultView: run_mode ? 'agendaDay' : 'agendaThreeDay',
-	height: run_mode ? 455 : 685,
+	height: run_mode ? 455 : 770,
 	////////////////////
 	defaultTimedEventDuration: '00:01:00',
 	slotDuration: "01:00:00",

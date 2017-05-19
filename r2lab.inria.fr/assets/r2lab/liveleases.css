@@ -39,9 +39,15 @@
 #manage-slices-keys.run {
   margin-top: 0px;
 }
+#my-slices.run {
+  height: 378px;
+}
 
 #manage-slices-keys.book {
-  margin-top: 40px;
+  margin-top: 55px;
+}
+#my-slices.book {
+  height: 635px;
 }
 
 .slice-active {
@@ -69,14 +75,6 @@
   border: 1px solid #d0d0d0; /*#ccc;*/
   background: #eee;
   text-align: left;
-}
-
-#my-slices.book {
-  height: 568px;
-}
-
-#my-slices.run {
-  height: 378px;
 }
 
 #my-slices h4 {
@@ -112,7 +110,7 @@ div.leases-run-width {
 #liveleases_container.book {
   margin: 10px 10px;
   padding: 0;
-  font-size: 16px;
+  font-size: 18px;
   /*max-width: 500px;*/
   margin: 0 auto;
 }
