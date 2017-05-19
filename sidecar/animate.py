@@ -97,18 +97,29 @@ def random_phone_status(id):
 # too lazy to get this properly (need to turn off server auth)
 leases_url = "https://faraday.inria.fr:12346/resources/leases";
 leases_file = "LEASES"
+nightly = 'inria_r2lab.nightly'
+other_slice = 'inria_r2lab.tutorial'
 
 def get_leases():
     print("WARNING: get_leases returns a hard-wired set of leases today")
     today = datetime.datetime.now()
-    return [ {
-        "uuid" : id + 100,
-        "slicename" : "onelab.inria.nightly",
-        "ok" : True,
-        "valid_from" : "{:%Y-%m-%d}T{:02d}:00:00".format(today, start),
-        "valid_until" : "{:%Y-%m-%d}T{:02d}:00:00".format(today, end),
-    }
-             for (id, start, end) in [ (0, 8, 10), (1, 13, 14), (2, 17, 18)]
+    slices_specs = [
+        # slicename - hour-from - hour-until
+        (nightly, 8, 10),
+        (nightly, 13, 14),
+        (nightly, 17, 18),
+        (other_slice, 3, 4),
+        (other_slice, 20, 21),
+    ]
+    return [
+        {
+            "uuid" : id + 100,
+            "slicename" : slicename,
+            "ok" : True,
+            "valid_from" : "{:%Y-%m-%d}T{:02d}:00:00".format(today, start),
+            "valid_until" : "{:%Y-%m-%d}T{:02d}:00:00".format(today, end),
+        }
+        for (id, (slicename, start, end)) in enumerate(slices_specs)
     ]
 
 def main():
