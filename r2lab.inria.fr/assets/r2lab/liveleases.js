@@ -12,9 +12,8 @@ let liveleases_options = {
     // these properties in the fullCalendar object will
     // be traced when debug is set to true
     trace_events : [
-	'select', 'drop', 'eventDrop', 'eventDragStart',
-	// 'eventRender',
-	'eventMouseout', 'eventResize' 
+	'select', 'drop', 'eventDrop', 'eventDragStart', 'eventResize',
+	// 'eventRender', 'eventMouseout', 
     ],
     debug : true,
 }
@@ -94,7 +93,7 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 	// this is fired when a selection is made
 	select: function(start, end, event, view) {
 	    if (isPastDate(end)) {
-		$('#calendar').fullCalendar('unselect');
+		$(`#${xxxdomid}`).fullCalendar('unselect');
 		sendMessage('This timeslot is in the past!');
 		return false;
 	    }
@@ -116,7 +115,7 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 		};
 		updateLeases('addLease', eventData);
 	    }
-	    $('#calendar').fullCalendar('unselect');
+	    $(`#${xxxdomid}`).fullCalendar('unselect');
 	},
 
 	// this allows things to be dropped onto the calendar
@@ -124,7 +123,7 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 	    let start = date;
 	    let end   = moment(date).add(60, 'minutes');
 	    if (isPastDate(end)) {
-		$('#calendar').fullCalendar('unselect');
+		$(`#${xxxdomid}`).fullCalendar('unselect');
 		sendMessage('This timeslot is in the past!');
 		return false;
 	    }
@@ -152,7 +151,7 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 
 	// this happens when the event is dragged moved and dropped
 	eventDrop: function(event, delta, revertFunc) {
-	    let view = $('#calendar').fullCalendar('getView').type;
+	    let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
 	    if(view != 'month'){
 		if (!confirm("Confirm this change ?")) {
 		    revertFunc();
@@ -189,7 +188,7 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 	    $(element).popover({content: event.title, placement: 'top',
 				trigger: 'hover', delay: {"show": 1000 }});
 	    
-	    let view = $('#calendar').fullCalendar('getView').type;
+	    let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
 	    if(view != 'month'){
 		element.bind('dblclick', function() {
 		    if (isMySlice(event.title) && event.editable == true ) {
@@ -379,7 +378,7 @@ let currentTimezone     = 'local';
 let nigthly_slice_name  = 'inria_r2lab.nightly'
 let nigthly_slice_color = '#000000';
 
-let xxxdomid = '#liveleases_container';
+let xxxdomid = 'liveleases_container';
 
 function setSlice(element){
     let element_color = element.css("background-color");
@@ -534,7 +533,7 @@ function zombieLease(lease){
 
 
 function removeElementFromCalendar(id){
-    $(xxxdomid).fullCalendar('removeEvents', id );
+    $(`#${xxxdomid}`).fullCalendar('removeEvents', id );
 }
 
 
@@ -613,7 +612,7 @@ function isFailed(title){
 
 
 function addElementToCalendar(element){
-    $(xxxdomid).fullCalendar('renderEvent', element, true );
+    $(`#${xxxdomid}`).fullCalendar('renderEvent', element, true );
 }
 
 
@@ -740,15 +739,15 @@ function showImmediate(action, event) {
     liveleases_debug("showImmediate", action);
     if (action == 'add'){
 	let lease  = createLease(event);
-	$(xxxdomid).fullCalendar('renderEvent', lease, true );
+	$(`#${xxxdomid}`).fullCalendar('renderEvent', lease, true );
     } else if (action == 'edit'){
 	let lease  = createLease(event);
 	removeElementFromCalendar(lease.id);
-	$(xxxdomid).fullCalendar('renderEvent', lease, true );
+	$(`#${xxxdomid}`).fullCalendar('renderEvent', lease, true );
     } else if (action == 'del'){
 	let lease  = createLease(event);
 	removeElementFromCalendar(lease.id);
-	$(xxxdomid).fullCalendar('renderEvent', lease, true );
+	$(`#${xxxdomid}`).fullCalendar('renderEvent', lease, true );
     }
 }
 
@@ -894,7 +893,7 @@ function resetActionQueue(){
 
 
 function resetCalendar(){
-    $(xxxdomid).fullCalendar('removeEvents');
+    $(`#${xxxdomid}`).fullCalendar('removeEvents');
 }
 
 
@@ -919,6 +918,7 @@ function isPresent(element, list){
 
 function buildSlicesBox(leases){
     // let known_slices = getMySlicesinShortName();
+    liveleases_debug('buildSlicesBox');
     let slices = $("#my-slices");
 
     $.each(leases, function(key,val){
@@ -927,15 +927,17 @@ function buildSlicesBox(leases){
 		if(val.title === nigthly_slice_name){
 		    color = getNightlyColor();
 		    setCurrentSliceColor(color);
-		}
-		else if(val.title === getCurrentSliceName()){
+		} else if(val.title === getCurrentSliceName()){
 		    setCurrentSliceColor(val.color);
 		}
-		slices.append($("<div />")
-			      .addClass('fc-event')
-			      .attr("style", `background-color: ${val.color}`)
-			      .text(val.title))
-		    .append($("<div />")
+		slices
+		    .append(
+			$("<div/>")
+			    .addClass('fc-event')
+			    .attr("style", `background-color: ${val.color}`)
+			    .text(val.title))
+		    .append(
+			$("<div/>")
 			    .attr("id", idFormat(val.title))
 			    .addClass('noactive'));
 	    }
@@ -955,9 +957,11 @@ function buildSlicesBox(leases){
 
 let known_slices = [];
 function buildInitialSlicesBox(leases){
+    liveleases_debug('buildInitialSlicesBox');
     setColorLeases();
     let slices = $("#my-slices");
-    slices.html('<h4 align="center" data-toggle="tooltip" title="Double click in slice to select default">drag & drop to book</h4>');
+    let legend = "Double click in slice to select default";
+    slices.html(`<h4 align="center" data-toggle="tooltip" title="${legend}">drag & drop to book</h4>`);
 
     $.each(leases, function(key,val){
 	val = shortName(val);
@@ -999,10 +1003,10 @@ function refreshCalendar(events){
 	$.each(events, function(key, event){
 	    liveleases_debug(`refreshCalendar : lease = ${event.title}: ${event.start} .. ${event.end}`);
 	    removeElementFromCalendar(event.id);
-	    $(xxxdomid).fullCalendar('renderEvent', event, true);
+	    $(`#${xxxdomid}`).fullCalendar('renderEvent', event, true);
 	});
 
-	let each_removing = $("xxxdomid").fullCalendar( 'clientEvents' );
+	let each_removing = $(`#${xxxdomid}`).fullCalendar( 'clientEvents' );
 	$.each(each_removing, function(k,obj){
 	    //when click in month view all 'thousands' of nightly comes.
 	    //Maybe reset when comeback from month view (not implemented)
@@ -1027,7 +1031,7 @@ function refreshCalendar(events){
 	    failedEvents.push(zombieLease(obj));
 	});
 	resetZombieLeases();
-	$(xxxdomid).fullCalendar('addEventSource', failedEvents);
+	$(`#${xxxdomid}`).fullCalendar('addEventSource', failedEvents);
 
 	resetActionQueue();
     }
