@@ -7,6 +7,7 @@
 
 let liveleases_options = {
 
+    // set to 'book' for the BOOK page
     mode : 'run',
 
     // these properties in the fullCalendar object will
@@ -18,16 +19,19 @@ let liveleases_options = {
     debug : true,
 }
 
+
 function liveleases_debug(...args) {
     if (liveleases_options.debug)
 	console.log(...args);
 }
 
 
+////////////////////////////////////////
 let LiveLeases = function(mode, domid) {
     this.mode = mode;
     this.domid = domid;
 }
+
 
 LiveLeases.prototype.buildCalendar = function(initial_events_json) {
     let today  = moment().format("YYYY-MM-DD");
@@ -921,10 +925,10 @@ function buildSlicesBox(leases){
     liveleases_debug('buildSlicesBox');
     let slices = $("#my-slices");
 
-    $.each(leases, function(key,val){
+    $.each(leases, function(key, val){
 	if ($.inArray(val.title, known_slices) === -1) { //already present?
 	    if (isMySlice(val.title)) {
-		if(val.title === nigthly_slice_name){
+		if (val.title === nigthly_slice_name){
 		    color = getNightlyColor();
 		    setCurrentSliceColor(color);
 		} else if(val.title === getCurrentSliceName()){
@@ -963,23 +967,26 @@ function buildInitialSlicesBox(leases){
     let legend = "Double click in slice to select default";
     slices.html(`<h4 align="center" data-toggle="tooltip" title="${legend}">drag & drop to book</h4>`);
 
-    $.each(leases, function(key,val){
+    $.each(leases, function(key, val){
 	val = shortName(val);
 	let color = getColorLease(val);
 	if ($.inArray(val, known_slices) === -1) { //removing nightly routine and slices already present?
 	    if (isMySlice(val)) {
-		if(val === nigthly_slice_name){
+		if (val === nigthly_slice_name){
 		    color = getNightlyColor();
 		    setCurrentSliceColor(color);
 		}
 		else if(val === getCurrentSliceName()){
 		    setCurrentSliceColor(color);
 		}
-		slices.append($("<div />")
-			      .addClass('fc-event')
-			      .attr("style", `background-color: ${color}`)
-			      .text(val))
-		    .append($("<div />")
+		slices
+		    .append(
+			$("<div />")
+			    .addClass('fc-event')
+			    .attr("style", `background-color: ${color}`)
+			    .text(val))
+		    .append(
+			$("<div />")
 			    .attr("id", idFormat(val))
 			    .addClass('noactive'));
 	    }
@@ -998,8 +1005,8 @@ function buildInitialSlicesBox(leases){
 
 
 function refreshCalendar(events){
-    if(refresh){
-
+    // xxx ugly use of global
+    if (refresh){
 	$.each(events, function(key, event){
 	    liveleases_debug(`refreshCalendar : lease = ${event.title}: ${event.start} .. ${event.end}`);
 	    removeElementFromCalendar(event.id);
@@ -1007,27 +1014,24 @@ function refreshCalendar(events){
 	});
 
 	let each_removing = $(`#${xxxdomid}`).fullCalendar( 'clientEvents' );
-	$.each(each_removing, function(k,obj){
-	    //when click in month view all 'thousands' of nightly comes.
-	    //Maybe reset when comeback from month view (not implemented)
+	$.each(each_removing, function(k, obj){
+	    // when click in month view all 'thousands' of nightly comes.
+	    // Maybe reset when comeback from month view (not implemented)
 	    if (!isNightly(obj.title) && obj.title) {
-		if(isRemoving(obj.title)){
+		if (isRemoving(obj.title)){
 		    removeElementFromCalendar(obj.id);
-		}
-		else if (obj.uuid && isPending(obj.title)){
+		} else if (obj.uuid && isPending(obj.title)){
 		    removeElementFromCalendar(obj.id);
-		}
-		else if (!isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
+		} else if (!isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
 		    removeElementFromCalendar(obj.id);
-		}
-		else if (/*isPresent(obj.id, actionsQueue) &&*/ isPending(obj.title) && !obj.uuid ){
+		} else if (/*isPresent(obj.id, actionsQueue) &&*/ isPending(obj.title) && !obj.uuid ){
 		    removeElementFromCalendar(obj.id);
 		}
 	    }
 	});
 
 	let failedEvents = [];
-	$.each(theZombieLeases, function(k,obj){
+	$.each(theZombieLeases, function(k, obj){
 	    failedEvents.push(zombieLease(obj));
 	});
 	resetZombieLeases();
