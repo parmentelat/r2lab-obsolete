@@ -131,7 +131,43 @@ http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-image-3.19.0-031
     ubuntu-grub-update
 }
 
-doc-imaging ubuntu-setup-ntp "installs ntp"
+# see seed article
+# https://renaudcerrato.github.io/2016/05/30/build-your-homemade-router-part3/
+doc-imaging ubuntu-atheros-noreg "patch the atheros driver to turn off regulatory domain - on vanilla ubuntu"
+function ubuntu-atheros-noreg() {
+
+    # create space
+    local root=/root/r2lab-kernel
+    mkdir -p $root
+    cd $root
+
+    # need to turn on the deb-src clauses in /etc/apt/sources.list
+    sed -i -e 's,^# *deb-src,deb-src,' /etc/apt/sources.list
+    apt-get -y update
+
+    local VERSION=$(uname -r)
+    apt-get -y build-dep linux-image-${VERSION}
+    apt-get -y source linux-image-${VERSION}
+
+    # apply patch
+    cd linux-${VERSION%%-*}
+    local files="drivers/net/wireless/ath/regd.c drivers/net/wireless/ath/Kconfig"
+    for file in $files; do
+	cp $file $file.bkp
+    done
+    # using the patch from our repo
+    local patch_url=https://raw.githubusercontent.com/parmentelat/r2lab/public/infra/patches/ath-regd-optional.patch
+    wget -O - $patch_url | patch -p1 -b
+    for file in $files; do
+	echo "====================" diff in $file
+	diff $file.bkp $file
+    done
+
+    # xxx - tmp - need to rebuild from there
+    
+}
+
+doc-imaging ubuntu-setup-ntp "install and start ntp"
 function ubuntu-setup-ntp () {
     apt-get install -y ntp ntpdate
     # let's not tweak ntp.conf, use DHCP instead
