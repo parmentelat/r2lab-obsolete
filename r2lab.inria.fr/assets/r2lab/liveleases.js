@@ -12,7 +12,9 @@ let liveleases_options = {
     // these properties in the fullCalendar object will
     // be traced when debug is set to true
     trace_events : [
-	'select'
+	'select', 'drop', 'eventDrop', 'eventDragStart',
+	// 'eventRender',
+	'eventMouseout', 'eventResize' 
     ],
     debug : true,
 }
@@ -28,10 +30,11 @@ let LiveLeases = function(mode, domid) {
     this.domid = domid;
 }
 
-LiveLeases.prototype.buildCalendar = function(theEvents) {
+LiveLeases.prototype.buildCalendar = function(initial_events_json) {
     let today  = moment().format("YYYY-MM-DD");
     let showAt = moment().subtract(1, 'hour').format("HH:mm");
     let run_mode = liveleases_options.mode == 'run';
+    console.log(`liveleases - sidecar_url = ${sidecar_url}`);
     
     // Create the calendar
     let calendar_args = {
@@ -73,7 +76,6 @@ LiveLeases.prototype.buildCalendar = function(theEvents) {
 	},
 	defaultView: run_mode ? 'agendaDay' : 'agendaThreeDay',
 	height: run_mode ? 455 : 685,
-	width: run_mode ? 100 : undefined,
 	////////////////////
 	defaultTimedEventDuration: '00:01:00',
 	slotDuration: "01:00:00",
@@ -98,9 +100,7 @@ LiveLeases.prototype.buildCalendar = function(theEvents) {
 	    }
 	    let my_title = getCurrentSliceName();
 	    let eventData;
-	    let adapt = adaptStartEnd(start, end);
-	    start = adapt[0];
-	    end   = adapt[1];
+	    [start, end] = adaptStartEnd(start, end);
 
 	    if (my_title) {
 		eventData = {
@@ -130,9 +130,7 @@ LiveLeases.prototype.buildCalendar = function(theEvents) {
 	    }
 
 	    setSlice($(this))
-	    let adapt = adaptStartEnd(start, end);
-	    start = adapt[0];
-	    end   = adapt[1];
+	    [start, end] = adaptStartEnd(start, end);
 
 	    let my_title = getCurrentSliceName();
 	    let eventData;
@@ -264,7 +262,7 @@ LiveLeases.prototype.buildCalendar = function(theEvents) {
 	    }
 	},
 	//Events from Json file
-	events: theEvents,
+	events: initial_events_json,
     };
     let trace_function = function(f) {
 	let wrapped = function(...args) {
@@ -327,7 +325,7 @@ LiveLeases.prototype.main = function (){
 
     resetActionsQueued();
     buildInitialSlicesBox(getMySlicesName());
-    this.buildCalendar(setNightlyAndPast());
+    this.buildCalendar([]);
     setCurrentSliceBox(getCurrentSliceName());
 
     listenLeases();
@@ -591,12 +589,17 @@ function isPending(title){
 
 function isNightly(title){
     let nightly = false;
-    if (title){
+    if (title) {
 	if(title.indexOf('nightly routine') > -1){
 	    nightly = true;
 	}
     }
     return nightly;
+}
+
+
+function getNightlyColor(){
+    return nigthly_slice_color;
 }
 
 
@@ -638,35 +641,6 @@ function setCurrentLeases(leases){
 
 function getCurrentLeases(){
     return current_leases;
-}
-
-
-function setNightlyAndPast(){
-    let notAllowedEvents = []
-    //Nightly routine fixed in each nigth from 3AM to 5PM
-    // newEvent = new Object();
-    // newEvent.title = "nightly routine";
-    // newEvent.id = "nightly";
-    // newEvent.start = " T03:00:00Z";
-    // newEvent.end   = " T04:00:00Z";
-    // newEvent.color = "#616161";
-    // newEvent.overlap = false;
-    // newEvent.editable = false;
-    // newEvent.dow = [0,1,2,3,4,5,6,7,8];
-    // notAllowedEvents.push(newEvent);
-
-    //Past dates
-    let newEvent = new Object();
-    newEvent.id = "pastDate";
-    newEvent.start = moment().format("YYYY-01-01T00:00:00Z");
-    newEvent.end   = moment().format("YYYY-MM-DD");
-    newEvent.overlap = false;
-    newEvent.editable = false;
-    newEvent.rendering = "background",
-    newEvent.color = "#FFE5E5";
-    notAllowedEvents.push(newEvent);
-
-    return notAllowedEvents;
 }
 
 
@@ -943,17 +917,12 @@ function isPresent(element, list){
 }
 
 
-function getNightlyColor(){
-    return nigthly_slice_color;
-}
-
-
 function buildSlicesBox(leases){
-    // let knew_slices = getMySlicesinShortName();
+    // let known_slices = getMySlicesinShortName();
     let slices = $("#my-slices");
 
     $.each(leases, function(key,val){
-	if ($.inArray(val.title, knew_slices) === -1) { //already present?
+	if ($.inArray(val.title, known_slices) === -1) { //already present?
 	    if (isMySlice(val.title)) {
 		if(val.title === nigthly_slice_name){
 		    color = getNightlyColor();
@@ -970,7 +939,7 @@ function buildSlicesBox(leases){
 			    .attr("id", idFormat(val.title))
 			    .addClass('noactive'));
 	    }
-	    knew_slices.push(val.title);
+	    known_slices.push(val.title);
 	}
     });
 
@@ -984,7 +953,7 @@ function buildSlicesBox(leases){
 }
 
 
-let knew_slices = [];
+let known_slices = [];
 function buildInitialSlicesBox(leases){
     setColorLeases();
     let slices = $("#my-slices");
@@ -993,7 +962,7 @@ function buildInitialSlicesBox(leases){
     $.each(leases, function(key,val){
 	val = shortName(val);
 	let color = getColorLease(val);
-	if ($.inArray(val, knew_slices) === -1) { //removing nightly routine and slices already present?
+	if ($.inArray(val, known_slices) === -1) { //removing nightly routine and slices already present?
 	    if (isMySlice(val)) {
 		if(val === nigthly_slice_name){
 		    color = getNightlyColor();
@@ -1010,7 +979,7 @@ function buildInitialSlicesBox(leases){
 			    .attr("id", idFormat(val))
 			    .addClass('noactive'));
 	    }
-	    knew_slices.push(val);
+	    known_slices.push(val);
 	}
     });
 
@@ -1080,18 +1049,19 @@ function parseLeases(data){
 	newLease.end = lease.valid_until;
 	newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);
 	newLease.color = getColorLease(newLease.title);
-	if(isMySlice(newLease.title) && !isPastDate(newLease.end))
+	if (isMySlice(newLease.title) && !isPastDate(newLease.end)) {
 	    newLease.editable = true;
-	else
+	} else {
 	    newLease.editable = false;
+	}
 	newLease.overlap = false;
 
 	// //HARD CODE TO SET SPECIAL ATTR to nightly routine
-	if(newLease.title == nigthly_slice_name){
+	if (newLease.title == nigthly_slice_name){
 	    newLease.color = getNightlyColor();
 	}
 
-	if(isZombie(lease)){
+	if (isZombie(lease)) {
 	    theZombieLeases.push(newLease);
 	    let request = {"uuid" : newLease.uuid};
 	    post_xhttp_django('/leases/delete', request, function(xhttp) {
@@ -1099,16 +1069,13 @@ function parseLeases(data){
 		    liveleases_debug("return from /leases/delete", request);
 		}
 	    });
-	}
-	else {
+	} else {
 	    leases.push(newLease);
 	    queueAction(newLease.title, newLease.start, newLease.end);
 	}
 
     });
+
     buildSlicesBox(leases);
-    if($(location).attr('pathname') == '/run.md'){
-	$.merge(leases, setNightlyAndPast()); //present in run
-    }
     return leases;
 }
