@@ -1,5 +1,3 @@
-@import url("popover-overrides.css");
-
 #messages {
   max-width: 100%;
   margin: 0 auto;
@@ -150,4 +148,24 @@ a.fc-event {
   border: .2em solid #ccc;
   background-color: #3a87ad; /* default BACKGROUND color */
   font-weight: normal; /* undo jqui's ui-widget-header bold */
+}
+
+/* CUSTOM POPOVERS */
+div.liveleases-popover {
+}
+
+.popover {
+    z-index: 1060;
+    padding: 2px;
+}
+
+h3.popover-title {
+    background-color: #ccc;
+    font-size: 125%;
+}
+
+div.popover-content {
+    background-color: #eee;
+    font-size: 150%;
+    margin: 5px;
 }

@@ -106,7 +106,7 @@ def get_leases():
     slices_specs = [
         # slicename - hour-from - hour-until
         (nightly, 8, 10),
-        (nightly, 13, 14),
+        (nightly, 13, 15),
         (nightly, 17, 18),
         (other_slice, 3, 4),
         (other_slice, 20, 21),

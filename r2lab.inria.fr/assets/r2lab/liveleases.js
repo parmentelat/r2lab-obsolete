@@ -14,7 +14,8 @@ let liveleases_options = {
     // be traced when debug is set to true
     trace_events : [
 	'select', 'drop', 'eventDrop', 'eventDragStart', 'eventResize',
-	// 'eventRender', 'eventMouseout', 
+	//'eventRender', 'eventMouseover',
+	'eventMouseout', 
     ],
     debug : true,
 }
@@ -39,6 +40,14 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
     let run_mode = liveleases_options.mode == 'run';
     console.log(`liveleases - sidecar_url = ${sidecar_url}`);
     
+    // helpers for popover area 
+    let hh_mm = function(date) {
+	return moment(date).format("HH:mm");
+    }
+    let pretty_content = function(event) {
+	return `${hh_mm(event.start._d)}--${hh_mm(event.end._d)}`;
+    };
+
     // Create the calendar
     let calendar_args = {
 	header:
@@ -189,8 +198,14 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 
 	// this fires when an event is rendered
 	eventRender: function(event, element) {
-	    $(element).popover({content: event.title, placement: 'top',
-				trigger: 'hover', delay: {"show": 1000 }});
+
+	    $(element).popover({
+		title: event.title,
+		content: pretty_content(event),
+		html: true,
+		placement: 'top',
+		trigger: 'hover',
+		delay: {"show": 500 }});
 	    
 	    let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
 	    if(view != 'month'){
@@ -238,12 +253,13 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 	// eventClick: function(event, jsEvent, view) {
 	//   $(this).popover('show');
 	// },
-
-	// eventMouseover: function(event, jsEvent, view) {
-	//   $(this).popover('show');
-	// },
-	//
+	
+	//eventMouseover: function(event, jsEvent, view) {
+	//$(this).popover('show');
+	//},
+	
 	eventMouseout: function(event, jsEvent, view) {
+	    console.log('inside eventMouseout, this & $(this)= ', this, $(this));
 	    $(this).popover('hide');
 	},
 
@@ -277,7 +293,11 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 	return wrapped;
     }
     for (let prop of liveleases_options.trace_events) {
-	calendar_args[prop] = trace_function(calendar_args[prop])
+	if ( ! prop in calendar_args) {
+	    console.log(`liveleases: trace_events: ignoring undefined prop ${prop}`);
+	} else {
+	    calendar_args[prop] = trace_function(calendar_args[prop])
+	}
     }
     $(`#${this.domid}`).fullCalendar(calendar_args);
 }
@@ -321,7 +341,6 @@ LiveLeases.prototype.getLastSlice = function(){
 
 ////////////////////////////////////////
 LiveLeases.prototype.main = function (){
-    console.log('main');
 
     this.saveSomeColors();
     this.getLastSlice();
@@ -920,7 +939,7 @@ function isPresent(element, list){
 }
 
 
-function buildSlicesBox(leases){
+function buildSlicesBox(leases) {
     // let known_slices = getMySlicesinShortName();
     liveleases_debug('buildSlicesBox');
     let slices = $("#my-slices");
