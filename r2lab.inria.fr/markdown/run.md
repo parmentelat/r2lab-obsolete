@@ -38,12 +38,12 @@ require_login: true
     </div>
     <div class="col-md-3 leases-run-width">
       <div id="liveleases_container" class="run"></div>
-      <script type="text/javascript" src="/assets/js/moment.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
       <script type="text/javascript" src="/assets/js/moment-round.js"></script>
-      <script type="text/javascript" src="/assets/js/jquery-ui.fullcalendar-custom.min.js"></script>
-      <script type="text/javascript" src="/assets/js/fullcalendar.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
-      <style type="text/css"> @import url("/assets/css/fullcalendar.css"); </style>
+      <style type="text/css"> @import url("https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css"); </style>
 
       <style type="text/css"> @import url("/assets/r2lab/liveleases.css"); </style>
       <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>

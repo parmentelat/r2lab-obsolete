@@ -11,7 +11,7 @@ require_login: true
 * R2lab platform is reset every time a <strong>nightly</strong> slice is found in the calendar,
 which occurs a couple times a week on average.
 As part of this verification routine, the testbed will be thoroughly reset and <strong>all data will be lost</strong>.
-* In any case, please make sure to save your experiment's data once you are done,
+* In any case, please make sure to **save your experiment's data** once you are done,
 as the next user will probably reload an image on your nodes.
 * All times on this website are expressed wrt the <strong>CET timezone</strong>,
 which is UTC+1 in winter, and UTC+2 in summer.
@@ -40,12 +40,12 @@ which is UTC+1 in winter, and UTC+2 in summer.
  </div>
  <div class="col-md-10">
   <div id="liveleases_container" class="book"></div>
-   <script type="text/javascript" src="/assets/js/moment.min.js"></script>
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
    <script type="text/javascript" src="/assets/js/moment-round.js"></script>
-   <script type="text/javascript" src="/assets/js/jquery-ui.fullcalendar-custom.min.js"></script>
-   <script type="text/javascript" src="/assets/js/fullcalendar.min.js"></script>
-   <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
-   <style type="text/css"> @import url("/assets/css/fullcalendar.css"); </style>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+      <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
+      <style type="text/css"> @import url("https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css"); </style>
 
    <style type="text/css"> @import url("/assets/r2lab/liveleases.css"); </style>
    <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
