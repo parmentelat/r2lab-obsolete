@@ -131,9 +131,21 @@ http://kernel.ubuntu.com/~kernel-ppa/mainline/v3.19-vivid/linux-image-3.19.0-031
     ubuntu-grub-update
 }
 
-# see seed article
+function change-Kconfig-default () {
+    kconfig=$1; shift
+    config_name=$1; shift
+    new_default=$1; shift
+    # instruct sed to work on a range defined by 2 patterns
+    sed "/config ${config_name}/,/config / s/default.*/default ${new_default}/"\
+	--in-place=.debian $kconfig
+}
+
+# initially based on this article
 # https://renaudcerrato.github.io/2016/05/30/build-your-homemade-router-part3/
-doc-imaging ubuntu-atheros-noreg "patch the atheros driver to turn off regulatory domain - on vanilla ubuntu"
+# that patch seems to be useless though
+# also based on this howto
+# https://wiki.ubuntu.com/Kernel/BuildYourOwnKernel
+doc-imaging ubuntu-atheros-noreg "allow the atheros driver to tweak regulatory domain - for vanilla ubuntu"
 function ubuntu-atheros-noreg() {
 
     # create space
@@ -146,38 +158,32 @@ function ubuntu-atheros-noreg() {
     apt-get -y update
 
     local VERSION=$(uname -r)
+    # VERSION=4.4.0-21-generic
+    local SHORT_VERSION=${VERSION%%-*}
+    # SHORT_VERSION=4.4.0
+
+    # get the stuff from ubuntu
     apt-get -y build-dep linux-image-${VERSION}
     apt-get -y source linux-image-${VERSION}
 
-    # apply patch
-    cd linux-${VERSION%%-*}
-    local files="drivers/net/wireless/ath/regd.c drivers/net/wireless/ath/Kconfig"
-    for file in $files; do
-	cp $file $file.bkp
-    done
-    # using the patch from our repo
-    local patch_url=https://raw.githubusercontent.com/parmentelat/r2lab/public/infra/patches/ath-regd-optional.patch
-    wget -O - $patch_url | patch -p1 -b
-    for file in $files; do
-	echo "====================" diff in $file
-	diff $file.bkp $file
-    done
+    cd linux-${SHORT_VERSION}
+    
+    # change configuration
+    change-Kconfig-default net/wireless/Kconfig CFG80211_CERTIFICATION_ONUS y
+    change-Kconfig-default drivers/net/wireless/ath/Kconfig ATH_REG_DYNAMIC_USER_REG_HINTS y
 
-    # moving to this howto
-    # https://wiki.ubuntu.com/Kernel/BuildYourOwnKernel
     debian/rules clean
     debian/rules binary-headers
-    # xxx
-    # --- need to answer 'y' manually ---
-    # had to answer 'y' to the only question regarding config
-    #   Do not enforce EEPROM regulatory restrictions (ATH_USER_REGD) [N/y] (NEW) y
-    # ---
-    # fakeroot was causing wierd issues, so I took it out of the way
-    # xxx
-    return
     debian/rules binary-generic
     debian/rules binary-perarch
+
+    # at that point we need to install the .deb packages
+    cd $kroot
+    dpkg -i  linux-{headers,image}*${SHORT_VERSION}*.deb
     
+    # cleanup - it's huge (14Gb) and makes for a 6Gb+ image
+    cd /root
+    rm -rf $kroot
 }
 
 doc-imaging ubuntu-setup-ntp "install and start ntp"

@@ -58,6 +58,10 @@ enb_options="
     -b /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-softmodem
 "
 
+function u16-ath-noreg() {
+    bim 8 ubuntu-16.04 u16-ath-noreg-$DATE "imaging.sh ubuntu-atheros-noreg"
+}
+
 function u16-48() {
     bim 2 ubuntu-16.04 u16.04-$DATE "nodes.sh apt-upgrade-all" 
     bim 3 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" 
