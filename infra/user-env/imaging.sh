@@ -167,11 +167,20 @@ function ubuntu-atheros-noreg() {
     apt-get -y source linux-image-${VERSION}
 
     cd linux-${SHORT_VERSION}
-    
+
+    # define EXTRAVERSION in main Makefile
+    # this does not seem to make it in the running uname though...
+    sed --in-place=.debian -e "s,^EXTRAVERSION.*,EXTRAVERSION = athnoreg," Makefile
+
     # change configuration
     change-Kconfig-default net/wireless/Kconfig CFG80211_CERTIFICATION_ONUS y
     change-Kconfig-default drivers/net/wireless/ath/Kconfig ATH_REG_DYNAMIC_USER_REG_HINTS y
 
+    # apply patch
+    # using the patch from our repo
+    local patch_url=https://raw.githubusercontent.com/parmentelat/r2lab/public/infra/patches/ath-regd.patch
+    wget -O - $patch_url | patch -p1 -b
+    
     debian/rules clean
     debian/rules binary-headers
     debian/rules binary-generic
@@ -181,6 +190,9 @@ function ubuntu-atheros-noreg() {
     cd $kroot
     dpkg -i  linux-{headers,image}*${SHORT_VERSION}*.deb
     
+    # xxx tmp
+    return
+
     # cleanup - it's huge (14Gb) and makes for a 6Gb+ image
     cd /root
     rm -rf $kroot

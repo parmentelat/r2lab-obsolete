@@ -59,7 +59,7 @@ enb_options="
 "
 
 function u16-ath-noreg() {
-    bim 8 ubuntu-16.04 u16-ath-noreg-$DATE "imaging.sh ubuntu-atheros-noreg"
+    bim 8 ubuntu-16.04 u16-ath-noreg-$DATE "nodes.sh git-pull-r2lab" "nodes.sh apt-upgrade-all" "imaging.sh ubuntu-atheros-noreg"
 }
 
 function u16-48() {
@@ -183,4 +183,4 @@ function  update-v11() {
 
 #bim 37 fedora-23-v4-ntp == "nodes.sh common-setup-user-env"
 
-u16-48
+u16-ath-noreg
