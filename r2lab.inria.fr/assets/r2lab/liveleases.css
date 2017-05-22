@@ -120,19 +120,6 @@ a.fc-event {
   border-radius: 5px;
 }
 
-/* looks unused
-#my-slices p {
-  margin: 1.5em 0;
-  font-size: 11px;
-  color: #666;
-}
-
-#my-slices p input {
-  margin: 0;
-  vertical-align: middle;
-}
-*/
-
 .fc-toolbar h2 {
   font-size: 12px;
   white-space: normal !important;
@@ -151,9 +138,6 @@ a.fc-event {
 }
 
 /* CUSTOM POPOVERS */
-div.liveleases-popover {
-}
-
 .popover {
     z-index: 1060;
     padding: 2px;
