@@ -150,6 +150,7 @@ h3.popover-title {
 
 div.popover-content {
     background-color: #eee;
-    font-size: 150%;
-    margin: 5px;
+    font-size: 140%;
+    margin: 0px;
+    text-align: center;
 }

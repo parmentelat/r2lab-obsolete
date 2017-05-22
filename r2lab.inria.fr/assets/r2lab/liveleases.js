@@ -45,7 +45,7 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 	return moment(date).format("HH:mm");
     }
     let pretty_content = function(event) {
-	return `${hh_mm(event.start._d)}--${hh_mm(event.end._d)}`;
+	return `${hh_mm(event.start._d)}-${hh_mm(event.end._d)}`;
     };
 
     // Create the calendar
@@ -203,7 +203,7 @@ LiveLeases.prototype.buildCalendar = function(initial_events_json) {
 		title: event.title,
 		content: pretty_content(event),
 		html: true,
-		placement: 'top',
+		placement: 'auto',
 		trigger: 'hover',
 		delay: {"show": 500 }});
 	    
