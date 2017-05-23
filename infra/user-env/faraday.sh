@@ -372,56 +372,6 @@ function tcpdump-frisbee () {
     set +x
 }
 
-function nitos-restart () {
-    service omf-sfa stop
-    service ntrc stop
-    service ntrc start
-    service omf-sfa start
-}
-doc-admin nitos-restart "restart the omf-sfa and nitos (ntrc) services)"
-
-function nitos-running-frisbees () {
-    pids=$(pgrep frisbee)
-    [ -z "$pids" ] && echo No running frisbee || ps $pids
-}
-doc-admin nitos-running-frisbees "list running instances of the frisbee server"
-
-function nitos-frisbee-bandwidth () {
-    grep bandwidth /etc/nitos_testbed_rc/frisbee_proxy_conf.yaml
-}
-doc-admin nitos-frisbee-bandwidth "show configured bandwidth"
-
-####################
-### utilities to switch the frisbee binaries
-# not needed anymore now that we use new frisbee, but just in case
-# this is to use the 'old' binaries as shipped with OMF
-function pxe-old () {
-#    preplab || { echo "designed for bemol only" ; return 1; }
-    rsync -a /usr/sbin/frisbee-old-64 /usr/sbin/frisbee
-    rsync -a /usr/sbin/frisbeed-old-64 /usr/sbin/frisbeed
-    rsync -a /tftpboot/irfs-pxefrisbee.igz.old /tftpboot/irfs-pxefrisbee.igz
-    echo old pxe-frisbee config
-    pxe-config
-}
-doc-admin pxe-old "DO NOT USE THIS - Configure the system to use old frisbee binaries!"
-
-# this is to use ours
-function pxe-new () {
-#    preplab || { echo "designed for bemol only" ; return 1; }
-    rsync -a /usr/sbin/frisbee-new-64 /usr/sbin/frisbee
-    rsync -a /usr/sbin/frisbeed-new-64 /usr/sbin/frisbeed
-    rsync -a /tftpboot/irfs-pxefrisbee.igz.new /tftpboot/irfs-pxefrisbee.igz
-    echo new pxe-frisbee config
-    pxe-config
-}
-doc-admin pxe-new "DO NOT USE THIS - Configure the system to use new frisbee binaries!"
-
-# and this lists the current config
-function pxe-config () {
-    ls -l /usr/sbin/frisbee* /tftpboot/irfs*
-}
-doc-admin pxe-config "Displays various files related to using old or new frisbee"
-
 ####################
 # prepare a node to boot on the standard pxe image - or another variant
 # *) 2 special forms are
@@ -507,25 +457,6 @@ function nextboot-cleanall () { -nextboot-all clean; }
 doc-alt nextboot-cleanall "remove all pxelinux symlinks"
 
 ####################
-# for now we use a different port for bemol and faraday
-
-# mostly meant as a means to check the broker is alive and well configured
-function omf-nodes() { curl -k https://localhost:12346/resources/nodes; echo; }
-doc-admin omf-nodes function
-function omf-leases() { curl -k https://faraday.inria.fr:12346/resources/leases; echo; }
-doc-alt omf-leases function
-function omf-accounts() { curl -k https://faraday.inria.fr:12346/resources/accounts; echo; }
-doc-alt omf-accounts function
-
-# XXX todo : a tool for turning on and off debug mode in omf6 commands
-# omf-debug : says what is in action
-# omf-debug on : turn it on
-# omf-debug off : turn it off
-function omf-debug () { echo not implemented; }
-
-# do ssh to the first node in our list
-# nodes 4
-# ss -> ssh fit04
 # ss 5 -> ssh fit05
 # tn -> telnet fit04
 #
@@ -557,17 +488,9 @@ doc-admin sx "alias for ssh1nx"
 alias s="ssh1n"
 
 ####################
-alias nitos-gem-203="cd /var/lib/gems/1.9.1/gems/nitos_testbed_rc-2.0.3/lib/nitos_testbed_rc"
-alias nitos-gem-204="cd /var/lib/gems/1.9.1/gems/nitos_testbed_rc-2.0.4/lib/nitos_testbed_rc"
-
 # look at logs
 alias logs-dns="tail -f /var/log/dnsmasqfit.log"
 doc-admin logs-dns alias
-alias logs-nitos="tail -f /var/log/upstart/ntrc*.log"
-doc-admin logs-nitos alias
-
-alias nitos-frisbeed-calls="grep frisbeed /var/log/upstart/ntrc_frisbee.log | grep command"
-doc-admin nitos-frisbeed-calls "extract previously invoked frisbeed commands from logs"
 
 # talk to switches
 function sw-c007 () { ssh switch-c007; }
@@ -585,83 +508,27 @@ function chmod-private-key () {
 doc-alt chmod-private-key "Chmod private key so that ssh won't complain anymore"
 
 ##########
-# we had to create a crontab-oriented proper shell-script to do this in ./restart-all.sh
-# to avoid code duplication we call that script here
-function restart-omf () {
-    /root/r2lab/infra/scripts/restart-omf.sh interactive
-}
-doc-admin restart-all "Restart all 4 services omf-sfa, ntrc, openfire and dnsmasq"
-
 alias images-repo="cd /var/lib/rhubarbe-images/"
 doc-admin images-repo alias
 
-alias r2lab-users="ls -d /home/onelab.inria.r2lab*"
-doc-admin r2lab-users alias
-
 ####################
-# user environment
-
-function init-user-env () {
-
-    SLICE=$(id --user --name 2>/dev/null || id -un)
-
-    MY_CERT=$HOME/.omf/user_cert.pem
-    MY_KEY=$HOME/.ssh/id_rsa
-    # turns out regular users cannot use CJ; sigh..
-    #CURL_CERT="--cert $MY_CERT --key $MY_KEY"
-    CURL_CERT=""
-    # root user does has a plain pem with private key embedded
-    if [ "$SLICE" == root ]; then
-	MY_KEY=$HOME/.omf/user_cert.pkey
-	CURL_CERT="--cert $MY_CERT"
-    fi
-
-    CURL="curl -k $CURL_CERT"
-
-    CURL_JSON="-H 'Accept: application/json' -H 'Content-Type:application/json'"
-
-    CJ="$CURL $CURL_JSON"
-
-    RU=https://localhost:12346/resources/
-
-}
-
-init-user-env
-
-doc-alt CURL "env. variable: CURL=$CURL"
-doc-alt CJ env. variable: CJ=$CJ
-doc-alt RU "env. variable: RU=$RU"
-
-function slice () {
-    [ -n "$1" ] && SLICE=$1
-    echo Using SLICE=$SLICE
-}
-doc-alt slice "Display current slice (and optionnally set it)"
-
-function GET () {
-    request=$1; shift
-    $CURL $RU/$request
-}
-doc-alt GET "Issue a REST GET api call - expects one arguments like 'accounts' or 'accounts?name=onelab.inria.r2lab.admin'"
-
-function get-my-account () { GET accounts?name=$SLICE ; }
-doc-alt get-my-account "Displays current account $SLICE as obtained by REST"
-
-ADMIN=onelab.inria.r2lab.admin
+ADMIN=inria_r2lab.admin
 
 alias admin-account="su - $ADMIN"
 doc-admin admin-account alias
 
-alias jour-monitor="journalctl -b -f --unit=monitor.service"
-doc-admin jour-monitor alias
-alias logs-monitor="tail -f /var/log/monitor.log"
-doc-admin logs-monitor alias
+alias jou-monitor="jou -f monitor"
+doc-admin jou-monitor alias
+alias log-monitor="tail -f /var/log/monitor.log"
+doc-admin log-monitor alias
 
-alias logs-omf-sfa="tail -f /var/log/upstart/omf-sfa.log"
-doc-admin logs-omf-sfa alias
-alias jour-omf-sfa="journalctl --unit=omf-sfa"
-doc-admin jour-omf-sfa alias
+alias jou-accounts="jou -f accountsmanager"
+doc-admin jou-accounts alias
 
+alias jou-faraday="jou -f monitor accountsmanager"
+doc-admin jou-faraday alias
+
+####################
 alias rhubarbe-update='pip3 install --upgrade rhubarbe; rhubarbe version'
 doc-admin rhubarbe-update alias
 
