@@ -513,7 +513,7 @@ doc-admin images-repo alias
 
 ####################
 ADMIN=inria_r2lab.admin
-<
+
 alias admin-account="su - $ADMIN"
 doc-admin admin-account alias
 
