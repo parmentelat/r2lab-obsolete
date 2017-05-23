@@ -145,13 +145,16 @@ function change-Kconfig-default () {
 # that patch seems to be useless though
 # also based on this howto
 # https://wiki.ubuntu.com/Kernel/BuildYourOwnKernel
+
+# a space to rebuild kernels
+kbuildroot=/root/kernel-build
+
 doc-imaging ubuntu-atheros-noreg "allow the atheros driver to tweak regulatory domain - for vanilla ubuntu"
 function ubuntu-atheros-noreg() {
 
     # create space
-    local kroot=/root/kernel-build
-    mkdir -p $kroot
-    cd $kroot
+    mkdir -p $kbuildroot
+    cd $kbuildroot
 
     # need to turn on the deb-src clauses in /etc/apt/sources.list
     sed -i -e 's,^# *deb-src,deb-src,' /etc/apt/sources.list
@@ -178,7 +181,7 @@ function ubuntu-atheros-noreg() {
 
     # apply patch
     # using the patch from our repo
-    local patch_url=https://raw.githubusercontent.com/parmentelat/r2lab/public/infra/patches/ath-regd.patch
+    local patch_url=https://raw.githubusercontent.com/parmentelat/r2lab/public/infra/patches/ath-noreg.patch
     wget -O - $patch_url | patch -p1 -b
     
     debian/rules clean
@@ -187,15 +190,24 @@ function ubuntu-atheros-noreg() {
     debian/rules binary-perarch
 
     # at that point we need to install the .deb packages
-    cd $kroot
+    cd $kbuildroot
     dpkg -i  linux-{headers,image}*${SHORT_VERSION}*.deb
     
-    # xxx tmp
+    # the .deb are interesting in themselves, so we can shove this kernel in other
+    # images; so, let's finish this step here so that
+    # we can first save the full image even if it's huge
+    cd 
     return
+}
 
-    # cleanup - it's huge (14Gb) and makes for a 6Gb+ image
-    cd /root
-    rm -rf $kroot
+doc-imaging clean-kernel-build "clean up $kbuildroot after kernel building"
+function clean-kernel-build () {
+    
+    # cleanup - it can be huge
+    # typically this area is 14Gb large after ubuntu-atheros-noreg, and makes for a 6Gb+ image
+    # which can be reduced down to 
+    cd
+    rm -rf $kbuildroot
 }
 
 doc-imaging ubuntu-setup-ntp "install and start ntp"
