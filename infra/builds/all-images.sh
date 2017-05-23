@@ -59,7 +59,8 @@ enb_options="
 "
 
 function u16-ath-noreg() {
-    bim 8 ubuntu-16.04 u16-ath-noreg-$DATE "nodes.sh git-pull-r2lab" "nodes.sh apt-upgrade-all" "imaging.sh ubuntu-atheros-noreg"
+    bim 8 ubuntu-16.04 u16-ath-noreg-full-$DATE "nodes.sh git-pull-r2lab" "nodes.sh apt-upgrade-all" "imaging.sh ubuntu-atheros-noreg"
+    bim 9 u16-ath-noreg-full-$DATE u16-ath-noreg-$DATE "imaging.sh clean-kernel-build"
 }
 
 function u16-48() {
@@ -157,30 +158,6 @@ function  update-v11() {
           gnuradio-v11-os-update	"nodes.sh git-pull-r2lab" "nodes.sh update-os-packages" &
 }
 
-# seems to have worked except for nodes
-# 1 : ubuntu-16.04-v10-wireless-names.log - which is odd because it seemed to have worked manually
-# 8 : gnuradio-3.7.10.1-v11-os-packages.log
-
-### running apt-upgrade-all in unattended mode currently won't work
-# and requires more work
-# try to run apt-upgrade-all on ubuntu-16
-# bim fit06 ubuntu-16.04 u16-upgrade "nodes.sh apt-upgrade-all"
-
 ####################
-# same on ubuntu-14.04 + node-env
-#0#bim fit02 ubuntu-14.04-v3-stamped ubuntu-14.04-v4-ntp-node-env \
-#0#  "imaging.sh ubuntu-setup-ntp" \
-#0#  "imaging.sh common-setup-user-env" \
-#0#  "imaging.sh common-setup-node-ssh-key" \
-#0#  "nodes.sh git-pull-r2lab"
-
-#bim 36 ubuntu-14.04-v4-ntp-node-env == "nodes.sh common-setup-user-env"
-
-# same on fedora-23
-#0#bim fit03 fedora-23-node-env fedora-23-v4-ntp \
-#0#  "imaging.sh fedora-setup-ntp" \
-#0#  "nodes.sh git-pull-r2lab"
-
-#bim 37 fedora-23-v4-ntp == "nodes.sh common-setup-user-env"
-
+# xxx this clearly should be specified on the command line some day
 u16-ath-noreg
