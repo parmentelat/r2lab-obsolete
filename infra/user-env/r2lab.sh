@@ -12,10 +12,11 @@ doc-admin logs-django alias
 alias logs-r2lab=logs-django
 doc-admin logs-r2lab alias
 
-alias logs-sidecar="tail -f /var/log/sidecar.log"
-alias jour-sidecar="journalctl -b -f --unit=sidecar"
-doc-admin logs-sidecar alias
-doc-admin jour-sidecar alias
+alias log-sidecar="tail -f /var/log/sidecar.log"
+doc-admin log-sidecar alias
+
+alias jou-sidecar="journalctl -b -f --unit=sidecar"
+doc-admin jou-sidecar alias
 
 doc-admin gitup "runs git pull in /root/r2lab"
 function gitup() {
