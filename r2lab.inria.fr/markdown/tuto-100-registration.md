@@ -207,7 +207,7 @@ will be challenged so as to prove that you can access the corresponding private 
 
 When multiple ssh connections are created, it is traditionally easier
 to run an ssh agent. The role of this software, that runs locally on
-your laptopm, is to work as a cache of private keys, so that you only
+your laptop, is to work as a cache of private keys, so that you only
 need enter the password for your private key once when you log in into
 your laptop, rather than each time an ssh session is created - which
 can happen a lot.
@@ -237,7 +237,7 @@ At this point you should reach R2lab platform typing in your terminal:
 
 *<h6>if by any chance your public key is not at its standard location, and not known to your ssh agent, then place `-i` option in the command line to specify its path.</h6>*
 
-Once this command works for you, proceed to the next tutorial), where [we see in more details the available tools
+Once this command works for you, proceed to the next tutorial, where [we see in more details the available tools
 for manipulating the nodes](tuto-200-shell-tools.md).
 
 ### Problems?
