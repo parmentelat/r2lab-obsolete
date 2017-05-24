@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+"use strict";
 
 //// oct. 2016
 // major changes in channels naming scheme
@@ -13,7 +14,7 @@
 
 // dependencies
 const fs = require('fs');
-const path = require('path');
+//const path = require('path');
 const url = require('url');
 const express = require('express');
 const http = require('http');
@@ -23,23 +24,23 @@ const socketio = require('socket.io');
 
 ////////// globals
 // use -v to turn on
-var verbose_flag = false;
+let verbose_flag = false;
 // use -l to turn on
-var local_flag = false;
+let local_flag = false;
 // default is to be incremental - i.e. emit only differences
 // use -c (--complete) to go back to the mode where the complete
 // news string gets emitted
-var incremental_flag = true;
+let incremental_flag = true;
 
-var default_url = "https://r2lab.inria.fr:999/";
-var default_devel_url = "http://localhost:10000/";
-var global_url = undefined;
+let default_url = "https://r2lab.inria.fr:999/";
+let default_devel_url = "http://localhost:10000/";
+let global_url = undefined;
 
-var default_ssl_key = "/etc/pki/tls/private/r2lab.inria.fr.key";
-var global_ssl_key = undefined;
+let default_ssl_key = "/etc/pki/tls/private/r2lab.inria.fr.key";
+let global_ssl_key = undefined;
 
-var default_ssl_cert = "/etc/pki/tls/certs/r2lab_inria_fr.crt";
-var global_ssl_cert = undefined;
+let default_ssl_cert = "/etc/pki/tls/certs/r2lab_inria_fr.crt";
+let global_ssl_cert = undefined;
 
 // locate and load certificates
 function ssl_cert_options() {
@@ -52,7 +53,7 @@ function ssl_cert_options() {
 	    cert : fs.readFileSync(global_ssl_cert),
 	}
     } catch (err) {
-	console.log("Could not load SSL material : " + err);
+	console.log(`Could not load SSL material : ${err}`);
 	process.exit(1);
     }
 }
@@ -74,29 +75,29 @@ function ssl_cert_options() {
 
 
 // always display
-function display(args) {
-    for (var i in arguments) {
-       console.log(new Date() + " sidecar " + arguments[i]);
+function display() {
+    for (let i in arguments) {
+       console.log(`${new Date()} sidecar `, arguments[i]);
     }
 }
 // display only if in verbose mode
-function vdisplay(args) {
+function vdisplay() {
     if (verbose_flag)
 	display.apply(this, arguments);
 }
 
 // in the following, name = 'nodes' or 'phones' or 'leases' 
 function info_channel_name(name) {
-    return "info:" + name;
+    return `info:${name}`;
 }
 function request_channel_name(name) {
-    return "request:" + name;
+    return `request:${name}`;
 }
 function db_filename(name) {
     if (! local_flag) {
-	return "/var/lib/sidecar/" + name + ".json";
+	return `/var/lib/sidecar/${name}.json`;
     } else {
-	return "./" + name + ".json";
+	return `./${name}.json`;
     }
 }
 
@@ -126,27 +127,27 @@ io.on('connection', function(socket){
 //   * either forward the news as-is if incremental_mode is off
 //   * or forward the smallest delta that describes the changes if it is on
 function prepare_persistent_channel(socket, name) {
-    var info_channel = info_channel_name(name);
-    var filename = db_filename(name);
-    vdisplay("arming callback for channel " + info_channel);
+    let info_channel = info_channel_name(name);
+    let filename = db_filename(name);
+    vdisplay(`arming callback for channel ${info_channel}`);
     socket.on(info_channel, function(news_string) {
-	vdisplay("received on channel " + info_channel + " chunk " + news_string)
-	infos_to_emit = update_dbfile_from_news(filename, news_string, incremental_flag);
+	vdisplay(`received on channel ${info_channel} chunk ${news_string}`)
+	let infos_to_emit = update_dbfile_from_news(filename, news_string, incremental_flag);
 	// avoid the noise of sending empty news
 	if (infos_to_emit.length >= 1) {
-	    string_to_emit = JSON.stringify(infos_to_emit);
-	    vdisplay("emitting on "+ info_channel + " chunk " + string_to_emit);
+	    let string_to_emit = JSON.stringify(infos_to_emit);
 	    io.emit(info_channel, string_to_emit);
+	    vdisplay(`emitting on ${info_channel} chunk ${string_to_emit}`);
+	    display(`emitting on ${info_channel} ${infos_to_emit.length} chunks`);
 	} else {
-	    vdisplay("no news found in news_string (was "
-		     + news_string.length + " chars long)");
+	    vdisplay(`no news found in news_string (was ${news_string.length} chars long)`);
 	}
     });
     // this now is how complete status gets transmitted initially
-    var request_channel = request_channel_name(name);
-    vdisplay("arming callback for channel " + request_channel);
+    let request_channel = request_channel_name(name);
+    vdisplay(`arming callback for channel ${request_channel}`);
     socket.on(request_channel, function(msg) {
-	display("Received " + msg + " on channel " + request_channel);
+	display(`Received ${msg} on channel ${request_channel}`);
 	// feature : if we can find 'CLEAR' in the text, we clear our own db
 	if (msg.indexOf('CLEAR') != -1) {
 	    clean_dbfile(filename);
@@ -158,17 +159,18 @@ function prepare_persistent_channel(socket, name) {
 // non-persistent channels are simpler,
 // e.g. we always propagate a complete list of leases
 function prepare_non_persistent_channel(socket, name) {
-    var info_channel = info_channel_name(name);
-    vdisplay("arming callback for channel " + info_channel);
+    let info_channel = info_channel_name(name);
+    vdisplay(`arming callback for channel ${info_channel}`);
     socket.on(info_channel, function(infos){
-	vdisplay("Forwarding on non-persistent channel " + info_channel);
 	io.emit(info_channel, infos);
+	let json = JSON.parse(infos);
+	display(`Forwarding ${json.length} items on non-persistent channel ${info_channel}`);
     });
 
-    var request_channel = request_channel_name(name);
-    vdisplay("arming callback for channel " + request_channel);
+    let request_channel = request_channel_name(name);
+    vdisplay(`arming callback for channel ${request_channel}`);
     socket.on(request_channel, function(anything) {
-	display("Forwarding trigger message " + anything + " on channel "+ request_channel);
+	display(`Forwarding trigger message ${anything} on channel ${request_channel}`);
 	io.emit(request_channel, anything);
     });
     
@@ -192,17 +194,17 @@ io.on('connection', function(socket){
 // convenience function to synchroneously read a file as a string
 function sync_read_file_as_string(filename){
     try {
-	var contents = fs.readFileSync(filename, 'utf8');
-	vdisplay("sync read " + filename + " -> " + contents.length + " chars");
+	let contents = fs.readFileSync(filename, 'utf8');
+	vdisplay(`sync read ${filename} -> ${contents.length} chars`);
 	if (! contents) {
-	    display(filename + ": WARNING, could not read");
+	    display(`${filename}: WARNING, could not read`);
 	    // artificially return an empty list
 	    return "[]";
 	} else {
 	    return contents;
 	}
     } catch(err){
-	display(filename + ": could not read - " + err);
+	display(`${filename}: could not read - ${err}`);
 	return "[]";
     }
 }
@@ -212,7 +214,7 @@ function sync_read_file_as_infos(filename) {
     try {
 	return JSON.parse(sync_read_file_as_string(filename));
     } catch(err) {
-	display(filename + ": could not parse JSON - " + err);
+	display(`${filename}: could not parse JSON - ${err}`);
 	// return an empty list in this case
 	// useful for when the file does not exist yet
 	// a little hacky as this assumes all our files contain JSON lists
@@ -222,13 +224,12 @@ function sync_read_file_as_infos(filename) {
 
 // utility to open a file and broadcast its contents on channel
 function emit_file(io, filename, channel){
-    var complete_string = sync_read_file_as_string(filename);
+    let complete_string = sync_read_file_as_string(filename);
     if (complete_string) {
-	//vdisplay("emit_file: sending on channel " + channel + ":" + complete_string);
-	vdisplay("emit_file: sending on channel " + channel + ":" + complete_string.length + " chars");
+	vdisplay(`emit_file: sending on channel ${channel}:${complete_string.length} chars`);
 	io.emit(channel, complete_string);
     } else {
-	display("OOPS - not emitting - empty contents found in " + filename)
+	display(`OOPS - not emitting - empty contents found in ${filename}`)
     }
 }
 
@@ -236,11 +237,11 @@ function emit_file(io, filename, channel){
 // we do everything synchroneously to avoid trouble
 function sync_save_dbfile(filename, infos){
     try {
-	var contents = JSON.stringify(infos);
+	let contents = JSON.stringify(infos);
 	fs.writeFileSync(filename, contents, 'utf8');
-	vdisplay("sync (over)wrote " + contents.length + " on " + filename)
+	vdisplay(`sync (over)wrote ${contents.length} on ${filename}`)
     } catch(err) {
-	display(filename + ": could not sync write " + filename + " - " + err);
+	display(`${filename}: could not sync write ${filename} - ${err}`);
     }
 }
 
@@ -260,18 +261,18 @@ function update_dbfile_from_news(filename, news_string, incremental_mode) {
     }
     try {
 	// start from the complete infos
-	var complete_infos = sync_read_file_as_infos(filename);
+	let complete_infos = sync_read_file_as_infos(filename);
 	// convert string into infos
-	var news_infos = JSON.parse(news_string);
-	vdisplay("updating dbfile with " + news_infos.length + " news infos");
+	let news_infos = JSON.parse(news_string);
+	vdisplay(`updating dbfile with ${news_infos.length} news infos`);
 	// merge both and save in file
-	delta_infos = merge_news_into_complete(complete_infos, news_infos, filename);
+	let delta_infos = merge_news_into_complete(complete_infos, news_infos, filename);
 	// xxx
 	return incremental_mode ? delta_infos : news_infos;
     } catch(err) {
-	display(" OOPS - unexpected exception in update_dbfile_from_news",
-		"news_string was " + news_string,
-		"strack trace is " + err.stack);
+	display(` OOPS - unexpected exception in update_dbfile_from_news`,
+		`news_string was ${news_string}`,
+		`strack trace is ${err.stack}`);
 	return [];
     }
 }
@@ -281,18 +282,18 @@ function update_dbfile_from_news(filename, news_string, incremental_mode) {
 // return delta_infos, the smallest set of infos
 // that describe the changes from previous db state
 function merge_news_into_complete(complete_infos, news_infos, filename) {
-    var delta_infos = [];
+    let delta_infos = [];
     news_infos.forEach(function(news_info) {
-	var id = news_info.id;
-	var item_already_present_in_db = false;
+	let id = news_info.id;
+	let item_already_present_in_db = false;
 	complete_infos.forEach(function(complete_info) {
 	    // search for corresponding item in complete db
 	    if (complete_info['id'] == id) {
 		item_already_present_in_db = true;
-		items_has_changes = false;
-		var delta_info;
+		let items_has_changes = false;
+		let delta_info;
 		// copy all contents from news_info into complete_infos
-		for (var prop in news_info) {
+		for (let prop in news_info) {
 		    // do we have change for that node x prop
 		    if ( (news_info[prop] != undefined) &&
 			 (complete_info[prop] != news_info[prop]) ) {
@@ -327,21 +328,21 @@ function merge_news_into_complete(complete_infos, news_infos, filename) {
 }
 
 ////////////////////////////////////////
-var usage = "Usage: sidecar.js [options][-v] [-l] [-c] [-u (http|https)://hostname:port/]\n\
+let usage = `Usage: sidecar.js [options][-v] [-l] [-c] [-u (http|https)://hostname:port/]\n\
   -v: verbose mode \n\
   -l: local mode for devel : create local logfile, and change SSL defaults \n\
   -c: complete mode - default is to incremental mode, i.e. publish differences;\n\
       complete floods with the whole data \n\
   -u: (http|https)://hostname:port/\n\
-      set url (hostname ignored)  - def is " + default_url + "\n\
-  -C: path for the local SSL cert - def is " + default_ssl_cert + "\n\
-  -K: path for the local SSL key  - def is " + default_ssl_key;  
+      set url (hostname ignored)  - def is ${default_url}\n\
+  -C: path for the local SSL cert - def is ${default_ssl_cert}\n\
+  -K: path for the local SSL key  - def is ${default_ssl_key}`;  
 
 function parse_args() {
     // very rough parsing of command line args - to set verbosity
-    var argv = process.argv.slice(2);
-    for (var index=0; index < argv.length; index++) {
-	var arg = argv[index];
+    let argv = process.argv.slice(2);
+    for (let index=0; index < argv.length; index++) {
+	let arg = argv[index];
 	if (arg == "-v") {
 	    verbose_flag = true;
 	} else if (arg == "-l") {
@@ -365,18 +366,18 @@ function parse_args() {
 	    console.log(usage);
 	    process.exit(1);
 	} 
-    };
+    }
     global_url = (global_url || default_url);
     global_ssl_cert = (global_ssl_cert || default_ssl_cert);
     global_ssl_key = (global_ssl_key || default_ssl_key);
     
-    vdisplay("======== using URL = " + global_url);
+    display(`======== using URL = ${global_url}`);
     vdisplay("==========");
-    vdisplay("SSL cert file = " + global_ssl_cert);
-    vdisplay("SSL cert key = " + global_ssl_key);
+    vdisplay(`SSL cert file = ${global_ssl_cert}`);
+    vdisplay(`SSL cert key = ${global_ssl_key}`);
     vdisplay("==========");
-    vdisplay("complete file for nodes = " + db_filename('node'));
-    vdisplay("complete file for phones = " + db_filename('phone'));
+    display(`complete file for nodes = ${db_filename('node')}`);
+    display(`complete file for phones = ${db_filename('phone')}`);
     
 }
 
@@ -389,39 +390,40 @@ function run_server() {
 
 
     // https://nodejs.org/docs/latest/api/url.html
-    var url_obj = url.parse(global_url);
-    var scheme = url_obj.protocol || 'http:' ;      // "http:" or "https:"
-    var hostname = url_obj.hostname || 'localhost';
-    var port = url_obj.port || '80';
+    let url_obj = url.parse(global_url);
+    let scheme = url_obj.protocol || 'http:' ;      // "http:" or "https:"
+    let hostname = url_obj.hostname || 'localhost';
+    let port = url_obj.port || '80';
     port = parseInt(port);
-    vdisplay("scheme = " + scheme + ", hostname = " + hostname + ", port = " + port);
+    vdisplay(`scheme = ${scheme}, hostname = ${hostname}, port = ${port}`);
 
-    var express_app = express();
+    let express_app = express();
+    let server;
     if (scheme == 'https:') {
 	vdisplay("using https stack");
-	var server_https = https.createServer(ssl_cert_options(), express_app);
+	let server_https = https.createServer(ssl_cert_options(), express_app);
 	server = server_https;
     } else {
 	vdisplay("using http stack");
-	var server_http = http.Server(express_app);
+	let server_http = http.Server(express_app);
 	server = server_http;
     }
 
     process.on('uncaughtException',
-	       function(err) {console.log("async. execption ->", err); })
+	       function(err) {console.log(`async. execption ->${err}`); })
 
     try {
-	var io = socketio(server);
+	let io = socketio(server);
 	initialize_socketio(io);
 	server.listen(port, function(){
-	    display('listening on ' + global_url + " (hostname ignored)");
-	    display('verbose flag is ' + verbose_flag);
-	    display('local flag is ' + local_flag);
-	    display('incremental mode is ' + incremental_flag);
+	    display(`listening on ${global_url} (hostname ignored)`);
+	    display(`verbose flag is ${verbose_flag}`);
+	    display(`local flag is ${local_flag}`);
+	    display(`incremental mode is ${incremental_flag}`);
 	});
     } catch (err) {
-	console.log("Could not run http server on port " + port);
-	console.log("Need to sudo ?");
+	console.log(`Could not run http server on port ${port}`);
+	console.log(`Need to sudo ?`);
 	console.log(err);
     }
 }
