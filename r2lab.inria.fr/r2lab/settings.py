@@ -181,9 +181,18 @@ if not PRODUCTION:
     # it can be either the actual sidecar_url,
     # or e.g. 'local', to use the default hardwired in sidecar.js
     SIDECAR = os.getenv('SIDECAR')
-    if SIDECAR is not None:
-        sidecar_url = SIDECAR if 'http' in SIDECAR else "http://localhost:10000/"
-        print("Using sidecar_url = {sidecar_url}".format(**locals()))
+    if not SIDECAR:
+        # development mode with no setting: use the local sidecar
+        sidecar_url = "http://localhost:10000"
+    elif 'http' in SIDECAR:
+        # development mode, SIDECAR mentions http, this means
+        # it points at the URL to use
+        sidecar_url = SIDECAR_URL
+    else:
+        # development mode, SIDECAR defined to e.g. r2lab
+        # specify https
+        sidecar_url = "https://r2lab.inria.fr:999/"
+    print("Using sidecar_url = {sidecar_url}".format(**locals()))
 
 # transitioning to plcauthbackend
 AUTHENTICATION_BACKENDS = (
