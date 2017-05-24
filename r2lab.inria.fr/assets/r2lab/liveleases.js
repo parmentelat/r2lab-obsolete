@@ -33,6 +33,30 @@ class LiveLeases {
     constructor(mode, domid) {
 	this.mode = mode;
 	this.domid = domid;
+
+	////////////////////////////////////////
+	// also needs some cleanup in the actionsQueue/actionsQueued area
+	
+	this.my_slices_name      = r2lab_accounts.map((account) => account.name);
+	
+	this.my_slices_color     = [];
+	this.known_slices        = [];
+
+	this.actionsQueue        = [];
+	this.actionsQueued       = [];
+	this.current_slice_name  = current_slice.name;
+	this.current_slice_color = '#DDD';
+	this.current_leases      = null;
+	this.color_pending       = '#FFFFFF';
+	this.color_removing      = '#FFFFFF';
+	this.keepOldEvent        = null;
+	
+	this.socket              = io.connect(sidecar_url);
+	this.refresh             = true;
+	this.currentTimezone     = 'local';
+	this.nightly_slice_name  = 'inria_r2lab.nightly'
+	this.nightly_slice_color = '#000000';
+	
     }
 
 
@@ -95,7 +119,7 @@ class LiveLeases {
 	    defaultTimedEventDuration: '00:01:00',
 	    slotDuration: "01:00:00",
 	    forceEventDuration: true,
-	    timezone: currentTimezone,
+	    timezone: liveleases.currentTimezone,
 	    defaultDate: today,
 	    selectHelper: false,
 	    overlap: false,
@@ -109,7 +133,7 @@ class LiveLeases {
 	    // this is fired when a selection is made
 	    select: function(start, end, event, view) {
 		if (liveleases.isPastDate(end)) {
-		    $(`#${xxxdomid}`).fullCalendar('unselect');
+		    $(`#${liveleases.domid}`).fullCalendar('unselect');
 		    liveleases.sendMessage('This timeslot is in the past!');
 		    return false;
 		}
@@ -126,12 +150,12 @@ class LiveLeases {
 			editable: false,
 			selectable: false,
 			color: liveleases.getCurrentSliceColor(),
-			textColor: color_pending,
+			textColor: liveleases.color_pending,
 			id: liveleases.getLocalId(my_title, start, end),
 		    };
 		    liveleases.updateLeases('addLease', eventData);
 		}
-		$(`#${xxxdomid}`).fullCalendar('unselect');
+		$(`#${liveleases.domid}`).fullCalendar('unselect');
 	    },
 
 	    // this allows things to be dropped onto the calendar
@@ -139,7 +163,7 @@ class LiveLeases {
 		let start = date;
 		let end   = moment(date).add(60, 'minutes');
 		if (liveleases.isPastDate(end)) {
-		    $(`#${xxxdomid}`).fullCalendar('unselect');
+		    $(`#${liveleases.domid}`).fullCalendar('unselect');
 		    liveleases.sendMessage('This timeslot is in the past!');
 		    return false;
 		}
@@ -158,7 +182,7 @@ class LiveLeases {
 			editable: false,
 			selectable: false,
 			color: liveleases.getCurrentSliceColor(),
-			textColor: color_pending,
+			textColor: liveleases.color_pending,
 			id: liveleases.getLocalId(my_title, start, end),
 		    };
 		    liveleases.updateLeases('addLease', eventData);
@@ -167,8 +191,8 @@ class LiveLeases {
 
 	    // this happens when the event is dragged moved and dropped
 	    eventDrop: function(event, delta, revertFunc) {
-		let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
-		if(view != 'month'){
+		let view = $(`#${liveleases.domid}`).fullCalendar('getView').type;
+		if (view != 'month'){
 		    if (!confirm("Confirm this change ?")) {
 			revertFunc();
 		    } else if (liveleases.isPastDate(event.end)) {
@@ -178,7 +202,7 @@ class LiveLeases {
 			let newLease = liveleases.createLease(event);
 			newLease.title = liveleases.pendingName(event.title);
 			newLease.editable = false;
-			newLease.textColor = color_pending;
+			newLease.textColor = liveleases.color_pending;
 			liveleases.removeElementFromCalendar(newLease.id);
 			liveleases.updateLeases('editLease', newLease);
 		    }
@@ -189,14 +213,14 @@ class LiveLeases {
 
 	    // this fires when one event starts to be dragged
 	    eventDragStart: function(event, jsEvent, ui, view) {
-		keepOldEvent = event;
-		refresh = false;
+		this.keepOldEvent = event;
+		this.refresh = false;
 	    },
 
 	    // this fires when one event starts to be dragged
 	    eventDragStop: function(event, jsEvent, ui, view) {
-		keepOldEvent = event;
-		refresh = true;
+		this.keepOldEvent = event;
+		this.refresh = true;
 	    },
 
 	    // this fires when an event is rendered
@@ -210,7 +234,7 @@ class LiveLeases {
 		    trigger: 'hover',
 		    delay: {"show": 500 }});
 		
-		let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
+		let view = $(`#${liveleases.domid}`).fullCalendar('getView').type;
 		if(view != 'month'){
 		    element.bind('dblclick', function() {
 			if (liveleases.isMySlice(event.title) && event.editable == true ) {
@@ -224,7 +248,7 @@ class LiveLeases {
 				newLease.start = moment(event.start);
 				newLease.end = moment(event.start).add(started, 'minutes');
 				newLease.title = liveleases.removingName(event.title);
-				newLease.textColor = color_removing;
+				newLease.textColor = liveleases.color_removing;
 				newLease.editable = false;
 				newLease.selectable = false;
 				newLease.id = liveleases.getLocalId(
@@ -241,7 +265,7 @@ class LiveLeases {
 			    if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
 				let newLease = liveleases.createLease(event);
 				newLease.title = liveleases.removingName(event.title);
-				newLease.textColor = color_removing;
+				newLease.textColor = liveleases.color_removing;
 				newLease.editable = false;
 				liveleases.removeElementFromCalendar(event.id);
 				liveleases.addElementToCalendar(newLease);
@@ -276,7 +300,7 @@ class LiveLeases {
 		} else if (liveleases.isMySlice(event.title)) {
 		    let newLease = liveleases.createLease(event);
 		    newLease.title = liveleases.pendingName(event.title);
-		    newLease.textColor = color_pending;
+		    newLease.textColor = liveleases.color_pending;
 		    newLease.editable = false;
 		    liveleases.removeElementFromCalendar(newLease.id);
 		    liveleases.updateLeases('editLease', newLease);
@@ -315,12 +339,12 @@ class LiveLeases {
 	if (! some_colors){
 	    some_colors = 0
 	}
-	if (local_colors.length >= my_slices_name.length) {
+	if (local_colors.length >= this.my_slices_name.length) {
 	    $.cookie("some-colors-data", local_colors)
-	} else if (some_colors.length >= my_slices_name.length) {
+	} else if (some_colors.length >= this.my_slices_name.length) {
 	    ;
 	} else {
-	    let lack_colors = my_slices_name.length - local_colors.length;
+	    let lack_colors = this.my_slices_name.length - local_colors.length;
 	    $.each(this.range(0, lack_colors), function(key, obj){
 		local_colors.push(this.getRandomColor());
 	    });
@@ -393,13 +417,13 @@ class LiveLeases {
 
 
     setCurrentSliceColor(color){
-	current_slice_color = color;
+	this.current_slice_color = color;
 	return true;
     }
 
 
     setCurrentSliceName(name){
-	current_slice_name = name;
+	this.current_slice_name = name;
 	return true;
     }
 
@@ -415,12 +439,12 @@ class LiveLeases {
 
 
     getCurrentSliceName(){
-	return this.shortName(current_slice_name);
+	return this.shortName(this.current_slice_name);
     }
 
 
     getCurrentSliceColor(){
-	return current_slice_color;
+	return this.current_slice_color;
     }
 
 
@@ -432,7 +456,7 @@ class LiveLeases {
 
 
     getMySlicesName(){
-	return my_slices_name;
+	return this.my_slices_name;
     }
 
 
@@ -490,7 +514,7 @@ class LiveLeases {
 
 
     removeElementFromCalendar(id){
-	$(`#${xxxdomid}`).fullCalendar('removeEvents', id );
+	$(`#${this.domid}`).fullCalendar('removeEvents', id );
     }
 
 
@@ -515,7 +539,7 @@ class LiveLeases {
 
 
     getActionsQueue(){
-	return actionsQueue;
+	return this.actionsQueue;
     }
 
 
@@ -549,7 +573,7 @@ class LiveLeases {
 
 
     getNightlyColor(){
-	return nigthly_slice_color;
+	return this.nightly_slice_color;
     }
 
 
@@ -563,29 +587,29 @@ class LiveLeases {
 
 
     addElementToCalendar(element){
-	$(`#${xxxdomid}`).fullCalendar('renderEvent', element, true );
+	$(`#${this.domid}`).fullCalendar('renderEvent', element, true );
     }
 
 
     resetActionsQueued(){
-	actionsQueued = [];
+	this.actionsQueued = [];
     }
 
 
     queueAction(title, start, end) {
 	let local_id = null;
 	local_id = this.getLocalId(title, start, end);
-	actionsQueued.push(local_id);
+	this.actionsQueued.push(local_id);
     }
 
 
     setCurrentLeases(leases){
-	current_leases = leases;
+	this.current_leases = leases;
     }
 
 
     getCurrentLeases(){
-	return current_leases;
+	return this.current_leases;
     }
 
 
@@ -656,7 +680,7 @@ class LiveLeases {
     refreshLeases(){
 	let msg = "INIT";
 	liveleases_debug("sending on request:leases -> ", msg);
-	socket.emit('request:leases', msg);
+	this.socket.emit('request:leases', msg);
     }
 
     // show action immediately before it becomes confirmed
@@ -664,21 +688,21 @@ class LiveLeases {
 	liveleases_debug("showImmediate", action);
 	if (action == 'add'){
 	    let lease  = this.createLease(event);
-	    $(`#${xxxdomid}`).fullCalendar('renderEvent', lease, true );
+	    $(`#${this.domid}`).fullCalendar('renderEvent', lease, true );
 	} else if (action == 'edit'){
 	    let lease  = this.createLease(event);
 	    this.removeElementFromCalendar(lease.id);
-	    $(`#${xxxdomid}`).fullCalendar('renderEvent', lease, true );
+	    $(`#${this.domid}`).fullCalendar('renderEvent', lease, true );
 	} else if (action == 'del'){
 	    let lease  = this.createLease(event);
 	    this.removeElementFromCalendar(lease.id);
-	    $(`#${xxxdomid}`).fullCalendar('renderEvent', lease, true );
+	    $(`#${this.domid}`).fullCalendar('renderEvent', lease, true );
 	}
     }
 
     listenLeases(){
 	let liveleases = this;
-	socket.on('info:leases', function(msg){
+	this.socket.on('info:leases', function(msg){
 	    liveleases.setCurrentLeases(msg);
 	    liveleases.resetActionsQueued();
 	    let leases = liveleases.getCurrentLeases();
@@ -721,7 +745,7 @@ class LiveLeases {
 		"valid_from" : data.start._d.toISOString(),
 		"valid_until": data.end._d.toISOString()
 	    };
-	    actionsQueue.push(data.id);
+	    this.actionsQueue.push(data.id);
 	} else if (action == 'edit'){
 	    verb = 'update';
 	    request = {
@@ -781,12 +805,13 @@ class LiveLeases {
     }
 
 
-    setColorLeases(){
+    setColorLeases() {
+	let liveleases = this;
 	let some_colors = $.cookie("some-colors-data")
-	$.each(my_slices_name, function(key,obj){
-	    my_slices_color[key] = some_colors[key];
+	$.each(liveleases.my_slices_name, function(key, obj){
+	    liveleases.my_slices_color[key] = some_colors[key];
 	});
-	return my_slices_color;
+	return this.my_slices_color;
     }
 
 
@@ -798,20 +823,20 @@ class LiveLeases {
     getColorLease(slice_title){
 	let lease_color = '#A1A1A1';
 	if ($.inArray(slice_title, this.getMySlicesName()) > -1){
-	    lease_color = my_slices_color[my_slices_name.indexOf(slice_title)];
+	    lease_color = this.my_slices_color[this.my_slices_name.indexOf(slice_title)];
 	}
 	return lease_color;
     }
 
 
     delActionQueue(id){
-	let idx = actionsQueue.indexOf(id);
-	actionsQueue.splice(idx,1);
+	let idx = this.actionsQueue.indexOf(id);
+	this.actionsQueue.splice(idx, 1);
     }
 
 
     resetActionQueue(){
-	actionsQueue = [];
+	this.actionsQueue = [];
     }
 
 
@@ -841,9 +866,9 @@ class LiveLeases {
 	let slices = $("#my-slices");
 
 	$.each(leases, function(key, val){
-	    if ($.inArray(val.title, known_slices) === -1) { //already present?
+	    if ($.inArray(val.title, liveleases.known_slices) === -1) { //already present?
 		if (liveleases.isMySlice(val.title)) {
-		    if (val.title === nigthly_slice_name){
+		    if (val.title === liveleases.nightly_slice_name){
 			color = liveleases.getNightlyColor();
 			liveleases.setCurrentSliceColor(color);
 		    } else if(val.title === liveleases.getCurrentSliceName()){
@@ -860,7 +885,7 @@ class LiveLeases {
 				.attr("id", liveleases.idFormat(val.title))
 				.addClass('noactive'));
 		}
-		known_slices.push(val.title);
+		liveleases.known_slices.push(val.title);
 	    }
 	});
 
@@ -885,10 +910,10 @@ class LiveLeases {
 	$.each(leases, function(key, val){
 	    val = liveleases.shortName(val);
 	    let color = liveleases.getColorLease(val);
-	    if ($.inArray(val, known_slices) === -1) {
+	    if ($.inArray(val, liveleases.known_slices) === -1) {
 		//removing nightly routine and slices already present?
 		if (liveleases.isMySlice(val)) {
-		    if (val === nigthly_slice_name){
+		    if (val === liveleases.nightly_slice_name){
 			color = liveleases.getNightlyColor();
 			liveleases.setCurrentSliceColor(color);
 		    }
@@ -906,7 +931,7 @@ class LiveLeases {
 				.attr("id", liveleases.idFormat(val))
 				.addClass('noactive'));
 		}
-		known_slices.push(val);
+		liveleases.known_slices.push(val);
 	    }
 	});
 
@@ -923,14 +948,14 @@ class LiveLeases {
     refreshCalendar(events) {
 	let liveleases = this;
 	// xxx ugly use of global
-	if (refresh){
+	if (this.refresh){
 	    $.each(events, function(key, event){
 		liveleases_debug(`refreshCalendar : lease = ${event.title}: ${event.start} .. ${event.end}`);
 		liveleases.removeElementFromCalendar(event.id);
-		$(`#${xxxdomid}`).fullCalendar('renderEvent', event, true);
+		$(`#${liveleases.domid}`).fullCalendar('renderEvent', event, true);
 	    });
 
-	    let each_removing = $(`#${xxxdomid}`).fullCalendar( 'clientEvents' );
+	    let each_removing = $(`#${liveleases.domid}`).fullCalendar( 'clientEvents' );
 	    $.each(each_removing, function(k, obj){
 		// when click in month view all 'thousands' of nightly comes.
 		// Maybe reset when comeback from month view (not implemented)
@@ -939,11 +964,11 @@ class LiveLeases {
 			liveleases.removeElementFromCalendar(obj.id);
 		    } else if (obj.uuid && liveleases.isPending(obj.title)){
 			liveleases.removeElementFromCalendar(obj.id);
-		    } else if (!liveleases.isPresent(obj.id, actionsQueued) &&
+		    } else if (!liveleases.isPresent(obj.id, liveleases.actionsQueued) &&
 			       !liveleases.isPending(obj.title) && !liveleases.isRemoving(obj.title) ){
 			liveleases.removeElementFromCalendar(obj.id);
 		    } else if (
-			/*isPresent(obj.id, actionsQueue) &&*/
+			/*isPresent(obj.id, liveleases.actionsQueue) &&*/
 			liveleases.isPending(obj.title) && !obj.uuid ){
 			liveleases.removeElementFromCalendar(obj.id);
 		    }
@@ -978,7 +1003,7 @@ class LiveLeases {
 	    newLease.overlap = false;
 
 	    // //HARD CODE TO SET SPECIAL ATTR to nightly routine
-	    if (newLease.title == nigthly_slice_name){
+	    if (newLease.title == liveleases.nightly_slice_name){
 		newLease.color = liveleases.getNightlyColor();
 	    }
 
@@ -1002,29 +1027,3 @@ $(function() {
     the_liveleases.main();
 })
 
-////////////////////////////////////////
-// previously in liveleases-common.js
-// needs to be redesigned into a proper class
-// also needs some cleanup in the actionsQueue/actionsQueued area
-
-let my_slices_name      = r2lab_accounts.map((account) => account.name); // a list of slice hrns
-
-let my_slices_color     = [];
-let actionsQueue        = [];
-let actionsQueued       = [];
-let current_slice_name  = current_slice.name;
-let current_slice_color = '#DDD';
-let current_leases      = null;
-let color_pending       = '#FFFFFF';
-let color_removing      = '#FFFFFF';
-let keepOldEvent        = null;
-
-let socket              = io.connect(sidecar_url);
-let refresh             = true;
-let currentTimezone     = 'local';
-let nigthly_slice_name  = 'inria_r2lab.nightly'
-let nigthly_slice_color = '#000000';
-
-let xxxdomid = 'liveleases_container';
-
-let known_slices = [];
