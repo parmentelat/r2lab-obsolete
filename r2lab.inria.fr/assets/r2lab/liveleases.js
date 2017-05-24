@@ -28,345 +28,351 @@ function liveleases_debug(...args) {
 
 
 ////////////////////////////////////////
-let LiveLeases = function(mode, domid) {
-    this.mode = mode;
-    this.domid = domid;
-}
+class LiveLeases {
 
-
-LiveLeases.prototype.buildCalendar = function(initial_events_json) {
-    let today  = moment().format("YYYY-MM-DD");
-    let showAt = moment().subtract(1, 'hour').format("HH:mm");
-    let run_mode = liveleases_options.mode == 'run';
-    console.log(`liveleases - sidecar_url = ${sidecar_url}`);
-    
-    // helpers for popover area 
-    let hh_mm = function(date) {
-	return moment(date).format("HH:mm");
+    constructor(mode, domid) {
+	this.mode = mode;
+	this.domid = domid;
     }
-    let pretty_content = function(event) {
-	return `${hh_mm(event.start._d)}-${hh_mm(event.end._d)}`;
-    };
 
-    // Create the calendar
-    let calendar_args = {
-	header:
-	run_mode
-	    ? false
-	    : {
-		left: 'prev,next today',
-		center: 'title',
-		right: 'agendaDay,agendaThreeDay,agendaWeek,month',
-	    },
+
+    buildCalendar(initial_events_json) {
+	let today  = moment().format("YYYY-MM-DD");
+	let showAt = moment().subtract(1, 'hour').format("HH:mm");
+	let run_mode = liveleases_options.mode == 'run';
+	console.log(`liveleases - sidecar_url = ${sidecar_url}`);
+    
+	// helpers for popover area 
+	let hh_mm = function(date) {
+	    return moment(date).format("HH:mm");
+	}
+	let pretty_content = function(event) {
+	    return `${hh_mm(event.start._d)}-${hh_mm(event.end._d)}`;
+	};
 	
-	views:
-	run_mode
-	    ? {
-		agendaTwoDay: {
-		    type: 'agenda',
-		    duration: { days: 2},
-		    buttonText: '2 days',
-		}
-	    }
-	: {
-	    agendaThreeDay: {
-		type: 'agenda',
-		duration: { days: 3 },
-		buttonText: '3 days'
-	    },
-	    agendaWeek: {
-		type: 'agenda',
-		duration: { days: 7 },
-		buttonText: 'week'
-	    },
-	    month: {
-		selectable: false,
-		editable: false,
-		droppable: false,
-		dblclick: false,
-	    }
-	},
-	defaultView: run_mode ? 'agendaDay' : 'agendaThreeDay',
-	height: run_mode ? 455 : 770,
-	////////////////////
-	defaultTimedEventDuration: '00:01:00',
-	slotDuration: "01:00:00",
-	forceEventDuration: true,
-	timezone: currentTimezone,
-	defaultDate: today,
-	selectHelper: false,
-	overlap: false,
-	selectable: true,
-	editable: true,
-	allDaySlot: false,
-	droppable: true,
-	nowIndicator: true,
-	scrollTime: showAt,
-	//Events
-	// this is fired when a selection is made
-	select: function(start, end, event, view) {
-	    if (isPastDate(end)) {
-		$(`#${xxxdomid}`).fullCalendar('unselect');
-		sendMessage('This timeslot is in the past!');
-		return false;
-	    }
-	    let my_title = getCurrentSliceName();
-	    let eventData;
-	    [start, end] = adaptStartEnd(start, end);
-
-	    if (my_title) {
-		eventData = {
-		    title: pendingName(my_title),
-		    start: start,
-		    end: end,
-		    overlap: false,
-		    editable: false,
-		    selectable: false,
-		    color: getCurrentSliceColor(),
-		    textColor: color_pending,
-		    id: getLocalId(my_title, start, end),
-		};
-		updateLeases('addLease', eventData);
-	    }
-	    $(`#${xxxdomid}`).fullCalendar('unselect');
-	},
-
-	// this allows things to be dropped onto the calendar
-	drop: function(date, event, view) {
-	    let start = date;
-	    let end   = moment(date).add(60, 'minutes');
-	    if (isPastDate(end)) {
-		$(`#${xxxdomid}`).fullCalendar('unselect');
-		sendMessage('This timeslot is in the past!');
-		return false;
-	    }
-
-	    setSlice($(this))
-	    [start, end] = adaptStartEnd(start, end);
-
-	    let my_title = getCurrentSliceName();
-	    let eventData;
-	    if (my_title) {
-		eventData = {
-		    title: pendingName(my_title),
-		    start: start,
-		    end: end,
-		    overlap: false,
-		    editable: false,
-		    selectable: false,
-		    color: getCurrentSliceColor(),
-		    textColor: color_pending,
-		    id: getLocalId(my_title, start, end),
-		};
-		updateLeases('addLease', eventData);
-	    }
-	},
-
-	// this happens when the event is dragged moved and dropped
-	eventDrop: function(event, delta, revertFunc) {
-	    let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
-	    if(view != 'month'){
-		if (!confirm("Confirm this change ?")) {
-		    revertFunc();
-		} else if (isPastDate(event.end)) {
-		    revertFunc();
-		    sendMessage('This timeslot is in the past!');
-		} else {
-		    let newLease = createLease(event);
-		    newLease.title = pendingName(event.title);
-		    newLease.editable = false;
-		    newLease.textColor = color_pending;
-		    removeElementFromCalendar(newLease.id);
-		    updateLeases('editLease', newLease);
-		}
-	    } else {
-		revertFunc();
-	    }
-	},
-
-	// this fires when one event starts to be dragged
-	eventDragStart: function(event, jsEvent, ui, view) {
-	    keepOldEvent = event;
-	    refresh = false;
-	},
-
-	// this fires when one event starts to be dragged
-	eventDragStop: function(event, jsEvent, ui, view) {
-	    keepOldEvent = event;
-	    refresh = true;
-	},
-
-	// this fires when an event is rendered
-	eventRender: function(event, element) {
-
-	    $(element).popover({
-		title: event.title,
-		content: pretty_content(event),
-		html: true,
-		placement: 'auto',
-		trigger: 'hover',
-		delay: {"show": 500 }});
+	// Create the calendar
+	let calendar_args = {
+	    header:
+	    run_mode
+		? false
+		: {
+		    left: 'prev,next today',
+		    center: 'title',
+		    right: 'agendaDay,agendaThreeDay,agendaWeek,month',
+		},
 	    
-	    let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
-	    if(view != 'month'){
-		element.bind('dblclick', function() {
-		    if (isMySlice(event.title) && event.editable == true ) {
-			if (!confirm("Confirm removing?")) {
-			    revertFunc();
-			}
-			let newLease = createLease(event);
-			let now = new Date();
-			let started = moment(now).diff(moment(event.start), 'minutes');
-			if(started >= 10){
-			    newLease.start = moment(event.start);
-			    newLease.end = moment(event.start).add(started, 'minutes');
-			    newLease.title = removingName(event.title);
-			    newLease.textColor = color_removing;
-			    newLease.editable = false;
-			    newLease.selectable = false;
-			    newLease.id = getLocalId(event.title+'new', newLease.start, newLease.end),
-			    removeElementFromCalendar(newLease.id);
-			    updateLeases('editLease', newLease);
-			} else {
-			    removeElementFromCalendar(event.id);
-			    addElementToCalendar(newLease);
-			    updateLeases('delLease', newLease);
-			}
+	    views:
+	    run_mode
+		? {
+		    agendaTwoDay: {
+			type: 'agenda',
+			duration: { days: 2},
+			buttonText: '2 days',
 		    }
-		    if (isMySlice(event.title) && isPending(event.title)) {
-			if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
-			    let newLease = createLease(event);
-			    newLease.title = removingName(event.title);
-			    newLease.textColor = color_removing;
-			    newLease.editable = false;
-			    removeElementFromCalendar(event.id);
-			    addElementToCalendar(newLease);
-			    updateLeases('delLease', newLease);
-			}
-		    }
-		    if (isMySlice(event.title) && isFailed(event.title)) {
-			removeElementFromCalendar(event.id);
-		    }
-		});
-	    }},
-
-	// eventClick: function(event, jsEvent, view) {
-	//   $(this).popover('show');
-	// },
-	
-	//eventMouseover: function(event, jsEvent, view) {
-	//$(this).popover('show');
-	//},
-	
-	eventMouseout: function(event, jsEvent, view) {
-	    console.log('inside eventMouseout, this & $(this)= ', this, $(this));
-	    $(this).popover('hide');
-	},
-
-	// this is fired when an event is resized
-	eventResize: function(event, jsEvent, ui, view, revertFunc) {
-	    if (!confirm("Confirm this change?")) {
-		//some bug in revertFunc
-		//must take the last date time and set manually
-		return;
-	    } else {
-		if (isMySlice(event.title)) {
-		    let newLease = createLease(event);
-		    newLease.title = pendingName(event.title);
-		    newLease.textColor = color_pending;
-		    newLease.editable = false;
-		    removeElementFromCalendar(newLease.id);
-		    updateLeases('editLease', newLease);
 		}
+	    : {
+		agendaThreeDay: {
+		    type: 'agenda',
+		    duration: { days: 3 },
+		    buttonText: '3 days'
+		},
+		agendaWeek: {
+		    type: 'agenda',
+		    duration: { days: 7 },
+		    buttonText: 'week'
+		},
+		month: {
+		    selectable: false,
+		    editable: false,
+		    droppable: false,
+		    dblclick: false,
+		}
+	    },
+	    defaultView: run_mode ? 'agendaDay' : 'agendaThreeDay',
+	    height: run_mode ? 455 : 770,
+	    ////////////////////
+	    defaultTimedEventDuration: '00:01:00',
+	    slotDuration: "01:00:00",
+	    forceEventDuration: true,
+	    timezone: currentTimezone,
+	    defaultDate: today,
+	    selectHelper: false,
+	    overlap: false,
+	    selectable: true,
+	    editable: true,
+	    allDaySlot: false,
+	    droppable: true,
+	    nowIndicator: true,
+	    scrollTime: showAt,
+	    //Events
+	    // this is fired when a selection is made
+	    select: function(start, end, event, view) {
+		if (isPastDate(end)) {
+		    $(`#${xxxdomid}`).fullCalendar('unselect');
+		    sendMessage('This timeslot is in the past!');
+		    return false;
+		}
+		let my_title = getCurrentSliceName();
+		let eventData;
+		[start, end] = adaptStartEnd(start, end);
+		
+		if (my_title) {
+		    eventData = {
+			title: pendingName(my_title),
+			start: start,
+			end: end,
+			overlap: false,
+			editable: false,
+			selectable: false,
+			color: getCurrentSliceColor(),
+			textColor: color_pending,
+			id: getLocalId(my_title, start, end),
+		    };
+		    updateLeases('addLease', eventData);
+		}
+		$(`#${xxxdomid}`).fullCalendar('unselect');
+	    },
+
+	    // this allows things to be dropped onto the calendar
+	    drop: function(date, event, view) {
+		let start = date;
+		let end   = moment(date).add(60, 'minutes');
+		if (isPastDate(end)) {
+		    $(`#${xxxdomid}`).fullCalendar('unselect');
+		    sendMessage('This timeslot is in the past!');
+		    return false;
+		}
+
+		setSlice($(this))
+		[start, end] = adaptStartEnd(start, end);
+
+		let my_title = getCurrentSliceName();
+		let eventData;
+		if (my_title) {
+		    eventData = {
+			title: pendingName(my_title),
+			start: start,
+			end: end,
+			overlap: false,
+			editable: false,
+			selectable: false,
+			color: getCurrentSliceColor(),
+			textColor: color_pending,
+			id: getLocalId(my_title, start, end),
+		    };
+		    updateLeases('addLease', eventData);
+		}
+	    },
+
+	    // this happens when the event is dragged moved and dropped
+	    eventDrop: function(event, delta, revertFunc) {
+		let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
+		if(view != 'month'){
+		    if (!confirm("Confirm this change ?")) {
+			revertFunc();
+		    } else if (isPastDate(event.end)) {
+			revertFunc();
+			sendMessage('This timeslot is in the past!');
+		    } else {
+			let newLease = createLease(event);
+			newLease.title = pendingName(event.title);
+			newLease.editable = false;
+			newLease.textColor = color_pending;
+			removeElementFromCalendar(newLease.id);
+			updateLeases('editLease', newLease);
+		    }
+		} else {
+		    revertFunc();
+		}
+	    },
+
+	    // this fires when one event starts to be dragged
+	    eventDragStart: function(event, jsEvent, ui, view) {
+		keepOldEvent = event;
+		refresh = false;
+	    },
+
+	    // this fires when one event starts to be dragged
+	    eventDragStop: function(event, jsEvent, ui, view) {
+		keepOldEvent = event;
+		refresh = true;
+	    },
+
+	    // this fires when an event is rendered
+	    eventRender: function(event, element) {
+
+		$(element).popover({
+		    title: event.title,
+		    content: pretty_content(event),
+		    html: true,
+		    placement: 'auto',
+		    trigger: 'hover',
+		    delay: {"show": 500 }});
+		
+		let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
+		if(view != 'month'){
+		    element.bind('dblclick', function() {
+			if (isMySlice(event.title) && event.editable == true ) {
+			    if (!confirm("Confirm removing?")) {
+				revertFunc();
+			    }
+			    let newLease = createLease(event);
+			    let now = new Date();
+			    let started = moment(now).diff(moment(event.start), 'minutes');
+			    if(started >= 10){
+				newLease.start = moment(event.start);
+				newLease.end = moment(event.start).add(started, 'minutes');
+				newLease.title = removingName(event.title);
+				newLease.textColor = color_removing;
+				newLease.editable = false;
+				newLease.selectable = false;
+				newLease.id = getLocalId(event.title+'new', newLease.start, newLease.end),
+				removeElementFromCalendar(newLease.id);
+				updateLeases('editLease', newLease);
+			    } else {
+				removeElementFromCalendar(event.id);
+				addElementToCalendar(newLease);
+				updateLeases('delLease', newLease);
+			    }
+			}
+			if (isMySlice(event.title) && isPending(event.title)) {
+			    if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
+				let newLease = createLease(event);
+				newLease.title = removingName(event.title);
+				newLease.textColor = color_removing;
+				newLease.editable = false;
+				removeElementFromCalendar(event.id);
+				addElementToCalendar(newLease);
+				updateLeases('delLease', newLease);
+			    }
+			}
+			if (isMySlice(event.title) && isFailed(event.title)) {
+			    removeElementFromCalendar(event.id);
+			}
+		    });
+		}},
+
+	    // eventClick: function(event, jsEvent, view) {
+	    //   $(this).popover('show');
+	    // },
+	    
+	    //eventMouseover: function(event, jsEvent, view) {
+	    //$(this).popover('show');
+	    //},
+	    
+	    eventMouseout: function(event, jsEvent, view) {
+		console.log('inside eventMouseout, this & $(this)= ', this, $(this));
+		$(this).popover('hide');
+	    },
+
+	    // this is fired when an event is resized
+	    eventResize: function(event, jsEvent, ui, view, revertFunc) {
+		if (!confirm("Confirm this change?")) {
+		    //some bug in revertFunc
+		    //must take the last date time and set manually
+		    return;
+		} else {
+		    if (isMySlice(event.title)) {
+			let newLease = createLease(event);
+			newLease.title = pendingName(event.title);
+			newLease.textColor = color_pending;
+			newLease.editable = false;
+			removeElementFromCalendar(newLease.id);
+			updateLeases('editLease', newLease);
+		    }
+		}
+	    },
+	    //Events from Json file
+	    events: initial_events_json,
+	};
+	let trace_function = function(f) {
+	    let wrapped = function(...args) {
+		liveleases_debug(`entering calendar ${f.name}`);
+		let result = f(...args);
+		liveleases_debug(`exiting calendar ${f.name} ->`, result);
+		return result;
 	    }
-	},
-	//Events from Json file
-	events: initial_events_json,
-    };
-    let trace_function = function(f) {
-	let wrapped = function(...args) {
-	    liveleases_debug(`entering calendar ${f.name}`);
-	    let result = f(...args);
-	    liveleases_debug(`exiting calendar ${f.name} ->`, result);
-	    return result;
+	    return wrapped;
 	}
-	return wrapped;
-    }
-    for (let prop of liveleases_options.trace_events) {
-	if ( ! prop in calendar_args) {
-	    console.log(`liveleases: trace_events: ignoring undefined prop ${prop}`);
-	} else {
-	    calendar_args[prop] = trace_function(calendar_args[prop])
+	for (let prop of liveleases_options.trace_events) {
+	    if ( ! prop in calendar_args) {
+		console.log(`liveleases: trace_events: ignoring undefined prop ${prop}`);
+	    } else {
+		calendar_args[prop] = trace_function(calendar_args[prop])
+	    }
 	}
+	$(`#${this.domid}`).fullCalendar(calendar_args);
     }
-    $(`#${this.domid}`).fullCalendar(calendar_args);
-}
 
-////////////////////////////////////////
-LiveLeases.prototype.saveSomeColors = function () {
-    $.cookie.json = true;
-    let local_colors = ["#F3537D", "#5EAE10", "#481A88", "#2B15CC", "#8E34FA",
-			"#A41987", "#1B5DF8", "#7AAD82", "#8D72E4", "#323C89"];
-    let some_colors = $.cookie("some-colors-data");
 
-    if (! some_colors){
-	some_colors = 0
-    }
-    if (local_colors.length >= my_slices_name.length) {
-	$.cookie("some-colors-data", local_colors)
-    } else {
-	if (some_colors.length >= my_slices_name.length) {
-	    ;
-	} else {
-	    let lack_colors = my_slices_name.length - local_colors.length;
-	    $.each(range(0,lack_colors), function(key,obj){
-		local_colors.push(getRandomColor());
-	    });
+    ////////////////////////////////////////
+    saveSomeColors () {
+	$.cookie.json = true;
+	let local_colors = ["#F3537D", "#5EAE10", "#481A88", "#2B15CC", "#8E34FA",
+			    "#A41987", "#1B5DF8", "#7AAD82", "#8D72E4", "#323C89"];
+	let some_colors = $.cookie("some-colors-data");
+	
+	if (! some_colors){
+	    some_colors = 0
+	}
+	if (local_colors.length >= my_slices_name.length) {
 	    $.cookie("some-colors-data", local_colors)
+	} else {
+	    if (some_colors.length >= my_slices_name.length) {
+		;
+	    } else {
+		let lack_colors = my_slices_name.length - local_colors.length;
+		$.each(range(0,lack_colors), function(key,obj){
+		    local_colors.push(getRandomColor());
+		});
+		$.cookie("some-colors-data", local_colors)
+	    }
 	}
     }
-}
 
-LiveLeases.prototype.getLastSlice = function(){
-    $.cookie.json = true;
-    let last_slice = $.cookie("last-slice-data")
 
-    if ($.inArray(fullName(last_slice), getMySlicesName()) > -1){
-	setCurrentSliceName(last_slice);
-	$.cookie("last-slice-data", last_slice)
-    } else {
-	$.cookie("last-slice-data", getCurrentSliceName())
-    }
-}
-
-////////////////////////////////////////
-LiveLeases.prototype.main = function (){
-
-    this.saveSomeColors();
-    this.getLastSlice();
-
-    resetActionsQueued();
-    buildInitialSlicesBox(getMySlicesName());
-    this.buildCalendar([]);
-    setCurrentSliceBox(getCurrentSliceName());
-
-    listenLeases();
-    refreshLeases();
-    
-    let run_mode = liveleases_options.mode == 'run';
-    if (run_mode) {
-	// don't do this in book mode, it would change all days
-	$('.fc-day-header').html('today');
+    getLastSlice(){
+	$.cookie.json = true;
+	let last_slice = $.cookie("last-slice-data")
+	
+	if ($.inArray(fullName(last_slice), getMySlicesName()) > -1){
+	    setCurrentSliceName(last_slice);
+	    $.cookie("last-slice-data", last_slice)
+	} else {
+	    $.cookie("last-slice-data", getCurrentSliceName())
+	}
     }
 
-    let slice = $('#my-slices .fc-event');
-    slice.dblclick(function() {
-	setSlice($(this));
-    });
 
-    $('body').on('click', 'button.fc-month-button', function() {
-	sendMessage('This view is read only!', 'info');
-    });
+    ////////////////////////////////////////
+    main(){
+	
+	this.saveSomeColors();
+	this.getLastSlice();
+	
+	resetActionsQueued();
+	buildInitialSlicesBox(getMySlicesName());
+	this.buildCalendar([]);
+	setCurrentSliceBox(getCurrentSliceName());
+	
+	listenLeases();
+	refreshLeases();
+	
+	let run_mode = liveleases_options.mode == 'run';
+	if (run_mode) {
+	    // don't do this in book mode, it would change all days
+	    $('.fc-day-header').html('today');
+	}
+	
+	let slice = $('#my-slices .fc-event');
+	slice.dblclick(function() {
+	    setSlice($(this));
+	});
+	
+	$('body').on('click', 'button.fc-month-button', function() {
+	    sendMessage('This view is read only!', 'info');
+	});
+    }
 }
 
 //global - mostly for debugging and convenience
@@ -383,7 +389,8 @@ $(function() {
 // needs to be redesigned into a proper class
 // also needs some cleanup in the actionsQueue/actionsQueued area
 
-let my_slices_name      = r2lab_accounts.map(function(account){return account['name'];}) // a list of slice hrns
+let my_slices_name      = r2lab_accounts.map((account) => account.name); // a list of slice hrns
+
 let my_slices_color     = [];
 let actionsQueue        = [];
 let actionsQueued       = [];
