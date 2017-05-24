@@ -649,20 +649,6 @@ class LiveLeases {
     }
 
 
-    // xxx plcapi : do we still have zombies ?
-    isZombie(obj){
-	return false;
-
-	let is_zombie = false;
-	if(obj.resource_type == 'lease'
-	   && obj.status == 'pending'
-	   && this.isMySlice(this.shortName(obj.slicename))){
-	    is_zombie = true;
-	}
-	return is_zombie;
-    }
-
-
     // use this to ask for an immediate refresh
     // of the set of leases
     // of course it must be called *after* the actual API call
@@ -824,11 +810,6 @@ class LiveLeases {
     }
 
 
-    resetZombieLeases(){
-	theZombieLeases = [];
-    }
-
-
     resetActionQueue(){
 	actionsQueue = [];
     }
@@ -969,13 +950,6 @@ class LiveLeases {
 		}
 	    });
 
-	    let failedEvents = [];
-	    $.each(theZombieLeases, function(k, obj){
-		failedEvents.push(zombieLease(obj));
-	    });
-	    liveleases.resetZombieLeases();
-	    $(`#${xxxdomid}`).fullCalendar('addEventSource', failedEvents);
-
 	    liveleases.resetActionQueue();
 	}
     }
@@ -985,7 +959,6 @@ class LiveLeases {
 	let liveleases = this;
 	let parsedData = JSON.parse(data);
 	let leases = [];
-	liveleases.resetZombieLeases();
 
 	liveleases_debug("parseLeases", data);
 	
@@ -1009,18 +982,8 @@ class LiveLeases {
 		newLease.color = liveleases.getNightlyColor();
 	    }
 
-	    if (liveleases.isZombie(lease)) {
-		theZombieLeases.push(newLease);
-		let request = {"uuid" : newLease.uuid};
-		post_xhttp_django('/leases/delete', request, function(xhttp) {
-		    if (xhttp.readyState == 4 && xhttp.status == 200) {
-			liveleases_debug("return from /leases/delete", request);
-		    }
-		});
-	    } else {
-		leases.push(newLease);
-		liveleases.queueAction(newLease.title, newLease.start, newLease.end);
-	    }
+	    leases.push(newLease);
+	    liveleases.queueAction(newLease.title, newLease.start, newLease.end);
 
 	});
 
@@ -1028,6 +991,7 @@ class LiveLeases {
 	return leases;
     }
 }
+
 
 //global - mostly for debugging and convenience
 let the_liveleases;
@@ -1054,7 +1018,6 @@ let current_leases      = null;
 let color_pending       = '#FFFFFF';
 let color_removing      = '#FFFFFF';
 let keepOldEvent        = null;
-let theZombieLeases     = [];
 
 let socket              = io.connect(sidecar_url);
 let refresh             = true;
