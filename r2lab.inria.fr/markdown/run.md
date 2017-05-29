@@ -12,51 +12,53 @@ require_login: true
 <div id="chat-container"></div>
 
 <div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <div id='messages' style="display: none" class="" role="alert">
-        <a class="close" onclick="$('.alert').hide()">×</a>
-      </div>
-      <div id='loading' style="display: none" class="alert alert-info" role="alert">
-        <strong>Be patient!</strong> Loading information from server...
-      </div>
-    </div>
+ <div class="row">
+  <div class="col-md-12">
+   <div id='messages' style="display: none" class="" role="alert">
+    <a class="close" onclick="$('.alert').hide()">×</a>
+   </div>
+   <div id='loading' style="display: none" class="alert alert-info" role="alert">
+    <strong>Be patient!</strong> Loading information from server...
+   </div>
   </div>
-  <br />
-  <div class="row" id="all">
-    <div class="col-md-2 no-padding" >
-      <div id="wrap">
-        <div id="manage-slices-keys" class="run">
-          <button type="button" data-toggle="modal" data-target="#slices_keys_modal"
-	          class="fc-button fc-state-default fc-corner-left fc-corner-right slices-keys">
+ </div>
+ <br />
+ <div class="row" id="all">
+  <div class="col-md-2 no-padding" >
+   <div id="wrap">
+    <div id="manage-slices-keys" class="run">
+     <button type="button" data-toggle="modal" data-target="#slices_keys_modal"
+     	          class="fc-button fc-state-default fc-corner-left fc-corner-right slices-keys">
 		  slices & keys <span class='fa fa-gear'></span>
-	  </button>
-        </div>
-        <div id="my-slices" class="run"></div>
-        <div style="clear:both"></div>
-      </div>
+     </button>
     </div>
-    <div class="col-md-3 leases-run-width">
-      <div id="liveleases_container" class="run"></div>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-      <script type="text/javascript" src="/assets/js/moment-round.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
-      <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
-      <style type="text/css"> @import url("https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css"); </style>
+    <div id="my-slices" class="run"></div>
+    <div style="clear:both"></div>
+   </div>
+  </div>
+  <div class="col-md-3 leases-run-width">
+   <div id="liveleases_container" class="run"></div>
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+   <script type="text/javascript" src="/assets/js/moment-round.js"></script>
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
+   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/locale/fr.js"></script>
+   <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
+   <style type="text/css"> @import url("https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css"); </style>
 
-      <style type="text/css"> @import url("/assets/r2lab/liveleases.css"); </style>
-      <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
-      <script type="text/javascript" src="/assets/r2lab/liveleases.js"></script>
-      <div id="current-slice" data-current-slice-color="#000"></div>
-    </div>
-    <div class="col-md-7">
-    <div id="livemap_container">Click a node for more details;
+   <style type="text/css"> @import url("/assets/r2lab/liveleases.css"); </style>
+   <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
+   <script type="text/javascript" src="/assets/r2lab/liveleases.js"></script>
+   <div id="current-slice" data-current-slice-color="#000"></div>
+  </div>
+  <div class="col-md-7">
+   <div id="livemap_container">Click a node for more details;
     see also <a href="status.md#livemap:legend">this page for a legend</a>
-    <span id="chat-button"></span></div>
-    <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
-    <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
-    <script>
+    <span id="chat-button"></span>
+   </div>
+   <script type="text/javascript" src="/assets/r2lab/livemap.js"></script>
+   <style type="text/css"> @import url("/assets/r2lab/livemap.css"); </style>
+   <script>
     // override livemap default settings 
     Object.assign(livemap_options, {
       space_x : 72,
@@ -70,12 +72,12 @@ require_login: true
       margin_y : 20,
       padding_x : 35,
       padding_y : 35,
-//      debug : true,
+//    debug : true,
    });
-    </script>
-    <div id="actions"></div>
-    </div>
-  </div>
+  </script>
+  <div id="actions"></div>
+ </div>
+</div>
 
   <hr/>
   See also <a href="status.md#livetable:legend">this page for a legend</a>; try clicking anywhere in the header or footer to focus on nodes of interest.

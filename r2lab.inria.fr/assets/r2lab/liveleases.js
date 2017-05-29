@@ -25,21 +25,37 @@ function liveleases_debug(...args) {
 
 
 ////////////////////////////////////////
+// events attached in the fullCalendar() plugin have
+// (*) visible attributes like 'title', 'start' and 'end'
+// (*) they also have a more subtle 'id' field, that can be used to
+// refer to them from the outside
+////
+// now the other way around, leases are managed in the API
+// also have of course a slicename, and start and end times
+// and they have a uuid, that is the internal API lease_id
+////
+// so it is tempting to use this api lease_id as a event_id
+// the only time when this is not convenient is when
+// a lease is created for the first time, as we have no idea
+// what the lease_id is going to be and so we need something else
+// during that time
+////
+
 class LiveLeases {
 
     constructor(domid) {
 	this.domid = domid;
 
 	////////////////////////////////////////
-	// also needs some cleanup in the actionsQueue/actionsQueued area
-	
 	this.my_slices_name      = r2lab_accounts.map((account) => account.name);
 	
 	this.my_slices_color     = [];
 	this.known_slices        = [];
 
-	this.actionsQueue        = [];
-	this.actionsQueued       = [];
+	// not clear what this contains, essentially it looks like a temporary
+	this.tmpLeases        = [];
+	// the ids of all the events known to the API
+	this.confirmedLeases     = [];
 	this.current_slice_name  = current_slice.name;
 	this.current_slice_color = '#DDD';
 	this.current_leases      = null;
@@ -49,11 +65,48 @@ class LiveLeases {
 	
 	this.socket              = io.connect(sidecar_url);
 	this.refresh             = true;
-	this.currentTimezone     = 'local';
 	this.nightly_slice_name  = 'inria_r2lab.nightly'
 	this.nightly_slice_color = '#000000';
 	
     }
+
+
+    q_dbg(msg){
+	console.log(`---------- DBG ${msg}`);
+	console.log("tmp", this.tmpLeases);
+	console.log("confirmed", this.confirmedLeases);
+    }
+    q_dbg_forever(timeout){
+	console.log(timeout);
+	let liveleases = this;
+	let msg = `forever every ${timeout}ms`;
+	this.q_dbg(msg);
+	setTimeout(function(){liveleases.q_dbg_forever(timeout);},
+		  timeout);
+    }
+
+    getTmpLeases(){
+	return this.tmpLeases;
+    }
+    resetConfirmedLeases(){
+	this.confirmedLeases = [];
+    }
+    /* used */
+    queueAction3(title, start, end) {
+	let local_id = this.getLocalId(title, start, end);
+	this.confirmedLeases.push(local_id);
+    }
+    delActionQueue(id){
+	this.q_dbg(`before delActionQueue ${id}`);
+	let idx = this.tmpLeases.indexOf(id);
+	this.tmpLeases.splice(idx, 1);
+	this.q_dbg("after delActionQueue");
+    }
+    resetActionQueue(){
+	this.tmpLeases = [];
+    }
+
+
 
 
     buildCalendar(initial_events_json) {
@@ -84,13 +137,7 @@ class LiveLeases {
 	    
 	    views:
 	    run_mode
-		? {
-		    agendaTwoDay: {
-			type: 'agenda',
-			duration: { days: 2},
-			buttonText: '2 days',
-		    }
-		}
+		? {}
 	    : {
 		agendaThreeDay: {
 		    type: 'agenda',
@@ -112,10 +159,10 @@ class LiveLeases {
 	    defaultView: run_mode ? 'agendaDay' : 'agendaThreeDay',
 	    height: run_mode ? 455 : 770,
 	    ////////////////////
-	    defaultTimedEventDuration: '00:01:00',
+	    defaultTimedEventDuration: '00:10:00',
 	    slotDuration: "01:00:00",
 	    forceEventDuration: true,
-	    timezone: liveleases.currentTimezone,
+	    timezone: 'local',
 	    defaultDate: today,
 	    selectHelper: false,
 	    overlap: false,
@@ -365,15 +412,17 @@ class LiveLeases {
     ////////////////////////////////////////
     main(){
 	
+//	if (liveleases_options.debug) this.q_dbg_forever(2000);
 	this.saveSomeColors();
 	this.getLastSlice();
 	
-	this.resetActionsQueued();
+	this.resetConfirmedLeases();
 	this.buildInitialSlicesBox(this.getMySlicesName());
 	this.buildCalendar([]);
 	this.setCurrentSliceBox(this.getCurrentSliceName());
 	
 	this.listenLeases();
+
 	this.refreshLeases();
 	
 	let run_mode = liveleases_options.mode == 'run';
@@ -391,8 +440,16 @@ class LiveLeases {
 	$('body').on('click', 'button.fc-month-button', function() {
 	    this.sendMessage('This view is read only!', 'info');
 	});
+
+	//////////
+	
     }
 
+
+    //////////
+    sliceElementId(id){
+	return id.replace(/\./g, '');
+    }
 
 
     setSlice(element){
@@ -406,7 +463,7 @@ class LiveLeases {
 
 
     setCurrentSliceBox(element){
-	let id = this.idFormat(element);
+	let id = this.sliceElementId(element);
 	$(".noactive").removeClass('slice-active');
 	$("#"+id).addClass('slice-active');
     }
@@ -426,11 +483,6 @@ class LiveLeases {
 
     setLastSlice(){
 	$.cookie("last-slice-data", this.getCurrentSliceName())
-    }
-
-
-    idFormat(id){
-	return id.replace(/\./g, '');
     }
 
 
@@ -494,51 +546,6 @@ class LiveLeases {
     }
 
 
-    getRandomColor() {
-	let reserved_colors = ["#A1A1A1", "#D0D0D0", "#FF0000",
-			       "#000000", "#FFE5E5", "#616161"];
-	let letters = '0123456789ABCDEF'.split('');
-	let color = '#';
-	for (let i = 0; i < 6; i++ ) {
-	    color += letters[Math.round(Math.random() * 15)];
-	}
-	if ($.inArray(color.toUpperCase(), reserved_colors) > -1){
-	    return this.getRandomColor();
-	}
-	return color;
-    }
-
-
-    removeElementFromCalendar(id){
-	$(`#${this.domid}`).fullCalendar('removeEvents', id );
-    }
-
-
-    getLocalId(title, start, end){
-	let id = null;
-	let m_start = moment(start)._d.toISOString();
-	let m_end   = moment(end)._d.toISOString();
-	String.prototype.hash = function() {
-	    let self = this;
-	    let range = Array(this.length);
-	    for(let i = 0; i < this.length; i++) {
-		range[i] = i;
-	    }
-	    return Array.prototype.map.call(range, function(i) {
-		return self.charCodeAt(i).toString(16);
-	    }).join('');
-	}
-	id = (title+m_start+m_end).hash();
-	liveleases_debug(`title = ${title} -> ${id}`);
-	return id;
-    }
-
-
-    getActionsQueue(){
-	return this.actionsQueue;
-    }
-
-
     isRemoving(title){
 	let removing = true;
 	if(title.indexOf('(removing)') == -1){
@@ -582,20 +589,35 @@ class LiveLeases {
     }
 
 
+    getRandomColor() {
+	let reserved_colors = ["#A1A1A1", "#D0D0D0", "#FF0000",
+			       "#000000", "#FFE5E5", "#616161"];
+	let letters = '0123456789ABCDEF'.split('');
+	let color = '#';
+	for (let i = 0; i < 6; i++ ) {
+	    color += letters[Math.round(Math.random() * 15)];
+	}
+	if ($.inArray(color.toUpperCase(), reserved_colors) > -1){
+	    return this.getRandomColor();
+	}
+	return color;
+    }
+
+
+    removeElementFromCalendar(id){
+	$(`#${this.domid}`).fullCalendar('removeEvents', id );
+    }
+
+
+    getLocalId(title, start, end){
+	let m_start = moment(start)._d.toISOString();
+	let m_end   = moment(end)._d.toISOString();
+	return `${title}-from-${m_start}-until-${m_end}`;
+    }
+
+
     addElementToCalendar(element){
 	$(`#${this.domid}`).fullCalendar('renderEvent', element, true );
-    }
-
-
-    resetActionsQueued(){
-	this.actionsQueued = [];
-    }
-
-
-    queueAction(title, start, end) {
-	let local_id = null;
-	local_id = this.getLocalId(title, start, end);
-	this.actionsQueued.push(local_id);
     }
 
 
@@ -610,7 +632,7 @@ class LiveLeases {
 
 
     createLease(lease){
-	let newLease             = new Object();
+	let newLease         = new Object();
 	newLease.id          = lease.id
 	newLease.uuid        = lease.uuid
 	newLease.title       = lease.title
@@ -700,7 +722,7 @@ class LiveLeases {
 	let liveleases = this;
 	this.socket.on('info:leases', function(msg){
 	    liveleases.setCurrentLeases(msg);
-	    liveleases.resetActionsQueued();
+	    liveleases.resetConfirmedLeases();
 	    let leases = liveleases.getCurrentLeases();
 	    let leasesbooked = liveleases.parseLeases(leases);
 	    liveleases_debug(`incoming on info:leases ${leasesbooked.length} leases`, msg);
@@ -713,23 +735,24 @@ class LiveLeases {
     updateLeases(action, event){
 	if (action == 'addLease') {
 	    this.showImmediate('add', event);
-	    this.setActionsQueue('add', event);
+	    this.queueAction2('add', event);
 	} else if (action == 'editLease'){
 	    this.showImmediate('edit', event);
-	    this.setActionsQueue('edit', event);
+	    this.queueAction2('edit', event);
 	} else if (action == 'delLease') {
-	    if(    ($.inArray(event.id, this.getActionsQueue()) == -1)
+	    if(    ($.inArray(event.id, this.getTmpLeases()) == -1)
 		&& (event.title.indexOf('* failed *') > -1) ){
 		this.removeElementFromCalendar(event.id);
 	    } else {
-		this.setActionsQueue('del', event);
+		this.queueAction2('del', event);
 		this.showImmediate('del', event);
 	    }
 	}
     }
 
 
-    setActionsQueue(action, data){
+    queueAction2(action, data){
+	liveleases_debug("QUEUING", action, data);
 	let liveleases = this;
 	let verb = null;
 	let request = null;
@@ -741,7 +764,7 @@ class LiveLeases {
 		"valid_from" : data.start._d.toISOString(),
 		"valid_until": data.end._d.toISOString()
 	    };
-	    this.actionsQueue.push(data.id);
+	    this.tmpLeases.push(data.id);
 	} else if (action == 'edit'){
 	    verb = 'update';
 	    request = {
@@ -756,9 +779,10 @@ class LiveLeases {
 	    };
 	    liveleases.delActionQueue(data.id);
 	} else {
-	    console.log('Something went wrong in map actions.');
+	    console.log(`queueAction2 : Unknown action ${action}`);
 	    return false;
 	}
+	this.q_dbg("INSIDE queueAction2");
 	// xxx replace this with some more sensible code for showing errors
 	let display_error_message = alert;
 	post_xhttp_django(`/leases/${verb}`, request, function(xhttp) {
@@ -779,18 +803,13 @@ class LiveLeases {
 		    // for starters, are we getting a JSON string ?
 		    try {
 			let obj = JSON.parse(xhttp.responseText);
-			if (obj['error']) {
-			    if (obj['error']['exception']) {
-				if (obj['error']['exception']['reason']) {
-				    liveleases.sendMessage(obj['error']['exception']['reason']);
-				} else {
-				    liveleases.sendMessage(obj['error']['exception']);
-				}
-			    } else {
-				liveleases.sendMessage(obj['error']);
-			    }
+			if (obj.error) {
+			    liveleases.sendMessage(
+				obj.error.exception.reason
+				    || obj.error.exception
+				    || obj.error)
 			} else {
-			    ;//sendMessage(obj);
+			    liveleases_debug("JSON.parse ->", obj);
 			}
 		    } catch(err) {
 			liveleases.sendMessage(`unexpected error while anayzing django answer ${err}`);
@@ -822,17 +841,6 @@ class LiveLeases {
 	    lease_color = this.my_slices_color[this.my_slices_name.indexOf(slice_title)];
 	}
 	return lease_color;
-    }
-
-
-    delActionQueue(id){
-	let idx = this.actionsQueue.indexOf(id);
-	this.actionsQueue.splice(idx, 1);
-    }
-
-
-    resetActionQueue(){
-	this.actionsQueue = [];
     }
 
 
@@ -878,7 +886,7 @@ class LiveLeases {
 				.text(val.title))
 			.append(
 			    $("<div/>")
-				.attr("id", liveleases.idFormat(val.title))
+				.attr("id", liveleases.sliceElementId(val.title))
 				.addClass('noactive'));
 		}
 		liveleases.known_slices.push(val.title);
@@ -924,7 +932,7 @@ class LiveLeases {
 				.text(val))
 			.append(
 			    $("<div />")
-				.attr("id", liveleases.idFormat(val))
+				.attr("id", liveleases.sliceElementId(val))
 				.addClass('noactive'));
 		}
 		liveleases.known_slices.push(val);
@@ -960,11 +968,11 @@ class LiveLeases {
 			liveleases.removeElementFromCalendar(obj.id);
 		    } else if (obj.uuid && liveleases.isPending(obj.title)){
 			liveleases.removeElementFromCalendar(obj.id);
-		    } else if (!liveleases.isPresent(obj.id, liveleases.actionsQueued) &&
+		    } else if (!liveleases.isPresent(obj.id, liveleases.confirmedLeases) &&
 			       !liveleases.isPending(obj.title) && !liveleases.isRemoving(obj.title) ){
 			liveleases.removeElementFromCalendar(obj.id);
 		    } else if (
-			/*isPresent(obj.id, liveleases.actionsQueue) &&*/
+			/*isPresent(obj.id, liveleases.tmpLeases) &&*/
 			liveleases.isPending(obj.title) && !obj.uuid ){
 			liveleases.removeElementFromCalendar(obj.id);
 		    }
@@ -991,11 +999,8 @@ class LiveLeases {
 	    newLease.end = lease.valid_until;
 	    newLease.id = liveleases.getLocalId(newLease.title, newLease.start, newLease.end);
 	    newLease.color = liveleases.getColorLease(newLease.title);
-	    if (liveleases.isMySlice(newLease.title) && !liveleases.isPastDate(newLease.end)) {
-		newLease.editable = true;
-	    } else {
-		newLease.editable = false;
-	    }
+	    newLease.editable = (liveleases.isMySlice(newLease.title)
+				 && !liveleases.isPastDate(newLease.end));
 	    newLease.overlap = false;
 
 	    // //HARD CODE TO SET SPECIAL ATTR to nightly routine
@@ -1004,7 +1009,7 @@ class LiveLeases {
 	    }
 
 	    leases.push(newLease);
-	    liveleases.queueAction(newLease.title, newLease.start, newLease.end);
+	    liveleases.queueAction3(newLease.title, newLease.start, newLease.end);
 
 	});
 
