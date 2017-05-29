@@ -2,9 +2,6 @@
 // this requires xhttp-django.js
 "use strict";
 
-// create this object with mode='run' or mode='book'
-// e.g. $(function() {let the_leases = new LiveLeases('run', 'container-leases'); the_leases.main(); })
-
 let liveleases_options = {
 
     // set to 'book' for the BOOK page
@@ -30,8 +27,7 @@ function liveleases_debug(...args) {
 ////////////////////////////////////////
 class LiveLeases {
 
-    constructor(mode, domid) {
-	this.mode = mode;
+    constructor(domid) {
 	this.domid = domid;
 
 	////////////////////////////////////////
@@ -1018,12 +1014,10 @@ class LiveLeases {
 }
 
 
-//global - mostly for debugging and convenience
+// global - only for debugging and convenience
 let the_liveleases;
 
-// xxx need options to select mode instead
 $(function() {
-    the_liveleases = new LiveLeases('book', 'liveleases_container');
+    the_liveleases = new LiveLeases('liveleases_container');
     the_liveleases.main();
 })
-
