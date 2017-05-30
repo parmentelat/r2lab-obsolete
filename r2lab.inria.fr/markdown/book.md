@@ -45,7 +45,6 @@ which is UTC+1 in winter, and UTC+2 in summer.
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/locale/fr.js"></script>
-   <script type="text/javascript" src="/assets/js/jquery.cookie-v141.min.js"></script>
    <style type="text/css"> @import url("https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css"); </style>
 
    <style type="text/css"> @import url("/assets/r2lab/liveleases.css"); </style>

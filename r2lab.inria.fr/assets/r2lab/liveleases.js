@@ -2,6 +2,10 @@
 // this requires xhttp-django.js
 "use strict";
 
+/* for eslint */
+/*global $ moment io*/
+/*global PersistentSlices sidecar_url r2lab_accounts post_xhttp_django*/
+
 let liveleases_options = {
 
     // set to 'book' for the BOOK page
@@ -11,8 +15,7 @@ let liveleases_options = {
     // be traced when debug is set to true
     trace_events : [
 	'select', 'drop', 'eventDrop', 'eventDragStart', 'eventResize',
-	//'eventRender', 'eventMouseover',
-	'eventMouseout', 
+	//'eventRender', 'eventMouseover', 'eventMouseout', 
     ],
     debug : true,
 }
@@ -41,75 +44,56 @@ function liveleases_debug(...args) {
 // during that time
 ////
 
+// xxx assuming the_persistent_slices has been loaded already
+// see r2lab0user.js
+
 class LiveLeases {
 
-    constructor(domid) {
+    constructor(domid, r2lab_accounts) {
 	this.domid = domid;
 
 	////////////////////////////////////////
-	this.my_slices_name      = r2lab_accounts.map((account) => account.name);
-	
-	this.my_slices_color     = [];
-	this.known_slices        = [];
+	this.persistent_slices   = new PersistentSlices(r2lab_accounts, 'r2lab');
 
 	// not clear what this contains, essentially it looks like a temporary
-	this.tmpLeases        = [];
+	this.tmpLeases           = [];
 	// the ids of all the events known to the API
 	this.confirmedLeases     = [];
-	this.current_slice_name  = current_slice.name;
-	this.current_slice_color = '#DDD';
-	this.current_leases      = null;
-	this.color_pending       = '#FFFFFF';
-	this.color_removing      = '#FFFFFF';
+
+	this.textcolor_pending   = 'black';
+	this.textcolor_removing  = 'red';
 	this.keepOldEvent        = null;
 	
 	this.socket              = io.connect(sidecar_url);
-	this.refresh             = true;
-	this.nightly_slice_name  = 'inria_r2lab.nightly'
-	this.nightly_slice_color = '#000000';
+	this.dragging            = false;
+
+	this.initial_duration    = 30;
+	this.minimal_duration    = 10;
 	
     }
 
 
-    q_dbg(msg){
-	console.log(`---------- DBG ${msg}`);
-	console.log("tmp", this.tmpLeases);
-	console.log("confirmed", this.confirmedLeases);
-    }
-    q_dbg_forever(timeout){
-	console.log(timeout);
-	let liveleases = this;
-	let msg = `forever every ${timeout}ms`;
-	this.q_dbg(msg);
-	setTimeout(function(){liveleases.q_dbg_forever(timeout);},
-		  timeout);
-    }
-
-    getTmpLeases(){
-	return this.tmpLeases;
-    }
     resetConfirmedLeases(){
 	this.confirmedLeases = [];
     }
     /* used */
-    queueAction3(title, start, end) {
+    addConfirmed(title, start, end) {
 	let local_id = this.getLocalId(title, start, end);
 	this.confirmedLeases.push(local_id);
     }
-    delActionQueue(id){
-	this.q_dbg(`before delActionQueue ${id}`);
+
+    tmpLeasesDel(id){
 	let idx = this.tmpLeases.indexOf(id);
 	this.tmpLeases.splice(idx, 1);
-	this.q_dbg("after delActionQueue");
     }
-    resetActionQueue(){
+    tmpLeasesReset(){
 	this.tmpLeases = [];
     }
 
 
 
 
-    buildCalendar(initial_events_json) {
+    buildCalendar() {
 	let liveleases = this;
 	let today  = moment().format("YYYY-MM-DD");
 	let showAt = moment().subtract(1, 'hour').format("HH:mm");
@@ -193,7 +177,7 @@ class LiveLeases {
 			editable: false,
 			selectable: false,
 			color: liveleases.getCurrentSliceColor(),
-			textColor: liveleases.color_pending,
+			textColor: liveleases.textcolor_pending,
 			id: liveleases.getLocalId(my_title, start, end),
 		    };
 		    liveleases.updateLeases('addLease', eventData);
@@ -204,7 +188,7 @@ class LiveLeases {
 	    // this allows things to be dropped onto the calendar
 	    drop: function(date, event, view) {
 		let start = date;
-		let end   = moment(date).add(60, 'minutes');
+		let end   = moment(date).add(liveleases.initial_duration, 'minutes');
 		if (liveleases.isPastDate(end)) {
 		    $(`#${liveleases.domid}`).fullCalendar('unselect');
 		    liveleases.sendMessage('This timeslot is in the past!');
@@ -225,7 +209,7 @@ class LiveLeases {
 			editable: false,
 			selectable: false,
 			color: liveleases.getCurrentSliceColor(),
-			textColor: liveleases.color_pending,
+			textColor: liveleases.textcolor_pending,
 			id: liveleases.getLocalId(my_title, start, end),
 		    };
 		    liveleases.updateLeases('addLease', eventData);
@@ -245,7 +229,7 @@ class LiveLeases {
 			let newLease = liveleases.createLease(event);
 			newLease.title = liveleases.pendingName(event.title);
 			newLease.editable = false;
-			newLease.textColor = liveleases.color_pending;
+			newLease.textColor = liveleases.textcolor_pending;
 			liveleases.removeElementFromCalendar(newLease.id);
 			liveleases.updateLeases('editLease', newLease);
 		    }
@@ -257,13 +241,13 @@ class LiveLeases {
 	    // this fires when one event starts to be dragged
 	    eventDragStart: function(event, jsEvent, ui, view) {
 		this.keepOldEvent = event;
-		this.refresh = false;
+		this.dragging = true;
 	    },
 
 	    // this fires when one event starts to be dragged
 	    eventDragStop: function(event, jsEvent, ui, view) {
 		this.keepOldEvent = event;
-		this.refresh = true;
+		this.dragging = false;
 	    },
 
 	    // this fires when an event is rendered
@@ -282,16 +266,17 @@ class LiveLeases {
 		    element.bind('dblclick', function() {
 			if (liveleases.isMySlice(event.title) && event.editable == true ) {
 			    if (!confirm("Confirm removing?")) {
+				// XXX undefined revertFunc XXX
 				revertFunc();
 			    }
 			    let newLease = liveleases.createLease(event);
 			    let now = new Date();
 			    let started = moment(now).diff(moment(event.start), 'minutes');
-			    if(started >= 10){
+			    if(started >= liveleases.minimal_duration){
 				newLease.start = moment(event.start);
 				newLease.end = moment(event.start).add(started, 'minutes');
 				newLease.title = liveleases.removingName(event.title);
-				newLease.textColor = liveleases.color_removing;
+				newLease.textColor = liveleases.textcolor_removing;
 				newLease.editable = false;
 				newLease.selectable = false;
 				newLease.id = liveleases.getLocalId(
@@ -308,7 +293,7 @@ class LiveLeases {
 			    if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
 				let newLease = liveleases.createLease(event);
 				newLease.title = liveleases.removingName(event.title);
-				newLease.textColor = liveleases.color_removing;
+				newLease.textColor = liveleases.textcolor_removing;
 				newLease.editable = false;
 				liveleases.removeElementFromCalendar(event.id);
 				liveleases.addElementToCalendar(newLease);
@@ -330,7 +315,6 @@ class LiveLeases {
 	    //},
 	    
 	    eventMouseout: function(event, jsEvent, view) {
-		console.log('inside eventMouseout, this & $(this)= ', this, $(this));
 		$(this).popover('hide');
 	    },
 
@@ -343,15 +327,21 @@ class LiveLeases {
 		} else if (liveleases.isMySlice(event.title)) {
 		    let newLease = liveleases.createLease(event);
 		    newLease.title = liveleases.pendingName(event.title);
-		    newLease.textColor = liveleases.color_pending;
+		    newLease.textColor = liveleases.textcolor_pending;
 		    newLease.editable = false;
 		    liveleases.removeElementFromCalendar(newLease.id);
 		    liveleases.updateLeases('editLease', newLease);
 		}
 	    },
-	    //Events from Json file
-	    events: initial_events_json,
+	    // events from Json file
+	    events: [],
 	};
+	calendar_args = this.decorate_traced_event(calendar_args);
+	$(`#${this.domid}`).fullCalendar(calendar_args);
+    }
+
+    // for debugging: trace events mentioned in  this.trace_events
+    decorate_traced_event(calendar_args) {
 	let trace_function = function(f) {
 	    let wrapped = function(...args) {
 		liveleases_debug(`entering calendar ${f.name}`);
@@ -362,63 +352,21 @@ class LiveLeases {
 	    return wrapped;
 	}
 	for (let prop of liveleases_options.trace_events) {
-	    if ( ! prop in calendar_args) {
+	    if ( ! (prop in calendar_args)) {
 		console.log(`liveleases: trace_events: ignoring undefined prop ${prop}`);
 	    } else {
 		calendar_args[prop] = trace_function(calendar_args[prop])
 	    }
 	}
-	$(`#${this.domid}`).fullCalendar(calendar_args);
-    }
-
-
-    ////////////////////////////////////////
-    saveSomeColors () {
-	$.cookie.json = true;
-	let local_colors = ["#F3537D", "#5EAE10", "#481A88", "#2B15CC", "#8E34FA",
-			    "#A41987", "#1B5DF8", "#7AAD82", "#8D72E4", "#323C89"];
-	let some_colors = $.cookie("some-colors-data");
-	
-	if (! some_colors){
-	    some_colors = 0
-	}
-	if (local_colors.length >= this.my_slices_name.length) {
-	    $.cookie("some-colors-data", local_colors)
-	} else if (some_colors.length >= this.my_slices_name.length) {
-	    ;
-	} else {
-	    let lack_colors = this.my_slices_name.length - local_colors.length;
-	    $.each(this.range(0, lack_colors), function(key, obj){
-		local_colors.push(this.getRandomColor());
-	    });
-	    $.cookie("some-colors-data", local_colors)
-	}
-    }
-
-
-    getLastSlice(){
-	$.cookie.json = true;
-	let last_slice = $.cookie("last-slice-data")
-	
-	if ($.inArray(last_slice, this.getMySlicesName()) > -1){
-	    this.setCurrentSliceName(last_slice);
-	    $.cookie("last-slice-data", last_slice)
-	} else {
-	    $.cookie("last-slice-data", liveleases.getCurrentSliceName())
-	}
+	return calendar_args;
     }
 
 
     ////////////////////////////////////////
     main(){
 	
-//	if (liveleases_options.debug) this.q_dbg_forever(2000);
-	this.saveSomeColors();
-	this.getLastSlice();
-	
-	this.resetConfirmedLeases();
-	this.buildInitialSlicesBox(this.getMySlicesName());
-	this.buildCalendar([]);
+	this.buildInitialSlicesBox(this.persistent_slices.pslices);
+	this.buildCalendar();
 	this.setCurrentSliceBox(this.getCurrentSliceName());
 	
 	this.listenLeases();
@@ -452,13 +400,12 @@ class LiveLeases {
     }
 
 
-    setSlice(element){
-	let element_color = element.css("background-color");
-	let element_name  = $.trim(element.text());
-	this.setCurrentSliceBox(element_name)
-	this.setCurrentSliceColor(element_color);
-	this.setCurrentSliceName(element_name);
-	this.setLastSlice();
+    setSlice(slice_element){
+	let color = slice_element.css("background-color");
+	let name  = $.trim(slice_element.text());
+	console.log("setSlice ->", name);
+	this.persistent_slices.set_current(name);
+	this.setCurrentSliceBox(name)
     }
 
 
@@ -469,32 +416,15 @@ class LiveLeases {
     }
 
 
-    setCurrentSliceColor(color){
-	this.current_slice_color = color;
-	return true;
-    }
-
-
-    setCurrentSliceName(name){
-	this.current_slice_name = name;
-	return true;
-    }
-
-
-    setLastSlice(){
-	$.cookie("last-slice-data", this.getCurrentSliceName())
-    }
-
-
     getCurrentSliceName(){
-	return this.shortName(this.current_slice_name);
+	return this.persistent_slices.get_current_slice_name();
     }
-
-
     getCurrentSliceColor(){
-	return this.current_slice_color;
+	return this.persistent_slices.get_current_slice_color();
     }
-
+    getMySlicesNames(){
+	return this.persistent_slices.my_slices_names();
+    }
 
     shortName(name){
 	let new_name = name;
@@ -502,42 +432,20 @@ class LiveLeases {
 	return new_name
     }
 
-
-    getMySlicesName(){
-	return this.my_slices_name;
+    getMySlicesShortNames(){
+	return this.getMySlicesNames().map(name => this.shortName(name));
     }
 
-
-    getMySlicesinShortName(){
-	let liveleases = this;
-	let new_short_names = [];
-	$.each(this.getMySlicesName(), function(key, val){
-	    new_short_names.push(liveleases.shortName(val));
-	});
-	return new_short_names;
-    }
-
-
-    getMySlicesColor(){
-	return my_slices_color;
-    }
-
-
+    ////////////////////
     pendingName(name){
 	return `${this.resetName(name)} (pending)`;
     }
-
-
     removingName(name){
 	return `${this.resetName(name)} (removing)`;
     }
-
-
     failedName(name){
 	return `${this.resetName(name)} * failed  *`;
     }
-
-
     resetName(name) {
 	return name
 	    .replace(' (pending)', '')
@@ -567,16 +475,11 @@ class LiveLeases {
     isNightly(title){
 	let nightly = false;
 	if (title) {
-	    if(title.indexOf('nightly routine') > -1){
+	    if(title.indexOf('nightly') > -1){
 		nightly = true;
 	    }
 	}
 	return nightly;
-    }
-
-
-    getNightlyColor(){
-	return this.nightly_slice_color;
     }
 
 
@@ -586,21 +489,6 @@ class LiveLeases {
 	    failed = false;
 	}
 	return failed;
-    }
-
-
-    getRandomColor() {
-	let reserved_colors = ["#A1A1A1", "#D0D0D0", "#FF0000",
-			       "#000000", "#FFE5E5", "#616161"];
-	let letters = '0123456789ABCDEF'.split('');
-	let color = '#';
-	for (let i = 0; i < 6; i++ ) {
-	    color += letters[Math.round(Math.random() * 15)];
-	}
-	if ($.inArray(color.toUpperCase(), reserved_colors) > -1){
-	    return this.getRandomColor();
-	}
-	return color;
     }
 
 
@@ -618,16 +506,6 @@ class LiveLeases {
 
     addElementToCalendar(element){
 	$(`#${this.domid}`).fullCalendar('renderEvent', element, true );
-    }
-
-
-    setCurrentLeases(leases){
-	this.current_leases = leases;
-    }
-
-
-    getCurrentLeases(){
-	return this.current_leases;
     }
 
 
@@ -666,8 +544,8 @@ class LiveLeases {
 	    start = ns;
 	    //end = moment(end).add(1, 'hour');
 	}
-	//round to not wait
-	start = moment(start).floor(10, 'minutes');
+	// round to not wait
+	start = moment(start).floor(this.minimal_duration, 'minutes');
 	return [start, end];
     }
 
@@ -720,12 +598,9 @@ class LiveLeases {
 
     listenLeases(){
 	let liveleases = this;
-	this.socket.on('info:leases', function(msg){
-	    liveleases.setCurrentLeases(msg);
-	    liveleases.resetConfirmedLeases();
-	    let leases = liveleases.getCurrentLeases();
-	    let leasesbooked = liveleases.parseLeases(leases);
-	    liveleases_debug(`incoming on info:leases ${leasesbooked.length} leases`, msg);
+	this.socket.on('info:leases', function(json){
+	    let leasesbooked = liveleases.parseLeases(json);
+	    liveleases_debug(`incoming on info:leases ${leasesbooked.length} leases`, json);
 	    liveleases.refreshCalendar(leasesbooked);
 	    liveleases.setCurrentSliceBox(liveleases.getCurrentSliceName());
 	});
@@ -740,7 +615,7 @@ class LiveLeases {
 	    this.showImmediate('edit', event);
 	    this.queueAction2('edit', event);
 	} else if (action == 'delLease') {
-	    if(    ($.inArray(event.id, this.getTmpLeases()) == -1)
+	    if(    ($.inArray(event.id, this.tmpLeases) == -1)
 		&& (event.title.indexOf('* failed *') > -1) ){
 		this.removeElementFromCalendar(event.id);
 	    } else {
@@ -777,14 +652,11 @@ class LiveLeases {
 	    request = {
 		"uuid" : data.uuid,
 	    };
-	    liveleases.delActionQueue(data.id);
+	    liveleases.tmpLeasesDel(data.id);
 	} else {
 	    console.log(`queueAction2 : Unknown action ${action}`);
 	    return false;
 	}
-	this.q_dbg("INSIDE queueAction2");
-	// xxx replace this with some more sensible code for showing errors
-	let display_error_message = alert;
 	post_xhttp_django(`/leases/${verb}`, request, function(xhttp) {
 	    if (xhttp.readyState == 4) {
 		// this triggers a refresh of the leases once the sidecar server answers back
@@ -820,38 +692,21 @@ class LiveLeases {
     }
 
 
-    setColorLeases() {
-	let liveleases = this;
-	let some_colors = $.cookie("some-colors-data")
-	$.each(liveleases.my_slices_name, function(key, obj){
-	    liveleases.my_slices_color[key] = some_colors[key];
-	});
-	return this.my_slices_color;
-    }
-
-
     range(start, end) {
 	return Array(end-start).join(0).split(0).map(function(val, id) {return id+start});
     }
 
 
-    getColorLease(slice_title){
-	let lease_color = '#A1A1A1';
-	if ($.inArray(slice_title, this.getMySlicesName()) > -1){
-	    lease_color = this.my_slices_color[this.my_slices_name.indexOf(slice_title)];
-	}
-	return lease_color;
+    getColorLease(slicename){
+	return this.persistent_slices.get_slice_color(slicename);
     }
 
 
-    isMySlice(slice){
-	let is_my = false;
-	if ($.inArray(this.resetName(slice), this.getMySlicesName()) > -1) {
-	    is_my = true;
-	}
-	return is_my;
+    isMySlice(slicename){
+	console.log("isMySlice", slicename);
+	let pslice = this.persistent_slices.record_slice(slicename);
+	return pslice.mine;
     }
-
 
     isPresent(element, list){
 	let present = false;
@@ -863,82 +718,65 @@ class LiveLeases {
     }
 
 
+    // incoming is a list of events suitable for fullCalendar
+    // i.e. with fields like title, start, end and id 
     buildSlicesBox(leases) {
 	let liveleases = this;
-	// let known_slices = getMySlicesinShortName();
+	let persistent_slices = this.persistent_slices;
 	liveleases_debug('buildSlicesBox');
 	let slices = $("#my-slices");
 
-	$.each(leases, function(key, val){
-	    if ($.inArray(val.title, liveleases.known_slices) === -1) { //already present?
-		if (liveleases.isMySlice(val.title)) {
-		    if (val.title === liveleases.nightly_slice_name){
-			color = liveleases.getNightlyColor();
-			liveleases.setCurrentSliceColor(color);
-		    } else if(val.title === liveleases.getCurrentSliceName()){
-			liveleases.setCurrentSliceColor(val.color);
-		    }
-		    slices
-			.append(
-			    $("<div/>")
-				.addClass('fc-event')
-				.attr("style", `background-color: ${val.color}`)
-				.text(val.title))
-			.append(
-			    $("<div/>")
-				.attr("id", liveleases.sliceElementId(val.title))
-				.addClass('noactive'));
-		}
-		liveleases.known_slices.push(val.title);
-	    }
-	});
-
-	$('#my-slices .fc-event').each(function() {
-	    $(this).draggable({
-		zIndex: 999,
-		revert: true,
-		revertDuration: 0
+	leases.forEach(
+	    function(lease) {
+		let slicename = lease.title;
+		let pslice = persistent_slices.get_pslice(slicename);
+		// already present / skip it
+		if (pslice)
+		    return;
+		pslice = persistent_slices.record_slice(slicename);
+		slices
+		    .append(
+			$("<div/>")
+			    .addClass('fc-event')
+			    .attr("style", `background-color: ${pslice.color}`)
+			    .text(pslice.name))
+		    .append(
+			$("<div/>")
+			    .attr("id", liveleases.sliceElementId(pslice.name))
+			    .addClass('noactive'));
 	    });
-	});
+	this.makeSliceBoxDraggable();
     }
 
-
-    buildInitialSlicesBox(leases){
+    // incoming is an array of pslices as defined in
+    // persistent_slices.js
+    buildInitialSlicesBox(pslices) {
 	let liveleases = this;
 	liveleases_debug('buildInitialSlicesBox');
-	liveleases.setColorLeases();
 	let slices = $("#my-slices");
 	let legend = "Double click in slice to select default";
 	slices.html(`<h4 align="center" data-toggle="tooltip" title="${legend}">drag & drop to book</h4>`);
 
-	$.each(leases, function(key, val){
-	    val = liveleases.shortName(val);
-	    let color = liveleases.getColorLease(val);
-	    if ($.inArray(val, liveleases.known_slices) === -1) {
-		//removing nightly routine and slices already present?
-		if (liveleases.isMySlice(val)) {
-		    if (val === liveleases.nightly_slice_name){
-			color = liveleases.getNightlyColor();
-			liveleases.setCurrentSliceColor(color);
-		    }
-		    else if(val === liveleases.getCurrentSliceName()){
-			liveleases.setCurrentSliceColor(color);
-		    }
-		    slices
-			.append(
-			    $("<div />")
-				.addClass('fc-event')
-				.attr("style", `background-color: ${color}`)
-				.text(val))
-			.append(
-			    $("<div />")
-				.attr("id", liveleases.sliceElementId(val))
-				.addClass('noactive'));
-		}
-		liveleases.known_slices.push(val);
-	    }
-	});
+	pslices.forEach(
+	    function(pslice) {
+		// need to run shortName ?
+		let name = pslice.name;
+		let color = pslice.color;
+		slices
+		    .append(
+			$("<div />")
+			    .addClass('fc-event')
+			    .attr("style", `background-color: ${color}`)
+			    .text(name))
+		    .append(
+			$("<div />")
+			    .attr("id", liveleases.sliceElementId(name))
+			    .addClass('noactive'));
+	    });
+	this.makeSliceBoxDraggable();
+    }
 
+    makeSliceBoxDraggable() {
 	$('#my-slices .fc-event').each(function() {
 	    $(this).draggable({
 		zIndex: 999,
@@ -952,7 +790,7 @@ class LiveLeases {
     refreshCalendar(events) {
 	let liveleases = this;
 	// xxx ugly use of global
-	if (this.refresh){
+	if ( ! this.dragging){
 	    $.each(events, function(key, event){
 		liveleases_debug(`refreshCalendar : lease = ${event.title}: ${event.start} .. ${event.end}`);
 		liveleases.removeElementFromCalendar(event.id);
@@ -979,19 +817,20 @@ class LiveLeases {
 		}
 	    });
 
-	    liveleases.resetActionQueue();
+	    liveleases.tmpLeasesReset();
 	}
     }
 
 
-    parseLeases(data){
+    parseLeases(json) {
 	let liveleases = this;
-	let parsedData = JSON.parse(data);
-	let leases = [];
-
+	let data = JSON.parse(json);
 	liveleases_debug("parseLeases", data);
+
+	let leases = [];
+	liveleases.resetConfirmedLeases();
 	
-	parsedData.forEach(function(lease){
+	data.forEach(function(lease){
 	    let newLease = new Object();
 	    newLease.title = liveleases.shortName(lease.slicename);
 	    newLease.uuid = String(lease.uuid);
@@ -1003,13 +842,8 @@ class LiveLeases {
 				 && !liveleases.isPastDate(newLease.end));
 	    newLease.overlap = false;
 
-	    // //HARD CODE TO SET SPECIAL ATTR to nightly routine
-	    if (newLease.title == liveleases.nightly_slice_name){
-		newLease.color = liveleases.getNightlyColor();
-	    }
-
 	    leases.push(newLease);
-	    liveleases.queueAction3(newLease.title, newLease.start, newLease.end);
+	    liveleases.addConfirmed(newLease.title, newLease.start, newLease.end);
 
 	});
 
@@ -1023,6 +857,6 @@ class LiveLeases {
 let the_liveleases;
 
 $(function() {
-    the_liveleases = new LiveLeases('liveleases_container');
+    the_liveleases = new LiveLeases('liveleases_container', r2lab_accounts);
     the_liveleases.main();
 })
