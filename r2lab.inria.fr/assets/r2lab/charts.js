@@ -1,37 +1,46 @@
+// -*- js-indent-level:4 -*-
+
+/* for eslint */
+/*global $ _ moment */   /* _ is from underscore.js */
+/*global simpleheat */   /* from Chart.Heat.js */
+/*global Chart */        /* from charts.js */
+/*global getCookie */    /* from xhttp-django.js */
+
+"use strict"; 
+
 $(document).ready(function() {
-    var now = moment();
-    var sharedData = null
+    let now = moment();
+    let sharedData = null
 
 
-    var draw = function(data, max) {
-	var heat = simpleheat('heat').data(data).max(max), frame;
+    let draw = function(data, max) {
+	let heat = simpleheat('heat').data(data).max(max);
 	//heat.radius(40, 35);//really round
 	heat.radius(50, 45);
 	// set gradient colors as {0.4: 'blue', 0.65: 'lime', 1: 'red'}
 	// heat.gradient({0.4: 'blue', 0.65: 'lime', 1: 'red'});
-	var minOpacity = 0.01;
+	let minOpacity = 0.01;
 	heat.draw(minOpacity);
-	frame = null;
     }
 
 
-    var set_data = function(data) {
+    let set_data = function(data) {
 	sharedData = data;
     }
 
 
-    var get_data = function() {
+    let get_data = function() {
 	return sharedData;
     }
 
 
-    var map_node = function() {
-	map = [];
-	var c = [38, 125, 210, 298, 383, 470, 557, 642, 729]; //columns
-	var l = [45, 150, 255, 360, 463]; //lines
-	var n = 0; //node
+    let map_node = function() {
+	let map = [];
+	let c = [38, 125, 210, 298, 383, 470, 557, 642, 729]; //columns
+	let l = [45, 150, 255, 360, 463]; //lines
+	let n = 0; //node
 	//ignoring holes in a square map [col, line]
-	var holes = ['3,1', '3,4', '4,4', '5,1', '5,4', '8,0', '8,1', '8,2'];
+	let holes = ['3,1', '3,4', '4,4', '5,1', '5,4', '8,0', '8,1', '8,2'];
 	$.each(c, function (cc, vc) {
 	    $.each(l, function (ll, vl) {
 		n++;
@@ -42,25 +51,14 @@ $(document).ready(function() {
     }
 
 
-    var is_last_week = function(week_ago) {
-	is_last = false;
-	if (week_ago == 1)
-	    is_last = true;
-	return is_last;
-    }
+    let is_last_week = function(week_ago) { return (week_ago == 1); }
 
 
-    var disable_week = function(week_ago) {
-	week_to_disable = [3,4];
-	return $.inArray(week_ago, week_to_disable) > -1 ? true : false;
-    }
-
-
-    var serie_color = function(week) {
-	var l_color = ['rgba(243,39,26,.7)', 'rgba(31, 54, 177, 0.7)',
+    let serie_color = function(week) {
+	let l_color = ['rgba(243,39,26,.7)', 'rgba(31, 54, 177, 0.7)',
 		       'rgba(194,111,225,.7)', 'rgba(13,113,75,.7)',
 		       'rgba(158,196,16,.7)', 'rgba(28, 255, 0, 0.7)']; //zero color is for complete series
-	var b_color = ['rgba(243,39,26,.6)', 'rgba(31, 54, 177, 0.6)',
+	let b_color = ['rgba(243,39,26,.6)', 'rgba(31, 54, 177, 0.6)',
 		       'rgba(194,111,225,.6)', 'rgba(13,113,75,.6)',
 		       'rgba(158,196,16,.6)', 'rgba(28, 255, 0, 0.6)']; //zero color is for complete series
 
@@ -68,10 +66,10 @@ $(document).ready(function() {
 	    try {
 		return [b_color[week], l_color[week]];
 	    } catch (e) {
-		var color = randomColor();
+		let color = randomColor();
 
 		return [color, color];
-	    } finally { }
+	    } 
 	}
 	else{
 	    return [b_color[0], l_color[0]];
@@ -79,17 +77,17 @@ $(document).ready(function() {
     }
 
 
-    var build_heat_chart = function(data) {
-	val = new Array(38).fill(0);
+    let build_heat_chart = function(data) {
+	let val = new Array(38).fill(0);
 	$.each(data, function (index, value) {
-	    $.each(value['data'], function (i, v) {
+	    $.each(value['data'], function (i/*, v*/) {
 		val[i] = val[i] + 1;
 	    });
 	});
-	var max = Math.max.apply(Math, val);
+	let max = Math.max.apply(Math, val);
 
 	data = [];
-	map = map_node();
+	let map = map_node();
 	$.each(map, function (i, v) {
 	    data.push([ v['c'], v['l'], val[v['id']] ]); //[[c[1],l[1], 1], ... or [col pos, lin pos, value]
 	});
@@ -97,18 +95,18 @@ $(document).ready(function() {
     }
 
 
-    var build_line_and_doug_chart = function(data) {
-	var w_ago  = [1,2,3,4]; //ex.: 3 means four weeks ago
-	var start  = null;
-	var end    = null;
-	var d_range= [];
-	var title  = '';
-	var color  = '';
-	var xax    = range(0,37); //all nodes
-	var val    = null; //ignoring 0 position of the array
-	var dataset= {};
+    let build_line_and_doug_chart = function(data) {
+	let w_ago  = [1,2,3,4]; //ex.: 3 means four weeks ago
+	let start  = null;
+	let end    = null;
+	let d_range= [];
+	let title  = '';
+	let color  = '';
+	let xax    = range(0,37); //all nodes
+	let val    = null; //ignoring 0 position of the array
+	let dataset= {};
 
-	var chartData = {
+	let chartData = {
             labels: xax,
             datasets: []
 	};
@@ -133,7 +131,7 @@ $(document).ready(function() {
 	    // select data and sum the ocurences of issues at each node
 	    val = new Array(38).fill(0);
 	    $.each(d_range, function (index, value) {
-		$.each(value['data'], function (i, v) {
+		$.each(value['data'], function (i/*, v*/) {
 		    val[i] = val[i] + 1;
 		});
 	    });
@@ -159,7 +157,7 @@ $(document).ready(function() {
 	d_range = selectInterval(data, start, end);
 	val = new Array(38).fill(0);
 	$.each(data, function (index, value) {
-	    $.each(value['data'], function (i, v) {
+	    $.each(value['data'], function (i/*, v*/) {
 		val[i] = val[i] + 1;
 	    });
 	});
@@ -172,11 +170,11 @@ $(document).ready(function() {
     }
 
 
-    var in_cumulative = function(chartData) {
+    let in_cumulative = function(chartData) {
 	//cumulative values to see difference between weeks
-	$.each(chartData.datasets, function (index, value) {
+	$.each(chartData.datasets, function (index/*, value*/) {
 	    if(index > 0){
-		$.each(chartData.datasets[index].data, function (i, v) {
+		$.each(chartData.datasets[index].data, function (i/*, v*/) {
 		    chartData.datasets[index].data[i] =
 			chartData.datasets[index].data[i]
 			+ chartData.datasets[index-1].data[i]
@@ -187,24 +185,27 @@ $(document).ready(function() {
     }
 
 
-    var parse_each_type_issue = function(data, node) {
-	var t=0; var l=0; var z=0;
+    let parse_each_type_issue = function(data, node) {
+	let t=0; let l=0; let z=0;
 	$.each(data, function (index, value) {
 	    try {
 		if(value['data'][node]['t'])//t = start
 		    t++;
 	    } catch (e) {
-	    } finally {}
+		undefined; /* to please eslint */
+	    } 
 	    try {
 		if(value['data'][node]['l'])//l = load
 		    l++;
 	    } catch (e) {
-	    } finally {}
+		undefined; /* to please eslint */
+	    } 
 	    try {
 		if(value['data'][node]['z'])//z = zombie
 		    z++;
 	    } catch (e) {
-	    } finally {}
+		undefined; /* to please eslint */
+	    } 
 	});
 	if (t+l+z == 0) {
 	    return [t,l,z,100];
@@ -214,9 +215,9 @@ $(document).ready(function() {
     }
 
 
-    var customTooltips = function(tooltip) {
+    let customTooltips = function(tooltip) {
 	// Tooltip Element
-	var tooltipEl = $('#line-chart-tooltip');
+	let tooltipEl = $('#line-chart-tooltip');
 	// Hide if no tooltip
 	if (!tooltip.opacity) {
             tooltipEl.css({
@@ -227,18 +228,18 @@ $(document).ready(function() {
 
 	//building new tootipe infos
 	//============================
-	var data = get_data();
-	var values = [];
+	let data = get_data();
+	let values = [];
 	$.each(data.datasets, function (index, value) {
             values.push(value['data'][tooltip.title]);
 	});
 	if (tooltip.body) {
-            var header = "<div class=\"headerboxtootip\">node "+tooltip.title+"<hr></div>"
-            var innerHtml = [header];
+            let header = "<div class=\"headerboxtootip\">node "+tooltip.title+"<hr></div>"
+            let innerHtml = [header];
             $.each(values, function (index, value) {
-		var diff = 0;
-		var label = data.datasets[index].label;
-		var bcolor = data.datasets[index].backgroundColor;
+		let diff = 0;
+		let label = data.datasets[index].label;
+		let bcolor = data.datasets[index].backgroundColor;
 
 		if(index > 0){
 		    label = label+'&nbsp;: ';
@@ -254,7 +255,7 @@ $(document).ready(function() {
 		else
 		    diff = '';
 
-		var box = "<div class='box' style='background-color:"
+		let box = "<div class='box' style='background-color:"
 		    + bcolor + "; display:inline'></div>&nbsp;"
 		innerHtml.push(box + label + value + diff +'<br>');
             });
@@ -263,9 +264,8 @@ $(document).ready(function() {
 	}
 	//============================
 
-	var position = $(this._chart.canvas)[0].getBoundingClientRect();
-	var posx = tooltip.x + 50;
-	var posy = tooltip.y - 100;
+	let posx = tooltip.x + 50;
+	let posy = tooltip.y - 100;
 	// Display, position, and set styles for font
 	tooltipEl.css({
             opacity: 1.5,
@@ -281,10 +281,9 @@ $(document).ready(function() {
     }
 
 
-    var create_line_chart = function(chartData) {
+    let create_line_chart = function(chartData) {
 	//CREATING LINE CHART
-	lll = chartData
-	ctx = document.getElementById("line").getContext("2d");
+	let ctx = document.getElementById("line").getContext("2d");
 	window.myLine = new Chart(ctx, {
             type: 'line',
             data: chartData,
@@ -335,17 +334,17 @@ $(document).ready(function() {
     }
 
 
-    var create_doug_chart = function(data) {
+    let create_doug_chart = function(data) {
 	//CREATING DOUGHNUT CHART
-	nodes = new Array(37);
-	$.each(nodes, function (index, value) {
-	    node = index + 1;
+	let nodes = new Array(37);
+	$.each(nodes, function (index/*, value*/) {
+	    let node = index + 1;
 
-	    var doughnut = '<div class="n' + node + '"><canvas id="chart-area' + node
+	    let doughnut = '<div class="n' + node + '"><canvas id="chart-area' + node
 		+ '" width="70" height="70"></canvas></div>';
 	    $("#doughnut_container").append(doughnut);
 
-	    var ctx = document.getElementById("chart-area"+node).getContext("2d");
+	    let ctx = document.getElementById("chart-area"+node).getContext("2d");
 	    window.myDoughnut = new Chart(ctx, {
 		type: 'doughnut',
 		data: {
@@ -383,17 +382,17 @@ $(document).ready(function() {
 
     //refactoring to put percents label in doughnuts
     Chart.pluginService.register({
-  	afterDraw: function (chart, easing) {
+  	afterDraw: function (chart/*, easing*/) {
   	    if (chart.config.options.showPercentage || chart.config.options.showLabel) {
-  		var self = chart.config;
-  		var ctx = chart.chart.ctx;
+  		let self = chart.config;
+  		let ctx = chart.chart.ctx;
 
   		ctx.font = '10px Arial';
   		ctx.textAlign = "center";
   		ctx.fillStyle = "#000";
 
-  		self.data.datasets.forEach(function (dataset, datasetIndex) {
-  		    var total = 0, //total values to compute fraction
+  		self.data.datasets.forEach(function (dataset/*, datasetIndex*/) {
+  		    let total = 0, //total values to compute fraction
   			labelxy = [],
   			offset = Math.PI / 2, //start sector from top
   			radius,
@@ -401,24 +400,24 @@ $(document).ready(function() {
   			centery,
   			lastend = 0; //prev arc's end line: starting with 0
 
-  		    for (var val of dataset.data) { total += val; }
+  		    for (let val of dataset.data) { total += val; }
 
   		    //TODO needs improvement
-  		    var i = 0;
-  		    var meta = dataset._meta[i];
+  		    let i = 0;
+  		    let meta = dataset._meta[i];
   		    while(!meta) {
   			i++;
   			meta = dataset._meta[i];
   		    }
 
-  		    var element;
-  		    for(index = 0; index < meta.data.length; index++) {
+  		    let element;
+  		    for(let index = 0; index < meta.data.length; index++) {
 
   			element = meta.data[index];
   			radius = 1.23 * element._view.outerRadius - element._view.innerRadius;
   			centerx = element._model.x;
   			centery = element._model.y;
-  			var thispart = dataset.data[index],
+  			let thispart = dataset.data[index],
   			    arcsector = Math.PI * (2 * thispart / total);
   			if (element.hasValue() && dataset.data[index] > 0) {
   			    labelxy.push(lastend + arcsector / 2 + Math.PI + offset);
@@ -430,10 +429,10 @@ $(document).ready(function() {
   		    }
 
 
-  		    var lradius = radius;// * 3 / 4;
-  		    for (var idx in labelxy) {
+  		    let lradius = radius;// * 3 / 4;
+  		    for (let idx in labelxy) {
   			if (labelxy[idx] === -1) continue;
-  			var langle = labelxy[idx],
+  			let langle = labelxy[idx],
   			    dx = centerx + lradius * Math.cos(langle),
   			    dy = centery + lradius * Math.sin(langle),
   			    val = Math.round(dataset.data[idx] / total * 100);
@@ -449,15 +448,15 @@ $(document).ready(function() {
     });
 
 
-    var range = function(j, k) {
+    let range = function(j, k) {
 	return Array
 	    .apply(null, Array((k - j) + 1))
 	    .map(function(discard, n){ return n + j; });
     }
 
 
-    var selectInterval = function(data, start, end) {
-	var requiredData = _.filter(data, function(data){
+    let selectInterval = function(data, start, end) {
+	let requiredData = _.filter(data, function(data){
 	    data.date = moment(new Date(data.date));
 	    return data.date > start.startOf('day') && data.date <= end.endOf('day');
 	});
@@ -465,7 +464,7 @@ $(document).ready(function() {
     }
 
 
-    var randomColor = function() {
+    let randomColor = function() {
 	return 'rgba('
 	    + randomColorFactor() + ','
 	    + randomColorFactor() + ','
@@ -473,33 +472,28 @@ $(document).ready(function() {
     };
 
 
-    var randomScalingFactor = function() {
-	return (Math.random() > 0.5 ? 1.0 : 1.0) * Math.round(Math.random() * 100);
-    };
-
-
-    var randomColorFactor = function() {
+    let randomColorFactor = function() {
 	return Math.round(Math.random() * 255);
     };
 
 
-    var post_request = function(urlpath, request, callback) {
-	var xhttp = new XMLHttpRequest();
+    let post_request = function(urlpath, request, callback) {
+	let xhttp = new XMLHttpRequest();
 	xhttp.open("POST", urlpath, true);
 	xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-	var csrftoken = getCookie('csrftoken');
+	let csrftoken = getCookie('csrftoken');
 	xhttp.setRequestHeader("X-CSRFToken", csrftoken);
 	xhttp.send(JSON.stringify(request));
 	xhttp.onreadystatechange = function(){callback(xhttp);};
     }
 
 
-    var main = function() {
+    let main = function() {
 	// gets the json file from nigthly routine
-	var request = {"file" : 'nigthly'};
+	let request = {"file" : 'nigthly'};
 	post_request('/files/get', request, function(xhttp) {
 	    if (xhttp.readyState == 4 && xhttp.status == 200) {
-		answer = JSON.parse(xhttp.responseText);
+		let answer = JSON.parse(xhttp.responseText);
 		if (answer)
 		    build_line_and_doug_chart(answer);
 		build_heat_chart(answer);

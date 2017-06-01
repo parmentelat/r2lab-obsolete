@@ -18,6 +18,9 @@
  * 
  */
 
+/* for eslint */
+/*global jQuery*/
+
 /* hide everything in an anonymous function and pass global jQuery as $ */
 (function($){
     /* register a function to fire at load-time */

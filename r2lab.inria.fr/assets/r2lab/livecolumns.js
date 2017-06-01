@@ -1,3 +1,10 @@
+// -*- js-indent-level:4 -*-
+
+/* for eslint */
+/*global $ d3 io */
+/*global sidecar_url */
+/*eslint no-unused-vars: ["error", { "varsIgnorePattern": "LiveColumns(Node)?" }]*/
+
 "use strict";
 
 //
@@ -137,9 +144,9 @@ class LiveColumns {
 
     init_table() {
 	let containers = d3.selectAll(`#${this.domid}`);
-	let head = containers.append('thead').attr('class', 'livecolumns_header');
-	let body = containers.append('tbody').attr('class', 'livecolumns_body');
-	let foot = containers.append('tfoot').attr('class', 'livecolumns_header');
+	containers.append('thead').attr('class', 'livecolumns_header');
+	containers.append('tbody').attr('class', 'livecolumns_body');
+	containers.append('tfoot').attr('class', 'livecolumns_header');
 	
 	let self = this;
 	let headers = d3.selectAll('.livecolumns_header').append('tr')
@@ -175,7 +182,7 @@ class LiveColumns {
     // I had to tweak it when adopting d3-v4 as per 
     // http://stackoverflow.com/questions/39861603/d3-js-v4-nested-selections
     // not that I have understood the bottom of it, but it works again..
-    animate_changes(nodes_info) {
+    animate_changes(/*nodes_info*/) {
 	livecolumns_debug("animate_changes");
 	let tbody = d3.select("tbody.livecolumns_body");
 	// row update selection

@@ -1,3 +1,10 @@
+// -*- js-indent-level:4 -*-
+
+/* for eslint */
+/*global $*/
+
+"use strict";
+
 $(document).ready(function() {
 
     hide_all();

@@ -1,10 +1,10 @@
 // -*- js-indent-level:4 -*-
-// this requires xhttp-django.js
-"use strict";
 
 /* for eslint */
 /*global $ moment io*/
 /*global PersistentSlices sidecar_url r2lab_accounts post_xhttp_django*/
+
+"use strict";
 
 ////////// provide for array.has()
 if (!Array.prototype.has) {
@@ -767,8 +767,6 @@ class LiveLeases {
     ////////////////////////////////////////
     main(){
 	
-	// xxx remove me
-	this.persistent_slices._clear();
 	this.buildInitialSlicesBox(this.persistent_slices.pslices);
 	this.buildCalendar();
 	this.outlineCurrentSlice(this.getCurrentSliceName());

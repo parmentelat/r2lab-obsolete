@@ -1,15 +1,14 @@
-"use strict";
+// -*- js-indent-level:4 -*-
 
-// sidecar_url global variable is defined in template sidecar-url.js
-// from sidecar_url as defined in settings.py
+/* for eslint */
+/*global $ */
+/*global LiveColumnsNode LiveColumns livecolumns_options span_html*/  /* from livecolumns.js */
+/*exported LiveHardwareNode LiveHardware livehardware_image*/
+
+"use strict";
 
 //global - mostly for debugging and convenience
 let the_livehardware;
-
-////////// configurable
-let livehardware_options = {
-
-}
 
 //////////////////////////////
 // nodes are dynamic
@@ -55,7 +54,7 @@ class LiveHardwareNode extends LiveColumnsNode{
     }
 
     cell_duplexer() {
-	let html = (! 'usrp_duplexer' in this) ? '-' : this.usrp_duplexer;
+	let html = (! ('usrp_duplexer' in this)) ? '-' : this.usrp_duplexer;
 	return [ html, "" ];
     }
 
@@ -64,7 +63,7 @@ class LiveHardwareNode extends LiveColumnsNode{
 	let icon = span_html('', 'fa fa-camera');
 	// something like ${this.id:02d} 
 	// let str_id = (this.id <= 9) ? `0${this.id}` : `${this.id}`;
-	return `<a class='image-link' alt="click to see image" onclick='show_image("/raw/node-images/${img}")'>${icon}</a>`;
+	return `<a class='image-link' alt="click to see image" onclick='livehardware_image("/raw/node-images/${img}")'>${icon}</a>`;
     }
 
     cell_usrp_antennas() {
@@ -119,8 +118,7 @@ $(function() {
 })
 
 //////////////////// helpers
-function show_image(img) {
+function livehardware_image(img) {
     $('#big_image_content').html('<img src="'+img+'" class="max-img" >');
     $('#big_photo').modal('toggle');
 }
-

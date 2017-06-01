@@ -137,12 +137,6 @@ A Nexus 5 phone is available right inside the chamber:
       <table class="table table-condensed" id='livehardware_container'> </table>
       <script type="text/javascript" src="/assets/r2lab/livecolumns.js"></script>
       <script type="text/javascript" src="/assets/r2lab/livehardware.js"></script>
-    <script>
-    // override livehardware default settings 
-    Object.assign(livehardware_options, {
-//      debug : true,
-   });
-    </script>
       <style type="text/css"> @import url("/assets/r2lab/livecolumns.css"); </style>
       <style type="text/css"> @import url("/assets/r2lab/livehardware.css"); </style>
     </div>

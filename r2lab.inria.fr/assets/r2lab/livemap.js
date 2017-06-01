@@ -1,3 +1,11 @@
+// -*- js-indent-level:4 -*-
+
+/* for eslint */
+/*global $ d3 io*/
+
+/*global sidecar_url*/
+/*global info_nodes*/
+
 "use strict";
 
 // xxx todo
@@ -416,7 +424,8 @@ function LiveMap() {
 	.attr('transform', 'translate(' + canvas_x + ',' + canvas_y + ')' + ' ' +  'rotate(180)')
     ;
 
-    let walls = g.append('path')
+    // walls
+    g.append('path')
 	.attr('d', livemap_geometry.walls_path())
 	.attr('id', 'walls')
 	.attr('fill', '#fdfdfd')
@@ -492,7 +501,6 @@ function LiveMap() {
 	    livemap_debug(`*** ${new Date()} Received info about ${infos.length} ${type}(s)`,
 			  infos)
 	    // first we write this data into the MapNode structures
-	    let livemap = this;
 	    infos.forEach(function(info) {
 		let id = info['id'];
 		let obj = locate_by_id(list_objs, id);
@@ -571,7 +579,7 @@ function LiveMap() {
 	    .attr('cx', function(node){return node.x;})
 	    .attr('id', function(node){return node.id;})
 	    .attr('cy', function(node){return node.y;})
-	    .attr('r', function(node){return livemap_options.radius_unavailable;})
+	    .attr('r', function(/*node*/){return livemap_options.radius_unavailable;})
 	    .on('click', function() {
 		//call a external function (located in info-nodes.js)
 		// to show de nodes details
@@ -639,7 +647,7 @@ function LiveMap() {
     this.animate_phones_changes = function() {
 	livemap_debug("in animate_phones_changes");
 	let svg = d3.select('div#livemap_container svg');
-	let animation_duration = 850;
+	let animation_duration = 750;
 
 	let w = 20;
 	let h = 20;
@@ -680,7 +688,7 @@ function LiveMap() {
 	    .attr('lengthAdjust', 'spacingAndGlyphs')
           .merge(texts)
 	    .transition()
-	    .duration(.5)
+	    .duration(animation_duration)
 	    .text(function(phone){ return phone.text();})
 	;
 

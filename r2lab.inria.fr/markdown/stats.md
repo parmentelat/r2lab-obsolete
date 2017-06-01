@@ -17,9 +17,6 @@ tab: platform
       <script type="text/javascript" src="/assets/r2lab/xhttp-django.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-      <style type="text/css"> @import url("/assets/css/daterangepicker.css"); </style>
-      <script src="/assets/js/daterangepicker.js"></script>
-      <script type="text/javascript" src="/assets/r2lab/range-calendar.js"></script>
       <script src="/assets/js/chartlib/src/charts/Chart.Heat.js"></script>
       <script type="text/javascript" src="/assets/r2lab/charts.js"></script>
       <style type="text/css"> @import url("/assets/r2lab/charts.css"); </style>
@@ -36,10 +33,6 @@ tab: platform
         <canvas id="line" height="250" width="700"></canvas>
       </div>
     </div>
-    <!-- <div class="col-lg-1"> -->
-      <!-- <br><br>select a range date<br>
-      <input type="text" id="range_calendar" class="form-control"> -->
-    <!-- </div> -->
   </div>
 
   <div class="row">

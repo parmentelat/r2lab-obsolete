@@ -1,7 +1,15 @@
+// -*- js-indent-level:4 -*-
+
+/* for eslint */
+/*global $ */
+/*global r2lab_user */
+
+"use strict"; 
+
 $(function() {
 
-    var init_chat = function() {
-	var username =
+    let init_chat = function() {
+	let username =
 	    r2lab_user.email
 	    .replace("@", "_at_")
 	    .replace(".", "_");
@@ -31,19 +39,19 @@ $(function() {
 	update_hide_show();
     }
 
-    var end_chat = function() {
+    let end_chat = function() {
 	$("#chat-container").html('');
     }
 
-    var hide_show = function() {
+    let hide_show = function() {
 	$("#chat-body").toggle(200, update_hide_show);
     }
 			  
-    var update_hide_show = function() {
-	var classes = [ 'fa-caret-down', 'fa-caret-right'];
-	var visible = $("#chat-body").is(":visible");
-	var add = visible ? 0 : 1;
-	var rem = 1 - add;
+    let update_hide_show = function() {
+	let classes = [ 'fa-caret-down', 'fa-caret-right'];
+	let visible = $("#chat-body").is(":visible");
+	let add = visible ? 0 : 1;
+	let rem = 1 - add;
 	$("#chat-hide-show")
 	    .addClass(classes[add])
 	    .removeClass(classes[rem]);
@@ -51,11 +59,11 @@ $(function() {
 	$("#chat-show-legend").toggle(!visible);
     }
     
-    var update_button = function() {
-	classes = [ 'fa-close', 'fa-user-o'];
-	messages = [ 'leave IRC', 'join IRC'];
-	var add = $("#chat-container").html() ? 0 : 1;
-	var rem = 1 - add;
+    let update_button = function() {
+	let classes = [ 'fa-close', 'fa-user-o'];
+	let messages = [ 'leave IRC', 'join IRC'];
+	let add = $("#chat-container").html() ? 0 : 1;
+	let rem = 1 - add;
 	$("#chat-button-text").html(messages[add]);
 	$("#chat-button-icon")
 	    .addClass(classes[add])
@@ -63,14 +71,14 @@ $(function() {
     }
 
 
-    var toggle_chat = function() {
-	var contents = $("#chat-container").html();
+    let toggle_chat = function() {
+	let contents = $("#chat-container").html();
 	contents ? end_chat() : init_chat();
 	update_button();
     };
 
     // at load-time we just create a button to enable it
-    var r2labchat_loadtime = function() {
+    let r2labchat_loadtime = function() {
 	$("#chat-button")
 	    .click(toggle_chat)
 	    .append(
