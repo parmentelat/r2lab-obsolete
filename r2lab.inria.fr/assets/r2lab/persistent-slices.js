@@ -26,10 +26,14 @@ class ColorsGenerator {
 	this.category = category;
 
 	// hard-wire special cases
-	this.nightly_slice_name  = 'inria_r2lab.nightly'
-	this.nightly_slice_color = 'black';
-	// for slices that are not mine
-	this.foreign_color = "#AAA";
+	this.hard_wired = {
+	    'inria_r2lab.nightly' : 'black',
+	    'inria_r2lab.admin' : 'red',
+	}
+
+	// special colors 
+	this.foreign_color = "#999";
+	this.overflow_color = "#558";
 
 	////////////////////
 	this.categories = {
@@ -51,6 +55,7 @@ class ColorsGenerator {
 	    r2lab: [
 		"#F3537D", "#5EAE10", "#481A88", "#2B15CC", "#8E34FA",
 		"#A41987", "#1B5DF8", "#7AAD82", "#8D72E4", "#323C89",
+		"#E4466b", "#DE9429", "#198C0F", "#AA322C", "#88713D",
 	    ],
 	};
 
@@ -66,30 +71,24 @@ class ColorsGenerator {
 	    console.log(...args)
     }
 
-    // remove specific color from this.colors
-    used_color(color) {
-	let index = this.colors.indexOf(color);
-	if (index >= 0) {
-	    this.colors.splice(index, 1);
-	}
-	this.debug(`After used_color(${color})`, this.colors);
-    }
-
     random_color(slicename, mine=true) {
-	if (slicename == this.nightly_slice_name) {
-	    return this.nightly_slice_color;
+	if (slicename in this.hard_wired) {
+	    return this.hard_wired[slicename]
 	} else if (! mine) {
 	    return this.foreign_color;
 	} 
 	let colors = this.colors;
 	if (colors.length > 0) {
-	    let color = colors[Math.floor(Math.random() * colors.length)];
-	    console.log("random color = ", color);
-	    this.used_color(color);
+	    let index = Math.floor(Math.random() * colors.length);
+	    let color = colors[index];
+	    this.debug(`random color: ${slicename} -> ${color}`);
+	    // remove color
+	    colors.splice(index, 1);
 	    return color;
 	} else {
 	    // xxx need to be smarter ?
-	    return "#AAAAAA";
+	    console.warn("persistent_slices ran out of colors..");
+	    return this.overflow_color;
 	}
     }
 
@@ -113,7 +112,6 @@ class PersistentSlices {
 	this.slicenames = r2lab_accounts.map(account => account.name);
 	// local storage uses this key internally
 	this.storage_key = 'r2lab_persistent_slices';
-	this._debug = true;
 	this.pslices = [];
 	this.colors_generator = new ColorsGenerator(category);
 
@@ -124,6 +122,7 @@ class PersistentSlices {
 	this._fill();
 	// store again
 	this._store();
+	this._debug = true;
     }
 
     debug(...args) {
@@ -133,7 +132,7 @@ class PersistentSlices {
 
     warn_missing_storage() {
 	if (typeof(Storage) === undefined) {
-	    console.log("WARNING: PersistentSlices can't work properly - no persistent storage");
+	    console.warn("WARNING: PersistentSlices can't work properly - no persistent storage");
 	    return true;
 	}
     }
@@ -201,7 +200,6 @@ class PersistentSlices {
 
     ////////// make sure the slice is known and create otherwise
     record_slice(slicename, mine=false, current=false) {
-	console.log(`recording ${slicename}`)
 	let existing = this.get_pslice(slicename);
 	if (existing)
 	    return existing;
@@ -213,7 +211,7 @@ class PersistentSlices {
 	};
 	this.pslices.push(pslice);
 	this._store();
-	console.log(`recorded ${slicename}`, pslice)
+	this.debug(`recorded ${slicename}`, pslice)
 	return pslice;
     }
 
@@ -260,4 +258,5 @@ class PersistentSlices {
 	pslice.current = true;
 	this._store();
     }
+
 }
