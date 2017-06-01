@@ -112,19 +112,26 @@ class LiveLeases {
 	
 	// Create the calendar
 	let calendar_args = {
+	    // all the other sizes are liveleases.css
+	    height: run_mode ? 455 : 762,
+	    // no header in run mode
 	    header:
 	    run_mode
 		? false
 		: {
 		    left: 'prev,next today',
 		    center: 'title',
-		    right: 'agendaOneDay,agendaThreeDays,agendaWeek,month,listMonth,listYear',
+		    right: 'agendaZoom agendaOneDay,agendaThreeDays,agendaWeek,month listMonth,listYear',
 		},
 	    
-	    views:
-	    run_mode
-		? {}
-	    : {
+	    views: {
+		agendaZoom: {
+		    type: 'agenda',
+		    duration: { days: 1},
+		    buttonText: 'zoom',
+		    // one slot = 10 minutes; that's what makes it a zoom
+		    slotDuration: '00:10:00',
+		},
 		agendaOneDay: {
 		    type: 'agenda',
 		    duration: { days: 1},
@@ -154,17 +161,19 @@ class LiveLeases {
 		},
 		listYear: {
 		    buttonText: 'list/year',
-		}
-		    
-		
+		},
 	    },
+    
 	    defaultView: run_mode ? 'agendaDay' : 'agendaThreeDays',
-	    height: run_mode ? 455 : 2800,
-	    contentHeight: run_mode ? undefined : 800,
+	    
 	    ////////////////////
-	    slotDuration: run_mode ? "01:00:00" : "00:10:00",
+	    slotDuration: "01:00:00", // except for agendaZoom
+	    snapMinutes: 10,
 	    forceEventDuration: true,
 	    timezone: 'local',
+	    locale: 'en',
+	    timeFormat: 'H(:mm)',
+	    slotLabelFormat: 'H(:mm)',
 	    defaultDate: today,
 	    selectHelper: false,
 	    overlap: false,

@@ -27,7 +27,7 @@ which is UTC+1 in winter, and UTC+2 in summer.
  <br />
  <div class="row" id="all">
   <div class="col-md-2 no-padding">
-   <div id="wrap">
+   <div id="slices-wrap">
     <div id="manage-slices-keys" class="book">
      <button type="button" data-toggle="modal" data-target="#slices_keys_modal"
          class="fc-button fc-state-default fc-corner-left fc-corner-right slices-keys">
@@ -44,7 +44,6 @@ which is UTC+1 in winter, and UTC+2 in summer.
    <script type="text/javascript" src="/assets/js/moment-round.js"></script>
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
-   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/locale/fr.js"></script>
    <style type="text/css"> @import url("https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css"); </style>
 
    <style type="text/css"> @import url("/assets/r2lab/liveleases.css"); </style>

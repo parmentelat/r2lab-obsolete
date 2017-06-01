@@ -1,28 +1,22 @@
 #messages {
-  max-width: 100%;
-  margin: 0 auto;
-  align-self: center;
+    max-width: 100%;
+    margin: 0 auto;
+    align-self: center;
 }
 
 /* ---------- the slices & keys button ---------- */
 .slices-keys {
-  padding: 3px 7px;
-  font-size: 15px;
-  width: 170px;
-  height: 60px;
-  font-family: ubunturegular, Arial, helvetica, sans-serif;
-  background-color: #4CAF50; /* Green */
-  color: #575757;
-  border: 1px solid #d0d0d0; /* 4CAF50 Green */
-  line-height: normal;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
+    font-size: 15px;
+    width: 170px;
+    height: 60px;
+    padding: 3px 7px;
+    border: 1px solid #d0d0d0; 
+    border-radius: 4px;
 }
 
 /* ---------- the slices area ---------- */
 
-#wrap {
+#slices-wrap {
   width: 100%;
   margin: 0 auto;
 }
@@ -37,16 +31,27 @@
 #manage-slices-keys.run {
   margin-top: 0px;
 }
+
 #my-slices.run {
   height: 378px;
 }
 
 #manage-slices-keys.book {
-  margin-top: 55px;
+  margin-top: 46px;
 }
 #my-slices.book {
-  height: 635px;
+  height: 638px;
 }
+
+/* slice buttons */
+#my-slices .fc-event {
+    font-size: 13px;
+    border: .2em solid #ccc;
+    margin: 10px 0;
+    padding: 5px;
+    cursor: move;
+}
+
 
 .slice-active {
   width: 0;
@@ -75,17 +80,17 @@
   text-align: left;
 }
 
+/* slices & keys label */
+#manage-slices-keys>button {
+    font-size: 15px;
+}
+
+/* drag & drop label */
 #my-slices h4 {
-  font-family: ubunturegular, Arial, helvetica, sans-serif;
   font-size: 15px;
   margin-top: 0;
   padding-top: 1em;
   color: #575757;
-}
-
-#my-slices .fc-event {
-  margin: 10px 0;
-  cursor: move;
 }
 
 /* ---------- the calendar area ---------- */
@@ -98,46 +103,90 @@ div.leases-run-width {
   padding: 0px 0px;
 }
 
-
-#liveleases_container.run {
-  width: 200px;
-  font-size: .78em;
-  max-width: 200px;
-}
-
-#liveleases_container.book {
-  margin: 10px 10px;
-  padding: 0;
-  font-size: 12px;
-  /*max-width: 500px;*/
-  margin: 0 auto;
-}
-
-/* time slots */
-a.fc-event {
-  border-width: 1px;
-  border-color: black;
-  border-radius: 5px;
-}
-
-.fc-toolbar h2 {
-  font-size: 12px;
+/* ----- header - relevant in book mode only anyway */
+#liveleases_container.book>div.fc-toolbar>div.fc-center h2 {
+  font-size: 18px;
   white-space: normal !important;
 }
 
-.fc-event {
-  position: relative; /* for resize handle and other inner positioning */
-  display: block; /* make the <a> tag block */
-  font-size: 1em;
-  line-height: 1.3;
-  padding: .3em;
-  border-radius: 4px;
-  border: .2em solid #ccc;
-  background-color: #3a87ad; /* default BACKGROUND color */
-  font-weight: normal; /* undo jqui's ui-widget-header bold */
+#liveleases_container.book>div.fc-toolbar>div.fc-right {
+  font-size: 14px;
+  white-space: normal !important;
 }
 
-/* CUSTOM POPOVERS */
+
+/* ----- layout in the page */
+#liveleases_container.run {
+    max-width: 200px;
+}
+
+#liveleases_container.book {
+    padding: 0;
+    margin: 0;
+}
+
+/* ----- time slots */
+.fc-event {
+    padding: 3px;
+    border-radius: 4px;
+    border: .2px solid;
+}
+
+
+/* --- run mode 
+
+ global height is set to 455 
+ border of each slot takes 1 already, so 16 + 1 = 18 * 24 = 432
+ */
+#liveleases_container.run .fc-slats td {
+    height: 17px;
+}
+/* with that in place, we can't increase font-size more than a limit,
+   otherwise each slot gets higher and the day won't fit in that height
+*/
+#liveleases_container.run .fc-event,
+#liveleases_container.run .fc-axis {
+    font-size: 12px;
+}
+/*#liveleases_container.run .fc-widget-content table tr {
+    max-height: 18px;
+}*/
+
+
+/* --- book mode 
+  same kind of computation here
+  we use 24 * (28+1) = 696 px
+  however in book mode we show a header so the final numbers
+  are byt trial and error
+*/
+#liveleases_container.book .fc-slats td {
+    height: 28px;
+}
+#liveleases_container.book .fc-event,
+#liveleases_container.book .fc-axis {
+    font-size: 18px;
+}
+
+/* zoom */
+/* 
+  in zoom mode we show plenty (24 * 6) time slots, so it sill spill
+  below the viewport, no big deal, let's just try to have
+  a reasonable portion of the day showup
+*/
+#liveleases_container.book .fc-agendaZoom-view .fc-slats td {
+    height: 14px;
+}
+#liveleases_container.book .fc-agendaZoom-view .fc-event,
+#liveleases_container.book .fc-agendaZoom-view .fc-axis {
+    font-size: 10px;
+}
+
+
+/* zoom view */
+#liveleases_container.book .
+
+
+/* ----- popovers */
 .popover {
     z-index: 1060;
     padding: 2px;
