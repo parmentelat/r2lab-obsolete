@@ -66,16 +66,18 @@ class LiveLeases {
 	////////////////////////////////////////
 	this.persistent_slices   = new PersistentSlices(r2lab_accounts, 'r2lab');
 
-	this.textcolor_regular   = 'white';
-	this.textcolor_pending   = 'black';
-	this.textcolor_editing   = 'blue';
-	this.textcolor_removing  = 'red';
-	
 	this.socket              = io.connect(sidecar_url);
 	this.dragging            = false;
 
 	this.initial_duration    = 60;
 	this.minimal_duration    = 10;
+	
+	this.textcolors = {
+	    regular : 'white',
+	    creating : 'black',
+	    editing : 'blue',
+	    deleting : 'red',
+	}
 	
     }
 
@@ -227,6 +229,8 @@ class LiveLeases {
 	return calendar_args;
     }
 
+    ////////////////////
+    // convenience
     isReadOnlyView() {
 	let view = this.fullCalendar('getView').type;
 	if (! this.active_views.has(view)) {
@@ -234,6 +238,26 @@ class LiveLeases {
 	    return true;
 	}
     }
+
+
+    showMessage(msg, type){
+	let cls   = 'danger';
+	let title = 'Ooops!'
+	if (type == 'info'){
+	    cls   = 'info';
+	    title = 'Info:'
+	}
+	if (type == 'success'){
+	    cls   = 'success';
+	    title = 'Yep!'
+	}
+	$('html,body').animate({'scrollTop' : 0},400);
+	$('#messages').removeClass().addClass('alert alert-'+cls);
+	$('#messages').html(`<strong>${title}</strong> ${msg}`);
+	$('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
+	$('#messages').delay(20000).fadeOut();
+    }
+
 
     //////////////////// creation
     // helper 
@@ -272,6 +296,8 @@ class LiveLeases {
             element.find(".fc-content").append("<div class='delete-slot fa fa-remove'></span>");
        	    element.find(".delete-slot").on('click', delete_slot)
 	}
+	// cannot do something like fullCalendar('updateEvent', slot)
+	// that would cause an infinite loop
     }
 
     // click in the calendar - requires a current slice
@@ -300,7 +326,7 @@ class LiveLeases {
 	    editable: false,
 	    selectable: false,
 	    color: this.getCurrentSliceColor(),
-	    textColor: this.textcolor_pending,
+	    textColor: this.textcolors.creating,
 	    id: this.slotId(current_title, start, end),
 	};
 	this.sendApi('add', slot);
@@ -332,7 +358,7 @@ class LiveLeases {
 	    editable: false,
 	    selectable: false,
 	    color: this.getCurrentSliceColor(),
-	    textColor: this.textcolor_pending,
+	    textColor: this.textcolors.creating,
 	    id: this.slotId(current_title, start, end),
 	};
 	this.sendApi('add', slot);
@@ -345,9 +371,6 @@ class LiveLeases {
     callbackEventDrop(dom, slot, delta, revertFunc/*, jsEvent, ui, view*/) {
 	$(dom).popover('hide');
 	if (this.isReadOnlyView()) {
-	    return;
-	}
-	if ( ! confirm("Confirm this change ?")) {
 	    revertFunc();
 	    return;
 	}
@@ -356,9 +379,13 @@ class LiveLeases {
 	    revertFunc();
 	    return;
 	}
+	if ( ! confirm("Confirm this change ?")) {
+	    revertFunc();
+	    return;
+	}
 	this.sendApi('update', slot);
 	slot.title = this.pendingName(slot.title);
-	slot.textColor = this.textcolor_editing;
+	slot.textColor = this.textcolors.editing;
 	this.fullCalendar('updateEvent', slot)
     }
 
@@ -370,7 +397,8 @@ class LiveLeases {
     // (*) but still keep track of that activity
     // so we try to resize the slot so that it remains in the history
     // but still is out of the way
-    removeSlot(dom, slot/*, element*/) {
+    removeSlot(slot/*, element*/) {
+	console.log('BINGO');
 	if (this.isReadOnlyView()) {
 	    return;
 	}
@@ -387,7 +415,7 @@ class LiveLeases {
 	    return;
 	
 	slot.title = this.removingName(slot.title);
-	slot.textColor = this.textcolor_removing;
+	slot.textColor = this.textcolors.deleting;
 	slot.selectable = false;
 	// how many minutes has it been running
 	let started = moment().diff(moment(slot.start), 'minutes');
@@ -397,13 +425,13 @@ class LiveLeases {
 	    // set end to now and, let the API round it 
 	    slot.end = moment();
 	    this.sendApi('update', slot);
-	    this.fullCalendar( 'updateEvents', slot);
+	    this.fullCalendar( 'updateEvent', slot);
 	} else {
 	    // either it's in the future completely, or has run for too
 	    // short a time that we can keep it, so delete altogether
 	    liveleases_debug(`up ${started} mn : delete slot completely`);
 	    this.sendApi('delete', slot);
-	    this.fullCalendar( 'updateEvents', slot);
+	    this.fullCalendar( 'updateEvent', slot);
 	}
     }
 
@@ -422,7 +450,7 @@ class LiveLeases {
 	} 
 	this.sendApi('update', slot);
 	slot.title = this.pendingName(slot.title);
-	slot.textColor = this.textcolor_editing;
+	slot.textColor = this.textcolors.editing;
 	this.fullCalendar( 'updateEvent', slot);
     }
 
@@ -468,15 +496,17 @@ class LiveLeases {
     getMySlicesNames(){
 	return this.persistent_slices.my_slices_names();
     }
-
-    shortName(name){
+    getSliceColor(slicename){
+	return this.persistent_slices.get_slice_color(slicename);
+    }
+    shortSliceName(name){
 	let new_name = name;
 	new_name = name.replace('onelab.', '');
 	return new_name
     }
-
-    getMySlicesShortNames(){
-	return this.getMySlicesNames().map(name => this.shortName(name));
+    isMySlice(slicename){
+	let pslice = this.persistent_slices.record_slice(slicename);
+	return pslice.mine;
     }
 
     ////////////////////
@@ -495,7 +525,6 @@ class LiveLeases {
     }
 
     ////////////////////
-
     adaptStartEnd(start, end) {
 	let now = new Date();0
 	let started = moment(now).diff(moment(start), 'minutes');
@@ -512,6 +541,7 @@ class LiveLeases {
 
 
     // go as deep as possible in an object
+    // typically used to get the meaningful part in an error object
     dig_xpath(obj, xpath) {
 	let result = obj;
 	for (let attr of xpath) {
@@ -523,25 +553,6 @@ class LiveLeases {
 	}
 	return result;
     }
-
-    showMessage(msg, type){
-	let cls   = 'danger';
-	let title = 'Ooops!'
-	if (type == 'info'){
-	    cls   = 'info';
-	    title = 'Info:'
-	}
-	if (type == 'success'){
-	    cls   = 'success';
-	    title = 'Yep!'
-	}
-	$('html,body').animate({'scrollTop' : 0},400);
-	$('#messages').removeClass().addClass('alert alert-'+cls);
-	$('#messages').html(`<strong>${title}</strong> ${msg}`);
-	$('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
-	$('#messages').delay(20000).fadeOut();
-    }
-
 
     sendApi(verb, slot){
 	liveleases_debug("sendApi", verb, slot);
@@ -602,16 +613,6 @@ class LiveLeases {
     }
 
 
-    getSliceColor(slicename){
-	return this.persistent_slices.get_slice_color(slicename);
-    }
-
-
-    isMySlice(slicename){
-	let pslice = this.persistent_slices.record_slice(slicename);
-	return pslice.mine;
-    }
-
     // incoming is an array of pslices as defined in
     // persistent_slices.js
     buildInitialSlicesBox(pslices) {
@@ -619,31 +620,27 @@ class LiveLeases {
 	liveleases_debug('buildInitialSlicesBox');
 	let slices = $("#my-slices");
 	let legend = "Double click in slice to select default";
-	slices.html(`<h4 align="center" data-toggle="tooltip" title="${legend}">drag & drop to book</h4>`);
+	slices.html(`<h4 align="center" data-toggle="tooltip" title="${legend}">`
+		    +`drag & drop to book</h4>`);
 
-	pslices.forEach(
-	    function(pslice) {
-		// show only slices that are mine
-		if ( ! pslice.mine )
-		    return;
-		// need to run shortName ?
-		let name = pslice.name;
-		let color = pslice.color;
-		slices
-		    .append(
-			$("<div />")
-			    .addClass('fc-event')
-			    .attr("style", `background-color: ${color}`)
-			    .text(name))
-		    .append(
-			$("<div />")
-			    .attr("id", liveleases.sliceElementId(name))
-			    .addClass('noactive'));
-	    });
-	this.makeSliceBoxDraggable();
-    }
-
-    makeSliceBoxDraggable() {
+	for (let pslice of pslices) {
+	    // show only slices that are mine
+	    if ( ! pslice.mine )
+		return;
+	    // need to run shortSliceName ?
+	    let name = pslice.name;
+	    let color = pslice.color;
+	    slices
+		.append(
+		    $("<div />")
+			.addClass('fc-event')
+			.attr("style", `background-color: ${color}`)
+			.text(name))
+		.append(
+		    $("<div />")
+			.attr("id", liveleases.sliceElementId(name))
+			.addClass('noactive'));
+	}
 	$('#my-slices .fc-event').each(function() {
 	    $(this).draggable({
 		zIndex: 999,
@@ -653,7 +650,8 @@ class LiveLeases {
 	});
     }
 
-
+    // triggered when a new message comes from the API
+    // refresh calendar from that data
     refreshFromApiLeases(confirmed_slots) {
 	liveleases_debug(`refreshFromApiLeases with ${confirmed_slots.length} API leases`)
 	// not while dragging
@@ -693,7 +691,7 @@ class LiveLeases {
 		    displayed_slot.title = confirmed_slot.title;
 		    displayed_slot.start = moment(confirmed_slot.start);
 		    displayed_slot.end = moment(confirmed_slot.end);
-		    displayed_slot.textColor = this.textcolor_regular;
+		    displayed_slot.textColor = this.textcolors.regular;
 		    // mark both as matched
 		    displayed_slot.confirmed = true;
 		    confirmed_slot.displayed = true;
@@ -701,23 +699,17 @@ class LiveLeases {
 		}
 	    }
 	}
-		    
+
+	// note that removing obsolete slots here instead of later
+	// was causing weird issues with fullCalendar
 
 	// update all slots, in case their title/start/end/colors have changed
 	let slots = this.fullCalendar( 'clientEvents' );
 	liveleases_debug(`refreshing ${slots.length} slots`);
-	this.fullCalendar('updateEvents', slots);
+	this.fullCalendar( 'updateEvents', slots);
 
-	//	// remove displayed slots that are no longer relevant
+	// remove displayed slots that are no longer relevant
 	this.fullCalendar('removeEvents', slot => ! slot.confirmed);
-//	let old_slots = displayed_slots.filter(slot => ! slot.confirmed);
-//	liveleases_debug(`should remove ${old_slots.length} slots ...`);
-//	old_slots.forEach((slot) => this.fullCalendar('removeEvents', slot.id));
-//	try {
-//	    this.fullCalendar('removeEvents', slot => ! slot.confirmed);
-//	} catch (err) {
-//	    console.log(`Could not remove zombies`, err.stack);
-//	}
 		
 	// create slots in calendar for confirmed slots not yet displayed
 	// typically useful at startup, and for stuff  created by someone else
@@ -725,6 +717,7 @@ class LiveLeases {
 	liveleases_debug(`creating ${new_slots.length} slots`);
 	this.fullCalendar('renderEvents', new_slots, true);
     }
+
 
     // use this to ask for an immediate refresh
     // of the set of leases
@@ -736,6 +729,8 @@ class LiveLeases {
 	this.socket.emit('request:leases', msg);
     }
 
+
+    // subscribe to the socket io channel
     listenToApiChannel(){
 	let liveleases = this;
 	this.socket.on('info:leases', function(json){
@@ -746,29 +741,33 @@ class LiveLeases {
 	});
     }
 
-    // 
+
+    // transform API leases from JSON into an object,
+    // and then into fc-friendly slots
     parseLeases(json) {
 	let liveleases = this;
 	let leases = JSON.parse(json);
 	liveleases_debug("parseLeases", leases);
 
 	return leases.map(function(lease){
-	    let title = liveleases.shortName(lease.slicename);
+	    let title = liveleases.shortSliceName(lease.slicename);
 	    let start = lease.valid_from;
 	    let end = lease.valid_until;
 	    // remember that slice
 	    liveleases.persistent_slices.record_slice(title);
 	    
-	    return { title : title,
-		     uuid : String(lease.uuid),
-		     start : start,
-		     end : end,
-		     id : liveleases.slotId(title, start, end),
-		     color : liveleases.getSliceColor(title),
-		     overlap : false
-		   }
+	    return {
+		title : title,
+		uuid : String(lease.uuid),
+		start : start,
+		end : end,
+		id : liveleases.slotId(title, start, end),
+		color : liveleases.getSliceColor(title),
+		overlap : false
+	    }
 	})
     }
+
 
     ////////////////////////////////////////
     main(){
