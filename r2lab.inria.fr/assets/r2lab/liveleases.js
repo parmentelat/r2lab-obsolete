@@ -621,9 +621,6 @@ class LiveLeases {
 	let liveleases = this;
 	liveleases_debug('buildInitialSlicesBox');
 	let slices = $("#my-slices");
-	let legend = "Double click in slice to select default";
-	slices.html(`<h4 align="center" data-toggle="tooltip" title="${legend}">`
-		    +`drag & drop to book</h4>`);
 
 	for (let pslice of pslices) {
 	    // show only slices that are mine
