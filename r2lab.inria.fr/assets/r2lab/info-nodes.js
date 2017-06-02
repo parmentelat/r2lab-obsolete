@@ -1,23 +1,32 @@
-panel_name = 'nodes_details_modal'
-var api;
+// -*- js-indent-level:4 -*-
+
+/* for eslint */
+/*global $ */   
+/*global getCookie */    /* from xhttp-django.js */
+/*eslint no-unused-vars: ["error", { "varsIgnorePattern": "info_nodes" }]*/
+
+"use strict";
+
+let panel_name = 'nodes_details_modal'
+
 function pad(str){
-    max = 2
+    let max = 2
     str = str.toString();
     str = str.length < max ? pad("0" + str, max) : str;
     return str
 }
 
-
+/* actually used outside of this module */
 function info_nodes(node) {
     get_info(pad(node))
 }
 
 
 function post_request (urlpath, request, callback) {
-    var xhttp = new XMLHttpRequest();
+    let xhttp = new XMLHttpRequest();
     xhttp.open("POST", urlpath, true);
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    var csrftoken = getCookie('csrftoken');
+    let csrftoken = getCookie('csrftoken');
     xhttp.setRequestHeader("X-CSRFToken", csrftoken);
     xhttp.send(JSON.stringify(request));
     xhttp.onreadystatechange = function(){callback(xhttp);};
@@ -25,10 +34,10 @@ function post_request (urlpath, request, callback) {
 
 
 function get_info(node) {
-    var request = {"file" : {'info' : node}};
+    let request = {"file" : {'info' : node}};
     post_request('/files/get', request, function(xhttp) {
 	if (xhttp.readyState == 4 && xhttp.status == 200) {
-	    info = JSON.parse(xhttp.responseText);
+	    let info = JSON.parse(xhttp.responseText);
 	    if (info) {
 		show(node, info)
 	    } else {
@@ -51,21 +60,21 @@ function remove_tabs() {
 
 
 function create_slider(tab_file, tab_name) {
-    var path = 'files/nodes/'
-    var imgs = ''
+    let path = 'files/nodes/'
+    let imgs = ''
 
     $.each(tab_file, function (i, file) {
 	imgs = imgs + '<img data-image="'+ path + file +'">'
     });
 
-    var tab_body = '<div id="gallery" style="display:none;">' + imgs + '</div>';
+    let tab_body = '<div id="gallery" style="display:none;">' + imgs + '</div>';
 
     $('#nodes_tabs').append('<li class="active"><a data-toggle="tab" href="#tab_gal">'
 			    + tab_name +'</a></li>');
     $('#nodes_tabs_content').append('<div id="tab_gal" class="tab-pane fade active in"><br>'
 				    + tab_body +'</div>');
 
-    api = jQuery("#gallery").unitegallery({
+    $("#gallery").unitegallery({
   	gallery_theme: "slider",
 	slider_enable_zoom_panel: true,
 	slider_scale_mode: "down",
@@ -74,14 +83,13 @@ function create_slider(tab_file, tab_name) {
 
 
 function set_info(node, info) {
-    var infos   = $.parseJSON(info);
-    var tabs    = 0;
-    var content = [];
+    let infos   = $.parseJSON(info);
+    let tabs    = 0;
 
     try {
 	tabs = infos[node].length;
     } catch (e) {
-	;
+	undefined; /* to please eslint */
     }
 
     if(tabs > 0)
@@ -90,17 +98,17 @@ function set_info(node, info) {
 	remove_tabs();
 
     $('#node_details_title').html("Node <b>" + node + "</b> Technical Details");
-    for(index = 0; index < tabs; index++) {
-	var active1 = '';
-	var active2 = '';
-	if(index == 0){
+    for(let index = 0; index < tabs; index++) {
+	let active1 = '';
+	let active2 = '';
+	if (index == 0){
 	    active1 = 'active';
 	    active2 = 'in active';
 	}
 
-	tab_name = infos[node][index]["tab"];
-	tab_file = infos[node][index]["file"];
-	tab_body = infos[node][index]["content"];
+	let tab_name = infos[node][index]["tab"];
+	let tab_file = infos[node][index]["file"];
+	let tab_body = infos[node][index]["content"];
 
 	if(tab_body == 'undefined' || tab_body == '' || tab_body == null){
 	    tab_body = '<br><p>No info about this yet.</p>';

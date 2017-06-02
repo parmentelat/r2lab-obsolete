@@ -1,3 +1,13 @@
+// -*- js-indent-level:4 -*-
+
+/* for eslint */
+/*global $*/
+/*global JsDiff*/   /* from diff.min.js */
+
+/*exported r2lab_diff*/
+
+"use strict";
+
 // protocol is as follows
 // each codediff is assigned an id by in the markdown source
 // together with the mandatatory 'a' file, and the optional 'b' file
@@ -13,22 +23,22 @@
 // see markdown/views.md to see how this is used to create the tuto pages
 
 function r2lab_diff(id, lang) {
-    var a      = document.getElementById(id + '_a');
-    var b      = document.getElementById(id + '_b');
-    var diff = document.getElementById(id + '_diff');
-    var style = 'diffLines'; // also available are diffChars and diffWords
-    var jsdiff = JsDiff[style](a.textContent, b.textContent);
+    let a      = document.getElementById(id + '_a');
+    let b      = document.getElementById(id + '_b');
+    let diff = document.getElementById(id + '_diff');
+    let style = 'diffLines'; // also available are diffChars and diffWords
+    let jsdiff = JsDiff[style](a.textContent, b.textContent);
 
-    var fragment = document.createDocumentFragment();
-    for (var i=0; i < jsdiff.length; i++) {
+    let fragment = document.createDocumentFragment();
+    for (let i=0; i < jsdiff.length; i++) {
 	if (jsdiff[i].added && jsdiff[i + 1] && jsdiff[i + 1].removed) {
-	    var swap = jsdiff[i];
+	    let swap = jsdiff[i];
 	    jsdiff[i] = jsdiff[i + 1];
 	    jsdiff[i + 1] = swap;
 	}
-	var type =   (jsdiff[i].removed) ? 'del'
+	let type =   (jsdiff[i].removed) ? 'del'
 	    : (jsdiff[i].added) ? 'ins' : 'code';
-	var node = document.createElement(type);
+	let node = document.createElement(type);
 	node.appendChild(document.createTextNode(jsdiff[i].value));
 	fragment.appendChild(node);
 	// passing e.g. lang='python' will enable prism

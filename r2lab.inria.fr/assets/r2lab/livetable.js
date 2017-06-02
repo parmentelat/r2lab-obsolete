@@ -1,3 +1,12 @@
+// -*- js-indent-level:4 -*-
+
+/* for eslint */
+/*global $*/
+
+/*global LiveColumnsNode LiveColumns livecolumns_options span_html*/
+
+/*exported LiveTableNode LiveTable*/
+
 "use strict";
 
 // sidecar_url global variable is defined in template sidecar-url.js

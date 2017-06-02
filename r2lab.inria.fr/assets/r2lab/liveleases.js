@@ -1,22 +1,23 @@
 // -*- js-indent-level:4 -*-
-// this requires xhttp-django.js
+
+/* for eslint */
+/*global $ moment io*/
+/*global PersistentSlices sidecar_url r2lab_accounts post_xhttp_django*/
+
 "use strict";
 
-// create this object with mode='run' or mode='book'
-// e.g. $(function() {let the_leases = new LiveLeases('run', 'container-leases'); the_leases.main(); })
+////////// provide for array.has()
+if (!Array.prototype.has) {
+  Array.prototype.has = function(needle) {
+      return this.indexOf(needle>=0);
+  }
+}
 
 let liveleases_options = {
 
     // set to 'book' for the BOOK page
     mode : 'run',
 
-    // these properties in the fullCalendar object will
-    // be traced when debug is set to true
-    trace_events : [
-	'select', 'drop', 'eventDrop', 'eventDragStart', 'eventResize',
-	//'eventRender', 'eventMouseover',
-	'eventMouseout', 
-    ],
     debug : true,
 }
 
@@ -28,1081 +29,781 @@ function liveleases_debug(...args) {
 
 
 ////////////////////////////////////////
-let LiveLeases = function(mode, domid) {
-    this.mode = mode;
-    this.domid = domid;
-}
+// what we call **slots** are the events attached in the fullCalendar() plugin
+// https://fullcalendar.io/docs/event_data/Event_Object/
+// they are also called 'client events' 
+// https://fullcalendar.io/docs/event_data/clientEvents/
+// they have
+// (*) visible attributes like 'title', 'start' and 'end'
+// (*) they also have a hidden 'id' field, that can be used to
+// refer to them from the outside
+////
+// now the other way around, leases are managed in the API
+// they have a slicename, and valid_from valid_until times
+// and they have a uuid, that is the internal API lease_id
+////
+// refreshFromApiLeases's job is to reconcile
+// (*) the currently displayed slots (displayed_slots), 
+// (*) with what comes in from the API (confirmed_slots)
+// 
+// whenever a displayed_slot has a uuid, it is used to map it
+// to the API (e.g. for tracking updates)
+// when it's not the case, it is a newly created slot
+// which has been displayed during the short amount of time
+// when we're waiting for the API to confirm its creation
+// for this we use the slot's id, that is just made of
+// title + start + end
+////
 
+class LiveLeases {
 
-LiveLeases.prototype.buildCalendar = function(initial_events_json) {
-    let today  = moment().format("YYYY-MM-DD");
-    let showAt = moment().subtract(1, 'hour').format("HH:mm");
-    let run_mode = liveleases_options.mode == 'run';
-    console.log(`liveleases - sidecar_url = ${sidecar_url}`);
-    
-    // helpers for popover area 
-    let hh_mm = function(date) {
-	return moment(date).format("HH:mm");
-    }
-    let pretty_content = function(event) {
-	return `${hh_mm(event.start._d)}-${hh_mm(event.end._d)}`;
-    };
+    constructor(domid, r2lab_accounts) {
+	// this.domid is the id of the DOM element that serves 
+	// as the basis for fullCalendar
+	// typically in our case liveleases_container
+	this.domid = domid;
 
-    // Create the calendar
-    let calendar_args = {
-	header:
-	run_mode
-	    ? false
-	    : {
-		left: 'prev,next today',
-		center: 'title',
-		right: 'agendaDay,agendaThreeDay,agendaWeek,month',
-	    },
+	////////////////////////////////////////
+	this.persistent_slices   = new PersistentSlices(r2lab_accounts, 'r2lab');
+
+	this.socket              = io.connect(sidecar_url);
+	this.dragging            = false;
+
+	this.initial_duration    = 60;
+	this.minimal_duration    = 10;
 	
-	views:
-	run_mode
-	    ? {
-		agendaTwoDay: {
-		    type: 'agenda',
-		    duration: { days: 2},
-		    buttonText: '2 days',
-		}
-	    }
-	: {
-	    agendaThreeDay: {
-		type: 'agenda',
-		duration: { days: 3 },
-		buttonText: '3 days'
-	    },
-	    agendaWeek: {
-		type: 'agenda',
-		duration: { days: 7 },
-		buttonText: 'week'
-	    },
-	    month: {
-		selectable: false,
-		editable: false,
-		droppable: false,
-		dblclick: false,
-	    }
-	},
-	defaultView: run_mode ? 'agendaDay' : 'agendaThreeDay',
-	height: run_mode ? 455 : 770,
-	////////////////////
-	defaultTimedEventDuration: '00:01:00',
-	slotDuration: "01:00:00",
-	forceEventDuration: true,
-	timezone: currentTimezone,
-	defaultDate: today,
-	selectHelper: false,
-	overlap: false,
-	selectable: true,
-	editable: true,
-	allDaySlot: false,
-	droppable: true,
-	nowIndicator: true,
-	scrollTime: showAt,
-	//Events
-	// this is fired when a selection is made
-	select: function(start, end, event, view) {
-	    if (isPastDate(end)) {
-		$(`#${xxxdomid}`).fullCalendar('unselect');
-		sendMessage('This timeslot is in the past!');
-		return false;
-	    }
-	    let my_title = getCurrentSliceName();
-	    let eventData;
-	    [start, end] = adaptStartEnd(start, end);
+	this.textcolors = {
+	    regular : 'white',
+	    creating : 'black',
+	    editing : 'blue',
+	    deleting : 'red',
+	}
+	
+    }
 
-	    if (my_title) {
-		eventData = {
-		    title: pendingName(my_title),
-		    start: start,
-		    end: end,
-		    overlap: false,
-		    editable: false,
-		    selectable: false,
-		    color: getCurrentSliceColor(),
-		    textColor: color_pending,
-		    id: getLocalId(my_title, start, end),
-		};
-		updateLeases('addLease', eventData);
-	    }
-	    $(`#${xxxdomid}`).fullCalendar('unselect');
-	},
+    // propagate fullCalendar call to the right jquery element
+    fullCalendar(...args) {
+	return $(`#${this.domid}`).fullCalendar(...args);
+    }
 
-	// this allows things to be dropped onto the calendar
-	drop: function(date, event, view) {
-	    let start = date;
-	    let end   = moment(date).add(60, 'minutes');
-	    if (isPastDate(end)) {
-		$(`#${xxxdomid}`).fullCalendar('unselect');
-		sendMessage('This timeslot is in the past!');
-		return false;
-	    }
-
-	    setSlice($(this))
-	    [start, end] = adaptStartEnd(start, end);
-
-	    let my_title = getCurrentSliceName();
-	    let eventData;
-	    if (my_title) {
-		eventData = {
-		    title: pendingName(my_title),
-		    start: start,
-		    end: end,
-		    overlap: false,
-		    editable: false,
-		    selectable: false,
-		    color: getCurrentSliceColor(),
-		    textColor: color_pending,
-		    id: getLocalId(my_title, start, end),
-		};
-		updateLeases('addLease', eventData);
-	    }
-	},
-
-	// this happens when the event is dragged moved and dropped
-	eventDrop: function(event, delta, revertFunc) {
-	    let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
-	    if(view != 'month'){
-		if (!confirm("Confirm this change ?")) {
-		    revertFunc();
-		} else if (isPastDate(event.end)) {
-		    revertFunc();
-		    sendMessage('This timeslot is in the past!');
-		} else {
-		    let newLease = createLease(event);
-		    newLease.title = pendingName(event.title);
-		    newLease.editable = false;
-		    newLease.textColor = color_pending;
-		    removeElementFromCalendar(newLease.id);
-		    updateLeases('editLease', newLease);
-		}
-	    } else {
-		revertFunc();
-	    }
-	},
-
-	// this fires when one event starts to be dragged
-	eventDragStart: function(event, jsEvent, ui, view) {
-	    keepOldEvent = event;
-	    refresh = false;
-	},
-
-	// this fires when one event starts to be dragged
-	eventDragStop: function(event, jsEvent, ui, view) {
-	    keepOldEvent = event;
-	    refresh = true;
-	},
-
-	// this fires when an event is rendered
-	eventRender: function(event, element) {
-
-	    $(element).popover({
-		title: event.title,
-		content: pretty_content(event),
-		html: true,
-		placement: 'auto',
-		trigger: 'hover',
-		delay: {"show": 500 }});
+    buildCalendar() {
+	let liveleases = this;
+	let today  = moment().format("YYYY-MM-DD");
+	let showAt = moment().subtract(1, 'hour').format("HH:mm");
+	let run_mode = liveleases_options.mode == 'run';
+	console.log(`liveleases - sidecar_url = ${sidecar_url}`);
+    
+	// the view types that are not read-only
+	this.active_views = [
+	    'agendaDay', // run mode
+	    'agendaOneDay', 'agendaThreeDays', 'agendaWeek',
+	];
+	
+	// Create the calendar
+	let calendar_args = {
+	    // all the other sizes are liveleases.css
+	    height: run_mode ? 455 : 762,
+	    // no header in run mode
+	    header:
+	    run_mode
+		? false
+		: {
+		    left: 'prev,next today',
+		    center: 'title',
+		    right: 'agendaZoom agendaOneDay,agendaThreeDays,agendaWeek,month listMonth,listYear',
+		},
 	    
-	    let view = $(`#${xxxdomid}`).fullCalendar('getView').type;
-	    if(view != 'month'){
-		element.bind('dblclick', function() {
-		    if (isMySlice(event.title) && event.editable == true ) {
-			if (!confirm("Confirm removing?")) {
-			    revertFunc();
-			}
-			let newLease = createLease(event);
-			let now = new Date();
-			let started = moment(now).diff(moment(event.start), 'minutes');
-			if(started >= 10){
-			    newLease.start = moment(event.start);
-			    newLease.end = moment(event.start).add(started, 'minutes');
-			    newLease.title = removingName(event.title);
-			    newLease.textColor = color_removing;
-			    newLease.editable = false;
-			    newLease.selectable = false;
-			    newLease.id = getLocalId(event.title+'new', newLease.start, newLease.end),
-			    removeElementFromCalendar(newLease.id);
-			    updateLeases('editLease', newLease);
-			} else {
-			    removeElementFromCalendar(event.id);
-			    addElementToCalendar(newLease);
-			    updateLeases('delLease', newLease);
-			}
-		    }
-		    if (isMySlice(event.title) && isPending(event.title)) {
-			if (confirm("This event is not confirmed yet. Are you sure to remove?")) {
-			    let newLease = createLease(event);
-			    newLease.title = removingName(event.title);
-			    newLease.textColor = color_removing;
-			    newLease.editable = false;
-			    removeElementFromCalendar(event.id);
-			    addElementToCalendar(newLease);
-			    updateLeases('delLease', newLease);
-			}
-		    }
-		    if (isMySlice(event.title) && isFailed(event.title)) {
-			removeElementFromCalendar(event.id);
-		    }
-		});
-	    }},
+	    views: {
+		agendaZoom: {
+		    type: 'agenda',
+		    duration: { days: 1},
+		    buttonText: 'zoom',
+		    // one slot = 10 minutes; that's what makes it a zoom
+		    slotDuration: '00:10:00',
+		},
+		agendaOneDay: {
+		    type: 'agenda',
+		    duration: { days: 1},
+		    buttonText: 'day',
+		},
+		agendaThreeDays: {
+		    type: 'agenda',
+		    duration: { days: 3 },
+		    buttonText: '3 days'
+		},
+		agendaWeek: {
+		    type: 'agenda',
+		    duration: { days: 7 },
+		    buttonText: 'week'
+		},
+		month: {
+		    type: 'agenda',
+		    duration: { months: 1},
+		    buttonText: 'month',
+		    selectable: false,
+		    editable: false,
+		    droppable: false,
+		    dblclick: false,
+		},
+		listMonth: {
+		    buttonText: 'list/month',
+		},
+		listYear: {
+		    buttonText: 'list/year',
+		},
+	    },
+    
+	    defaultView: run_mode ? 'agendaDay' : 'agendaThreeDays',
+	    
+	    ////////////////////
+	    slotDuration: "01:00:00", // except for agendaZoom
+	    snapMinutes: 10,
+	    forceEventDuration: true,
+	    timezone: 'local',
+	    locale: 'en',
+	    timeFormat: 'H(:mm)',
+	    slotLabelFormat: 'H(:mm)',
+	    defaultDate: today,
+	    selectHelper: false,
+	    overlap: false,
+	    selectable: true,
+	    editable: true,
+	    allDaySlot: false,
+	    droppable: true,
+	    nowIndicator: true,
+	    scrollTime: showAt,
 
-	// eventClick: function(event, jsEvent, view) {
-	//   $(this).popover('show');
-	// },
+	    // events from Json file
+	    events: [],
+	};
+	// for debugging only
+	calendar_args = this.decorate_with_callbacks(calendar_args);
 	
-	//eventMouseover: function(event, jsEvent, view) {
-	//$(this).popover('show');
-	//},
-	
-	eventMouseout: function(event, jsEvent, view) {
-	    console.log('inside eventMouseout, this & $(this)= ', this, $(this));
-	    $(this).popover('hide');
-	},
+	this.fullCalendar(calendar_args);
+    }
 
-	// this is fired when an event is resized
-	eventResize: function(event, jsEvent, ui, view, revertFunc) {
-	    if (!confirm("Confirm this change?")) {
-		//some bug in revertFunc
-		//must take the last date time and set manually
-		return;
+    // the callback machinery
+    // all the methods in LiveLeases whose names start with 'callback'
+    // get attached to the corresponding fullCalendar callback
+    // e.g.
+    // because we had defined callbackSelect,
+    // calendar_args will contain a 'select' entry
+    // that will redirect to invoking callbackSelect on
+    // the liveleases object
+    // 
+    // so e.g. a selection event in fullCalendar
+    // triggers select(start, end, jsEvent, view)
+    // which results in liveleases.callbackSelect(thisdom, start, end, jsEvent, view)
+    // in which thisdom is the 'this' passed to the callback, a DOM element in most cases
+
+    decorate_with_callbacks(calendar_args) {
+	let liveleases = this;
+	let callbacks = Object.getOwnPropertyNames(
+	    liveleases.__proto__)
+	    .filter(function(prop) {
+		return ((typeof liveleases[prop] == 'function')
+			&& prop.startsWith('callback'));
+	    });
+
+	// callback typically is callbackEventRender 
+	let decorator = function(callback) {
+	    let wrapped = function(...args) {
+		// always pass 'this' as a first *arg* to the method
+		// call, since otherwise 'this' in that context will
+		// be liveleases
+		let dom = this;
+		return liveleases[callback](dom, ...args);
+	    }
+	    return wrapped;
+	}
+	// transform callbackSomeThing into just someThing
+	function simpleName(x) {
+	    return camlCase(x.replace('callback', ''));
+	}
+	function camlCase(x) {
+	    return x[0].toLowerCase() + x.slice(1);
+	}
+	for (let callback of callbacks) {
+	    calendar_args[simpleName(callback)] = decorator(callback);
+	}
+	return calendar_args;
+    }
+
+    ////////////////////
+    // convenience
+    isReadOnlyView() {
+	let view = this.fullCalendar('getView').type;
+	if (! this.active_views.has(view)) {
+	    this.showMessage(`view ${view} is read only`);
+	    return true;
+	}
+    }
+
+
+    showMessage(msg, type){
+	let cls   = 'danger';
+	let title = 'Ooops!'
+	if (type == 'info'){
+	    cls   = 'info';
+	    title = 'Info:'
+	}
+	if (type == 'success'){
+	    cls   = 'success';
+	    title = 'Yep!'
+	}
+	$('html,body').animate({'scrollTop' : 0},400);
+	$('#messages').removeClass().addClass('alert alert-'+cls);
+	$('#messages').html(`<strong>${title}</strong> ${msg}`);
+	$('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
+	$('#messages').delay(20000).fadeOut();
+    }
+
+
+    //////////////////// creation
+    // helper 
+    popover_content(slot) {
+	let hh_mm = function(date) {
+	    return moment(date).format("HH:mm");
+	}
+	return `${hh_mm(slot.start._d)}-${hh_mm(slot.end._d)}`;
+    }
+	
+    callbackEventRender(dom, slot, element/*, view*/) {
+	$(element).popover({
+	    title: slot.title,
+	    content: this.popover_content(slot),
+	    html: true,
+	    placement: 'auto',
+	    trigger: 'hover',
+	    delay: {"show": 500 }});
+    }
+    
+
+    callbackEventAfterRender(dom, slot, element/*, view*/) {
+	let liveleases = this;
+	
+	// adjust editable each time a change occurs
+	slot.editable = 
+	    (this.isMySlice(slot.title) && (! this.isPastDate(slot.end)));
+	if (slot.editable) {
+	    // arm callback for deletion
+	    let delete_slot = function() {
+		liveleases.removeSlot(slot, element);
+	    };
+	    // on double click
+	    element.bind('dblclick', delete_slot);
+	    // add X button
+            element.find(".fc-content").append("<div class='delete-slot fa fa-remove'></span>");
+       	    element.find(".delete-slot").on('click', delete_slot)
+	}
+	// cannot do something like fullCalendar('updateEvent', slot)
+	// that would cause an infinite loop
+    }
+
+    // click in the calendar - requires a current slice
+    callbackSelect(dom, start, end/*, jsEvent, view*/) {
+	liveleases_debug(`start ${start} - end ${end}`);
+
+	let current_title = this.getCurrentSliceName();
+	if ( ! current_title) {
+	    this.showMessage("No selected slice..");
+	    return;
+	}
+	
+	if (this.isPastDate(end)) {
+	    this.fullCalendar('unselect');
+	    this.showMessage('This timeslot is in the past!');
+	    return;
+	}
+
+	[start, end] = this.adaptStartEnd(start, end);
+	
+	let slot = {
+	    title: this.pendingName(current_title),
+	    start: start,
+	    end: end,
+	    overlap: false,
+	    editable: false,
+	    selectable: false,
+	    color: this.getCurrentSliceColor(),
+	    textColor: this.textcolors.creating,
+	    id: this.slotId(current_title, start, end),
+	};
+	this.sendApi('add', slot);
+	this.fullCalendar('renderEvent', slot, true);
+	this.fullCalendar('unselect');
+    }
+
+
+    // dropping a slice into the calendar
+    callbackDrop(dom, date/*, jsEvent, ui, resourceId*/) {
+
+	this.adoptCurrentSlice($(dom))
+	let current_title = this.getCurrentSliceName();
+
+	let start = date;
+	let end   = moment(date).add(this.initial_duration, 'minutes');
+	if (this.isPastDate(end)) {
+	    this.fullCalendar('unselect');
+	    this.showMessage('This timeslot is in the past!');
+	    return false;
+	}
+	
+	[start, end] = this.adaptStartEnd(start, end);
+	let slot = {
+	    title: this.pendingName(current_title),
+	    start: start,
+	    end: end,
+	    overlap: false,
+	    editable: false,
+	    selectable: false,
+	    color: this.getCurrentSliceColor(),
+	    textColor: this.textcolors.creating,
+	    id: this.slotId(current_title, start, end),
+	};
+	this.sendApi('add', slot);
+	this.fullCalendar('renderEvent', slot, true);
+	this.fullCalendar('unselect');
+    }
+
+
+    // dragging a slot from one place to another
+    callbackEventDrop(dom, slot, delta, revertFunc/*, jsEvent, ui, view*/) {
+	$(dom).popover('hide');
+	if (this.isReadOnlyView()) {
+	    revertFunc();
+	    return;
+	}
+	if (this.isPastDate(slot.end)) {
+	    this.showMessage('This timeslot is in the past!');
+	    revertFunc();
+	    return;
+	}
+	if ( ! confirm("Confirm this change ?")) {
+	    revertFunc();
+	    return;
+	}
+	this.sendApi('update', slot);
+	slot.title = this.pendingName(slot.title);
+	slot.textColor = this.textcolors.editing;
+	this.fullCalendar('updateEvent', slot)
+    }
+
+    // when removing a lease
+    // if it's entirely in the past : refuse to remove
+    // if it's entirely in the future : delete completely
+    // if in the middle : then we want to
+    // (*) free the testbed immediately
+    // (*) but still keep track of that activity
+    // so we try to resize the slot so that it remains in the history
+    // but still is out of the way
+    removeSlot(slot/*, element*/) {
+	console.log('BINGO');
+	if (this.isReadOnlyView()) {
+	    return;
+	}
+	// cannot only remove my slices
+	if ( ! this.isMySlice(slot.title) )
+	    return;
+	// ignore leases in the past no matter what
+	if (this.isPastDate(slot.end)) {
+	    this.showMessage("This lease is in the past !");
+	}
+	
+	// this is editable, let's confirm
+	if ( ! confirm("Confirm removing?")) 
+	    return;
+	
+	slot.title = this.removingName(slot.title);
+	slot.textColor = this.textcolors.deleting;
+	slot.selectable = false;
+	// how many minutes has it been running
+	let started = moment().diff(moment(slot.start), 'minutes');
+	if (started >= this.minimal_duration) {
+	    // this is the case where we can just shrink it
+	    liveleases_debug(`up ${started} mn : delete slot by shrinking it down`);
+	    // set end to now and, let the API round it 
+	    slot.end = moment();
+	    this.sendApi('update', slot);
+	    this.fullCalendar( 'updateEvent', slot);
+	} else {
+	    // either it's in the future completely, or has run for too
+	    // short a time that we can keep it, so delete altogether
+	    liveleases_debug(`up ${started} mn : delete slot completely`);
+	    this.sendApi('delete', slot);
+	    this.fullCalendar( 'updateEvent', slot);
+	}
+    }
+
+
+    callbackResize(dom, slot, delta, revertFunc, jsEvent/*, ui, view*/) {
+	console.log('jsEvent', jsEvent);
+	if ( ! this.isMySlice(slot.title)) {
+	    // should not happen..
+	    this.showMessage("Not owner");
+	    return;
+	}
+	if ( ! confirm("Confirm this change?")) {
+	    // some bug in revertFunc
+	    // must take the last date time and set manually
+	    return;
+	} 
+	this.sendApi('update', slot);
+	slot.title = this.pendingName(slot.title);
+	slot.textColor = this.textcolors.editing;
+	this.fullCalendar( 'updateEvent', slot);
+    }
+
+
+    // minor callbacks
+    callbackEventDragStart(dom, /*event, jsEvent, ui, view*/) {
+	this.dragging = true;
+    }
+    callbackEventDragStop(dom, /*event, jsEvent, ui, view*/) {
+	this.dragging = false;
+    }
+    callbackEventMouseout(dom, /*event, jsEvent, view*/) {
+	$(dom).popover('hide');
+    }
+
+    //////////
+    sliceElementId(id){
+	return id.replace(/\./g, '');
+    }
+
+    // make this the new current slice from a jquery element
+    // associated to the clicked slice on the LHS
+    adoptCurrentSlice(slice_element){
+	let title  = $.trim(slice_element.text());
+	this.persistent_slices.set_current(title);
+	this.outlineCurrentSlice(title)
+    }
+
+
+    outlineCurrentSlice(name){
+	let id = this.sliceElementId(name);
+	$(".noactive").removeClass('slice-active');
+	$(`#${id}`).addClass('slice-active');
+    }
+
+
+    getCurrentSliceName(){
+	return this.persistent_slices.get_current_slice_name();
+    }
+    getCurrentSliceColor(){
+	return this.persistent_slices.get_current_slice_color();
+    }
+    getMySlicesNames(){
+	return this.persistent_slices.my_slices_names();
+    }
+    getSliceColor(slicename){
+	return this.persistent_slices.get_slice_color(slicename);
+    }
+    shortSliceName(name){
+	let new_name = name;
+	new_name = name.replace('onelab.', '');
+	return new_name
+    }
+    isMySlice(slicename){
+	let pslice = this.persistent_slices.record_slice(slicename);
+	return pslice.mine;
+    }
+
+    ////////////////////
+    isPastDate(end)    { return (moment().diff(end, 'minutes') > 0) }
+    pendingName(name)  { return `${this.resetName(name)} (pending)`; }
+    removingName(name) { return `${this.resetName(name)} (removing)`; }
+    resetName(name) {
+	return name
+	    .replace(' (pending)', '')
+	    .replace(' (removing)', '')
+    }
+    slotId(title, start, end){
+	let m_start = moment(start)._d.toISOString();
+	let m_end   = moment(end)._d.toISOString();
+	return `${title}-from-${m_start}-until-${m_end}`;
+    }
+
+    ////////////////////
+    adaptStartEnd(start, end) {
+	let now = new Date();0
+	let started = moment(now).diff(moment(start), 'minutes');
+	if (started > 0){
+	    let s   = moment(now).diff(moment(start), 'minutes')
+	    let ns  = moment(start).add(s, 'minutes');
+	    start = ns;
+	    //end = moment(end).add(1, 'hour');
+	}
+	// round to not wait
+	start = moment(start).floor(this.minimal_duration, 'minutes');
+	return [start, end];
+    }
+
+
+    // go as deep as possible in an object
+    // typically used to get the meaningful part in an error object
+    dig_xpath(obj, xpath) {
+	let result = obj;
+	for (let attr of xpath) {
+	    if ((typeof result == 'object') && (attr in result)) {
+		result = result[attr];
 	    } else {
-		if (isMySlice(event.title)) {
-		    let newLease = createLease(event);
-		    newLease.title = pendingName(event.title);
-		    newLease.textColor = color_pending;
-		    newLease.editable = false;
-		    removeElementFromCalendar(newLease.id);
-		    updateLeases('editLease', newLease);
+		break;
+	    }
+	}
+	return result;
+    }
+
+    sendApi(verb, slot){
+	liveleases_debug("sendApi", verb, slot);
+	let liveleases = this;
+	let request = null;
+
+	if (verb == 'add'){
+	    request = {
+		"slicename"  : this.resetName(slot.title),
+		"valid_from" : slot.start._d.toISOString(),
+		"valid_until": slot.end._d.toISOString()
+	    };
+	} else if (verb == 'update'){
+	    request = {
+		"uuid" : slot.uuid,
+		"valid_from" : slot.start._d.toISOString(),
+		"valid_until": slot.end._d.toISOString()
+	    };
+	} else if (verb == 'delete'){
+	    request = {
+		"uuid" : slot.uuid,
+	    };
+	} else {
+	    liveleases_debug(`sendApi : Unknown verb ${verb}`);
+	    return false;
+	}
+	post_xhttp_django(`/leases/${verb}`, request, function(xhttp) {
+	    if (xhttp.readyState == 4) {
+		// this triggers a refresh of the leases once the sidecar server answers back
+		liveleases.requestUpdateFromApi();
+		////////// temporary
+		// in all cases, show the results in console, in case we'd need to improve this
+		// logic further on in the future
+		liveleases_debug(`upon ajax POST: xhttp.status = ${xhttp.status}`);
+		////////// what should remain
+		if (xhttp.status != 200) {
+		    // this typically is a 500 error inside django
+		    // hard to know what to expect..
+		    liveleases.showMessage(`Something went wrong when managing leases with code ${xhttp.status}`);
+		} else {
+		    // the http POST has been successful, but a lot can happen still
+		    // for starters, are we getting a JSON string ?
+		    try {
+			let obj = JSON.parse(xhttp.responseText);
+			if (obj.error) {
+			    liveleases.showMessage(
+				liveleases.dig_xpath(obj, ['error', 'exception', 'reason']));
+			} else {
+			    liveleases_debug("JSON.parse ->", obj);
+			}
+		    } catch(err) {
+			liveleases.showMessage(`unexpected error while anayzing django answer ${err}`);
+			console.log(err.stack);
+		    }
 		}
 	    }
-	},
-	//Events from Json file
-	events: initial_events_json,
-    };
-    let trace_function = function(f) {
-	let wrapped = function(...args) {
-	    liveleases_debug(`entering calendar ${f.name}`);
-	    let result = f(...args);
-	    liveleases_debug(`exiting calendar ${f.name} ->`, result);
-	    return result;
-	}
-	return wrapped;
+	});
     }
-    for (let prop of liveleases_options.trace_events) {
-	if ( ! prop in calendar_args) {
-	    console.log(`liveleases: trace_events: ignoring undefined prop ${prop}`);
-	} else {
-	    calendar_args[prop] = trace_function(calendar_args[prop])
-	}
-    }
-    $(`#${this.domid}`).fullCalendar(calendar_args);
-}
 
-////////////////////////////////////////
-LiveLeases.prototype.saveSomeColors = function () {
-    $.cookie.json = true;
-    let local_colors = ["#F3537D", "#5EAE10", "#481A88", "#2B15CC", "#8E34FA",
-			"#A41987", "#1B5DF8", "#7AAD82", "#8D72E4", "#323C89"];
-    let some_colors = $.cookie("some-colors-data");
 
-    if (! some_colors){
-	some_colors = 0
-    }
-    if (local_colors.length >= my_slices_name.length) {
-	$.cookie("some-colors-data", local_colors)
-    } else {
-	if (some_colors.length >= my_slices_name.length) {
-	    ;
-	} else {
-	    let lack_colors = my_slices_name.length - local_colors.length;
-	    $.each(range(0,lack_colors), function(key,obj){
-		local_colors.push(getRandomColor());
+    // incoming is an array of pslices as defined in
+    // persistent_slices.js
+    buildInitialSlicesBox(pslices) {
+	let liveleases = this;
+	liveleases_debug('buildInitialSlicesBox');
+	let slices = $("#my-slices");
+	let legend = "Double click in slice to select default";
+	slices.html(`<h4 align="center" data-toggle="tooltip" title="${legend}">`
+		    +`drag & drop to book</h4>`);
+
+	for (let pslice of pslices) {
+	    // show only slices that are mine
+	    if ( ! pslice.mine )
+		return;
+	    // need to run shortSliceName ?
+	    let name = pslice.name;
+	    let color = pslice.color;
+	    slices
+		.append(
+		    $("<div />")
+			.addClass('fc-event')
+			.attr("style", `background-color: ${color}`)
+			.text(name))
+		.append(
+		    $("<div />")
+			.attr("id", liveleases.sliceElementId(name))
+			.addClass('noactive'));
+	}
+	$('#my-slices .fc-event').each(function() {
+	    $(this).draggable({
+		zIndex: 999,
+		revert: true,
+		revertDuration: 0
 	    });
-	    $.cookie("some-colors-data", local_colors)
+	});
+    }
+
+    // triggered when a new message comes from the API
+    // refresh calendar from that data
+    refreshFromApiLeases(confirmed_slots) {
+	liveleases_debug(`refreshFromApiLeases with ${confirmed_slots.length} API leases`)
+	// not while dragging
+	if (this.dragging)
+	    return;
+
+	////////// compute difference between displayed and confirmed slots
+	// gather all slots currently displayed
+	let displayed_slots = this.fullCalendar( 'clientEvents' );
+
+	// initialize 
+	for (let displayed_slot of displayed_slots)
+	    displayed_slot.confirmed = false;
+	for (let confirmed_slot of confirmed_slots)
+	    confirmed_slot.displayed = false;
+	
+	// scan all confirmed
+	for (let confirmed_slot of confirmed_slots) {
+	    let confirmed_id = this.slotId(confirmed_slot.title,
+					   confirmed_slot.start,
+					   confirmed_slot.end);
+	    // scan all displayed
+	    for (let displayed_slot of displayed_slots) {
+		// already paired visual slots can be ignored
+		if (displayed_slot.confirmed)
+		    continue;
+		//liveleases_debug(`matching CONFIRMED ${confirmed_slot.title} ${confirmed_slot.uuid}`
+		//		 + ` with displayed ${displayed_slot.title}`);
+		let match = (displayed_slot.uuid)
+		    ? (confirmed_slot.uuid == displayed_slot.uuid)
+		    : (confirmed_id == displayed_slot.id);
+
+		if (match) {
+		    //liveleases_debug(`MATCH`);
+		    // update displayed from confirmed
+		    displayed_slot.uuid = confirmed_slot.uuid;
+		    displayed_slot.title = confirmed_slot.title;
+		    displayed_slot.start = moment(confirmed_slot.start);
+		    displayed_slot.end = moment(confirmed_slot.end);
+		    displayed_slot.textColor = this.textcolors.regular;
+		    // mark both as matched
+		    displayed_slot.confirmed = true;
+		    confirmed_slot.displayed = true;
+		    continue;
+		}
+	    }
 	}
+
+	// note that removing obsolete slots here instead of later
+	// was causing weird issues with fullCalendar
+
+	// update all slots, in case their title/start/end/colors have changed
+	let slots = this.fullCalendar( 'clientEvents' );
+	liveleases_debug(`refreshing ${slots.length} slots`);
+	this.fullCalendar( 'updateEvents', slots);
+
+	// remove displayed slots that are no longer relevant
+	this.fullCalendar('removeEvents', slot => ! slot.confirmed);
+		
+	// create slots in calendar for confirmed slots not yet displayed
+	// typically useful at startup, and for stuff  created by someone else
+	let new_slots = confirmed_slots.filter( slot => ! slot.displayed);
+	liveleases_debug(`creating ${new_slots.length} slots`);
+	this.fullCalendar('renderEvents', new_slots, true);
+    }
+
+
+    // use this to ask for an immediate refresh
+    // of the set of leases
+    // of course it must be called *after* the actual API call
+    // via django
+    requestUpdateFromApi(){
+	let msg = "INIT";
+	liveleases_debug("sending on request:leases -> ", msg);
+	this.socket.emit('request:leases', msg);
+    }
+
+
+    // subscribe to the socket io channel
+    listenToApiChannel(){
+	let liveleases = this;
+	this.socket.on('info:leases', function(json){
+	    let api_slots = liveleases.parseLeases(json);
+	    liveleases_debug(`incoming on info:leases ${api_slots.length} leases`/*, json*/);
+	    liveleases.refreshFromApiLeases(api_slots);
+	    liveleases.outlineCurrentSlice(liveleases.getCurrentSliceName());
+	});
+    }
+
+
+    // transform API leases from JSON into an object,
+    // and then into fc-friendly slots
+    parseLeases(json) {
+	let liveleases = this;
+	let leases = JSON.parse(json);
+	liveleases_debug("parseLeases", leases);
+
+	return leases.map(function(lease){
+	    let title = liveleases.shortSliceName(lease.slicename);
+	    let start = lease.valid_from;
+	    let end = lease.valid_until;
+	    // remember that slice
+	    liveleases.persistent_slices.record_slice(title);
+	    
+	    return {
+		title : title,
+		uuid : String(lease.uuid),
+		start : start,
+		end : end,
+		id : liveleases.slotId(title, start, end),
+		color : liveleases.getSliceColor(title),
+		overlap : false
+	    }
+	})
+    }
+
+
+    ////////////////////////////////////////
+    main(){
+	
+	this.buildInitialSlicesBox(this.persistent_slices.pslices);
+	this.buildCalendar();
+	this.outlineCurrentSlice(this.getCurrentSliceName());
+	
+	this.listenToApiChannel();
+
+	this.requestUpdateFromApi();
+	
+	let run_mode = liveleases_options.mode == 'run';
+	if (run_mode) {
+	    // don't do this in book mode, it would change all days
+	    $('.fc-day-header').html('today');
+	}
+	
+	let liveleases = this;
+	let slices = $('#my-slices .fc-event');
+	slices.dblclick(function() {
+	    liveleases.adoptCurrentSlice($(this));
+	});
+	
+	$('body').on('click', 'button.fc-month-button', function() {
+	    liveleases.showMessage('This view is read only!', 'info');
+	});
+
     }
 }
 
-LiveLeases.prototype.getLastSlice = function(){
-    $.cookie.json = true;
-    let last_slice = $.cookie("last-slice-data")
 
-    if ($.inArray(fullName(last_slice), getMySlicesName()) > -1){
-	setCurrentSliceName(last_slice);
-	$.cookie("last-slice-data", last_slice)
-    } else {
-	$.cookie("last-slice-data", getCurrentSliceName())
-    }
-}
-
-////////////////////////////////////////
-LiveLeases.prototype.main = function (){
-
-    this.saveSomeColors();
-    this.getLastSlice();
-
-    resetActionsQueued();
-    buildInitialSlicesBox(getMySlicesName());
-    this.buildCalendar([]);
-    setCurrentSliceBox(getCurrentSliceName());
-
-    listenLeases();
-    refreshLeases();
-    
-    let run_mode = liveleases_options.mode == 'run';
-    if (run_mode) {
-	// don't do this in book mode, it would change all days
-	$('.fc-day-header').html('today');
-    }
-
-    let slice = $('#my-slices .fc-event');
-    slice.dblclick(function() {
-	setSlice($(this));
-    });
-
-    $('body').on('click', 'button.fc-month-button', function() {
-	sendMessage('This view is read only!', 'info');
-    });
-}
-
-//global - mostly for debugging and convenience
+// global - only for debugging and convenience
 let the_liveleases;
 
-// xxx need options to select mode instead
 $(function() {
-    the_liveleases = new LiveLeases('book', 'liveleases_container');
+    the_liveleases = new LiveLeases('liveleases_container', r2lab_accounts);
     the_liveleases.main();
 })
-
-////////////////////////////////////////
-// previously in liveleases-common.js
-// needs to be redesigned into a proper class
-// also needs some cleanup in the actionsQueue/actionsQueued area
-
-let my_slices_name      = r2lab_accounts.map(function(account){return account['name'];}) // a list of slice hrns
-let my_slices_color     = [];
-let actionsQueue        = [];
-let actionsQueued       = [];
-let current_slice_name  = current_slice.name;
-let current_slice_color = '#DDD';
-let current_leases      = null;
-let color_pending       = '#FFFFFF';
-let color_removing      = '#FFFFFF';
-let keepOldEvent        = null;
-let theZombieLeases     = [];
-
-let socket              = io.connect(sidecar_url);
-let refresh             = true;
-let currentTimezone     = 'local';
-let nigthly_slice_name  = 'inria_r2lab.nightly'
-let nigthly_slice_color = '#000000';
-
-let xxxdomid = 'liveleases_container';
-
-function setSlice(element){
-    let element_color = element.css("background-color");
-    let element_name  = $.trim(element.text());
-    setCurrentSliceBox(element_name)
-    setCurrentSliceColor(element_color);
-    setCurrentSliceName(element_name);
-    setLastSlice();
-}
-
-
-function setCurrentSliceBox(element){
-    let id = idFormat(element);
-    $(".noactive").removeClass('slice-active');
-    $("#"+id).addClass('slice-active');
-}
-
-
-function setCurrentSliceColor(color){
-    current_slice_color = color;
-    return true;
-}
-
-
-function setCurrentSliceName(name){
-    current_slice_name = name;
-    return true;
-}
-
-
-function setLastSlice(){
-    $.cookie("last-slice-data", getCurrentSliceName())
-}
-
-
-function idFormat(id){
-    let new_id = id.replace(/\./g, '');
-    return new_id;
-}
-
-
-function getCurrentSliceName(){
-    return shortName(current_slice_name);
-}
-
-
-function getCurrentSliceColor(){
-    return current_slice_color;
-}
-
-
-function shortName(name){
-    let new_name = name;
-    new_name = name.replace('onelab.', '');
-    return new_name
-}
-
-
-function getMySlicesName(){
-    return my_slices_name;
-}
-
-
-function getMySlicesinShortName(){
-    let new_short_names = [];
-    $.each(getMySlicesName(), function(key,val){
-	new_short_names.push(shortName(val));
-    });
-    return new_short_names;
-}
-
-
-function getMySlicesColor(){
-    return my_slices_color;
-}
-
-
-function pendingName(name){
-    let new_name = name;
-    new_name = resetName(name) + ' (pending)';
-    return new_name
-}
-
-
-function removingName(name){
-    let new_name = name;
-    new_name = resetName(name) + ' (removing)';
-    return new_name
-}
-
-
-function resetName(name){
-    let new_name = name;
-    new_name = name.replace(' (pending)', '');
-    new_name = new_name.replace(' (removing)', '');
-    new_name = new_name.replace(' * failed *', '');
-    return new_name
-}
-
-
-function failedName(name){
-    let new_name = name;
-    new_name = resetName(name) + ' * failed *';
-    return new_name
-}
-
-
-function getRandomColor() {
-    let reserved_colors = ["#A1A1A1", "#D0D0D0", "#FF0000", "#000000", "#FFE5E5", "#616161"];
-    let letters = '0123456789ABCDEF'.split('');
-    let color = '#';
-    for (let i = 0; i < 6; i++ ) {
-	color += letters[Math.round(Math.random() * 15)];
-    }
-    if ($.inArray(color.toUpperCase(), reserved_colors) > -1){
-	getRandomColor();
-    }
-    return color;
-}
-
-
-// no extra 'onelab.' anymore
-function fullName(name){
-    return name;
-}
-
-
-function failedLease(lease){
-    let newLease = new Object();
-    newLease.title = failedName(lease.title);
-    newLease.id = lease.id;
-    newLease.start = lease.start;
-    newLease.end   = lease.end;
-    newLease.color = "#FF0000";
-    newLease.overlap = false;
-    newLease.editable = false;
-    return newLease;
-}
-
-
-function zombieLease(lease){
-    newLease = new Object();
-    newLease.title = failedName(lease.title);
-    newLease.id = lease.uuid;
-    newLease.start = lease.start;
-    newLease.end   = lease.end;
-    newLease.color = "#FF0000";``
-    newLease.overlap = false;
-    newLease.editable = false;
-    return newLease;
-}
-
-
-function removeElementFromCalendar(id){
-    $(`#${xxxdomid}`).fullCalendar('removeEvents', id );
-}
-
-
-function diffArrays(first, second){
-    let diff_array = null;
-    diff_array = $(first).not(second).get()
-    return diff_array;
-}
-
-
-function getLocalId(title, start, end){
-    let id = null;
-    let m_start = moment(start)._d.toISOString();
-    let m_end   = moment(end)._d.toISOString();
-    String.prototype.hash = function() {
-	let self = this, range = Array(this.length);
-	for(let i = 0; i < this.length; i++) {
-	    range[i] = i;
-	}
-	return Array.prototype.map.call(range, function(i) {
-	    return self.charCodeAt(i).toString(16);
-	}).join('');
-    }
-    id = (title+m_start+m_end).hash();
-    liveleases_debug(`title = ${title} -> ${id}`);
-    return id;
-}
-
-
-function getActionsQueue(){
-    return actionsQueue;
-}
-
-
-function isRemoving(title){
-    let removing = true;
-    if(title.indexOf('(removing)') == -1){
-	removing = false;
-    }
-    return removing;
-}
-
-
-function isPending(title){
-    let pending = true;
-    if(title.indexOf('(pending)') == -1){
-	pending = false;
-    }
-    return pending;
-}
-
-
-function isNightly(title){
-    let nightly = false;
-    if (title) {
-	if(title.indexOf('nightly routine') > -1){
-	    nightly = true;
-	}
-    }
-    return nightly;
-}
-
-
-function getNightlyColor(){
-    return nigthly_slice_color;
-}
-
-
-function isFailed(title){
-    let failed = true;
-    if(title.indexOf('* failed *') == -1){
-	failed = false;
-    }
-    return failed;
-}
-
-
-function addElementToCalendar(element){
-    $(`#${xxxdomid}`).fullCalendar('renderEvent', element, true );
-}
-
-
-function resetActionsQueued(){
-    actionsQueued = [];
-}
-
-
-function getActionsQueued(){
-    return actionsQueued;
-}
-
-
-function queueAction(title, start, end) {
-    let local_id = null;
-    local_id = getLocalId(title, start, end);
-    actionsQueued.push(local_id);
-}
-
-
-function setCurrentLeases(leases){
-    current_leases = leases;
-}
-
-
-function getCurrentLeases(){
-    return current_leases;
-}
-
-
-function createLease(lease){
-    let newLease             = new Object();
-    newLease.id          = lease.id
-    newLease.uuid        = lease.uuid
-    newLease.title       = lease.title
-    newLease.start       = lease.start
-    newLease.end         = lease.end
-    newLease.overlap     = lease.overlap
-    newLease.editable    = lease.editable
-    newLease.selectable  = lease.selectable
-    newLease.color       = lease.color
-    newLease.textColor   = lease.textColor
-
-    return newLease;
-}
-
-
-function isPastDate(end){
-    let past = false;
-    if(moment().diff(end, 'minutes') > 0){
-	past = true;
-    }
-    return past;
-}
-
-
-function adaptStartEnd(start, end) {
-    let now = new Date();0
-    let started = moment(now).diff(moment(start), 'minutes');
-    if (started > 0){
-	let s   = moment(now).diff(moment(start), 'minutes')
-	let ns  = moment(start).add(s, 'minutes');
-	start = ns;
-	//end = moment(end).add(1, 'hour');
-    }
-    //round to not wait
-    start = moment(start).floor(10, 'minutes');
-    return [start, end];
-}
-
-
-function isR2lab(name){
-    let r2lab = false;
-    if (name.substring(0, 13) == 'inria_'){
-	r2lab = true;
-    }
-    return r2lab;
-}
-
-
-function sendMessage(msg, type){
-    let cls   = 'danger';
-    let title = 'Ooops!'
-    if(type == 'info'){
-	cls   = 'info';
-	title = 'Info:'
-    }
-    if(type == 'success'){
-	cls   = 'success';
-	title = 'Yep!'
-    }
-    $('html,body').animate({'scrollTop' : 0},400);
-    $('#messages').removeClass().addClass('alert alert-'+cls);
-    $('#messages').html(`<strong>${title}</strong> ${msg}`);
-    $('#messages').fadeOut(200).fadeIn(200).fadeOut(200).fadeIn(200);
-    $('#messages').delay(30000).fadeOut();
-}
-
-
-// xxx plcapi : do we still have zombies ?
-function isZombie(obj){
-    return false;
-
-    let is_zombie = false;
-    if(obj.resource_type == 'lease' && obj.status == 'pending' && isMySlice(shortName(obj.slicename))){
-	is_zombie = true;
-    }
-    return is_zombie;
-}
-
-
-// use this to ask for an immediate refresh
-// of the set of leases
-// of course it must be called *after* the actual API call
-// via django
-function refreshLeases(){
-    let msg = "INIT";
-    liveleases_debug("sending on request:leases -> ", msg);
-    socket.emit('request:leases', msg);
-}
-
-// show action immediately before it becomes confirmed
-function showImmediate(action, event) {
-    liveleases_debug("showImmediate", action);
-    if (action == 'add'){
-	let lease  = createLease(event);
-	$(`#${xxxdomid}`).fullCalendar('renderEvent', lease, true );
-    } else if (action == 'edit'){
-	let lease  = createLease(event);
-	removeElementFromCalendar(lease.id);
-	$(`#${xxxdomid}`).fullCalendar('renderEvent', lease, true );
-    } else if (action == 'del'){
-	let lease  = createLease(event);
-	removeElementFromCalendar(lease.id);
-	$(`#${xxxdomid}`).fullCalendar('renderEvent', lease, true );
-    }
-}
-
-function listenLeases(){
-    socket.on('info:leases', function(msg){
-	setCurrentLeases(msg);
-	resetActionsQueued();
-	let leases = getCurrentLeases();
-	let leasesbooked = parseLeases(leases);
-	liveleases_debug(`incoming on info:leases ${leasesbooked.length} leases`, msg);
-	refreshCalendar(leasesbooked);
-	setCurrentSliceBox(getCurrentSliceName());
-    });
-}
-
-
-function updateLeases(action, event){
-    if (action == 'addLease') {
-	showImmediate('add', event);
-	setActionsQueue('add', event);
-    } else if (action == 'editLease'){
-	showImmediate('edit', event);
-	setActionsQueue('edit', event);
-    } else if (action == 'delLease') {
-	if( ($.inArray(event.id, getActionsQueue()) == -1) && (event.title.indexOf('* failed *') > -1) ){
-	    removeElementFromCalendar(event.id);
-	} else {
-	    setActionsQueue('del', event);
-	    showImmediate('del', event);
-	}
-    }
-}
-
-
-function setActionsQueue(action, data){
-    let verb = null;
-    let request = null;
-
-    if (action == 'add'){
-	verb = 'add';
-	request = {
-	    "slicename"  : fullName(resetName(data.title)),
-	    "valid_from" : data.start._d.toISOString(),
-	    "valid_until": data.end._d.toISOString()
-	};
-	actionsQueue.push(data.id);
-    } else if (action == 'edit'){
-	verb = 'update';
-	request = {
-	    "uuid" : data.uuid,
-	    "valid_from" : data.start._d.toISOString(),
-	    "valid_until": data.end._d.toISOString()
-	};
-    } else if (action == 'del'){
-	verb = 'delete';
-	request = {
-	    "uuid" : data.uuid,
-	};
-	delActionQueue(data.id);
-    } else {
-	console.log('Something went wrong in map actions.');
-	return false;
-    }
-    // xxx replace this with some more sensible code for showing errors
-    let display_error_message = alert;
-    post_xhttp_django(`/leases/${verb}`, request, function(xhttp) {
-	if (xhttp.readyState == 4) {
-	    // this triggers a refresh of the leases once the sidecar server answers back
-	    refreshLeases();
-	    ////////// temporary
-	    // in all cases, show the results in console, in case we'd need to improve this
-	    // logic further on in the future
-	    liveleases_debug(`upon ajax POST: xhttp.status = ${xhttp.status}`);
-	    ////////// what should remain
-	    if (xhttp.status != 200) {
-		// this typically is a 500 error inside django
-		// hard to know what to expect..
-		sendMessage(`Something went wrong when managing leases with code ${xhttp.status}`);
-	    } else {
-		// the http POST has been successful, but a lot can happen still
-		// for starters, are we getting a JSON string ?
-		try {
-		    let obj = JSON.parse(xhttp.responseText);
-		    if (obj['error']) {
-			if (obj['error']['exception']) {
-			    if (obj['error']['exception']['reason']) {
-				sendMessage(obj['error']['exception']['reason']);
-			    } else {
-				sendMessage(obj['error']['exception']);
-			    }
-			} else {
-			    sendMessage(obj['error']);
-			}
-		    } else {
-			;//sendMessage(obj);
-		    }
-		} catch(err) {
-		    sendMessage(`unexpected error while anayzing django answer ${err}`);
-		}
-	    }
-	}
-    });
-}
-
-
-function setColorLeases(){
-    let some_colors = $.cookie("some-colors-data")
-    $.each(my_slices_name, function(key,obj){
-	my_slices_color[key] = some_colors[key];
-    });
-    return my_slices_color;
-}
-
-
-function range(start, end) {
-    return Array(end-start).join(0).split(0).map(function(val, id) {return id+start});
-}
-
-
-function getColorLease(slice_title){
-    let lease_color = '#A1A1A1';
-    if ($.inArray(fullName(slice_title), getMySlicesName()) > -1){
-	lease_color = my_slices_color[my_slices_name.indexOf(fullName(slice_title))];
-    }
-    return lease_color;
-}
-
-
-function delActionQueue(id){
-    let idx = actionsQueue.indexOf(id);
-    actionsQueue.splice(idx,1);
-}
-
-
-function resetZombieLeases(){
-    theZombieLeases = [];
-}
-
-
-function resetActionQueue(){
-    actionsQueue = [];
-}
-
-
-function resetCalendar(){
-    $(`#${xxxdomid}`).fullCalendar('removeEvents');
-}
-
-
-function isMySlice(slice){
-    let is_my = false;
-    if ($.inArray(fullName(resetName(slice)), getMySlicesName()) > -1){
-	is_my = true;
-    }
-    return is_my;
-}
-
-
-function isPresent(element, list){
-    let present = false;
-
-    if ($.inArray(element, list) > -1){
-	present = true;
-    }
-    return present;
-}
-
-
-function buildSlicesBox(leases) {
-    // let known_slices = getMySlicesinShortName();
-    liveleases_debug('buildSlicesBox');
-    let slices = $("#my-slices");
-
-    $.each(leases, function(key, val){
-	if ($.inArray(val.title, known_slices) === -1) { //already present?
-	    if (isMySlice(val.title)) {
-		if (val.title === nigthly_slice_name){
-		    color = getNightlyColor();
-		    setCurrentSliceColor(color);
-		} else if(val.title === getCurrentSliceName()){
-		    setCurrentSliceColor(val.color);
-		}
-		slices
-		    .append(
-			$("<div/>")
-			    .addClass('fc-event')
-			    .attr("style", `background-color: ${val.color}`)
-			    .text(val.title))
-		    .append(
-			$("<div/>")
-			    .attr("id", idFormat(val.title))
-			    .addClass('noactive'));
-	    }
-	    known_slices.push(val.title);
-	}
-    });
-
-    $('#my-slices .fc-event').each(function() {
-	$(this).draggable({
-	    zIndex: 999,
-	    revert: true,
-	    revertDuration: 0
-	});
-    });
-}
-
-
-let known_slices = [];
-function buildInitialSlicesBox(leases){
-    liveleases_debug('buildInitialSlicesBox');
-    setColorLeases();
-    let slices = $("#my-slices");
-    let legend = "Double click in slice to select default";
-    slices.html(`<h4 align="center" data-toggle="tooltip" title="${legend}">drag & drop to book</h4>`);
-
-    $.each(leases, function(key, val){
-	val = shortName(val);
-	let color = getColorLease(val);
-	if ($.inArray(val, known_slices) === -1) { //removing nightly routine and slices already present?
-	    if (isMySlice(val)) {
-		if (val === nigthly_slice_name){
-		    color = getNightlyColor();
-		    setCurrentSliceColor(color);
-		}
-		else if(val === getCurrentSliceName()){
-		    setCurrentSliceColor(color);
-		}
-		slices
-		    .append(
-			$("<div />")
-			    .addClass('fc-event')
-			    .attr("style", `background-color: ${color}`)
-			    .text(val))
-		    .append(
-			$("<div />")
-			    .attr("id", idFormat(val))
-			    .addClass('noactive'));
-	    }
-	    known_slices.push(val);
-	}
-    });
-
-    $('#my-slices .fc-event').each(function() {
-	$(this).draggable({
-	    zIndex: 999,
-	    revert: true,
-	    revertDuration: 0
-	});
-    });
-}
-
-
-function refreshCalendar(events){
-    // xxx ugly use of global
-    if (refresh){
-	$.each(events, function(key, event){
-	    liveleases_debug(`refreshCalendar : lease = ${event.title}: ${event.start} .. ${event.end}`);
-	    removeElementFromCalendar(event.id);
-	    $(`#${xxxdomid}`).fullCalendar('renderEvent', event, true);
-	});
-
-	let each_removing = $(`#${xxxdomid}`).fullCalendar( 'clientEvents' );
-	$.each(each_removing, function(k, obj){
-	    // when click in month view all 'thousands' of nightly comes.
-	    // Maybe reset when comeback from month view (not implemented)
-	    if (!isNightly(obj.title) && obj.title) {
-		if (isRemoving(obj.title)){
-		    removeElementFromCalendar(obj.id);
-		} else if (obj.uuid && isPending(obj.title)){
-		    removeElementFromCalendar(obj.id);
-		} else if (!isPresent(obj.id, actionsQueued) && !isPending(obj.title) && !isRemoving(obj.title) ){
-		    removeElementFromCalendar(obj.id);
-		} else if (/*isPresent(obj.id, actionsQueue) &&*/ isPending(obj.title) && !obj.uuid ){
-		    removeElementFromCalendar(obj.id);
-		}
-	    }
-	});
-
-	let failedEvents = [];
-	$.each(theZombieLeases, function(k, obj){
-	    failedEvents.push(zombieLease(obj));
-	});
-	resetZombieLeases();
-	$(`#${xxxdomid}`).fullCalendar('addEventSource', failedEvents);
-
-	resetActionQueue();
-    }
-}
-
-
-function parseLeases(data){
-    let parsedData = JSON.parse(data);
-    let leases = [];
-    resetZombieLeases();
-
-    liveleases_debug("parseLeases", data);
-    
-    parsedData.forEach(function(lease){
-	let newLease = new Object();
-	newLease.title = shortName(lease.slicename);
-	newLease.uuid = String(lease.uuid);
-	newLease.start = lease.valid_from;
-	newLease.end = lease.valid_until;
-	newLease.id = getLocalId(newLease.title, newLease.start, newLease.end);
-	newLease.color = getColorLease(newLease.title);
-	if (isMySlice(newLease.title) && !isPastDate(newLease.end)) {
-	    newLease.editable = true;
-	} else {
-	    newLease.editable = false;
-	}
-	newLease.overlap = false;
-
-	// //HARD CODE TO SET SPECIAL ATTR to nightly routine
-	if (newLease.title == nigthly_slice_name){
-	    newLease.color = getNightlyColor();
-	}
-
-	if (isZombie(lease)) {
-	    theZombieLeases.push(newLease);
-	    let request = {"uuid" : newLease.uuid};
-	    post_xhttp_django('/leases/delete', request, function(xhttp) {
-		if (xhttp.readyState == 4 && xhttp.status == 200) {
-		    liveleases_debug("return from /leases/delete", request);
-		}
-	    });
-	} else {
-	    leases.push(newLease);
-	    queueAction(newLease.title, newLease.start, newLease.end);
-	}
-
-    });
-
-    buildSlicesBox(leases);
-    return leases;
-}
