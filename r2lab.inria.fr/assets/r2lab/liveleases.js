@@ -18,7 +18,7 @@ let liveleases_options = {
     // set to 'book' for the BOOK page
     mode : 'run',
 
-    debug : true,
+    debug : false,
 }
 
 

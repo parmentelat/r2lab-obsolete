@@ -25,13 +25,8 @@ require_login: true
  <br />
  <div class="row" id="all">
   <div class="col-md-2 no-padding" >
-   <div id="wrap">
-    <div id="manage-slices-keys" class="run">
-     <button type="button" data-toggle="modal" data-target="#slices_keys_modal"
-     	          class="fc-button fc-state-default fc-corner-left fc-corner-right slices-keys">
-		  slices & keys <span class='fa fa-gear'></span>
-     </button>
-    </div>
+<!-- the button to access slices_keys_modal -->
+<< include r2lab/slices-keys-button.html >>
     <div id="my-slices" class="run"></div>
     <div style="clear:both"></div>
    </div>
