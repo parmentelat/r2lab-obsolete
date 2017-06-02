@@ -18,12 +18,6 @@ let liveleases_options = {
     // set to 'book' for the BOOK page
     mode : 'run',
 
-    // these properties in the fullCalendar object will
-    // be traced when debug is set to true
-    trace_events : [
-	// 'select', 'drop', 'eventDrop', 'eventDragStart', 'eventResize',
-	//'eventRender', 'eventMouseover', 'eventMouseout', 
-    ],
     debug : true,
 }
 
@@ -74,6 +68,7 @@ class LiveLeases {
 
 	this.textcolor_regular   = 'white';
 	this.textcolor_pending   = 'black';
+	this.textcolor_editing   = 'blue';
 	this.textcolor_removing  = 'red';
 	
 	this.socket              = io.connect(sidecar_url);
@@ -96,14 +91,6 @@ class LiveLeases {
 	let run_mode = liveleases_options.mode == 'run';
 	console.log(`liveleases - sidecar_url = ${sidecar_url}`);
     
-	// helpers for popover area 
-	let hh_mm = function(date) {
-	    return moment(date).format("HH:mm");
-	}
-	let pretty_content = function(event) {
-	    return `${hh_mm(event.start._d)}-${hh_mm(event.end._d)}`;
-	};
-	
 	// the view types that are not read-only
 	this.active_views = [
 	    'agendaDay', // run mode
@@ -183,99 +170,59 @@ class LiveLeases {
 	    droppable: true,
 	    nowIndicator: true,
 	    scrollTime: showAt,
-	    //Events
-	    // this is fired when a selection is made
-	    select: function(start, end/*, event, view*/) {
-		liveleases.interactiveSelect(start, end);
-	    },
-
-	    // this allows things to be dropped onto the calendar
-	    drop: function(date/*, event, view*/) {
-		let dom = this;
-		liveleases.interactiveDrop(dom, date);
-	    },
-
-	    // this happens when the event is dragged moved and dropped
-	    eventDrop: function(event, delta, revertFunc) {
-		liveleases.interactiveEventDrop(event, delta, revertFunc);
-	    },
-	    // this fires when one event starts to be dragged
-	    eventDragStart: function(/*event, jsEvent, ui, view*/) {
-		liveleases.dragging = true;
-	    },
-
-	    // this fires when one event starts to be dragged
-	    eventDragStop: function(/*event, jsEvent, ui, view*/) {
-		liveleases.dragging = false;
-	    },
-
-	    // this fires when an event is rendered
-	    eventRender: function(event, element) {
-
-		$(element).popover({
-		    title: event.title,
-		    content: pretty_content(event),
-		    html: true,
-		    placement: 'auto',
-		    trigger: 'hover',
-		    delay: {"show": 500 }});
-		
-		// when removing a lease
-		// if it's entirely in the past : refuse to remove
-		// if it's entirely in the future : delete completely
-		// if in the middle : then we want to
-		// (*) free the testbed immediately
-		// (*) but still keep track of that activity
-		// so we try to resize the slot so that it remains in the history
-		// but still is out of the way
-		element.bind('dblclick', function() {
-		    liveleases.interactiveRemove(event, element);
-		})
-	    },
-
-	    // eventClick: function(event, jsEvent, view) {
-	    //   $(this).popover('show');
-	    // },
-	    
-	    //eventMouseover: function(event, jsEvent, view) {
-	    //$(this).popover('show');
-	    //},
-	    
-	    eventMouseout: function(/*event, jsEvent, view*/) {
-		$(this).popover('hide');
-	    },
-
-	    // this is fired when an event is resized
-	    eventResize: function(event/*, jsEvent, ui, view, revertFunc*/) {
-		liveleases.interactiveResize(event);
-	    },
 
 	    // events from Json file
 	    events: [],
 	};
 	// for debugging only
-	calendar_args = this.decorate_traced_event(calendar_args);
+	calendar_args = this.decorate_with_callbacks(calendar_args);
 	
 	this.fullCalendar(calendar_args);
     }
 
-    // for debugging: trace events mentioned in  this.trace_events
-    decorate_traced_event(calendar_args) {
-	let trace_function = function(f) {
+    // the callback machinery
+    // all the methods in LiveLeases whose names start with 'callback'
+    // get attached to the corresponding fullCalendar callback
+    // e.g.
+    // because we had defined callbackSelect,
+    // calendar_args will contain a 'select' entry
+    // that will redirect to invoking callbackSelect on
+    // the liveleases object
+    // 
+    // so e.g. a selection event in fullCalendar
+    // triggers select(start, end, jsEvent, view)
+    // which results in liveleases.callbackSelect(thisdom, start, end, jsEvent, view)
+    // in which thisdom is the 'this' passed to the callback, a DOM element in most cases
+
+    decorate_with_callbacks(calendar_args) {
+	let liveleases = this;
+	let callbacks = Object.getOwnPropertyNames(
+	    liveleases.__proto__)
+	    .filter(function(prop) {
+		return ((typeof liveleases[prop] == 'function')
+			&& prop.startsWith('callback'));
+	    });
+
+	// callback typically is callbackEventRender 
+	let decorator = function(callback) {
 	    let wrapped = function(...args) {
-		liveleases_debug(`entering calendar ${f.name}`);
-		let result = f(...args);
-		liveleases_debug(`exiting calendar ${f.name} ->`, result);
-		return result;
+		// always pass 'this' as a first *arg* to the method
+		// call, since otherwise 'this' in that context will
+		// be liveleases
+		let dom = this;
+		return liveleases[callback](dom, ...args);
 	    }
 	    return wrapped;
 	}
-	for (let prop of liveleases_options.trace_events) {
-	    if ( ! (prop in calendar_args)) {
-		liveleases_debug(`liveleases: trace_events: ignoring undefined prop ${prop}`);
-	    } else {
-		calendar_args[prop] = trace_function(calendar_args[prop])
-	    }
+	// transform callbackSomeThing into just someThing
+	function simpleName(x) {
+	    return camlCase(x.replace('callback', ''));
+	}
+	function camlCase(x) {
+	    return x[0].toLowerCase() + x.slice(1);
+	}
+	for (let callback of callbacks) {
+	    calendar_args[simpleName(callback)] = decorator(callback);
 	}
 	return calendar_args;
     }
@@ -288,9 +235,47 @@ class LiveLeases {
 	}
     }
 
-    ////////////////////
+    //////////////////// creation
+    // helper 
+    popover_content(slot) {
+	let hh_mm = function(date) {
+	    return moment(date).format("HH:mm");
+	}
+	return `${hh_mm(slot.start._d)}-${hh_mm(slot.end._d)}`;
+    }
+	
+    callbackEventRender(dom, slot, element/*, view*/) {
+	$(element).popover({
+	    title: slot.title,
+	    content: this.popover_content(slot),
+	    html: true,
+	    placement: 'auto',
+	    trigger: 'hover',
+	    delay: {"show": 500 }});
+    }
+    
+
+    callbackEventAfterRender(dom, slot, element/*, view*/) {
+	let liveleases = this;
+	
+	// adjust editable each time a change occurs
+	slot.editable = 
+	    (this.isMySlice(slot.title) && (! this.isPastDate(slot.end)));
+	if (slot.editable) {
+	    // arm callback for deletion
+	    let delete_slot = function() {
+		liveleases.removeSlot(slot, element);
+	    };
+	    // on double click
+	    element.bind('dblclick', delete_slot);
+	    // add X button
+            element.find(".fc-content").append("<div class='delete-slot fa fa-remove'></span>");
+       	    element.find(".delete-slot").on('click', delete_slot)
+	}
+    }
+
     // click in the calendar - requires a current slice
-    interactiveSelect(start, end) {
+    callbackSelect(dom, start, end/*, jsEvent, view*/) {
 	liveleases_debug(`start ${start} - end ${end}`);
 
 	let current_title = this.getCurrentSliceName();
@@ -318,14 +303,14 @@ class LiveLeases {
 	    textColor: this.textcolor_pending,
 	    id: this.slotId(current_title, start, end),
 	};
+	this.sendApi('add', slot);
 	this.fullCalendar('renderEvent', slot, true);
 	this.fullCalendar('unselect');
-	this.sendApi('add', slot);
     }
 
 
     // dropping a slice into the calendar
-    interactiveDrop(dom, date) {
+    callbackDrop(dom, date/*, jsEvent, ui, resourceId*/) {
 
 	this.adoptCurrentSlice($(dom))
 	let current_title = this.getCurrentSliceName();
@@ -350,14 +335,15 @@ class LiveLeases {
 	    textColor: this.textcolor_pending,
 	    id: this.slotId(current_title, start, end),
 	};
+	this.sendApi('add', slot);
 	this.fullCalendar('renderEvent', slot, true);
 	this.fullCalendar('unselect');
-	this.sendApi('add', slot);
     }
 
 
     // dragging a slot from one place to another
-    interactiveEventDrop(slot, delta, revertFunc) {
+    callbackEventDrop(dom, slot, delta, revertFunc/*, jsEvent, ui, view*/) {
+	$(dom).popover('hide');
 	if (this.isReadOnlyView()) {
 	    return;
 	}
@@ -370,14 +356,21 @@ class LiveLeases {
 	    revertFunc();
 	    return;
 	}
+	this.sendApi('update', slot);
 	slot.title = this.pendingName(slot.title);
-	slot.textColor = this.textcolor_pending;
+	slot.textColor = this.textcolor_editing;
 	this.fullCalendar('updateEvent', slot)
-	this.sendApi('edit', slot);
     }
 
-    // double click
-    interactiveRemove(slot/*, element*/) {
+    // when removing a lease
+    // if it's entirely in the past : refuse to remove
+    // if it's entirely in the future : delete completely
+    // if in the middle : then we want to
+    // (*) free the testbed immediately
+    // (*) but still keep track of that activity
+    // so we try to resize the slot so that it remains in the history
+    // but still is out of the way
+    removeSlot(dom, slot/*, element*/) {
 	if (this.isReadOnlyView()) {
 	    return;
 	}
@@ -395,28 +388,28 @@ class LiveLeases {
 	
 	slot.title = this.removingName(slot.title);
 	slot.textColor = this.textcolor_removing;
-	slot.editable = false;
 	slot.selectable = false;
 	// how many minutes has it been running
 	let started = moment().diff(moment(slot.start), 'minutes');
 	if (started >= this.minimal_duration) {
 	    // this is the case where we can just shrink it
-	    liveleases_debug(`up ${started} mn : delete slot by shrinking it down`)
+	    liveleases_debug(`up ${started} mn : delete slot by shrinking it down`);
 	    // set end to now and, let the API round it 
 	    slot.end = moment();
+	    this.sendApi('update', slot);
 	    this.fullCalendar( 'updateEvents', slot);
-	    this.sendApi('edit', slot);
 	} else {
 	    // either it's in the future completely, or has run for too
 	    // short a time that we can keep it, so delete altogether
-	    liveleases_debug(`up ${started} mn : delete slot completely`)
-	    this.fullCalendar( 'removeEvents', slot);
-	    this.sendApi('del', slot);
+	    liveleases_debug(`up ${started} mn : delete slot completely`);
+	    this.sendApi('delete', slot);
+	    this.fullCalendar( 'updateEvents', slot);
 	}
     }
 
 
-    interactiveResize(slot) {
+    callbackResize(dom, slot, delta, revertFunc, jsEvent/*, ui, view*/) {
+	console.log('jsEvent', jsEvent);
 	if ( ! this.isMySlice(slot.title)) {
 	    // should not happen..
 	    this.showMessage("Not owner");
@@ -427,13 +420,23 @@ class LiveLeases {
 	    // must take the last date time and set manually
 	    return;
 	} 
+	this.sendApi('update', slot);
 	slot.title = this.pendingName(slot.title);
-	slot.textColor = this.textcolor_pending;
-	slot.editable = false;
+	slot.textColor = this.textcolor_editing;
 	this.fullCalendar( 'updateEvent', slot);
-	this.sendApi('edit', slot);
     }
 
+
+    // minor callbacks
+    callbackEventDragStart(dom, /*event, jsEvent, ui, view*/) {
+	this.dragging = true;
+    }
+    callbackEventDragStop(dom, /*event, jsEvent, ui, view*/) {
+	this.dragging = false;
+    }
+    callbackEventMouseout(dom, /*event, jsEvent, view*/) {
+	$(dom).popover('hide');
+    }
 
     //////////
     sliceElementId(id){
@@ -540,33 +543,29 @@ class LiveLeases {
     }
 
 
-    sendApi(action, slot){
-	liveleases_debug("SENDING", action, slot);
+    sendApi(verb, slot){
+	liveleases_debug("sendApi", verb, slot);
 	let liveleases = this;
-	let verb = null;
 	let request = null;
 
-	if (action == 'add'){
-	    verb = 'add';
+	if (verb == 'add'){
 	    request = {
 		"slicename"  : this.resetName(slot.title),
 		"valid_from" : slot.start._d.toISOString(),
 		"valid_until": slot.end._d.toISOString()
 	    };
-	} else if (action == 'edit'){
-	    verb = 'update';
+	} else if (verb == 'update'){
 	    request = {
 		"uuid" : slot.uuid,
 		"valid_from" : slot.start._d.toISOString(),
 		"valid_until": slot.end._d.toISOString()
 	    };
-	} else if (action == 'del'){
-	    verb = 'delete';
+	} else if (verb == 'delete'){
 	    request = {
 		"uuid" : slot.uuid,
 	    };
 	} else {
-	    liveleases_debug(`sendApi : Unknown action ${action}`);
+	    liveleases_debug(`sendApi : Unknown verb ${verb}`);
 	    return false;
 	}
 	post_xhttp_django(`/leases/${verb}`, request, function(xhttp) {
@@ -741,7 +740,7 @@ class LiveLeases {
 	let liveleases = this;
 	this.socket.on('info:leases', function(json){
 	    let api_slots = liveleases.parseLeases(json);
-	    liveleases_debug(`incoming on info:leases ${api_slots.length} leases`, json);
+	    liveleases_debug(`incoming on info:leases ${api_slots.length} leases`/*, json*/);
 	    liveleases.refreshFromApiLeases(api_slots);
 	    liveleases.outlineCurrentSlice(liveleases.getCurrentSliceName());
 	});
@@ -766,8 +765,6 @@ class LiveLeases {
 		     end : end,
 		     id : liveleases.slotId(title, start, end),
 		     color : liveleases.getSliceColor(title),
-		     editable : (liveleases.isMySlice(title)
-				 && !liveleases.isPastDate(end)),
 		     overlap : false
 		   }
 	})

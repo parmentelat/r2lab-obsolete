@@ -182,9 +182,13 @@ div.leases-run-width {
 }
 
 
-/* zoom view */
-#liveleases_container.book .
-
+/* delete button */
+div.delete-slot {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    text-align: right;
+}
 
 /* ----- popovers */
 .popover {
