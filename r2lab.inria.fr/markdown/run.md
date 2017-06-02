@@ -24,13 +24,8 @@ require_login: true
  </div>
  <br />
  <div class="row" id="all">
-  <div class="col-md-2 no-padding" >
-<!-- the button to access slices_keys_modal -->
-<< include r2lab/slices-keys-button.html >>
-    <div id="my-slices" class="run"></div>
-    <div style="clear:both"></div>
-   </div>
-  </div>
+ <!-- the left pane with the slices & keys button, and the slices list, on 2 columns -->
+ << include r2lab/slices-left-pane.html >>
   <div class="col-md-3 leases-run-width">
    <div id="liveleases_container" class="run"></div>
    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
