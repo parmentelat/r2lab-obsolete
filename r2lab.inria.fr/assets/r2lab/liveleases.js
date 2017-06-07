@@ -195,6 +195,9 @@ class LiveLeases {
     // triggers select(start, end, jsEvent, view)
     // which results in liveleases.callbackSelect(thisdom, start, end, jsEvent, view)
     // in which thisdom is the 'this' passed to the callback, a DOM element in most cases
+    //
+    // for details on suported callbacks see
+    // https://fullcalendar.io/docs/
 
     decorate_with_callbacks(calendar_args) {
 	let liveleases = this;
@@ -371,6 +374,7 @@ class LiveLeases {
 
     // dragging a slot from one place to another
     callbackEventDrop(dom, slot, delta, revertFunc/*, jsEvent, ui, view*/) {
+	liveleases_debug(`eventDrop`, slot, delta);
 	$(dom).popover('hide');
 	if (this.isReadOnlyView()) {
 	    revertFunc();
@@ -438,8 +442,8 @@ class LiveLeases {
     }
 
 
-    callbackResize(dom, slot, delta, revertFunc, jsEvent/*, ui, view*/) {
-	console.log('jsEvent', jsEvent);
+    callbackEventResize(dom, slot, delta, revertFunc, jsEvent/*, ui, view*/) {
+	liveleases_debug(`resize`, slot, delta, jsEvent);
 	if ( ! this.isMySlice(slot.title)) {
 	    // should not happen..
 	    this.showMessage("Not owner");
