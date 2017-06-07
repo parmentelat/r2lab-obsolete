@@ -63,7 +63,7 @@ class ColorsGenerator {
 	this.colors = this.categories[this.category] || this.categories.rainbow;
 	// so a shallow copy
 	this.colors = this.colors.slice();
-	this._debug = true;
+	this._debug = false;
     }
 
     debug(...args) {
@@ -122,7 +122,7 @@ class PersistentSlices {
 	this._fill();
 	// store again
 	this._store();
-	this._debug = true;
+	this._debug = false;
     }
 
     debug(...args) {
