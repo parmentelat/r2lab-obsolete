@@ -298,7 +298,7 @@ class LiveLeases {
 	    // add X button
             element.find(".fc-content")
 		.append(`<div class='delete-slot fa fa-remove'`
-			+ ` data-toggle='tooltip' title='delete'></div>`);
+			+ ` data-toggle='tooltip' title='delete (double click deletes too)'></div>`);
        	    element.find(".delete-slot").on('click', delete_slot)
 	}
 	// cannot do something like fullCalendar('updateEvent', slot)
