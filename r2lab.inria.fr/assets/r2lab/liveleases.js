@@ -332,6 +332,9 @@ class LiveLeases {
 	    selectable: false,
 	    color: this.getCurrentSliceColor(),
 	    textColor: this.textcolors.creating,
+	    // note that this id really is used only until
+	    // the lease comes back from the API
+	    // so there is no need to maintain it later on
 	    id: this.slotId(current_title, start, end),
 	};
 	this.sendApi('add', slot);
@@ -364,6 +367,9 @@ class LiveLeases {
 	    selectable: false,
 	    color: this.getCurrentSliceColor(),
 	    textColor: this.textcolors.creating,
+	    // note that this id really is used only until
+	    // the lease comes back from the API
+	    // so there is no need to maintain it later on
 	    id: this.slotId(current_title, start, end),
 	};
 	this.sendApi('add', slot);
@@ -426,9 +432,12 @@ class LiveLeases {
 	let started = moment().diff(moment(slot.start), 'minutes');
 	if (started >= this.minimal_duration) {
 	    // this is the case where we can just shrink it
-	    liveleases_debug(`up ${started} mn : delete slot by shrinking it down`);
-	    // set end to now and, let the API round it 
-	    slot.end = moment();
+	    let rounded = started - (started % this.minimal_duration);
+	    liveleases_debug(`up ${started} mn : delete slot by shrinking it down by ${rounded} mn`);
+	    // set end to now and, let the API round it
+	    liveleases_debug('before', slot);
+	    slot.end = moment(slot.start).add(rounded, 'minutes');
+	    liveleases_debug('after', slot);
 	    this.sendApi('update', slot);
 	    this.fullCalendar( 'updateEvent', slot);
 	} else {
@@ -583,6 +592,7 @@ class LiveLeases {
 	    liveleases_debug(`sendApi : Unknown verb ${verb}`);
 	    return false;
 	}
+	liveleases_debug('sendApi ->', request);
 	post_xhttp_django(`/leases/${verb}`, request, function(xhttp) {
 	    if (xhttp.readyState == 4) {
 		// this triggers a refresh of the leases once the sidecar server answers back
