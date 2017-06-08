@@ -623,16 +623,15 @@ class LiveLeases {
     buildInitialSlicesBox(pslices) {
 	let liveleases = this;
 	liveleases_debug('buildInitialSlicesBox');
-	let slices = $("#my-slices");
 
 	for (let pslice of pslices) {
 	    // show only slices that are mine
 	    if ( ! pslice.mine )
-		return;
+		break;
 	    // need to run shortSliceName ?
 	    let name = pslice.name;
 	    let color = pslice.color;
-	    slices
+	    $("#my-slices")
 		.append(
 		    $("<div />")
 			.addClass('fc-event')
