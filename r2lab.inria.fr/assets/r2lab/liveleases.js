@@ -619,14 +619,15 @@ class LiveLeases {
 
     // incoming is an array of pslices as defined in
     // persistent_slices.js
-    buildInitialSlicesBox(pslices) {
+    buildInitialSlicesBox() {
 	let liveleases = this;
 	liveleases_debug('buildInitialSlicesBox');
+	let pslices = this.persistent_slices.pslices;
 
 	for (let pslice of pslices) {
 	    // show only slices that are mine
 	    if ( ! pslice.mine )
-		break;
+		continue;
 	    // need to run shortSliceName ?
 	    let name = pslice.name;
 	    let color = pslice.color;
@@ -772,7 +773,7 @@ class LiveLeases {
     ////////////////////////////////////////
     main(){
 	
-	this.buildInitialSlicesBox(this.persistent_slices.pslices);
+	this.buildInitialSlicesBox();
 	this.buildCalendar();
 	this.outlineCurrentSlice(this.getCurrentSliceName());
 	
