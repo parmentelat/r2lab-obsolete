@@ -462,13 +462,13 @@ class LiveLeases {
 
 
     // minor callbacks
-    callbackEventDragStart(dom, /*event, jsEvent, ui, view*/) {
+    callbackEventDragStart(dom/*, event, jsEvent, ui, view*/) {
 	this.dragging = true;
     }
-    callbackEventDragStop(dom, /*event, jsEvent, ui, view*/) {
+    callbackEventDragStop(dom/*, event, jsEvent, ui, view*/) {
 	this.dragging = false;
     }
-    callbackEventMouseout(dom, /*event, jsEvent, view*/) {
+    callbackEventMouseout(dom/*, event, jsEvent, view*/) {
 	$(dom).popover('hide');
     }
 
