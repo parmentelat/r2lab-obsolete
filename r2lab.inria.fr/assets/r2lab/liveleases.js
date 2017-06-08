@@ -404,7 +404,6 @@ class LiveLeases {
     // so we try to resize the slot so that it remains in the history
     // but still is out of the way
     removeSlot(slot/*, element*/) {
-	console.log('BINGO');
 	if (this.isReadOnlyView()) {
 	    return;
 	}
