@@ -23,7 +23,7 @@ require_login: true
   </div>
  </div>
  <br />
- <div class="row" id="all">
+ <div class="row run" id="all">
  <!-- the left pane with the slices & keys button, and the slices list, on 2 columns -->
  << include r2lab/slices-left-pane.html >>
   <div class="col-md-3 leases-run-width">

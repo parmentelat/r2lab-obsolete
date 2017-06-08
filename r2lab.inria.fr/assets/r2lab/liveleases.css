@@ -28,18 +28,18 @@
   width: 100%;
 }
 
-#manage-slices-keys.run {
+#manage-slices-keys {
   margin-top: 0px;
 }
 
-#my-slices.run {
+div.row.run #my-slices {
   height: 378px;
 }
 
-#manage-slices-keys.book {
+div.row.book #manage-slices-keys {
   margin-top: 46px;
 }
-#my-slices.book {
+div.row.book #my-slices {
   height: 638px;
 }
 
