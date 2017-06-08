@@ -450,8 +450,7 @@ class LiveLeases {
 	    return;
 	}
 	if ( ! confirm("Confirm this change?")) {
-	    // some bug in revertFunc
-	    // must take the last date time and set manually
+	    revertFunc();
 	    return;
 	} 
 	this.sendApi('update', slot);
