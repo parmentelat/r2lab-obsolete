@@ -544,27 +544,53 @@ function usrp-reset() {
     curl http://$cmc/usrpon
 }
 
-doc-nodes scramble "shortcuts for scrambling the skype demo; use -blast to use max. gain"
-function scramble() {
-    local mode=$1; shift
-    local command="uhd_siggen --freq=2.56G --gaussian"
-    case "$mode" in
-	"")        command="$command -g 78" ; message="perturbating" ;;
-	"-blast")  command="$command -g 90" ; message="blasting" ;;
-	*)         echo unknown option "$mode"; return ;;
+##############################
+# xxx could use a -interactive wrapper to display command
+# and then ask for user's confirmation
+
+downlink_freq="--freq=2.56G"
+uplink_freq="--freq=2.68G"
+
+function -scramble() {
+    local link="$1"; shift
+    local force="$1"; shift
+    
+    local command="uhd_siggen --gaussian"
+    case "$link" in
+	up*)
+	    command="$command $uplink_freq" ;;
+	down*)
+	    command="$command $downlink_freq" ;;
     esac
-    echo "Running $command in foreground - press Enter at the prompt to exit"
+    command="$command $force"
+
+    echo "About to run command:"
+    echo $command
+    echo -n "OK ? (Ctrl-C to abort) "
+    read _
     $command
 }
 
+doc-nodes 'scramble-*' "shortcuts for scrambling the skype demo; use -blast to use max. gain"
+function scramble-downlink() { -scramble downlink "-g 70"; }
+function scramble-downlink-mid() { -scramble downlink "-g 80"; }
+function scramble-downlink-blast() { -scramble downlink "-g 90"; }
+function scramble-uplink() { -scramble uplink "-g 70"; }
+function scramble-uplink-mid() { -scramble uplink "-g 80"; }
+function scramble-uplink-blast() { -scramble uplink "-g 90"; }
+
 doc-nodes watch-uplink "Run uhd_fft on band7 uplink"
 function watch-uplink() {
-    uhd_fft -f2560M -s 25M
+    local command="uhd_fft $uplink_freq -s 25M"
+    echo $command
+    $command
 }
 
 doc-nodes watch-downlink "Run uhd_fft on band7 downlink"
 function watch-downlink() {
-    uhd_fft -f2680M -s 25M
+    local command="uhd_fft $downlink_freq -s 25M"
+    echo $command
+    $command
 }
 ########################################
 define-main "$0" "$BASH_SOURCE"
