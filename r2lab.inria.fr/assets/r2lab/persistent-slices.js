@@ -118,8 +118,8 @@ class PersistentSlices {
 	//// could be separated some place in some _init method..
 	// read local storage
 	this._retrieve();
-	// fill in this.persistent if some slicenames are missing
-	this._fill();
+	// update pslices: add new slices, delete old ones
+	this._sync();
 	// store again
 	this._store();
 	this._debug = false;
@@ -147,10 +147,6 @@ class PersistentSlices {
 	    if ( ! this.pslices) {
 		throw new Error();
 	    }
-	    // filter out old slices
-	    this.pslices = this.pslices.filter(
-		ps => this.slicenames.indexOf(ps.name) >= 0
-	    );
 	    this.debug("retrieved from local storage", this.pslices)
 	} catch(err) {
 	    if ( ! this.warn_missing_storage()) {
@@ -169,8 +165,19 @@ class PersistentSlices {
 	
     }
 
-    // make sure all entries in slicenames are in pslices
-    _fill() {
+    // make sure that:
+    // (*) entries not in slicenames get discarded from pslices
+    //     this is for slices that we are no longer a member of
+    // (*) all entries in slicenames are in pslices
+    //     this is for slices that we are a new member of
+    // (*) we have exactly one current pslice
+    // (*) pslices are sorted
+    _sync() {
+	// filter out old slices
+	this.pslices = this.pslices.filter(
+	    ps => this.slicenames.indexOf(ps.name) >= 0
+	);
+	// add new slices
 	let generator = this.colors_generator;
 	// compute the entries not yet in this.pslices
 	let known = new Map(this.pslices.map(
@@ -184,6 +191,15 @@ class PersistentSlices {
 		    current: false,
 		})
 	    }
+	}
+	// keep sorted
+	this.pslices.sort( (ps1, ps2) => (ps1.name <= ps2.name) ? -1 : 1);
+	// have we one current ?
+	let nb_currents = this.pslices.filter( ps => ps.current).length;
+	if (nb_currents != 1) {
+	    this.pslices.forEach(function(ps, i) {
+		ps.current = (i==0);
+	    });
 	}
     }
 

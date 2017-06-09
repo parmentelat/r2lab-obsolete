@@ -629,9 +629,9 @@ class LiveLeases {
 
     // incoming is an array of pslices as defined in
     // persistent_slices.js
-    buildInitialSlicesBox() {
+    buildSlicesBox() {
 	let liveleases = this;
-	liveleases_debug('buildInitialSlicesBox');
+	liveleases_debug('buildSlicesBox');
 	let pslices = this.persistent_slices.pslices;
 
 	for (let pslice of pslices) {
@@ -783,7 +783,7 @@ class LiveLeases {
     ////////////////////////////////////////
     main(){
 	
-	this.buildInitialSlicesBox();
+	this.buildSlicesBox();
 	this.buildCalendar();
 	this.outlineCurrentSlice(this.getCurrentSliceName());
 	
