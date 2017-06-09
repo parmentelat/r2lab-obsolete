@@ -630,6 +630,7 @@ class LiveLeases {
     // incoming is an array of pslices as defined in
     // persistent_slices.js
     buildSlicesBox() {
+
 	let liveleases = this;
 	liveleases_debug('buildSlicesBox');
 	let pslices = this.persistent_slices.pslices;
@@ -641,10 +642,13 @@ class LiveLeases {
 	    // need to run shortSliceName ?
 	    let name = pslice.name;
 	    let color = pslice.color;
+	    let slice_tooltip = "double-click to make current -- drag in timeline to book";
 	    $("#my-slices")
 		.append(
 		    $("<div />")
 			.addClass('fc-event')
+			.attr('data-toggle', 'tooltip')
+			.attr('title', slice_tooltip)
 			.attr("style", `background-color: ${color}`)
 			.text(name))
 		.append(
