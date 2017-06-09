@@ -144,10 +144,14 @@ class PersistentSlices {
 	try {
 	    /* with storage */
 	    this.pslices = JSON.parse(localStorage.getItem(this.storage_key));
-	    this.debug("retrieved from local storage", this.pslices)
 	    if ( ! this.pslices) {
 		throw new Error();
 	    }
+	    // filter out old slices
+	    this.pslices = this.pslices.filter(
+		ps => this.slicenames.indexOf(ps.name) >= 0
+	    );
+	    this.debug("retrieved from local storage", this.pslices)
 	} catch(err) {
 	    if ( ! this.warn_missing_storage()) {
 		this.debug("Could not retrieve persistent slices..");
