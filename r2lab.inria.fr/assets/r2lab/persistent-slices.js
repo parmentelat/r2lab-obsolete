@@ -181,16 +181,19 @@ class PersistentSlices {
 	let generator = this.colors_generator;
 	// compute the entries not yet in this.pslices
 	let known = new Map(this.pslices.map(
-	    pslice =>  ([pslice.name, true])));
+	    pslice =>  ([pslice.name, pslice])));
 	for (let slicename of this.slicenames) {
-	    if (! known.get(slicename)) {
-		this.pslices.push({
+	    let pslice = known.get(slicename);
+	    if (! pslice) {
+		pslice = {
 		    name: slicename,
 		    color: generator.random_color(slicename),
 		    mine: true,
 		    current: false,
-		})
+		}
+		this.pslices.push(pslice);
 	    }
+	    pslice.mine = true;
 	}
 	// keep sorted
 	this.pslices.sort( (ps1, ps2) => (ps1.name <= ps2.name) ? -1 : 1);
@@ -220,7 +223,7 @@ class PersistentSlices {
 
     ////////// make sure the slice is known and create otherwise
     record_slice(slicename, mine=false, current=false) {
-	let existing = this.get_pslice(slicename);
+	let existing = this._get_pslice(slicename);
 	if (existing)
 	    return existing;
 	let pslice = {
@@ -235,6 +238,16 @@ class PersistentSlices {
 	return pslice;
     }
 
+    ////////// return a pslice
+    _get_pslice(slicename) {
+	return this.pslices
+	    .filter(pslice => pslice.name == slicename).first();
+    }
+    _get_current_pslice() {
+	return this.pslices
+	    .filter(pslice => pslice.current).first();
+    }
+
     //////////
     all_slice_names() {
 	return this.pslices.map(pslice => pslice.name);
@@ -245,32 +258,22 @@ class PersistentSlices {
 	    .map(pslice => pslice.name)
     }
 
-    ////////// return a pslice
-    get_pslice(slicename) {
-	return this.pslices
-	    .filter(pslice => pslice.name == slicename).first();
-    }
-    get_current_pslice() {
-	return this.pslices
-	    .filter(pslice => pslice.current).first();
-    }
-
     ////////// easier access
     get_current_slice_name() {
-	return this.get_current_pslice().name
-	    || this.pslices.first().name;
+	let pslice = this._get_current_pslice();
+	return pslice ? pslice.name : 'user-not-in-any-slice';
     }
     get_current_slice_color() {
-	let pslice = this.get_current_pslice();
+	let pslice = this._get_current_pslice();
 	return pslice ? pslice.color : this.foreign_color;
     }
     get_slice_color(slicename) {
-	let pslice = this.get_pslice(slicename);
+	let pslice = this._get_pslice(slicename);
 	return pslice ? pslice.color : this.foreign_color;
     }
 
     set_current(slicename) {
-	let pslice = this.get_pslice(slicename);
+	let pslice = this._get_pslice(slicename);
 	if ( ! pslice) {
 	    return;
 	}
