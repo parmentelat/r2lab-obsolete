@@ -25,7 +25,7 @@ which is UTC+1 in winter, and UTC+2 in summer.
   </div>
  </div>
  <br />
- <div class="row" id="all">
+ <div class="row book" id="all">
  <!-- the left pane with the slices & keys button, and the slices list, on 2 columns -->
  << include r2lab/slices-left-pane.html >>
  <div class="col-md-10">
