@@ -339,16 +339,18 @@ def markdown_page(request, markdown_file, extra_metavars={}):
         metavars.update(extra_metavars)
         return render(request, 'r2lab/r2lab.html', metavars)
     except Exception as e:
-        previous_message = "<h1> Oops - could not render markdown_file = {}</h1>"\
+        error_message = "<h1> Oops - cannot render markdown</h1>"\
             .format(markdown_file)
         if isinstance(e, FileNotFoundError):
-            previous_message += str(e)
+            # turned off following an advice from inria's security cell
+            # error_message += str(e)
+            error_message += " file not found"
         else:
             stack = traceback.format_exc()
             logger.info("Storing stacktrace in previous_message - {}".format(stack))
-            previous_message += "<pre>\n{}\n</pre>".format(stack)
-        previous_message = mark_safe(previous_message)
+            error_message += "<pre>\n{}\n</pre>".format(stack)
+        error_message = mark_safe(error_message)
         if settings.DEBUG:
-            return HttpResponseNotFound(previous_message)
+            return HttpResponseNotFound(error_message)
         else:
-            return markdown_page(request, 'oops', {'previous_message': previous_message})
+            return markdown_page(request, 'oops', {'previous_message': error_message})
