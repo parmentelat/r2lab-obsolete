@@ -30,7 +30,7 @@ skip_header: yes
       <p class="blue">Left Tour</p>
     </div>
     <!-- <div class="title_tour"><br>Place the mouse in the picture and move it in any direction to take a look in our platform.<br>R2lab anechoic chamber - Sophia Antipolis </div> -->
-    <object type="text/html" data="http://on.bubb.li/449687az9nuzaq0160uvtwc"
+    <object type="text/html" data="https://on.bubb.li/449687az9nuzaq0160uvtwc"
             style="width:100%; height:90%;">
     </object>
   </div>
@@ -40,7 +40,7 @@ skip_header: yes
       <p class="blue">Center Tour</p>
     </div>
     <!-- <div class="title_tour"><br>Place the mouse in the picture and move it in any direction to take a look in our platform.<br>R2lab anechoic chamber - Sophia Antipolis </div> -->
-    <object type="text/html" data="http://on.bubb.li/449687amtkk831692nocb9i"
+    <object type="text/html" data="https://on.bubb.li/449687amtkk831692nocb9i"
             style="width:100%; height:90%;">
     </object>
   </div>
@@ -49,7 +49,7 @@ skip_header: yes
     <p class="blue">Right Tour</p>
   </div>
     <!-- <div class="title_tour"><br>Place the mouse in the picture and move it in any direction to take a look in our platform.<br>R2lab anechoic chamber - Sophia Antipolis </div> -->
-    <object type="text/html" data="http://on.bubb.li/449687aobq55ei8lvenc0mc"
+    <object type="text/html" data="https://on.bubb.li/449687aobq55ei8lvenc0mc"
             style="width:100%; height:90%;">
     </object>
   </div>
