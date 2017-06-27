@@ -61,3 +61,6 @@ img.fit-width {
     max-width: 100%;
 }
     
+img.onelab-header {
+    margin-top: -10px;
+}

@@ -54,7 +54,7 @@
    <div class="container">
     <div class="row">
      <div class="col-lg-2 col-xs-12 col-sm-3 col-md-2 logo">
-      <a href="/index.md">
+      <a href="https://fit-equipex.fr/" target="_">
        <img class="img-responsive" src="/assets/img/r2lab-logo.svg" alt="OneLab - Future Internet Testbeds" />
       </a>
      </div>
@@ -68,10 +68,6 @@
 {% if r2lab_context %}
         <li><a id="tab-book" tab="{{tab}}" class="sites" href="/book.md">Book</a></li>
         <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">Run</a></li>
-        <!-- <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">One</a></li>
-        <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">Two</a></li>
-        <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">Three</a></li>
-        <li><a id="tab-run" tab="{{tab}}" class="sites" href="/run.md">Four</a></li> -->
 {% endif %}
       </ul>
      </div>
@@ -81,7 +77,9 @@
 {% if r2lab_context.user_details %}
     <a class="button logout" href="/logout/">Logout</a>
 {% else %}
-    <!-- <a class="button" target="_blank" href="http://portal.onelab.eu">Access the portal</a> -->
+    <a href="https://www.onelab.eu/" target="_">
+    <img class="img-responsive onelab-header" src="/assets/img/onelab-small.png" alt="OneLab" />
+    </a>
 {% endif %}
        </li>
       </ul>
