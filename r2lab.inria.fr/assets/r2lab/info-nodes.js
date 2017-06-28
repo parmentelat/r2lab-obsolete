@@ -7,7 +7,7 @@
 
 "use strict";
 
-let panel_name = 'nodes_details_modal'
+let panel_name = 'nodes_details_modal';
 
 function pad(str){
     let max = 2
