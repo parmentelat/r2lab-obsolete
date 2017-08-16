@@ -482,10 +482,10 @@ alias ssh1nx="-do-first 'ssh -X'"
 doc-admin tln1n "Enter first selected node using telnet - ditto"
 alias tln1n="-do-first telnet"
 
-doc-admin s "alias for ssh1n"
+doc-selection s "alias for ssh1n"
 alias s="ssh1n"
-doc-admin sx "alias for ssh1nx"
-alias s="ssh1n"
+doc-selection sx "alias for ssh1nx"
+alias sx="ssh1n"
 
 ####################
 # look at logs
