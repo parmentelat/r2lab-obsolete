@@ -485,7 +485,7 @@ alias tln1n="-do-first telnet"
 doc-selection s "alias for ssh1n"
 alias s="ssh1n"
 doc-selection sx "alias for ssh1nx"
-alias sx="ssh1n"
+alias sx="ssh1x"
 
 ####################
 # look at logs
