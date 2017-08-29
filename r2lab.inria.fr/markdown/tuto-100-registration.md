@@ -242,7 +242,7 @@ for manipulating the nodes](tuto-200-shell-tools.md).
 
 ### Problems?
 
-Feel free to contact us on the **R2lab users mailinglist** [fit-r2lab-user@inria.fr](mailto:fit-r2lab-user@inria.fr) if you experience trouble with ssh-logging into the R2lab gateway at `faraday.inria.fr`, or with running your experiments, and/or none of those hints are helpful.
+Feel free to contact us on the **R2lab users mailinglist** [fit-r2lab-users@inria.fr](mailto:fit-r2lab-user@inria.fr) if you experience trouble with ssh-logging into the R2lab gateway at `faraday.inria.fr`, or with running your experiments, and/or none of those hints are helpful.
 
 </div>
 
