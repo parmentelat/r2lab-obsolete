@@ -46,7 +46,7 @@ function image() {
 
 ####################
 # would make sense to add more stuff in the base image - see the NEWS file
-base_packages="git libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential libffi-dev
+base_packages="git subversion libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential libffi-dev
 texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsfonts imagemagick-common 
  gdb ruby flex bison gfortran xterm mysql-common python-pip python-numpy qtcore4-l10n tcl tk xorg-sgml-doctools
  i7z
@@ -64,73 +64,78 @@ function base() {
 
     # 
     git-ssl-turn-off-verification
-    echo "========== Running git clone for openair-cn and r2lab and openinterface5g"
+##   No need to clone openair-cn for eNB
+##    echo "========== Running git clone for openair-cn and r2lab and openinterface5g"
+    echo "========== Running git clone for r2lab and openinterface5g"
     cd
-    [ -d openair-cn ] || git clone https://gitlab.eurecom.fr/oai/openair-cn.git
+##    [ -d openair-cn ] || git clone https://gitlab.eurecom.fr/oai/openair-cn.git
     [ -d openairinterface5g ] || git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git
     [ -d /root/r2lab ] || git clone https://github.com/parmentelat/r2lab.git
 
-    echo "========== Setting up cpufrequtils"
-    apt-get install -y cpufrequtils
-    echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
-    update-rc.d ondemand disable
-    /etc/init.d/cpufrequtils restart
-    # this seems to be purely informative ?
-    cd
-    cpufreq-info > cpufreq.info
-
-    # xxx turning off hyperthreading : adding noht to the line below does not seem to work
-    sed -i -e 's|GRUB_CMDLINE_LINUX_DEFAULT.*|GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_pstate=disable processor.max_cstate=1 intel_idle.max_cstate=0 idle=poll"|' /etc/default/grub
-    update-grub
+##    Following is now done in the ubuntu-lowlatency image as it requires a reboot to be active
+##
+#    echo "========== Setting up cpufrequtils"
+#    apt-get install -y cpufrequtils
+#    echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
+#    update-rc.d ondemand disable
+#    /etc/init.d/cpufrequtils restart
+#    # this seems to be purely informative ?
+#    cd
+#    cpufreq-info > cpufreq.info
+#
+#    # xxx turning off hyperthreading : adding noht to the line below does not seem to work
+#    sed -i -e 's|GRUB_CMDLINE_LINUX_DEFAULT.*|GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_pstate=disable processor.max_cstate=1 intel_idle.max_cstate=0 idle=poll"|' /etc/default/grub
+#    update-grub
 
 }
 
-doc-nodes deps "builds uhd for an oai image"
-function deps() {
-    # arg1 should be uhd-ettus or uhd-oai
-    
-    git-pull-r2lab
-    git-pull-oai
-    case $1 in
-	uhd-ettus)
-	    echo Building UHD with ETTUS recipe
-	    build-uhd-ettus ;;
-	uhd-oai)
-	    echo Building UHD with OAI recipe
-	    build-uhd-oai ;;
-	*)
-	    echo unkwown argument $1 to deps
-	    exit 1 ;;
-    esac
-}
-
+## Following is no more useful as uhd must be installed within OAI build
+##
+#doc-nodes deps "builds uhd for an oai image"
+#function deps() {
+#    # arg1 should be uhd-ettus or uhd-oai
+#    
+#    git-pull-r2lab
+#    git-pull-oai
+#    case $1 in
+#	uhd-ettus)
+#	    echo Building UHD with ETTUS recipe
+#	    build-uhd-ettus ;;
+#	uhd-oai)
+#	    echo Building UHD with OAI recipe
+#	    build-uhd-oai ;;
+#	*)
+#	    echo unkwown argument $1 to deps
+#	    exit 1 ;;
+#    esac
+#}
 # xxx Rohit says this is WRONG - use oai recipe instead
-doc-nodes build-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
-function build-uhd-ettus() {
-    cd
-    echo "========== Building UHD from ettus git repo"
-    if [ -d uhd ]; then
-	cd uhd; git pull
-    else
-	git clone git://github.com/EttusResearch/uhd.git
-	cd uhd
-    fi
-    mkdir -p build
-    cd build
-    cmake ../host
-    make
-    make test
-    make install
-}
-
-doc-nodes build-uhd-oai "build UHD using the OAI recipe" 
-function build-uhd-oai() {
-    git-pull-r2lab
-    git-pull-oai
-    cd /root/openairinterface5g/cmake_targets
-#    run-in-log build-uhd.log ./build_oai -I --install-optional-packages -w USRP
-    run-in-log build-uhd.log ./build_oai -I -w USRP
-}
+#doc-nodes build-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
+#function build-uhd-ettus() {
+#    cd
+#    echo "========== Building UHD from ettus git repo"
+#    if [ -d uhd ]; then
+#	cd uhd; git pull
+#    else
+#	git clone git://github.com/EttusResearch/uhd.git
+#	cd uhd
+#    fi
+#    mkdir -p build
+#    cd build
+#    cmake ../host
+#    make
+#    make test
+#    make install
+#}
+#
+#doc-nodes build-uhd-oai "build UHD using the OAI recipe" 
+#function build-uhd-oai() {
+#    git-pull-r2lab
+#    git-pull-oai
+#    cd /root/openairinterface5g/cmake_targets
+##    run-in-log build-uhd.log ./build_oai -I --install-optional-packages -w USRP
+#    run-in-log build-uhd.log ./build_oai -I -w USRP
+#}
 
 doc-nodes build "builds oai5g for an oai image"
 function build() {
@@ -155,33 +160,37 @@ function build-oai5g() {
 	esac
     fi
 
-    OPENAIR_HOME=/root/openairinterface5g
-    # don't do this twice
-    grep -q OPENAIR ~/.bashrc >& /dev/null || cat >> $HOME/.bashrc <<EOF
-export OPENAIR_HOME=$OPENAIR_HOME
-export OPENAIR1_DIR=$OPENAIR_HOME/openair1
-export OPENAIR2_DIR=$OPENAIR_HOME/openair2
-export OPENAIR3_DIR=$OPENAIR_HOME/openair3
-export OPENAIRCN_DIR=$OPENAIR_HOME/openair-cn
-export OPENAIR_TARGETS=$OPENAIR_HOME/targets
-alias oairoot='cd $OPENAIR_HOME'
-alias oai0='cd $OPENAIR0_DIR'
-alias oai1='cd $OPENAIR1_DIR'
-alias oai2='cd $OPENAIR2_DIR'
-alias oai3='cd $OPENAIR3_DIR'
-alias oait='cd $OPENAIR_TARGETS'
-alias oaiu='cd $OPENAIR2_DIR/UTIL'
-alias oais='cd $OPENAIR_TARGETS/SIMU/USER'
-alias oaiex='cd $OPENAIR_TARGETS/SIMU/EXAMPLES'
-EOF
-
+##   It is better to source directly OAI configuration file to get possible future changes from them
+    cd $HOME/openairinterface5g
+    source oaienv
+#    OPENAIR_HOME=/root/openairinterface5g
+#    # don't do this twice
+#    grep -q OPENAIR ~/.bashrc >& /dev/null || cat >> $HOME/.bashrc <<EOF
+#export OPENAIR_HOME=$OPENAIR_HOME
+#export OPENAIR1_DIR=$OPENAIR_HOME/openair1
+#export OPENAIR2_DIR=$OPENAIR_HOME/openair2
+#export OPENAIR3_DIR=$OPENAIR_HOME/openair3
+#export OPENAIRCN_DIR=$OPENAIR_HOME/openair-cn
+#export OPENAIR_TARGETS=$OPENAIR_HOME/targets
+#alias oairoot='cd $OPENAIR_HOME'
+#alias oai0='cd $OPENAIR0_DIR'
+#alias oai1='cd $OPENAIR1_DIR'
+#alias oai2='cd $OPENAIR2_DIR'
+#alias oai3='cd $OPENAIR3_DIR'
+#alias oait='cd $OPENAIR_TARGETS'
+#alias oaiu='cd $OPENAIR2_DIR/UTIL'
+#alias oais='cd $OPENAIR_TARGETS/SIMU/USER'
+#alias oaiex='cd $OPENAIR_TARGETS/SIMU/EXAMPLES'
+#EOF
     source $HOME/.bashrc
 
-    cd $HOME/openairinterface5g/cmake_targets/
-    # xxx l'original avait une seule ligne :
+    cd $OPENAIR_HOME/cmake_targets/
+
     echo Building in $(pwd) - see 'build*log'
-    run-in-log build-oai-1.log ./build_oai -I -w USRP
-    run-in-log build-oai-2.log ./build_oai --eNB -c -w USRP $oscillo
+#    run-in-log build-oai-1.log ./build_oai -I -w USRP
+#    run-in-log build-oai-2.log ./build_oai --eNB -c -w USRP $oscillo
+    run-in-log build-oai-1.log ./build_oai -I --eNB $oscillo --install-system-files -w USRP
+    run-in-log build-oai-2.log ./build_oai -w USRP $oscillo -c --eNB
 #    [ -n "$oscillo" ] && run-in-log build-oai-3.log ./build_oai -x
 
 }
@@ -191,7 +200,7 @@ EOF
 ########################################
 
 # entry point for global orchestration
-doc-nodes run-enb "run-enb 12: does init/configure/start with epc running on node 12"
+doc-nodes run-enb "run-enb 23: does init/configure/start with epc running on node 23"
 function run-enb() {
     peer=$1; shift
     # pass exactly 'False' to skip usrp-reset
@@ -227,6 +236,7 @@ function init() {
 #    echo "========== turning on offload negociations on ${oai_ifname}"
 #    offload-on ${oai_ifname}
     echo "========== setting mtu to 9000 on interface ${oai_ifname}"
+## To check if following is still useful today with new GTP
     ip link set dev ${oai_ifname} mtu 9000
 }
 

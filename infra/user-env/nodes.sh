@@ -46,7 +46,7 @@ function -git-pull-repos() {
 	local repo=$(split_repo_branch repo $repo_branch)
 	local branch=$(split_repo_branch branch $repo_branch)
 	[ -d $repo ] || { echo "WARNING: cannot git pull in $repo - not found"; continue; }
-	echo "========== Updating $repo"
+	echo "========== Updating $repo for branch $branch"
 	cd $repo
 	# always undo any local change
 	git reset --hard HEAD
@@ -395,7 +395,7 @@ function define-peer() {
 doc-nodes get-peer "retrieve the value defined with define-peer"
 function get-peer() {
     if [ ! -f $peer_id_file ]; then
-	echo "ERRROR: you need to run define-peer first" >&2-
+	echo "ERROR: you need to run define-peer first" >&2-
     else
 	echo $(cat $peer_id_file)
     fi
@@ -476,28 +476,27 @@ function demo() {
 	38)
 	    oai-as-hss
 	    define-peer 39
-	    ;;
+	    ;; # for preplab
 	39)
 	    oai-as-epc
 	    define-peer 38
-	    ;;
-
-	37)
-	    oai-as-hss
-	    define-peer 36
-	    ;;
-	36)
+	    ;; # for preplab
+	03)
 	    oai-as-epc
-	    define-peer 37
+	    define-peer 04
 	    ;;
-	19)
+    04)
+        oai-as-hss
+        define-peer 03
+        ;;
+    16)
 	    oai-as-enb
-	    define-peer 36
+	    define-peer 03
 	    ;;
-	11)
+	23)
 	    oai-as-enb
-	    define-peer 36
-	    ;;
+	    define-peer 03
+	    ;;
     esac
     echo "========== Demo setup on node $(r2lab-id)"
     echo "running as a ${oai_role}"
