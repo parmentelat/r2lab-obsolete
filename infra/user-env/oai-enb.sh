@@ -161,7 +161,7 @@ function build-oai5g() {
     fi
 
 ##   It is better to source directly OAI configuration file to get possible future changes from them
-    cd $HOME/openairinterface5g
+    cd /root/openairinterface5g
     source oaienv
 #    OPENAIR_HOME=/root/openairinterface5g
 #    # don't do this twice
