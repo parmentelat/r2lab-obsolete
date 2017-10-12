@@ -496,7 +496,7 @@ function demo() {
 	23)
 	    oai-as-enb
 	    define-peer 03
-	    ;;
+	    ;;
     esac
     echo "========== Demo setup on node $(r2lab-id)"
     echo "running as a ${oai_role}"
