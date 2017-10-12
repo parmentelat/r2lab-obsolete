@@ -19,11 +19,11 @@ esac
 doc-nodes-sep "#################### commands for managing an OAI gateway"
 
 ####################
-run_dir=/root/openair-cn/SCRIPTS
+run_dir=/root/openair-cn/scripts
 [ -n "$runs_hss" ] && {
     log_hss=$run_dir/hss.log
     add-to-logs $log_hss
-    template_dir=/root/openair-cn/ETC/
+    template_dir=/root/openair-cn/etc/
     conf_dir=/usr/local/etc/oai
     add-to-configs $conf_dir/hss.conf
     add-to-configs $conf_dir/freeDiameter/hss_fd.conf
@@ -33,7 +33,7 @@ run_dir=/root/openair-cn/SCRIPTS
     out_mme=$run_dir/mme.out; add-to-logs $out_mme
     log_spgw=$run_dir/spgw.log; add-to-logs $log_spgw
     out_spgw=$run_dir/spgw.out; add-to-logs $out_spgw
-    template_dir=/root/openair-cn/ETC/
+    template_dir=/root/openair-cn/etc/
     conf_dir=/usr/local/etc/oai
     add-to-configs $conf_dir/mme.conf
     add-to-configs $conf_dir/freeDiameter/mme_fd.conf
@@ -68,9 +68,9 @@ function image() {
 
 #####
 # would make sense to add more stuff in the base image - see the NEWS file
-base_packages="git cmake build-essential gdb"
+base_packages="git subversion cmake build-essential gdb"
 
-doc-nodes base "the script to install base software on top of a raw image" 
+doc-nodes base "the script to install base software on top of a raw u16 low-latency image"
 function base() {
 
     git-pull-r2lab
@@ -106,14 +106,15 @@ function base() {
     # this is probably useless, but well
     [ -d r2lab ] || git clone https://github.com/parmentelat/r2lab.git
 
-    echo "========== Setting up cpufrequtils"
-    apt-get install -y cpufrequtils
-    echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
-    update-rc.d ondemand disable
-    /etc/init.d/cpufrequtils restart
-    # this seems to be purely informative ?
-    cd
-    cpufreq-info > cpufreq.info
+##   Following is now useless as it is done in the u16 low-latency image and it requires a reboot to be active
+#    echo "========== Setting up cpufrequtils"
+#    apt-get install -y cpufrequtils
+#    echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
+#    update-rc.d ondemand disable
+#    /etc/init.d/cpufrequtils restart
+#    # this seems to be purely informative ?
+#    cd
+#    cpufreq-info > cpufreq.info
 
 }
 
@@ -347,7 +348,8 @@ EOF
     echo "===== populating DB"
     # xxx ???
     ./hss_db_create localhost root linux hssadmin admin oai_db
-    ./hss_db_import localhost root linux oai_db ../SRC/OAI_HSS/db/oai_db.sql
+    ./hss_db_import localhost root linux oai_db ../src/oai_hss/db/oai_db.sql
+#    ./hss_db_import localhost root linux oai_db ../SRC/OAI_HSS/db/oai_db.sql
     populate-hss-db "$epcid"
 }
 
@@ -442,11 +444,22 @@ function populate-hss-db() {
 ###    echo issuing SQL "$insert_command $update_command"
 ###    mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
 
+## Following for Nexus phone with SIM # 02
     hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000002;"
     echo issuing HACK SQL "$hack_command"
     mysql --user=root --password=linux -e "$hack_command" oai_db
 
-    # mmeidentity table
+## Following for LTE stick with SIM # 07 on node fit02
+    hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000007;"
+    echo issuing HACK SQL "$hack_command"
+    mysql --user=root --password=linux -e "$hack_command" oai_db
+
+## Following for OAI UE with fake SIM # 03 on node fit06
+    hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000003;"
+    echo issuing HACK SQL "$hack_command"
+    mysql --user=root --password=linux -e "$hack_command" oai_db
+
+   # mmeidentity table
     insert_command="INSERT INTO mmeidentity (idmmeidentity, mmehost, mmerealm, \`UE-Reachability\`) VALUES ("
     update_command="ON DUPLICATE KEY UPDATE "
 
