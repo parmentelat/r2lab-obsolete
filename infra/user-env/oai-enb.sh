@@ -209,8 +209,8 @@ function run-enb() {
     stop
     status
     init
-    peer_epc = str(int($peer))
-    configure $peer_epc
+# following should be configure str(int($peer))
+    configure 3
     if [ "$reset_usrp" == "False" ]; then
 	echo "SKIPPING USRP reset"
     else
