@@ -315,12 +315,19 @@ function configure-hss() {
     [ -z "$epcid" ] && { echo "configure-enb: no peer defined - exiting"; return; }
     echo "HSS: Using EPC on $epcid"
 
-    fitid=fit$(r2lab-id)
-
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
     local fitid=fit$id
     local localip="192.168.${oai_subnet}.${id}/24"
+
+    if [ -n "$runs_epc" ]; then
+        # box runs both services                                                                                                      
+	echo "/etc/hosts already configured"
+    else
+	clean-hosts
+	echo "127.0.1.1 $fitid $fitid.${oai_realm}" >> /etc/hosts
+	echo "192.168.${oai_subnet}.$fitid hss hss.${oai_realm}" >> /etc/hosts
+    fi
 
     cd $template_dir
 
