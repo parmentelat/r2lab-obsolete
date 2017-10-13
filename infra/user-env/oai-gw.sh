@@ -326,7 +326,7 @@ function configure-hss() {
     else
 	clean-hosts
 	echo "127.0.1.1 $fitid $fitid.${oai_realm}" >> /etc/hosts
-	echo "192.168.${oai_subnet}.$fitid hss hss.${oai_realm}" >> /etc/hosts
+	echo "192.168.${oai_subnet}.${id} hss hss.${oai_realm}" >> /etc/hosts
     fi
 
     cd $template_dir
