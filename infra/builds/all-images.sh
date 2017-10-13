@@ -49,11 +49,10 @@ cn_opts="
 "
 
 enb_opts="
-    -l /root/build-uhd-ettus.log -l /root/build-oai5g.log
+    -l /root/build-oai5g.log
     -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt
     -l /root/openairinterface5g/cmake_targets/build-oai-1.log
     -l /root/openairinterface5g/cmake_targets/build-oai-2.log
-    -b uhd_find_devices
     -b /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-softmodem
 "
 gw_options="
