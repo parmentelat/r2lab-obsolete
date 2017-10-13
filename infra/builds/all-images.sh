@@ -80,8 +80,7 @@ function u16-ath-noreg() {
 
 function u16-48() {
     bim 2 ubuntu-16.04 u16.04-$DATE "nodes.sh apt-upgrade-all" 
-    bim 3 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" 
-    bim 5 u16-lowlat48-$DATE == "nodes.sh activate-lowlatency" 
+    bim 3 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" "nodes.sh activate-lowlatency"
     bim $cn_opts  6 u16-lowlat48-$DATE u16.48-oai-cn "oai-gw.sh  image"
     bim $enb_opts 7 u16-lowlat48-$DATE u16.48-oai-enb "oai-enb.sh image"
 }
