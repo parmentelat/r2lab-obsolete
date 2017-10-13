@@ -114,7 +114,7 @@ function ubuntu-grub-update() {
 function ubuntu-k319-lowlatency() {
 
     # this recipe proposed by Rohit won't work for us
-    # apt-get install linux-image-3.19.0-61-lowlatency linux-headers-3.19.0-61-lowlatency
+    # apt-get -y install linux-image-3.19.0-61-lowlatency linux-headers-3.19.0-61-lowlatency
     
     # let's go back to ours
     # XXX this however is not enough as it won't change the default kernel for grub
@@ -212,7 +212,7 @@ function clean-kernel-build () {
 
 doc-imaging ubuntu-setup-ntp "install and start ntp"
 function ubuntu-setup-ntp () {
-    apt-get install -y ntp ntpdate
+    apt-get -y install ntp ntpdate
     # let's not tweak ntp.conf, use DHCP instead
     # see faraday:/etc/dnsmasq.conf
     systemctl restart ntp || service ntp start
@@ -268,7 +268,7 @@ rsync git make gcc emacs24-nox
 iw ethtool tcpdump wireshark bridge-utils
 "
 
-    apt-get update
+    apt-get -y update
     apt-get -y install $packages
 }
 

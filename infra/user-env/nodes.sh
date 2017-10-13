@@ -102,7 +102,7 @@ function update-apt-get-packages () {
     export DEBCONF_DEBUG=developer
     apt-get -y update
     apt-get -y upgrade > /root/.apt-get-upgrade.log
-    apt-get clean
+    apt-get -y clean
 }
 
 ##########
@@ -119,11 +119,14 @@ function init-ntp-clock() {
 
 doc-nodes apt-upgrade-all "refresh all packages with apt-get"
 function apt-upgrade-all() {
-    apt-get update
+    apt-get -y update
     # for grub-pc
     debconf-set-selections <<< 'grub-pc	grub-pc/install_devices_disks_changed multiselect /dev/sda'
     debconf-set-selections <<< 'grub-pc	grub-pc/install_devices	multiselect /dev/sda'
-    apt-get upgrade -y
+    apt-get -y upgrade
+    # turn off automatic updates
+    apt-get -y purge unattended-upgrades
+
 }
 ##########
 doc-nodes-sep
