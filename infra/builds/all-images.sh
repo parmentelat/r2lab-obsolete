@@ -40,6 +40,22 @@ DATE=$(date +"%Y-%m-%d")
 #0#     "nodes.sh gitup"
 
 
+cn_opts="
+    -l /root/openair-cn/scripts/build-hss-deps.log
+    -l /root/openair-cn/scripts/build-mme-deps.log
+    -l /root/openair-cn/scripts/build-spgw-deps.log
+    -b /root/openair-cn/build/mme/build/mme
+    -b /root/openair-cn/build/spgw/build/spgw
+"
+
+enb_opts="
+    -l /root/build-uhd-ettus.log -l /root/build-oai5g.log
+    -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt
+    -l /root/openairinterface5g/cmake_targets/build-oai-1.log
+    -l /root/openairinterface5g/cmake_targets/build-oai-2.log
+    -b uhd_find_devices
+    -b /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-softmodem
+"
 gw_options="
     -l /root/openair-cn/SCRIPTS/build-hss-deps.log
     -l /root/openair-cn/SCRIPTS/build-mme-deps.log
@@ -64,6 +80,14 @@ function u16-ath-noreg() {
 }
 
 function u16-48() {
+    bim 2 ubuntu-16.04 u16.04-$DATE "nodes.sh apt-upgrade-all" 
+    bim 3 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" 
+    bim 5 u16-lowlat48-$DATE == "nodes.sh activate-lowlatency" 
+    bim $cn_opts  6 u16-lowlat48-$DATE u16.48-oai-cn "oai-gw.sh  image"
+    bim $enb_opts 7 u16-lowlat48-$DATE u16.48-oai-enb "oai-enb.sh image"
+}
+
+function old-u16-48() {
     bim 2 ubuntu-16.04 u16.04-$DATE "nodes.sh apt-upgrade-all" 
     bim 3 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" 
     bim $gw_options  6 u16-lowlat48-$DATE u16.48-oai-gw-$DATE  "oai-gw.sh  image"
@@ -160,4 +184,4 @@ function  update-v11() {
 
 ####################
 # xxx this clearly should be specified on the command line some day
-u16-ath-noreg
+u16-48

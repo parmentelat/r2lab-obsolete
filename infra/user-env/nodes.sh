@@ -340,6 +340,20 @@ function oai-as() {
     source $path
 }
 
+doc-nodes activate-lowlatency "activate low latency functionality"
+function activate-lowlatency() {
+
+    echo "========== Setting up cpufrequtils"
+    apt-get install -y cpufrequtils i7z
+    echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
+    update-rc.d ondemand disable
+    /etc/init.d/cpufrequtils restart
+    # xxx turning off hyperthreading
+    sed -i -e 's|GRUB_CMDLINE_LINUX_DEFAULT.*|GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_pstate=disable processor.max_cstate=1 intel_idle.max_cstate=0 idle=poll"|' /etc/default/grub
+    update-grub
+    echo 'blacklist intel_powerclamp' >> /etc/modprobe.d/blacklist.conf
+}
+
 doc-nodes oai-as-gw "load additional functions for dealing with an OAI gateway"
 function oai-as-gw() { oai-as gw; }
 
