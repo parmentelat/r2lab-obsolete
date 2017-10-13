@@ -383,11 +383,12 @@ doc-nodes-sep
 peer_id_file=/root/peer.id
 doc-nodes define-peer "defines the id of a peer - stores it in $peer_id_file; e.g. define-peer 16"
 # define-peer allows you to store the identity of the node being used as a gateway
-# example: define-peer 16
+# example: define-peer 03
 # this is stored in file $peer_id_file
 # it is required by some setups that need to know where to reach another service
 function define-peer() {
     id="$1"; shift
+    id=$(printf %02d $id)
     [ -n "$id" ] && echo $id > $peer_id_file
     echo "peer now defined as : " $(cat $peer_id_file)
 }

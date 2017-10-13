@@ -210,7 +210,7 @@ function run-enb() {
     status
     init
 # following should be configure str(int($peer))
-    configure 3
+    configure 03
     if [ "$reset_usrp" == "False" ]; then
 	echo "SKIPPING USRP reset"
     else
@@ -254,6 +254,7 @@ function configure-enb() {
     gw_id=$1; shift
     [ -z "$gw_id" ] && gw_id=$(get-peer)
     [ -z "$gw_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
+    gw_id=$(printf %d $gw_id)
     echo "ENB: Using gateway (EPC) on $gw_id"
 
     git-pull-r2lab   # calls to git-pull-oai should be explicit from the caller if desired
