@@ -366,6 +366,9 @@ function oai-as-epc() { oai-as epc; }
 doc-nodes oai-as-enb "defines the 'oai' command for an oai eNodeB, and related env. vars"
 function oai-as-enb() { oai-as enb; }
 
+doc-nodes oai-as-ue "defines the 'oai' command for an oai UE, and related env. vars"
+function oai-as-ue() { oai-as ue; }
+
 doc-nodes-sep
 
 # this will define add-to-logs and get-logs and grep-logs and tail-logs
@@ -503,11 +506,11 @@ function demo() {
 	    oai-as-epc
 	    define-peer 04
 	    ;;
-    04)
-        oai-as-hss
-        define-peer 03
-        ;;
-    16)
+	04)
+            oai-as-hss
+            define-peer 03
+            ;;
+	16)
 	    oai-as-enb
 	    define-peer 03
 	    ;;
