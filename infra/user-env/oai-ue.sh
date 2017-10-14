@@ -6,13 +6,14 @@ doc-nodes-sep "#################### For managing an OAI UE"
 
 source $(dirname $(readlink -f $BASH_SOURCE))/oai-common.sh
 
-run_dir=/root/openairinterface5g/targets/bin 
-build_dir=/root/openairinterface5g/cmake_targets
+OPENAIR_DIR=/root/openairinterface5g
+run_dir=$OPENAIR_DIR/targets/bin 
+build_dir=$OPENAIR_DIR/cmake_targets
 lte_log="$run_dir/softmodem-ue.log"
 add-to-logs $lte_log
 lte_pcap="$run_dir/softmodem-ue.pcap"
 add-to-datas $lte_pcap
-conf_dir=/root/openairinterface5g/openair3/NAS/TOOLS
+conf_dir=$OPENAIR_DIR/openair3/NAS/TOOLS
 template=ue_eurecom_test_sfr.conf
 add-to-configs $conf_dir/$config
 
@@ -92,7 +93,7 @@ function build-oai5g() {
     fi
 
     # Set OAI environment variables
-    cd /root/openairinterface5g
+    cd $OPENAIR_DIR
     source oaienv
 
     source $HOME/.bashrc
@@ -188,10 +189,15 @@ EOF
     echo in $(pwd)
     sed -i -f oai-ue.sed $template 
     echo "Adapt $template to R2lab in $(pwd)"
-    cd - >& /dev/null
     
+    # Set OAI environment variables
+    cd $OPENAIR_DIR
+    source oaienv
+
+    source $HOME/.bashrc
+
     # then build
-    cd $OPENAIR_HOME/cmake_targets/
+    cd $build_dir
     run-in-log build-oai-ue-2.log ./build_oai -w USRP -x -c --UE
 }
 
