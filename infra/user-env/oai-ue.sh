@@ -35,10 +35,10 @@ function dumpvars() {
 ####################
 doc-nodes image "the entry point for nightly image builds"
 function image() {
-    deps_arg="$1"; shift
+#    deps_arg="$1"; shift
     dumpvars
     base
-    deps "$deps_arg"
+#    deps "$deps_arg"
     build
 }
 
@@ -115,7 +115,7 @@ EOF
     # Set LINUX and PDCP_USE_NETLINK variables in CMakeLists.txt
     cat <<EOF > cmakelists.sed
 s|add_boolean_option(LINUX                   False.*|add_boolean_option(LINUX                   True "used in weird memcpy() in pdcp.c ???")|
-s|add_boolean_option(PDCP_USE_NETLINK            False.*|add_boolean_option(PDCP_USE_NETLINK            True "For eNB, PDCP communicate with a NETLINK socket if connected to network driver, else could use a RT-FIFO"|
+s|add_boolean_option(PDCP_USE_NETLINK            False.*|add_boolean_option(PDCP_USE_NETLINK            True "For eNB, PDCP communicate with a NETLINK socket if connected to network driver, else could use a RT-FIFO")|
 EOF
     sed -i -f cmakelists.sed CMakeLists.txt
     echo "Set LINUX and PDCP_USE_NETLINK variables in CMakeLists.txt at $(pwd)"
