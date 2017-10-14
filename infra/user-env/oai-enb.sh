@@ -241,12 +241,12 @@ function init() {
 }
 
 ####################
+doc-nodes configure "function"
 function configure() {
     configure-enb "$@"
 }
-doc-nodes configure "function"
 
-doc-nodes configure "configure eNodeB (requires define-peer)"
+doc-nodes configure-enb "configure eNodeB (requires define-peer)"
 function configure-enb() {
 
     # pass peer id on the command line, or define it it with define-peer
