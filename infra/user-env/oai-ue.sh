@@ -163,12 +163,11 @@ function init() {
 }
 
 ####################
-doc-nodes configure "function"
 function configure() {
     configure-ue "$@"
 }
+doc-nodes configure "function"
 
-doc-nodes configure-ue "configure UE (no need of define-peer but later maybe add fake SIM number)"
 function configure-ue() {
 
     # pass peer id on the command line, or define it with define-peer
@@ -201,6 +200,7 @@ EOF
     cd $build_dir
     run-in-log build-oai-ue-2.log ./build_oai -w USRP -x -c --UE
 }
+doc-nodes configure-ue "configure UE (no need of define-peer but later maybe add fake SIM number)"
 
 ####################
 doc-nodes start "starts lte-softmodem - run with -d to turn on soft oscilloscope" 
