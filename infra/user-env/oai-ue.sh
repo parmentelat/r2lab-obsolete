@@ -193,6 +193,7 @@ EOF
     # Set OAI environment variables
     cd $OPENAIR_DIR
     source oaienv
+    cd - >& /dev/null
 
     source $HOME/.bashrc
 
@@ -213,11 +214,12 @@ function start() {
 	esac
     fi
 
-cd $run_dir
-#    echo "In $(pwd)"
+    cd - >& /dev/null
+    cd $run_dir
+    echo "in $(pwd)"
     echo "Running lte-softmodem UE mode in background see logs at $lte_ue_log"
     ./init_nas_s1 UE
-    ./lte-softmodem.Rel14  -U -C2660000000 -r25 --ue-scan-carrier --ue-txgain 100 --ue-rxgain 120 $oscillo >& $lte_ue_log &
+    ./lte-softmodem.Rel14 -U -C2660000000 -r25 --ue-scan-carrier --ue-txgain 100 --ue-rxgain 120 $oscillo >& $lte_log &
     cd - >& /dev/null
 }
 
