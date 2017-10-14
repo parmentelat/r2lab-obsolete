@@ -55,6 +55,14 @@ enb_opts="
     -l /root/openairinterface5g/cmake_targets/build-oai-2.log
     -b /root/openairinterface5g/cmake_targets/lte_build_oai/build/lte-softmodem
 "
+ue_opts="
+    -l /root/build-oai5g-ue.log
+    -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt
+    -l /root/openairinterface5g/cmake_targets/build-oai-ue-1.log
+    -b /root/openairinterface5g/targets/bin/lte-softmodem.Rel14
+    -b /root/openairinterface5g/targets/bin/init_nas_s1
+"
+# following 2 are deprecated
 gw_options="
     -l /root/openair-cn/SCRIPTS/build-hss-deps.log
     -l /root/openair-cn/SCRIPTS/build-mme-deps.log
@@ -81,10 +89,12 @@ function u16-ath-noreg() {
 function u16-48() {
     bim 2 ubuntu-16.04 u16.04-$DATE "nodes.sh apt-upgrade-all" 
     bim 3 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" "nodes.sh activate-lowlatency"
-    bim $cn_opts  6 u16-lowlat48-$DATE u16.48-oai-cn "oai-gw.sh  image"
-    bim $enb_opts 7 u16-lowlat48-$DATE u16.48-oai-enb "oai-enb.sh image"
+    bim $cn_opts 5 u16-lowlat48-$DATE u16.48-oai-cn "oai-gw.sh  image"
+    bim $enb_opts 6 u16-lowlat48-$DATE u16.48-oai-enb "oai-enb.sh image"
+    bim $ue_opts 7 u16-lowlat48-$DATE u16.48-oai-ue "oai-ue.sh image"
 }
 
+#following deprecated
 function old-u16-48() {
     bim 2 ubuntu-16.04 u16.04-$DATE "nodes.sh apt-upgrade-all" 
     bim 3 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" 
@@ -92,6 +102,7 @@ function old-u16-48() {
     bim $enb_options 7 u16-lowlat48-$DATE u16.48-oai-enb-$DATE "oai-enb.sh image uhd-oai"
 }
 
+#following deprecated
 function u16-47() {
     #bim 1 ubuntu-16.04-v5-ntp == "imaging.sh common-setup-user-env"
     #bim 2 ubuntu-16.04-v5-ntp u16-lowlat47 "imaging.sh ubuntu-k47-lowlatency"
@@ -99,6 +110,7 @@ function u16-47() {
     bim $enb_options 5 u16-lowlat47 u16.47-oai-enb "oai-enb.sh image"
 }
 
+#following deprecated
 function u14-48(){
     #bim 6 ubuntu-14.04-v5-ntp == "imaging.sh common-setup-user-env"
     #bim 7 ubuntu-14.04-v5-ntp u14-lowlat48 "imaging.sh ubuntu-k48-lowlatency"
@@ -106,6 +118,7 @@ function u14-48(){
     ###bim $enb_options 7 u14-lowlat48 u14.48-oai-enb "oai-enb.sh image"
 }
 
+#following deprecated
 function u14-319(){
     #bim 1 ubuntu-14.04-v5-ntp u14-lowlat319 "imaging.sh ubuntu-k319-lowlatency"
     ###bim $gw_options  2 u14-lowlat48 u14.48-oai-gw "oai-gw.sh image"
