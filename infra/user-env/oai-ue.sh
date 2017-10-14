@@ -168,7 +168,7 @@ function configure() {
     configure-ue "$@"
 }
 
-doc-nodes configure "configure UE (no need of define-peer but later maybe add fake SIM number)"
+doc-nodes configure-ue "configure UE (no need of define-peer but later maybe add fake SIM number)"
 function configure-ue() {
 
     # pass peer id on the command line, or define it with define-peer
