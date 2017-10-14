@@ -14,7 +14,6 @@ lte_pcap="$run_dir/softmodem-ue.pcap"
 add-to-datas $lte_pcap
 conf_dir=/root/openairinterface5g/openair3/NAS/TOOLS
 template=ue_eurecom_test_sfr.conf
-config=ue-r2lab.conf
 add-to-configs $conf_dir/$config
 
 doc-nodes dumpvars "list environment variables"
@@ -165,7 +164,7 @@ function init() {
 ####################
 doc-nodes configure "function"
 function configure() {
-    configure-enb "$@"
+    configure-ue "$@"
 }
 
 doc-nodes configure "configure UE (no need of define-peer but later maybe add fake SIM number)"
@@ -187,8 +186,8 @@ s|HPLMN=.*|HPLMN= "20893";|
 s|"20893"|"20895"|
 EOF
     echo in $(pwd)
-    sed -f oai-ue.sed < $template > $config
-    echo "Overwrote $config in $(pwd)"
+    sed -i -f oai-ue.sed $template 
+    echo "Adapt $template to R2lab in $(pwd)"
     cd - >& /dev/null
     
     # then build
