@@ -73,7 +73,8 @@ base_packages="git subversion cmake build-essential gdb"
 doc-nodes base "the script to install base software on top of a raw u16 low-latency image"
 function base() {
 
-    git-pull-r2lab
+##remove for debug
+#    git-pull-r2lab
     git-pull-oai
     # apt-get requirements
     apt-get update

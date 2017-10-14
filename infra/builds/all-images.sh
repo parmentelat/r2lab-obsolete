@@ -7,7 +7,7 @@ case $(hostname) in
 	;;
     *)
 	gateway=inria_r2lab.tutorial@faraday.inria.fr
-	gitroot=$HOME/git/r2lab
+	gitroot=$HOME/r2lab
 	;;
 esac
 
