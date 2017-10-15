@@ -35,8 +35,8 @@ EOF
     }
     
 ##########
-doc-nodes git-pull-r2lab "updates /root/r2lab from git repo"
 function git-pull-r2lab() { -git-pull-repos /root/r2lab@public; }
+doc-nodes git-pull-r2lab "updates /root/r2lab from git repo"
 
 # branches MUST be specified
 function -git-pull-repos() {
