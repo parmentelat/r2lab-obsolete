@@ -214,7 +214,7 @@ function check-etc-hosts() {
 
     id=$(r2lab-id)
     fitid=fit$id
-    hss_id=$(printf %d $hss_id)
+    id=$(printf %d $id)
 
     if [ -n "$runs_hss" -a -n "$runs_epc" ]; then
 	# box runs both services
