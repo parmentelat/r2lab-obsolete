@@ -73,8 +73,8 @@ base_packages="git subversion cmake build-essential gdb"
 doc-nodes base "the script to install base software on top of a raw u16 low-latency image"
 function base() {
 
-##remove for debug
-#    git-pull-r2lab
+
+    git-pull-r2lab
     git-pull-oai
     # apt-get requirements
     apt-get update
@@ -214,7 +214,8 @@ function check-etc-hosts() {
 
     id=$(r2lab-id)
     fitid=fit$id
-    
+    hss_id=$(printf %d $hss_id)
+
     if [ -n "$runs_hss" -a -n "$runs_epc" ]; then
 	# box runs both services
 	echo "127.0.1.1 $fitid $fitid.${oai_realm} hss hss.${oai_realm}" >> /etc/hosts
