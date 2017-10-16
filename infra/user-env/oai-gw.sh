@@ -215,6 +215,7 @@ function check-etc-hosts() {
     id=$(r2lab-id)
     fitid=fit$id
     id=$(printf %d $id)
+    hss_id=$(printf %d $hss_id)
 
     if [ -n "$runs_hss" -a -n "$runs_epc" ]; then
 	# box runs both services
@@ -249,6 +250,7 @@ function configure-epc() {
     echo "EPC: Using  HSS on $hss_id"
 
     check-etc-hosts $hss_id
+    hss_id=$(printf %d $hss_id)
 
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
