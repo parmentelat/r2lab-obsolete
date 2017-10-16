@@ -246,7 +246,10 @@ function configure-epc() {
     # pass peer id on the command line, or define it it with define-peer
     hss_id=$1; shift
     [ -z "$hss_id" ] && hss_id=$(get-peer)
-    [ -z "$hss_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
+    [ -z "$h
+ss_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
+    # ensure nodes functions are known
+    bashrc()
     hss_id=`ip2id $hss_id`
     echo "EPC: Using  HSS on $hss_id"
 
@@ -322,6 +325,7 @@ function configure-hss() {
     epcid=$1; shift
     [ -z "$epcid" ] && epcid=$(get-peer)
     [ -z "$epcid" ] && { echo "configure-enb: no peer defined - exiting"; return; }
+    bashrc()
     epcid=`ip2id $epcid`
     echo "HSS: Using EPC on $epcid"
 
@@ -376,6 +380,7 @@ function populate-hss-db() {
 
     epc_id=$1; shift
     [ -z "$epc_id" ] && { echo "check-etc-hosts requires hss-id - exiting" ; return ; }
+    bashrc()
     # ensure that epc_id is encoded with 2 digits
     epc_id=`ip2id $epc_id`
     
