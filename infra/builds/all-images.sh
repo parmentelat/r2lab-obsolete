@@ -60,7 +60,6 @@ ue_opts="
     -l /root/openairinterface5g/cmake_targets/log/asn1c_install_log.txt
     -l /root/openairinterface5g/cmake_targets/build-oai-ue-1.log
     -b /root/openairinterface5g/targets/bin/lte-softmodem.Rel14
-    -b /root/openairinterface5g/targets/bin/init_nas_s1
 "
 # following 2 are deprecated
 gw_options="

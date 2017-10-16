@@ -9,6 +9,7 @@ source $(dirname $(readlink -f $BASH_SOURCE))/oai-common.sh
 OPENAIR_DIR=/root/openairinterface5g
 run_dir=$OPENAIR_DIR/targets/bin 
 build_dir=$OPENAIR_DIR/cmake_targets
+tools_dir=$OPENAIR_DIR/cmake_targets/tools/
 lte_log="$run_dir/softmodem-ue.log"
 add-to-logs $lte_log
 lte_pcap="$run_dir/softmodem-ue.pcap"
@@ -98,17 +99,20 @@ function build-oai5g() {
 
     source $HOME/.bashrc
 
-    cd $run_dir
-    # Retrieve init_nas_s1 script from following URL
-    wget https://gitlab.eurecom.fr/oai/openairinterface5g/wikis/HowToConnectOAIENBWithOAIUEWithS1Interface/init_nas_s1
-    chmod a+x init_nas_s1
+# following is no more required as init_nas_s1 is part of openairinterface5g
+#    cd $run_dir
+#    # Retrieve init_nas_s1 script from following URL
+#    wget https://gitlab.eurecom.fr/oai/openairinterface5g/wikis/HowToConnectOAIENBWithOAIUEWithS1Interface/init_nas_s1
+#
+#    # Modify the OPENAIR_DIR variable to /root/openairinterface5g in this file
+#    cat <<EOF > init_nas_s1.sed
+#s|OPENAIR_DIR=.*|OPENAIR_DIR=/root/openairinterface5g|
+#EOF
+#    sed -i -f init_nas_s1.sed init_nas_s1
+#    echo "Set OPENAIR_DIR variable in init_nas_s1 in $(pwd)"
 
-    # Modify the OPENAIR_DIR variable to /root/openairinterface5g in this file (see attached example)
-    cat <<EOF > init_nas_s1.sed
-s|OPENAIR_DIR=.*|OPENAIR_DIR=/root/openairinterface5g|
-EOF
-    sed -i -f init_nas_s1.sed init_nas_s1
-    echo "Set OPENAIR_DIR variable in init_nas_s1 in $(pwd)"
+    # make following script runnable
+    chmod a+x $tools_dir/init_nas_s1
 
     cd $build_dir
 
@@ -199,6 +203,9 @@ EOF
     # then build
     cd $build_dir
     run-in-log build-oai-ue-2.log ./build_oai -w USRP -x -c --UE
+
+    # load the ue_ip module and sets up IP for the UE
+    $tools_dir/init_nas_s1 UE
 }
 doc-nodes configure-ue "configure UE (no need of define-peer but later maybe add fake SIM number)"
 
@@ -218,7 +225,6 @@ function start() {
     cd $run_dir
     echo "in $(pwd)"
     echo "Running lte-softmodem UE mode in background see logs at $lte_ue_log"
-    ./init_nas_s1 UE
     ./lte-softmodem.Rel14 -U -C2660000000 -r25 --ue-scan-carrier --ue-txgain 100 --ue-rxgain 120 $oscillo >& $lte_log &
     cd - >& /dev/null
 }
