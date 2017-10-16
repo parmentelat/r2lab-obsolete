@@ -253,6 +253,7 @@ function configure-epc() {
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
     local fitid=fit$id
+    id=$(printf %d $id)
     local localip="192.168.${oai_subnet}.${id}/24"
     local hssip="192.168.${oai_subnet}.${hss_id}"
 
@@ -320,6 +321,7 @@ function configure-hss() {
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
     local fitid=fit$id
+    id=$(printf %d $id)
     local localip="192.168.${oai_subnet}.${id}/24"
 
     if [ -n "$runs_epc" ]; then
@@ -367,6 +369,7 @@ function populate-hss-db() {
 
     epc_id=$1; shift
     [ -z "$epc_id" ] && { echo "check-etc-hosts requires hss-id - exiting" ; return ; }
+    epc_id=$(printf %02d $epc_id)
     
     # insert our SIM in the hss db
     # NOTE: setting the 'key' column raises a special issue as key is a keyword in
