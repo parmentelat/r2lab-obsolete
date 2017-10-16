@@ -252,12 +252,13 @@ function configure-enb() {
     gw_id=$1; shift
     [ -z "$gw_id" ] && gw_id=$(get-peer)
     [ -z "$gw_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
-    gw_id=$(printf %d $gw_id)
     echo "ENB: Using gateway (EPC) on $gw_id"
+    gw_id=`id2ip $gw_id`
 
     git-pull-r2lab   # calls to git-pull-oai should be explicit from the caller if desired
     id=$(r2lab-id)
     fitid=fit$id
+    id=`id2ip $id`
     cd $conf_dir
     ### xxx TMP : we use eth1 instead of data
     # note that this requires changes in
