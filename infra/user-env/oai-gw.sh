@@ -247,6 +247,7 @@ function configure-epc() {
     hss_id=$1; shift
     [ -z "$hss_id" ] && hss_id=$(get-peer)
     [ -z "$hss_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
+    hss_id=$(printf %02d $hss_id)
     echo "EPC: Using  HSS on $hss_id"
 
     check-etc-hosts $hss_id
@@ -318,6 +319,7 @@ function configure-hss() {
     epcid=$1; shift
     [ -z "$epcid" ] && epcid=$(get-peer)
     [ -z "$epcid" ] && { echo "configure-enb: no peer defined - exiting"; return; }
+    epcid=$(printf %02d $epcid)
     echo "HSS: Using EPC on $epcid"
 
     mkdir -p /usr/local/etc/oai/freeDiameter
@@ -369,9 +371,9 @@ EOF
 # not declared in available since it's called by configure
 function populate-hss-db() {
 
+    # assert here epc_id is encoded with 2 digits
     epc_id=$1; shift
     [ -z "$epc_id" ] && { echo "check-etc-hosts requires hss-id - exiting" ; return ; }
-    epc_id=$(printf %02d $epc_id)
     
     # insert our SIM in the hss db
     # NOTE: setting the 'key' column raises a special issue as key is a keyword in
