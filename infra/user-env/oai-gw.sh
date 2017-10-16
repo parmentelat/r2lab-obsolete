@@ -255,10 +255,12 @@ function configure-epc() {
 
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
+    echo "before id = $id"
     local fitid=fit$id
     id=$(printf %d $id)
     local localip="192.168.${oai_subnet}.${id}/24"
     local hssip="192.168.${oai_subnet}.${hss_id}"
+    echo "after id = $id and hssid = $hssid"
 
     cd $template_dir
 
