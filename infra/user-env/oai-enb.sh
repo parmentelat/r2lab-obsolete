@@ -7,8 +7,7 @@ doc-nodes-sep "#################### For managing an OAI enodeb"
 source $(dirname $(readlink -f $BASH_SOURCE))/oai-common.sh
 
 OPENAIR_HOME=/root/openairinterface5g
-build_dir=$OPENAIR_HOME/cmake_targets/
-#run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
+build_dir=$OPENAIR_HOME/cmake_targets/lte_build_oai/build
 run_dir=$build_dir
 lte_log="$run_dir/softmodem.log"
 add-to-logs $lte_log
