@@ -6,18 +6,19 @@ doc-nodes-sep "#################### For managing an OAI enodeb"
 
 source $(dirname $(readlink -f $BASH_SOURCE))/oai-common.sh
 
-run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
+OPENAIR_HOME==/root/openairinterface5g
+build_dir=$OPENAIR_HOME/cmake_targets/
+#run_dir=/root/openairinterface5g/cmake_targets/lte_build_oai/build
+run_dir=$build_dir
 lte_log="$run_dir/softmodem.log"
 add-to-logs $lte_log
 lte_pcap="$run_dir/softmodem.pcap"
 add-to-datas $lte_pcap
-conf_dir=/root/openairinterface5g/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
-#template=enb.band7.tm1.usrpb210.epc.remote.conf
+conf_dir=$OPENAIR_HOME/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
 template=enb.band7.tm1.usrpb210.conf
 config=r2lab.conf
 add-to-configs $conf_dir/$config
 
-#requires_chmod_x="/root/openairinterface5g/targets/RT/USER/init_b200.sh"
 
 doc-nodes dumpvars "list environment variables"
 function dumpvars() {
@@ -62,80 +63,13 @@ function base() {
     apt-get update
     apt-get install -y $base_packages
 
-    # 
     git-ssl-turn-off-verification
-##   No need to clone openair-cn for eNB
-##    echo "========== Running git clone for openair-cn and r2lab and openinterface5g"
     echo "========== Running git clone for r2lab and openinterface5g"
     cd
-##    [ -d openair-cn ] || git clone https://gitlab.eurecom.fr/oai/openair-cn.git
+
     [ -d openairinterface5g ] || git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git
     [ -d /root/r2lab ] || git clone https://github.com/parmentelat/r2lab.git
-
-##    Following is now done in the ubuntu-lowlatency image as it requires a reboot to be active
-##
-#    echo "========== Setting up cpufrequtils"
-#    apt-get install -y cpufrequtils
-#    echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
-#    update-rc.d ondemand disable
-#    /etc/init.d/cpufrequtils restart
-#    # this seems to be purely informative ?
-#    cd
-#    cpufreq-info > cpufreq.info
-#
-#    # xxx turning off hyperthreading : adding noht to the line below does not seem to work
-#    sed -i -e 's|GRUB_CMDLINE_LINUX_DEFAULT.*|GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_pstate=disable processor.max_cstate=1 intel_idle.max_cstate=0 idle=poll"|' /etc/default/grub
-#    update-grub
-
 }
-
-## Following is no more useful as uhd must be installed within OAI build
-##
-#doc-nodes deps "builds uhd for an oai image"
-#function deps() {
-#    # arg1 should be uhd-ettus or uhd-oai
-#    
-#    git-pull-r2lab
-#    git-pull-oai
-#    case $1 in
-#	uhd-ettus)
-#	    echo Building UHD with ETTUS recipe
-#	    build-uhd-ettus ;;
-#	uhd-oai)
-#	    echo Building UHD with OAI recipe
-#	    build-uhd-oai ;;
-#	*)
-#	    echo unkwown argument $1 to deps
-#	    exit 1 ;;
-#    esac
-#}
-# xxx Rohit says this is WRONG - use oai recipe instead
-#doc-nodes build-uhd-ettus "builds UHD from github.com/EttusResearch/uhd.git"
-#function build-uhd-ettus() {
-#    cd
-#    echo "========== Building UHD from ettus git repo"
-#    if [ -d uhd ]; then
-#	cd uhd; git pull
-#    else
-#	git clone git://github.com/EttusResearch/uhd.git
-#	cd uhd
-#    fi
-#    mkdir -p build
-#    cd build
-#    cmake ../host
-#    make
-#    make test
-#    make install
-#}
-#
-#doc-nodes build-uhd-oai "build UHD using the OAI recipe" 
-#function build-uhd-oai() {
-#    git-pull-r2lab
-#    git-pull-oai
-#    cd /root/openairinterface5g/cmake_targets
-##    run-in-log build-uhd.log ./build_oai -I --install-optional-packages -w USRP
-#    run-in-log build-uhd.log ./build_oai -I -w USRP
-#}
 
 doc-nodes build "builds oai5g for an oai image"
 function build() {
@@ -143,8 +77,8 @@ function build() {
     git-pull-r2lab
     git-pull-oai
 
-    cd
-    echo Building OAI5G - see $HOME/build-oai5g.log
+    cd $build_dir
+    echo Building OAI5G - see $build_dir/build-oai5g.log
     build-oai5g -x >& build-oai5g.log
 
 }
@@ -160,38 +94,15 @@ function build-oai5g() {
 	esac
     fi
 
-##   It is better to source directly OAI configuration file to get possible future changes from them
-    cd /root/openairinterface5g
+    cd $OPENAIR_HOME
     source oaienv
-#    OPENAIR_HOME=/root/openairinterface5g
-#    # don't do this twice
-#    grep -q OPENAIR ~/.bashrc >& /dev/null || cat >> $HOME/.bashrc <<EOF
-#export OPENAIR_HOME=$OPENAIR_HOME
-#export OPENAIR1_DIR=$OPENAIR_HOME/openair1
-#export OPENAIR2_DIR=$OPENAIR_HOME/openair2
-#export OPENAIR3_DIR=$OPENAIR_HOME/openair3
-#export OPENAIRCN_DIR=$OPENAIR_HOME/openair-cn
-#export OPENAIR_TARGETS=$OPENAIR_HOME/targets
-#alias oairoot='cd $OPENAIR_HOME'
-#alias oai0='cd $OPENAIR0_DIR'
-#alias oai1='cd $OPENAIR1_DIR'
-#alias oai2='cd $OPENAIR2_DIR'
-#alias oai3='cd $OPENAIR3_DIR'
-#alias oait='cd $OPENAIR_TARGETS'
-#alias oaiu='cd $OPENAIR2_DIR/UTIL'
-#alias oais='cd $OPENAIR_TARGETS/SIMU/USER'
-#alias oaiex='cd $OPENAIR_TARGETS/SIMU/EXAMPLES'
-#EOF
     source $HOME/.bashrc
 
-    cd $OPENAIR_HOME/cmake_targets/
+    cd $build_dir
 
     echo Building in $(pwd) - see 'build*log'
-#    run-in-log build-oai-1.log ./build_oai -I -w USRP
-#    run-in-log build-oai-2.log ./build_oai --eNB -c -w USRP $oscillo
     run-in-log build-oai-1.log ./build_oai -I --eNB $oscillo --install-system-files -w USRP
     run-in-log build-oai-2.log ./build_oai -w USRP $oscillo -c --eNB
-#    [ -n "$oscillo" ] && run-in-log build-oai-3.log ./build_oai -x
 
 }
 
@@ -260,15 +171,7 @@ function configure-enb() {
     fitid=fit$id
     id=$(echo $id | sed  's/^0*//')
     cd $conf_dir
-    ### xxx TMP : we use eth1 instead of data
-    # note that this requires changes in
-    # /etc/network/interfaces as well
-    # /etc/udev/rules.d/70..blabla as well
-    # xxx on his printed stabyloed configs, Thierry T
-    # had also changed this
-    #s|eNB_name[ 	]*=.*|eNB_name = "softmodem_$fitid";|
-    # but I suspect it actually causes this
-    # r2lab.conf, mismatch between 1 active eNBs and 0 corresponding defined eNBs !
+
     cat <<EOF > oai-enb.sed
 s|pdsch_referenceSignalPower[ 	]*=.*|pdsch_referenceSignalPower = -24;|
 s|mobile_network_code[ 	]*=.*|mobile_network_code = "95";|
@@ -278,8 +181,7 @@ s|ENB_INTERFACE_NAME_FOR_S1U[ 	]*=.*|ENB_INTERFACE_NAME_FOR_S1U = "${oai_ifname}
 s|ENB_IPV4_ADDRESS_FOR_S1_MME[ 	]*=.*|ENB_IPV4_ADDRESS_FOR_S1_MME = "192.168.${oai_subnet}.$id/24";|
 s|ENB_IPV4_ADDRESS_FOR_S1U[ 	]*=.*|ENB_IPV4_ADDRESS_FOR_S1U = "192.168.${oai_subnet}.$id/24";|
 EOF
-# s,tx_gain.*,tx_gain = 80;,
-# s,rx_gain.*,rx_gain = 80;,
+
     echo in $(pwd)
     sed -f oai-enb.sed < $template > $config
     echo "Overwrote $config in $(pwd)"
