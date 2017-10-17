@@ -37,19 +37,16 @@ function dumpvars() {
 ####################
 doc-nodes image "the entry point for nightly image builds"
 function image() {
-    deps_arg="$1"; shift
+#    deps_arg="$1"; shift
     dumpvars
     base
-    deps "$deps_arg"
+#    deps "$deps_arg"
     build
 }
 
 ####################
 # would make sense to add more stuff in the base image - see the NEWS file
-base_packages="git subversion libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential libffi-dev
-texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsfonts imagemagick-common 
- gdb ruby flex bison gfortran xterm mysql-common python-pip python-numpy qtcore4-l10n tcl tk xorg-sgml-doctools
- i7z
+base_packages="git subversion libboost-all-dev libusb-1.0-0-dev python-mako doxygen python-docutils cmake build-essential libffi-dev texlive-base texlive-latex-base ghostscript gnuplot-x11 dh-apparmor graphviz gsfonts imagemagick-common  gdb ruby flex bison gfortran xterm mysql-common python-pip python-numpy qtcore4-l10n tcl tk xorg-sgml-doctools i7z
 "
 
 doc-nodes base "the script to install base software on top of a raw image" 
@@ -65,7 +62,7 @@ function base() {
     git-ssl-turn-off-verification
     echo "========== Running git clone for r2lab and openinterface5g"
     cd
-
+    # following should be useless
     [ -d openairinterface5g ] || git clone https://gitlab.eurecom.fr/oai/openairinterface5g.git
     [ -d /root/r2lab ] || git clone https://github.com/parmentelat/r2lab.git
 }
@@ -143,11 +140,11 @@ function init() {
     init-ntp-clock
     # data interface if relevant
     [ "$oai_ifname" == data ] && echo Checking interface is up : $(turn-on-data)
-    echo "========== turning on offload negociations on ${oai_ifname}"
-    offload-on ${oai_ifname}
-#    echo "========== setting mtu to 9000 on interface ${oai_ifname}"
+#    echo "========== turning on offload negociations on ${oai_ifname}"
+#    offload-on ${oai_ifname}
+    echo "========== setting mtu to 9000 on interface ${oai_ifname}"
 ## To check if following is still useful today with new GTP
-#    ip link set dev ${oai_ifname} mtu 9000
+    ip link set dev ${oai_ifname} mtu 9000
 }
 
 ####################
