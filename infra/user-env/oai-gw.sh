@@ -214,8 +214,8 @@ function check-etc-hosts() {
 
     id=$(r2lab-id)
     fitid=fit$id
-    id=`id2ip $id`
-    hss_id=`id2ip $hss_id`
+    id=$(echo $id | sed  's/^0*//')
+    hss_id=$(echo $hss_id | sed  's/^0*//')
 
     if [ -n "$runs_hss" -a -n "$runs_epc" ]; then
 	# box runs both services
@@ -250,18 +250,17 @@ function configure-epc() {
 ss_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
     # ensure nodes functions are known
     bashrc()
-    hss_id=`ip2id $hss_id`
+    hss_id=$(echo -n "0"${hss_id}|tail -c 2)
     echo "EPC: Using  HSS on $hss_id"
 
     check-etc-hosts $hss_id
     
-    hss_id=$(printf %d $hss_id)
-    hss_id=`id2ip $hss_id`
+    hss_id=$(echo $hss_id | sed  's/^0*//')
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
     echo "before id = $id"
     local fitid=fit$id
-    id=`id2ip $id`
+    id= $(echo $id | sed  's/^0*//')
     local localip="192.168.${oai_subnet}.${id}/24"
     local hssip="192.168.${oai_subnet}.${hss_id}"
     echo "after id = $id and hssid = $hssid"
@@ -326,13 +325,13 @@ function configure-hss() {
     [ -z "$epcid" ] && epcid=$(get-peer)
     [ -z "$epcid" ] && { echo "configure-enb: no peer defined - exiting"; return; }
     bashrc()
-    epcid=`ip2id $epcid`
+    epcid=$(echo -n "0"${epcid}|tail -c 2)
     echo "HSS: Using EPC on $epcid"
 
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
     local fitid=fit$id
-    id=`id2ip $id`
+    id=$(echo $id | sed  's/^0*//')
     local localip="192.168.${oai_subnet}.${id}/24"
 
     if [ -n "$runs_epc" ]; then
@@ -382,7 +381,7 @@ function populate-hss-db() {
     [ -z "$epc_id" ] && { echo "check-etc-hosts requires hss-id - exiting" ; return ; }
     bashrc()
     # ensure that epc_id is encoded with 2 digits
-    epc_id=`ip2id $epc_id`
+    epc_id=$(echo -n "0"${epc_id}|tail -c 2)
     
     # insert our SIM in the hss db
     # NOTE: setting the 'key' column raises a special issue as key is a keyword in
