@@ -259,10 +259,10 @@ ss_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
     local id=$(r2lab-id)
     echo "before id = $id"
     local fitid=fit$id
-    id= $(echo $id | sed  's/^0*//')
+    id=$(echo $id | sed  's/^0*//')
     local localip="192.168.${oai_subnet}.${id}/24"
     local hssip="192.168.${oai_subnet}.${hss_id}"
-    echo "after id = $id and hssid = $hssid"
+    echo "after id = $id and hssip = $hssip"
 
     cd $template_dir
 
