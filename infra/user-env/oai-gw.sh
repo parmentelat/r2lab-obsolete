@@ -195,6 +195,9 @@ function init() {
 #	echo "========== turning on offload negociations on $interface"
 #	offload-on $interface
     done
+    # TO BE VERIFIED WITH LIONEL IF GTP MODULE LOADING SHOULD BE MANUAL OR DONE WITHIN THE BUILD
+    # for now, do it manually...
+    modprobe gtp
 
     enable-nat-data
 }
