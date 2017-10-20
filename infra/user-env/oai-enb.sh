@@ -112,7 +112,8 @@ function run-enb() {
     peer=$1; shift
     # pass exactly 'False' to skip usrp-reset
     reset_usrp=$1; shift
-    oai_role=enb
+## for debug    oai_role=enb
+    oai-as-enb
     stop
     status
     init
