@@ -222,16 +222,16 @@ function check-etc-hosts() {
 
     if [ -n "$runs_hss" -a -n "$runs_epc" ]; then
 	# box runs both services
-	echo "127.0.1.1 $fitid $fitid.${oai_realm} hss hss.${oai_realm}" >> /etc/hosts
+	echo "127.0.1.1 $fitid.${oai_realm} $fitid hss.${oai_realm} hss" >> /etc/hosts
     elif [ -n "$runs_hss" ]; then
 	# HSS only
-	echo "127.0.1.1 $fitid $fitid.${oai_realm}" >> /etc/hosts
-	echo "192.168.${oai_subnet}.${id} hss hss.${oai_realm}" >> /etc/hosts
+	echo "127.0.1.1 $fitid.${oai_realm} $fitid" >> /etc/hosts
+	echo "192.168.${oai_subnet}.${id} hss.${oai_realm} hss" >> /etc/hosts
     else
 	[ -z "$hss_id" ] && { echo "ERROR: no peer defined"; return; }
 	echo "Using HSS on $hss_id"
-	echo "127.0.1.1 $fitid $fitid.${oai_realm}" >> /etc/hosts
-	echo "192.168.${oai_subnet}.${hss_id} hss hss.${oai_realm}" >> /etc/hosts
+	echo "127.0.1.1 $fitid.${oai_realm} $fitid" >> /etc/hosts
+	echo "192.168.${oai_subnet}.${hss_id} hss.${oai_realm} hss" >> /etc/hosts
     fi
 }
 	
@@ -260,12 +260,12 @@ ss_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
     hss_id=$(echo $hss_id | sed  's/^0*//')
     mkdir -p /usr/local/etc/oai/freeDiameter
     local id=$(r2lab-id)
-    echo "before id = $id"
+    echo "**debug** before id = $id"
     local fitid=fit$id
     id=$(echo $id | sed  's/^0*//')
     local localip="192.168.${oai_subnet}.${id}/24"
     local hssip="192.168.${oai_subnet}.${hss_id}"
-    echo "after id = $id and hssip = $hssip"
+    echo "**debug** after id = $id and hssip = $hssip"
 
     cd $template_dir
 
@@ -340,8 +340,8 @@ function configure-hss() {
 	echo "/etc/hosts already configured"
     else
 	clean-hosts
-	echo "127.0.1.1 $fitid $fitid.${oai_realm}" >> /etc/hosts
-	echo "192.168.${oai_subnet}.${id} hss hss.${oai_realm}" >> /etc/hosts
+	echo "127.0.1.1 $fitid.${oai_realm} $fitid" >> /etc/hosts
+	echo "192.168.${oai_subnet}.${id} hss.${oai_realm} hss" >> /etc/hosts
     fi
 
     cd $template_dir
