@@ -112,12 +112,13 @@ function run-enb() {
     peer=$1; shift
     # pass exactly 'False' to skip usrp-reset
     reset_usrp=$1; shift
-## for debug    oai_role=enb
-    oai-as-enb
+    oai_role=enb
     stop
     status
     init
     echo "run-enb: configure $peer"
+    configure $peer
+# debug
     configure $peer
     if [ "$reset_usrp" == "False" ]; then
 	echo "SKIPPING USRP reset"
@@ -164,7 +165,7 @@ function configure-enb() {
     echo "ENB: Using gateway (EPC) on $gw_id"
     gw_id=$(echo $gw_id | sed  's/^0*//')
 
-    git-pull-r2lab   # calls to git-pull-oai should be explicit from the caller if desired
+#    git-pull-r2lab   # calls to git-pull-oai should be explicit from the caller if desired
     id=$(r2lab-id)
     fitid=fit$id
     id=$(echo $id | sed  's/^0*//')
