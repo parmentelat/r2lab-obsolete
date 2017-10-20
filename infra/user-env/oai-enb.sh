@@ -119,7 +119,7 @@ function run-enb() {
     echo "run-enb: configure $peer"
     configure $peer
 # debug DO NOT WHY BUT WE NEED TO DO IT TWICE, ELSE FIRST RUN FAILS TO CONNECT WITH MME !!!
-#    configure $peer
+    configure $peer
     if [ "$reset_usrp" == "False" ]; then
 	echo "SKIPPING USRP reset"
     else
@@ -166,8 +166,6 @@ function configure-enb() {
     [ -z "$gw_id" ] && { echo "configure-enb: no peer defined - exiting"; return; }
     echo "ENB: Using gateway (EPC) on $gw_id"
     gw_id=$(echo $gw_id | sed  's/^0*//')
-
-#    git-pull-r2lab   # calls to git-pull-oai should be explicit from the caller if desired
     id=$(r2lab-id)
     fitid=fit$id
     id=$(echo $id | sed  's/^0*//')
