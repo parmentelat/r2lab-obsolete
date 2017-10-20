@@ -123,7 +123,7 @@ function run-enb() {
     else
 	usrp-reset
     fi
-    start-tcpdump-data ${oai_role}
+## removed for debug    start-tcpdump-data ${oai_role}
     start
     status
     return 0
