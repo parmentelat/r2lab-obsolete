@@ -118,14 +118,14 @@ function run-enb() {
     init
     echo "run-enb: configure $peer"
     configure $peer
-# debug
-    configure $peer
+# debug DO NOT WHY BUT WE NEED TO DO IT TWICE, ELSE FIRST RUN FAILS TO CONNECT WITH MME !!!
+#    configure $peer
     if [ "$reset_usrp" == "False" ]; then
 	echo "SKIPPING USRP reset"
     else
 	usrp-reset
     fi
-## removed for debug    start-tcpdump-data ${oai_role}
+    start-tcpdump-data ${oai_role}
     start
     status
     return 0
@@ -151,11 +151,13 @@ function init() {
 }
 
 ####################
+doc-nodes configure "configure function (requires define-peer)"
 function configure() {
     configure-enb "$@"
 }
-doc-nodes configure "function"
 
+
+doc-nodes configure-enb "configure eNodeB (requires define-peer)"
 function configure-enb() {
 
     # pass peer id on the command line, or define it it with define-peer
@@ -186,7 +188,6 @@ EOF
     echo "Overwrote $config in $(pwd)"
     cd - >& /dev/null
 }
-doc-nodes configure-enb "configure eNodeB (requires define-peer)"
 
 ####################
 doc-nodes start "starts lte-softmodem - run with -d to turn on soft oscilloscope" 
