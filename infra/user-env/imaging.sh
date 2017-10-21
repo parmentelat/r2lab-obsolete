@@ -337,6 +337,56 @@ EOF
 
 }
 
+doc-nodes activate-lowlatency "activate low-latency functionality"
+function activate-lowlatency() {
+
+    echo "========== Setting up cpufrequtils"
+    apt-get install -y cpufrequtils i7z
+    echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
+    update-rc.d ondemand disable
+    /etc/init.d/cpufrequtils restart
+    # xxx turning off hyperthreading
+    sed -i -e 's|GRUB_CMDLINE_LINUX_DEFAULT.*|GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_pstate=disable processor.max_cstate=1 intel_idle.max_cstate=0 idle=poll"|' /etc/default/grub
+    update-grub
+    echo 'blacklist intel_powerclamp' >> /etc/modprobe.d/blacklist.conf
+}
+
+
+doc-nodes install-e3372 "install E3372 functionality"
+function install-e3372() {
+
+    apt-get update
+    apt-get install -y usb-modeswitch
+    apt-get install -y firefox  # can be useful to handle Huawei web interface config
+    
+    echo "========== add /etc/usb_modeswitch.conf file"
+    cat > /etc/usb_modeswitch.conf <<EOF
+#######################################################
+# Huawei E353 (3.se)
+#
+# Contributor: Ulf Eklund
+
+DefaultVendor= 0x12d1
+DefaultProduct=0x1f01
+
+TargetVendor=  0x12d1
+TargetProduct= 0x14dc
+
+MessageContent="55534243123456780000000000000a11062000000000000100000000000000"
+
+# Driver is cdc_ether
+NoDriverLoading=1
+EOF
+
+    # add the network interface for the Huawei E3372 LTE USB stick
+    echo "========== add E3372 network interface configuration to /etc/network/interfaces"
+    echo "# the Huawei E3372 LTE network interface - optional" >> /etc/network/interfaces
+    echo "#auto enx0c5b8f279a64" >> /etc/network/interfaces
+    echo "iface enx0c5b8f279a64 inet dhcp" >> /etc/network/interfaces
+}
+
+
+
 ########################################
 # FEDORA
 ########################################

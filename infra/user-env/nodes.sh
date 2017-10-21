@@ -340,20 +340,6 @@ function oai-as() {
     source $path
 }
 
-doc-nodes activate-lowlatency "activate low latency functionality"
-function activate-lowlatency() {
-
-    echo "========== Setting up cpufrequtils"
-    apt-get install -y cpufrequtils i7z
-    echo 'GOVERNOR="performance"' > /etc/default/cpufrequtils
-    update-rc.d ondemand disable
-    /etc/init.d/cpufrequtils restart
-    # xxx turning off hyperthreading
-    sed -i -e 's|GRUB_CMDLINE_LINUX_DEFAULT.*|GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_pstate=disable processor.max_cstate=1 intel_idle.max_cstate=0 idle=poll"|' /etc/default/grub
-    update-grub
-    echo 'blacklist intel_powerclamp' >> /etc/modprobe.d/blacklist.conf
-}
-
 doc-nodes oai-as-gw "load additional functions for dealing with an OAI gateway"
 function oai-as-gw() { oai-as gw; }
 
@@ -563,6 +549,18 @@ function usrp-reset() {
     echo "Turning on USRP # $id"
     curl http://$cmc/usrpon
 }
+
+doc-nodes e3372-reset "Reset the LTE Huawei E3372 attached to this node"
+function e3372-reset() {
+    # The node should have a USB LTE Huawei E3372 attached and have an ubuntu-huawei image
+
+    usrp-reset()
+    sleep 1
+    usb_modeswitch -v 12d1 -p 1f01 -M '55534243123456780000000000000011062000000101000100000000000000'
+    ifup enx0c5b8f279a64
+}
+
+
 
 ##############################
 # xxx could use a -interactive wrapper to display command

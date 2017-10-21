@@ -86,13 +86,14 @@ function u16-ath-noreg() {
 }
 
 function u16-48() {
-# now there is an error when building lowlat48. So, bim 2  now uses an old lowlat (not activated) image. TO BE FIXED LATER
-#    bim 1 ubuntu-16.04 u16.04-$DATE "imaging.sh common-setup" "nodes.sh git-pull-r2lab" "nodes.sh apt-upgrade-all" 
-#    bim 2 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" "nodes.sh activate-lowlatency"
-    bim 2 u16-lowlat48-cpufreqok-2017-09-08 u16-lowlat48-$DATE "nodes.sh git-pull-r2lab" "nodes.sh activate-lowlatency"
-    bim $cn_opts 3 u16-lowlat48-$DATE u16.48-oai-cn "oai-gw.sh  image" &
-    bim $enb_opts 5 u16-lowlat48-$DATE u16.48-oai-enb "oai-enb.sh image" &
-    bim $ue_opts 6 u16-lowlat48-$DATE u16.48-oai-ue "oai-ue.sh image" &
+# now there is an error when building lowlat48. So, bim 2 below has to use an old lowlat (not activated) image. TO BE FIXED LATER
+    bim 1 ubuntu-16.04 u16.04-$DATE "imaging.sh common-setup" "nodes.sh git-pull-r2lab" "nodes.sh apt-upgrade-all" 
+    bim 2 ubuntu-16.04-$DATE u16.04-e3372-$DATE "imaging.sh install-e3372"
+#    bim 3 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" "imaging.sh activate-lowlatency"
+    bim 3 u16-lowlat48-cpufreqok-2017-09-08 u16-lowlat48-$DATE "nodes.sh git-pull-r2lab" "nodes.sh activate-lowlatency"
+    bim $cn_opts 5 u16-lowlat48-$DATE u16.48-oai-cn "oai-gw.sh  image" &
+    bim $enb_opts 6 u16-lowlat48-$DATE u16.48-oai-enb "oai-enb.sh image" &
+    bim $ue_opts 7 u16-lowlat48-$DATE u16.48-oai-ue "oai-ue.sh image" &
 }
 
 #following deprecated
