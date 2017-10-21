@@ -554,7 +554,7 @@ doc-nodes e3372-reset "Reset the LTE Huawei E3372 attached to this node"
 function e3372-reset() {
     # The node should have a USB LTE Huawei E3372 attached and have an ubuntu-huawei image
 
-    usrp-reset()
+    usrp-reset
     sleep 1
     usb_modeswitch -v 12d1 -p 1f01 -M '55534243123456780000000000000011062000000101000100000000000000'
     ifup enx0c5b8f279a64
