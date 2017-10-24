@@ -118,9 +118,6 @@ function run-enb() {
     echo "run-enb: configure $peer"
     configure $peer
     init
-    echo "run-enb: configure $peer"
-    configure $peer
-    init
     if [ "$reset_usrp" == "False" ]; then
 	echo "SKIPPING USRP reset"
     else
