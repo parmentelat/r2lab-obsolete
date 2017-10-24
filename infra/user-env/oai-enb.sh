@@ -197,8 +197,8 @@ function start() {
 	esac
     fi
 
-cd $run_dir
-#    echo "In $(pwd)"
+    cd $run_dir
+    echo "In $(pwd)"
     echo "Running lte-softmodem in background"
     ./lte-softmodem -P softmodem.pcap --ulsch-max-errors 100 -O $conf_dir/$config $oscillo >& $lte_log &
     cd - >& /dev/null
