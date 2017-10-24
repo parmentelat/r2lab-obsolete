@@ -15,6 +15,8 @@ lte_pcap="$run_dir/softmodem.pcap"
 add-to-datas $lte_pcap
 conf_dir=$OPENAIR_HOME/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
 template=enb.band7.tm1.usrpb210.conf
+#following template name corresponds to the latest buggy develop version
+#template=enb.band7.tm1.50PRB.usrpb210.conf
 config=r2lab.conf
 add-to-configs $conf_dir/$config
 
