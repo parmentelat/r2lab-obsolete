@@ -115,12 +115,9 @@ function run-enb() {
     oai_role=enb
     stop
     status
-    init
     echo "run-enb: configure $peer"
     configure $peer
-# debug DO NOT WHY BUT WE NEED TO DO IT TWICE, ELSE FIRST RUN FAILS TO CONNECT WITH MME !!!
-    sleep 5
-    configure $peer
+    init
     if [ "$reset_usrp" == "False" ]; then
 	echo "SKIPPING USRP reset"
     else
