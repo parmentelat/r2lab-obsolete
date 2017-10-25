@@ -386,6 +386,12 @@ EOF
 }
 
 
+doc-nodes install-gnuradio "install gnuradio package with uhd"
+function install-gnuradio() {
+    apt-get update 
+    apt-get -y install libuhd-dev libuhd003 uhd-host gnuradio 
+}
+
 
 ########################################
 # FEDORA

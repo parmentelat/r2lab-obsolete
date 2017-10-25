@@ -536,8 +536,17 @@ function enable-nat-data() {
 }
 
 ####################
-doc-nodes usrp-reset "Reset the USRP attached to this node"
-function usrp-reset() {
+
+doc-nodes enable-usrp-ethernet "Configure the data network interface for USRP2 or N210 and rename it usrp"
+function enable-usrp-ethernet() {
+    ifconfig data down 2>/dev/null
+    ip link set data name usrp
+    ifconfig usrp 192.168.10.1 netmask 255.255.255.0 broadcast 192.168.10.255
+    ifconfig usrp up
+}
+
+doc-nodes usb-reset "Reset the USB port where the external device (USRP2/N210/e3372) is attached"
+function usb-reset() {
     local id=$(r2lab-id)
     # WARNING this might not work on a node that
     # is not in its nominal location,
@@ -549,6 +558,11 @@ function usrp-reset() {
     echo "Turning on USRP # $id"
     curl http://$cmc/usrpon
 }
+
+
+doc-nodes usrp-reset "Reset the USRP attached to this node" 
+function usrp-reset () { usb-reset; } 
+
 
 doc-nodes e3372-reset "Reset the LTE Huawei E3372 attached to this node"
 function e3372-reset() {

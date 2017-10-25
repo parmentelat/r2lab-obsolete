@@ -61,6 +61,12 @@ ue_opts="
     -l /root/openairinterface5g/cmake_targets/build-oai-ue-1.log
     -b /root/openairinterface5g/targets/bin/lte-softmodem.Rel14
 "
+
+gr_opts="
+    -b /usr/local/bin/gnuradio-companion
+    -b /usr/local/bin/uhd_find_devices
+"
+
 # following 2 are deprecated
 gw_options="
     -l /root/openair-cn/SCRIPTS/build-hss-deps.log
@@ -94,6 +100,7 @@ function u16-48() {
     bim $cn_opts 5 u16-lowlat48-$DATE u16.48-oai-cn "oai-gw.sh  image" &
     bim $enb_opts 6 u16-lowlat48-$DATE u16.48-oai-enb "oai-enb.sh image" &
     bim $ue_opts 7 u16-lowlat48-$DATE u16.48-oai-ue "oai-ue.sh image" &
+    bim $gr_opts 8 u16-lowlat48-$DATE u16.48-gnuradio-3.7.10 "imaging.sh install-gnuradio" "nodes.sh enable-usrp-ethernet"&
 }
 
 #following deprecated
