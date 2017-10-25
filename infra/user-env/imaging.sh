@@ -337,7 +337,7 @@ EOF
 
 }
 
-doc-nodes activate-lowlatency "activate low-latency functionality"
+doc-imaging activate-lowlatency "activate low-latency functionality"
 function activate-lowlatency() {
 
     echo "========== Setting up cpufrequtils"
@@ -352,7 +352,7 @@ function activate-lowlatency() {
 }
 
 
-doc-nodes install-e3372 "install E3372 functionality"
+doc-imaging install-e3372 "install E3372 functionality"
 function install-e3372() {
 
     apt-get update
@@ -386,7 +386,7 @@ EOF
 }
 
 
-doc-nodes install-gnuradio "install gnuradio package with uhd"
+doc-imaging install-gnuradio "install gnuradio package with uhd"
 function install-gnuradio() {
     apt-get update 
     apt-get -y install libuhd-dev libuhd003 uhd-host gnuradio 
