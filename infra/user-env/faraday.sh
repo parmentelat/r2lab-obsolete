@@ -610,8 +610,9 @@ function refresh-root() {
 ########################################
 doc-alt all-off "Switch off everything"
 function all-off() {
-    rhubarbe off -a
     rhubarbe usrpoff -a
+    sleep 1
+    rhubarbe off -a
     macphone phone-off
 }
 

@@ -63,9 +63,14 @@ ue_opts="
 "
 
 gr_opts="
-    -b /usr/local/bin/gnuradio-companion
-    -b /usr/local/bin/uhd_find_devices
+    -b /usr/bin/gnuradio-companion
+    -b /usr/bin/uhd_find_devices
 "
+
+e3372_opts="
+    -b /usr/sbin/usb_modeswitch
+"
+
 
 # following 2 are deprecated
 gw_options="
@@ -92,10 +97,9 @@ function u16-ath-noreg() {
 }
 
 function u16-48() {
-#   bim 3 u16-lowlat48-cpufreqok-2017-09-08 u16-lowlat48-$DATE "nodes.sh git-pull-r2lab" "nodes.sh activate-lowlatency"
     bim 1 ubuntu-16.04 u16.04-$DATE "imaging.sh common-setup" "nodes.sh git-pull-r2lab" "nodes.sh apt-upgrade-all" 
-    bim 2 u16.04-$DATE u16.04-e3372-$DATE "imaging.sh install-e3372"
-    bim 3 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" "imaging.sh activate-lowlatency"
+    bim 2 u16.04-$DATE u16-lowlat48-$DATE "imaging.sh ubuntu-k48-lowlatency" "imaging.sh activate-lowlatency"
+    bim $e3372_opts 3 u16.04-$DATE u16.04-e3372 "imaging.sh install-e3372"
     bim $cn_opts 5 u16-lowlat48-$DATE u16.48-oai-cn "oai-gw.sh  image" &
     bim $enb_opts 6 u16-lowlat48-$DATE u16.48-oai-enb "oai-enb.sh image" &
     bim $ue_opts 7 u16-lowlat48-$DATE u16.48-oai-ue "oai-ue.sh image" &
