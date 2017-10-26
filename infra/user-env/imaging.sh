@@ -15,6 +15,8 @@ function -dpkg-from-urls() {
     urls="$@"
     debs=""
     for url in $urls; do
+        echo ==================== fetching deb at url
+        echo "$url"
 	curl -O $url
 	debs="$debs $(basename $url)"
     done
@@ -63,8 +65,8 @@ http://kernel.ubuntu.com/~kernel-ppa/mainline/v4.7/linux-image-4.7.0-040700-lowl
 # it works fine on top of both ubuntu 14 and ubuntu 16
 function ubuntu-k48-lowlatency() {
 
-    local k48_ver="4.8.0-52"
-    local k48_sub="55"
+    local k48_ver="4.8.0-59"
+    local k48_sub="64"
     
     -dpkg-is-installed linux-image-${k48_ver}-lowlatency && return
     
