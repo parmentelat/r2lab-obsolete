@@ -237,6 +237,10 @@ alias rleases="rhubarbe leases"
 doc-selection rleases "display current leases (rhubarbe leases)"
 
 #
+alias all-off="rhubarbe bye"
+alias rbye=all-off
+doc-selection "switch off whole testbed"
+
 alias ron="rhubarbe on"
 alias on=ron
 doc-selection "(r)on" "turn selected nodes on (rhubarbe on)"

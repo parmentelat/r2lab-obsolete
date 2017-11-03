@@ -42,16 +42,16 @@ from rhubarbe.ssh import SshProxy as SshWaiter
 ### globals
 # each image is defined by a tuple
 #  0: image name (for rload)
-#  1: string to expect in /etc/rhubarbe-image
-images_to_try = [
-    ( "ubuntu", "ubuntu-16.04" ),
-    ( "fedora", "fedoraxxx"),
+#  1: strings to expect in /etc/rhubarbe-image (any of these means it's OK)
+images_to_check = [
+    ( "ubuntu", ["ubuntu-16.04", "u16.04"]  ),
+    ( "fedora", ["fedora-23"] ),
 ]
 
 
 
-# not sure how progressbar would behave in unattended mode with no terminal
-# and so no width to display a progressbar..
+# not sure how progressbar would behave in unattended mode
+# that would meand no terminal and so no width to display a progressbar..
 class NoProgressBarDisplay(Display):
     def dispatch_ip_percent_hook(self, *args):
         print('.', end='', flush=True)
@@ -87,15 +87,15 @@ class Nightly:
         if self.test:
             print("test:", *args)
 
-    def mark_and_exclude(self, node):
+    def mark_and_exclude(self, node, reason):
         """ 
         what to do when a node is found as being non-nominal
         (*) remove it from further actions
         (*) mark it as unavailable
         """ 
         self.selector.add_or_delete(node.id, add_if_true=False)
-        print("TODO: node {} should be marked unavailable"
-              .format(node.id))
+        print("TODO: node {} should be marked unavailable for reason {}"
+              .format(node.id, reason))
 
 
     def global_send_action(self, mode):
@@ -117,7 +117,7 @@ class Nightly:
             else:
                 print("{}: COULD NOT {} - marked as FAIL"
                       .format(node.control_hostname(), message))
-                self.mark_and_exclude(node)
+                self.mark_and_exclude(node, "failure to {}".format(message))
                       
 
     def global_load_image(self, image_name):
@@ -159,19 +159,19 @@ class Nightly:
                   .format(node.id, job.is_done(), job.raised_exception()))
 
             if job.raised_exception():
-                self.mark_and_exclude(node)
+                self.mark_and_exclude(node, "could not ssh-reach after rload")
 
-    def global_check_image(self, check_string):
+    def global_check_image(self, image, check_strings):
         # on the remaining nodes: check image marker
         nodes = { Node(x, self.bus) for x in self.selector.cmc_names() }
         display = NoProgressBarDisplay(nodes, self.bus)
         print("Checking {} nodes against {} in /etc/rhubarbe-image"
-              .format(len(nodes), check_string))
+              .format(len(nodes), check_strings))
 
-        check_command = "tail -1 /etc/rhubarbe-image | grep -q {}"\
-                        .format(check_string)
+        check_command = "tail -1 /etc/rhubarbe-image | egrep -q '{}'"\
+                        .format("|".join(check_strings))
         jobs = [
-            SshJob(node = SshNode(hostname=node.control_hostname()),
+            SshJob(node = SshNode(hostname=node.control_hostname(), keys=[]),
                    command = check_command,
                    critical=False)
             for node in nodes
@@ -184,11 +184,11 @@ class Nightly:
         for node, job in zip(nodes, jobs):
             if not job.is_done() or job.raised_exception():
                 self.testmsg("S/t badly wrong with {}".format(node))
-                self.mark_and_exclude(node)
+                self.mark_and_exclude(node, "could not check for image {}".format(image))
                 continue
             if not job.result() == 0:
                 self.testmsg("Wrong image found on {}".format(node))
-                self.mark_and_exclude(node)
+                self.mark_and_exclude(node, "wrong image found instead of {}".format(image))
                 continue
 
     def check_lease(self):
@@ -208,16 +208,21 @@ class Nightly:
             print("no lease - exiting")
             exit(0)
 
-        self.global_send_action('on')
-        self.global_send_action('reset')
-        self.global_send_action('off')
+        if not self.test:
+            self.global_send_action('on')
+            self.global_send_action('reset')
+            self.global_send_action('off')
         # it's no use trying to send reset to a node that is off
 
-        for image, check_string in images_to_try:
+        images_expected = images_to_check if not self.test \
+                          else images_to_check[:1]
+
+        for image, check_strings in images_expected:
             # xxx could use a flag a bit like --reset to skip this one
-            self.global_load_image(image)
+            if not self.test:
+                self.global_load_image(image)
             self.global_wait_ssh()
-            self.global_check_image(check_string)
+            self.global_check_image(image, check_strings)
 
         # True means everything is OK
         return True
