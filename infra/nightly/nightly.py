@@ -22,6 +22,7 @@ Performed checks on all nodes:
 """
 
 import sys
+import os
 from argparse import ArgumentParser
 
 import asyncio
@@ -96,7 +97,7 @@ class Nightly:
         self.test = test
         ##########
         # keep a backup of initial scope for proper cleanup
-        self.all_names = selector.cmc_names()
+        self.all_names = list(selector.node_names())
         # the list of failed nodes together with the reason why
         self.failures = {}
         # retrieve bandwidth and other deatils from rhubarbe config
@@ -238,8 +239,10 @@ class Nightly:
         
 
     def all_off(self):
-        import os
-        os.system("rhubarbe bye")
+        command = "rhubarbe bye"
+        for host in self.all_names:
+            command += " {}".format(host)
+        os.system(command)
 
 
     def run(self):
@@ -287,6 +290,9 @@ class Nightly:
             subject = "R2lab nightly - everything is fine"
 
         send_email(email_from, email_to, subject, html)
+
+        self.all_off()
+
         # True means everything is OK
         return True
         
