@@ -33,11 +33,13 @@ from rhubarbe.config import Config
 from rhubarbe.imagesrepo import ImagesRepo
 from rhubarbe.display import Display
 
-from rhubarbe.main import check_reservation
+from rhubarbe.main import check_reservation, no_reservation
 from rhubarbe.node import Node
+from rhubarbe.leases import Leases
 from rhubarbe.selector import Selector, add_selector_arguments, selected_selector, MisformedRange
 from rhubarbe.imageloader import ImageLoader
 from rhubarbe.ssh import SshProxy as SshWaiter
+
 
 ### globals
 # each image is defined by a tuple
@@ -49,6 +51,22 @@ images_to_check = [
 ]
 
 
+### reasons for failure
+from enum import IntEnum
+class Reason(IntEnum):
+    WONT_TURN_ON = 1
+    WONT_TURN_OFF = 2
+    WONT_RESET = 3
+    WONT_SSH = 4
+    CANT_CHECK_IMAGE = 5
+    DID_NOT_LOAD = 6
+
+    def mail_column(self):
+        # the outgoing mail comes with 3 columns
+        # return 0 1 or 2 depending on the outgoing column
+        return 0 if self.value <= 3 \
+            else 1 if self.value <= 5 \
+                 else 2    
 
 # not sure how progressbar would behave in unattended mode
 # that would meand no terminal and so no width to display a progressbar..
@@ -69,7 +87,9 @@ class Nightly:
         ##########
         # keep a backup of initial scope for proper cleanup
         self.all_names = selector.cmc_names()
-        # retrieve bandwidth from rhubarbe config
+        # the list of failed nodes together with the reason why
+        self.failures = {}
+        # retrieve bandwidth and other deatils from rhubarbe config
         config = Config()
         self.bandwidth = int(config.value('networking', 'bandwidth'))
         self.backoff = int(config.value('networking', 'ssh_backoff'))
@@ -79,8 +99,7 @@ class Nightly:
         
         # accessories
         self.bus = asyncio.Queue()
-        self.testmsg("focus is {}"
-                     .format(" ".join(selector.node_names())))
+        self.testmsg("focus is {}" .format(" ".join(selector.node_names())))
 
     
     def testmsg(self, *args):
@@ -92,9 +111,11 @@ class Nightly:
         what to do when a node is found as being non-nominal
         (*) remove it from further actions
         (*) mark it as unavailable
+        (*) remember the reason why for producing summary
         """ 
         self.selector.add_or_delete(node.id, add_if_true=False)
-        print("TODO: node {} should be marked unavailable for reason {}"
+        self.failures[node.id] = reason
+        print("TODO: node {} should be marked unavailable for reason: `{}`"
               .format(node.id, reason))
 
 
@@ -107,17 +128,15 @@ class Nightly:
         result = asyncio.get_event_loop().run_until_complete(
             asyncio.gather(*actions)
         )
-        message = "turn on" if mode == 'on' \
-                  else "turn off" if mode == 'off' \
-                       else "reset"
+        reason = Reason.WONT_TURN_OFF if mode == 'on' \
+                  else Reason.WONT_TURN_OFF if mode == 'off' \
+                       else Reason.WONT_RESET
         for node in nodes:
             if node.action:
                 print("{}: {} OK"
-                      .format(node.control_hostname(), message))
+                      .format(node.control_hostname(), mode))
             else:
-                print("{}: COULD NOT {} - marked as FAIL"
-                      .format(node.control_hostname(), message))
-                self.mark_and_exclude(node, "failure to {}".format(message))
+                self.mark_and_exclude(node, reason)
                       
 
     def global_load_image(self, image_name):
@@ -159,7 +178,7 @@ class Nightly:
                   .format(node.id, job.is_done(), job.raised_exception()))
 
             if job.raised_exception():
-                self.mark_and_exclude(node, "could not ssh-reach after rload")
+                self.mark_and_exclude(node, Reason.WONT_SSH)
 
     def global_check_image(self, image, check_strings):
         # on the remaining nodes: check image marker
@@ -183,42 +202,67 @@ class Nightly:
         # exclude nodes that have not behaved
         for node, job in zip(nodes, jobs):
             if not job.is_done() or job.raised_exception():
-                self.testmsg("S/t badly wrong with {}".format(node))
-                self.mark_and_exclude(node, "could not check for image {}".format(image))
+                self.testmsg("something went badly wrong with {}".format(node))
+                self.mark_and_exclude(node, Reason.CANT_CHECK_IMAGE)
                 continue
             if not job.result() == 0:
                 self.testmsg("Wrong image found on {}".format(node))
-                self.mark_and_exclude(node, "wrong image found instead of {}".format(image))
+                self.mark_and_exclude(node, Reason.DID_NOT_LOAD)
                 continue
 
-    def check_lease(self):
+
+    def who_has_lease(self):
         """
+        return:
+        * None if nobody currently has a lease
+        * True if we currently have the lease
+        * False if somebody else currently has the lease
         """
-        return check_reservation(
-            message_bus=self.bus,
-            verbose = self.test)
+        leases = Leases(message_bus = self.bus)
+        if no_reservation(leases):
+            return None
+        elif check_reservation(leases, verbose = self.test):
+            return True
+        else:
+            return False
         
+
+    def all_off(self):
+        import os
+        os.system("rhubarbe bye")
+
 
     def run(self):
         """
         does everything and returns True if all nodes are fine
         """
 
-        if not self.check_lease():
-            print("no lease - exiting")
-            exit(0)
+        current_owner = self.who_has_lease()
 
+        ########## somebody else
+        if current_owner is False:
+            print("DBG - somebody else owns the testbed - silently exiting")
+            exit(0)
+        ########## nobody at all : make sure the testbed is switched off
+        elif current_owner is None:
+            self.all_off()
+            return True
+
+        ########## we have the lease
+        # we checked the lease, let's get down to business
+        # TODO: test mode currently skips this check
         if not self.test:
             self.global_send_action('on')
             self.global_send_action('reset')
             self.global_send_action('off')
         # it's no use trying to send reset to a node that is off
 
+        # TODO: test mode only focuses on one image
         images_expected = images_to_check if not self.test \
                           else images_to_check[:1]
 
         for image, check_strings in images_expected:
-            # xxx could use a flag a bit like --reset to skip this one
+            # TODO : test mode does not even load stuff
             if not self.test:
                 self.global_load_image(image)
             self.global_wait_ssh()
@@ -241,7 +285,7 @@ def main(*argv):
 
     args = parser.parse_args(argv)
 
-    selector = selected_selector(args)
+    selector = selected_selector(args, defaults_to_all=True)
     nightly = Nightly(selector, args.test)
     
     return 0 if nightly.run() else 1
