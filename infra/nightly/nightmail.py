@@ -2,8 +2,8 @@
 # yet available on faraday that runs ubuntu-16.04
 
 from datetime import datetime
+import smtplib
 
-from nightly import Reason
 
 def font_color_tick(column, failed_column):
     "return a couple of style and content for a span element" 
@@ -14,6 +14,7 @@ def font_color_tick(column, failed_column):
         # otherwise, a red cross
         else ('18px Arial, Tahoma, Sans-serif',  'red', '&#215;') if column == failed_column
         else ('18px Arial, Tahoma, Sans-serif',  'gray', '&#65110;'))
+
 
 def summary_table(failures):
     """
@@ -36,14 +37,14 @@ def summary_table(failures):
 </tr>"""
 
     result = header
-
     for id in sorted(failures):
         reason = failures[id]
         # the node id badge
         line = """<tr>
 <td style="font:15px helveticaneue, Arial, Tahoma, Sans-serif;">
  <span style="border-radius: 50%; border: 2px solid #525252; width: 30px; height: 30px; line-height: 30px; display: block; text-align: center;">
-  <span style="color: #525252;">{}</span></span></td>""".format(id)
+  <span style="color: #525252;">{}
+</span></span></td>""".format(id)
         # which column whould be outlined
         failed_column = reason.mail_column()
         for column in range(3):
@@ -51,7 +52,6 @@ def summary_table(failures):
             line += '<td style="text-align: center; font:{font}; color:{color}">{tick}</td>'.format(**locals())
         line += "</tr>"
         result += line
-
     return result
 
 
@@ -70,6 +70,7 @@ def dummy_html():
     return body
 
 
+# entry points of interest start here
 def complete_html(failures):
     now = datetime.now()
     today = now.strftime("%d/%m/%Y")
@@ -81,7 +82,41 @@ def complete_html(failures):
     return html
 
 
+def send_email(sender, receiver, subject, content):
+    """ send email using python """
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    # Create message container - the correct MIME type is multipart/alternative.
+    msg = MIMEMultipart('alternative')
+    msg['Subject']  = subject
+    msg['From']     = sender
+    msg['To']       = ", ".join(receiver)
+
+    # Record the MIME types of both parts - text/plain and text/html.
+    body = MIMEText(content, 'html')
+
+    # Attach parts into message container.
+    # According to RFC 2046, the last part of a multipart message, in this case
+    # the HTML message, is best and preferred.
+    msg.attach(body)
+
+    # Send the message via local SMTP server.
+    s = smtplib.SMTP('localhost')
+    # sendmail function takes 3 arguments: sender's address, recipient's address
+    # and message to send - here it is sent as one string.
+    s.sendmail(sender, receiver, msg.as_string())
+    s.quit()
+
+
+
+
+
+
+
 if __name__ == '__main__':
+
+    from nightly import Reason
 
     fake_failures = {
         30 : Reason.WONT_TURN_ON,

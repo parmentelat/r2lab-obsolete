@@ -40,8 +40,18 @@ from rhubarbe.selector import Selector, add_selector_arguments, selected_selecto
 from rhubarbe.imageloader import ImageLoader
 from rhubarbe.ssh import SshProxy as SshWaiter
 
+from nightmail import complete_html, send_email
 
 ### globals
+# xxx could be configurable
+email_from = "root@faraday.inria.fr"
+email_to = [
+    "fit-r2lab-dev@inria.fr",  # not quite sure this one will pass through moderation
+    "Thierry.Parmentelat@inria.fr", 
+# tmp    "Thierry.Turletti@inria.fr", 
+# tmp    "Walid.Dabbous@inria.fr", 
+]
+
 # each image is defined by a tuple
 #  0: image name (for rload)
 #  1: strings to expect in /etc/rhubarbe-image (any of these means it's OK)
@@ -268,6 +278,15 @@ class Nightly:
             self.global_wait_ssh()
             self.global_check_image(image, check_strings)
 
+        html = complete_html(self.failures)
+        if self.failures:
+            plural = '' if len(self.failures) == 1 else ''
+            subject = "R2lab nightly reports {} issue{}"\
+                      .format(len(self.failures), plural)
+        else:
+            subject = "R2lab nightly - everything is fine"
+
+        send_email(email_from, email_to, subject, html)
         # True means everything is OK
         return True
         
