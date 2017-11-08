@@ -44,13 +44,11 @@ from rhubarbe.ssh import SshProxy as SshWaiter
 from nightmail import complete_html, send_email
 
 ### globals
-# xxx could be configurable
+# xxx should probably be configurable
+nightly_slice = "inria_r2lab.nightly"
 email_from = "root@faraday.inria.fr"
 email_to = [
-    "fit-r2lab-dev@inria.fr",  # not quite sure this one will pass through moderation
-    "Thierry.Parmentelat@inria.fr", 
-# tmp    "Thierry.Turletti@inria.fr", 
-# tmp    "Walid.Dabbous@inria.fr", 
+    "fit-r2lab-dev@inria.fr",
 ]
 
 # each image is defined by a tuple
@@ -222,7 +220,7 @@ class Nightly:
                 continue
 
 
-    def who_has_lease(self):
+    def current_owner(self):
         """
         return:
         * None if nobody currently has a lease
@@ -232,7 +230,9 @@ class Nightly:
         leases = Leases(message_bus = self.bus)
         if no_reservation(leases):
             return None
-        elif check_reservation(leases, verbose = self.test):
+        elif check_reservation(leases, root_allowed=False,
+                               verbose = None if not self.test else True,
+                               login = nightly_slice):
             return True
         else:
             return False
@@ -242,6 +242,7 @@ class Nightly:
         command = "rhubarbe bye"
         for host in self.all_names:
             command += " {}".format(host)
+        command += "> /var/log/all-off.log"
         os.system(command)
 
 
@@ -250,11 +251,11 @@ class Nightly:
         does everything and returns True if all nodes are fine
         """
 
-        current_owner = self.who_has_lease()
+        current_owner = self.current_owner()
 
         ########## somebody else
         if current_owner is False:
-            print("DBG - somebody else owns the testbed - silently exiting")
+            # somebody else owns the testbed - silently exit
             exit(0)
         ########## nobody at all : make sure the testbed is switched off
         elif current_owner is None:
