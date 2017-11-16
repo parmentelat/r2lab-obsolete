@@ -215,7 +215,9 @@ can happen a lot.
 This is why, before you try to enter the R2lab gateway using your slice,
 we recommend that you add your ssh **private** key in your ssh agent, for example
 
-
+   # in order to list the keys currently loaded in the agent
+   $ ssh-add -l
+   # in order to add one
     $ ssh-add -K ~/.ssh/id_rsa
 
 
