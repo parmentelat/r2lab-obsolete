@@ -22,6 +22,8 @@ import json
 
 wire_timeformat = "%Y-%m-%dT%H:%M:%Z"
 
+today = time.strftime("%Y-%m-%d", time.gmtime(time.time()))
+
 def human_readable(epoch):
     return time.strftime(wire_timeformat, time.gmtime(epoch))
 #alias
@@ -99,6 +101,11 @@ def merge(objs1, objs2, key):
     merged += [ index2[key] for key in new_keys]
 
     return merged
+
+def save_today(objs, type):
+    filename = "{}-{}".format(type, today)
+    with open(filename, "w") as output:
+        output.write(json.dumps(objs))
                  
 
 def forensics(date="2017-02-06"):
@@ -131,9 +138,9 @@ with open("STATS", "w") as sys.stdout:
 l1, s1, p1 = old_items
 l2, s2, p2 = current_items
 
-l3 = merge(l1, l2, 'lease_id')
-s3 = merge(s1, s2, 'slice_id')
-p3 = merge(p1, p2, 'person_id')
+l3 = merge(l1, l2, 'lease_id'); save_today(l3, "leases")
+s3 = merge(s1, s2, 'slice_id'); save_today(s3, "slices")
+p3 = merge(p1, p2, 'person_id'); save_today(p3, "persons")
     
 def show_all(leases, slices, persons):
     print(30*'=', "merged")
