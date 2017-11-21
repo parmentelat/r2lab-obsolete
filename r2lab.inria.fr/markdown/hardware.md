@@ -76,13 +76,18 @@ All 37 nodes are based on <a href="http://nitlab.inf.uth.gr/NITlab/" target="_bl
     <div class="col-md-4">
       <br/>
       <img src="/assets/img/hardware-node.png" class='fit-width'>
-      <center>Fig. 1 - Icarus Nodes in the testbed</center>
+      <center>Icarus Nodes in the testbed</center>
     </div>
   </div>
 </div>
 
 <div class="container" markdown="1">
  <div class="row">
+  <div class="col-md-4">
+    <br/>
+  <img src="/assets/img/hardware-icarus.png"  class='fit-width'>
+  <center>Icarus node standalone</center>
+  </div>
   <div class="col-md-8 new_pad">
 ### USRP nodes
 
@@ -98,11 +103,6 @@ Currently, our deployment features the following types of USRP devices :
 
  * nodes equipped with a **USRP n210** do **not have** a `data` Ethernet interface, as the hardware interface is wired into the USRP device.
  * when using a **USRP B210** board, a **duplexer band 7**<a href="/raw/docs/duplexer-band7-specifications.pdf" target="_blank">[specs]</a> <a href="/raw/docs/duplexer-band7.png" target="_blank">[pict]</a> may be needed for good experimental conditions if the board is used for both sending and receiving; this is the case because the distance between the RX and TX antenna SMA connectors on the USRP B210 board is such that the TX antenna generates too much interferences to the RX channel; the actual configuration of duplexers can be found in the table below.
-  </div>
-  <div class="col-md-4">
-    <br/>
-  <img src="/assets/img/hardware-icarus.png"  class='fit-width'>
-  <center>Fig. 2 - Icarus node standalone</center>
   </div>
  </div>
 </div>
@@ -127,6 +127,11 @@ Here are the detailed specifications for the LimeSDR devices deployed in the cha
 *    **Plus**: "What makes LimeSDR interesting is that it is using Snappy Ubuntu Core as a sort of app store. Developers can make code available, and end-users can easily download and install that code."
 
     </div>
+   <div class="col-md-4">
+    <br/>
+    <img src="/assets/img/lime-sdr.png"  class='fit-width'>
+    <center>Node with a Lime SDR device</center>
+   </div>
   </div>
 </div>
 
@@ -147,7 +152,7 @@ A Nexus 5 phone is available right inside the chamber:
     <div class="col-md-4">
       <br><br>
       <img src="/assets/img/macphone.png"  class='fit-width'>
-      <center>Fig. 3 - Commercial phone</center>
+      <center>Commercial phone</center>
     </div>
   </div>
 </div>
