@@ -21,7 +21,7 @@ skip_news: yes
 
 ### September 2017
 
-* some nodes now feature a USB-based LTE dongledéploiement de noeuds avec dongle LTE (sept ??)
+* some nodes now feature a USB-based LTE dongle
 
 ### August 2017
 
