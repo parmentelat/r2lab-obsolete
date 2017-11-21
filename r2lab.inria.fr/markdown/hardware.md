@@ -110,6 +110,30 @@ Currently, our deployment features the following types of USRP devices :
 <div class="container" markdown="1">
   <div class="row">
     <div class="col-md-8 new_pad">
+###Lime SDR devices
+
+Here are the detailed specifications for the LimeSDR devices deployed in the chamber (see table below for the details on which nodes host such devices)
+
+*    **RF Transceiver**: Lime Microsystems LMS7002M MIMO FPRF (Datasheet)
+*    **FPGA**: Altera Cyclone IV EP4CE40F23 - also compatible with EP4CE30F23
+*    **Memory**: 256 MBytes DDR2 SDRAM
+*    **Oscillator**: Rakon RPT7050A @30.72MHz (Datasheet)
+*    **Continuous frequency range**: 100 kHz – 3.8 GHz
+*    **Bandwidth**: 61.44 MHz
+*    **RF connection**: 10 U.FL connectors (6 RX, 4 TX)
+*    **Power Output (CW)**: up to 10 dBm
+*    **Multiplexing**: 2x2 MIMO
+*    **Dimensions**: 100 mm x 60 mm
+*    **Plus**: "What makes LimeSDR interesting is that it is using Snappy Ubuntu Core as a sort of app store. Developers can make code available, and end-users can easily download and install that code."
+
+    </div>
+  </div>
+</div>
+
+
+<div class="container" markdown="1">
+  <div class="row">
+    <div class="col-md-8 new_pad">
 ###Commercial 4G Phone
 
 A Nexus 5 phone is available right inside the chamber:
