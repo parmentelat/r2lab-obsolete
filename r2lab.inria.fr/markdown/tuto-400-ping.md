@@ -392,7 +392,7 @@ Let us now see [how to use other network interfaces](javascript:open_tab('A5')).
 ### Objectives
 
 This time, we are going to run ping between two nodes in the testbed,
-over using the `data` wired network.
+over the `data` wired network.
 
 <center><img src="/assets/img/A5.png" alt="a5" height="240px"></center>
 
@@ -421,9 +421,7 @@ is how these 4 four interfaces are managed:
 We will see how to manage the wireless interfaces [in the next
 tutorial](tuto-500-wireless.md).
 
-But for now we will run the same ping as before, from `fit01` to
-`google.fr`, but using the `data` interface, so we can see how to turn
-these on and off.
+But for now we will run ping from `fit01` to `fit02`, and using the `data` interface on each node, so we can see how to turn these on and off.
 
 Here is what deserves to be outlined in the code below
 
