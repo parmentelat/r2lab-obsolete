@@ -5,21 +5,52 @@ skip_news: yes
 
 # Most recent first&nbsp;:
 
+
+****
+## 2017
+****
+
+
+### November 2017
+
+* some nodes feature a LimeSDR device
+
+### November 2017
+
+* so-called *nightly* procedure, that probes the testbed for failures, is reinstated to run on a bi-weekly basis
+
+### September 2017
+
+* some nodes now feature a USB-based LTE dongledéploiement de noeuds avec dongle LTE (sept ??)
+
+### August 2017
+
+* [the openair demo](https://github.com/parmentelat/r2lab/tree/public/demos/oai-skype) is given during the SIGCOMM-2017 demo session
+
+### July 2017
+
+* the Dell physical server that hosts the r2lab service VMs is upgraded and now runs a HTML5-based DRAC interface, causing a 2-hours scheduled outage of the testbed
+
+### April 2017
+
+* [the radiomap demo](https://github.com/parmentelat/r2lab/tree/public/demos/radiomap) gathers all-pairs communication conditions, see `visumap`  on how this can be visualized in a jupyter notebook
+
+
 ****
 ## 2016
 ****
 
-### <a name='migration'>December 20 2016</a>
+### <a name='migration'>December 20</a>
 
 * Running new architecture based on **PLCAPI** instead of **omf_sfa**
 * Previous contents (accounts, slices, keys...) has been migrated automatically
 * Slice names have changed a little, to be completed
 
-### November 30 2016
+### November 30
 
 * All tutorials now point at `nepi-ng` instead of deprecated `nepi`
 
-### November 9 2016
+### November 9
 
 * [Inauguration ceremony - see detailed program here.](https://www.inria.fr/en/centre/sophia/calendar/r2lab-anechoic-chamber-a-heterogeneous-wireless-testbed)
 
