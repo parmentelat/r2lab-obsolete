@@ -138,6 +138,11 @@ Here are the detailed specifications for the LimeSDR devices deployed in the cha
 
 <div class="container" markdown="1">
   <div class="row">
+    <div class="col-md-4">
+      <br><br>
+      <img src="/assets/img/macphone.png"  class='fit-width'>
+      <center>Commercial phone</center>
+    </div>
     <div class="col-md-8 new_pad">
 ###Commercial 4G Phone
 
@@ -148,11 +153,6 @@ A Nexus 5 phone is available right inside the chamber:
 * Once logged in the Mac you can use convenience helpers to manage the phone (type <code>help</code> for details), or use <code>adb</code> manually.
 * The mac can also be managed using apple screen sharing tools (VNC-compliant), pointing directly at <code>faraday.inria.fr</code>
 * You will find more details about controlling the phone [in the tutorials section](/tuto-800-5g.md#PHONE).
-    </div>
-    <div class="col-md-4">
-      <br><br>
-      <img src="/assets/img/macphone.png"  class='fit-width'>
-      <center>Commercial phone</center>
     </div>
   </div>
 </div>
