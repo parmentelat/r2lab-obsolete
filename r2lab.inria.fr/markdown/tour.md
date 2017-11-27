@@ -1,5 +1,6 @@
 title: R2lab virtual tour
 skip_header: yes
+tab: tour
 
 <div class="container text-center" markdown=1>
 
