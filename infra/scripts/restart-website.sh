@@ -8,10 +8,10 @@ LOG=/var/log/restart-website.log
 #### depending on which host:
 case $(hostname) in
     faraday*)
-	GIT_REPOS=/root/r2lab
+	GIT_REPOS="/root/r2lab"
 	;;
     r2lab*)
-	GIT_REPOS="/root/r2lab /root/r2lab-raw"
+	GIT_REPOS="/root/r2lab /root/r2lab.inria.fr /root/r2lab-raw"
 	;;
     *)
 	echo Unknown host $(hostname); exit 1;;
@@ -33,7 +33,7 @@ case $(hostname) in
 	systemctl restart monitorphones
 	;;
     r2lab*)
-	make -C /root/r2lab/r2lab.inria.fr publish >> $LOG 2>&1
+	make -C /root/r2lab.inria.fr publish >> $LOG 2>&1
 	make -C /root/r2lab-raw publish >> $LOG 2>&1
 	systemctl restart sidecar
 	systemctl restart httpd
