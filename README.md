@@ -1,14 +1,23 @@
 # The R2Lab testbed
 
-The R2Lab testbed, located at Inria Sophia Antipolis, and dedicated to **reproducible** wireless experiments, will be open to public usage starting January 2016.
+## Purpose
 
-This testbed offers an acheoid chamber with 37 nodes deployed in a 90m2 room; it has been developped as part of the French FIT Equipex Project with funding from A.N.R., and is part of the OneLab federation of testbeds, that manages registration and resource reservation.
+The R2Lab testbed, located at Inria Sophia Antipolis, and dedicated to **reproducible** wireless experiments, is open to public usage. See https://r2lab.inria.fr for details.
 
-Usage is open to anyone, but requires free registration at the OneLab portal.
+## Contents
 
-Our usage model is that the whole testbed is reserved as a single resource, so that only one experiment can access the testbed at any one time, and so be in full control of its electromagnetic environment.
+This repo used to contain everything needed to run the testbed, but as it grew bigger and bigger miscellaneous pieces have been taken out and now sit in their own repo; this is the case for
 
-Also we offer bare metal, with a few predefined images available, so that users can run any O.S. and software they need to. Available hardware includes WiFi, USRP and OpenAirInterface.
+* https://github.com/parmentelat/r2lab.inria.fr - contains the django app that runs on the testbed frontend
 
-All technical details, including node specifications, live status, and tutorials, can be found [at the testbed's website http://r2lab.inria.fr/](http://r2lab.inria.fr/); which actually is a django app based on the `r2lab.inria.fr` subdirectory right here.
+* https://github.com/parmentelat/r2lab-raw - contains some raw data such as various presentations and other snapshots
 
+## Plans
+
+* It is planned to also take out the `demos` subdir into a repo that will be called `r2lab-demos`
+
+* Same possibly for the `infra` subdir, although it is not yet clear how it should be split into pieces.
+
+## Todos
+
+We are using [github issues on the main repo here](https://github.com/parmentelat/r2lab/issues) to track bugs and features requests and all other discussions about the testbed.
