@@ -6,11 +6,6 @@ to instruct it that some nodes are available or not
 (use available.py or unavailable.py)
 """
 
-# xxx todo1 - if needed we could add options too to chose between available and unavailable
-# xxx todo2 - more importantly we could consider talking to the OMF inventory on faraday
-#             to maintain the same status over there
-
-
 from argparse import ArgumentParser
 import json
 import traceback
