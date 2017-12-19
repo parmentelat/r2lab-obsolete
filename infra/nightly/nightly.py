@@ -23,6 +23,7 @@ Performed checks on all nodes:
 
 import sys
 import os
+import time
 from pathlib import Path
 from enum import IntEnum
 from argparse import ArgumentParser
@@ -111,11 +112,8 @@ class Nightly:
             'nodes', 'load_default_timeout'))
         self.wait_timeout = float(config.value(
             'nodes', 'wait_default_timeout'))
-
-        # accessories
         self.bus = asyncio.Queue()
-        self.verbose_msg("focus is {}" .format(
-            " ".join(selector.node_names())))
+
 
     def verbose_msg(self, *args):
         if self.verbose:
@@ -132,9 +130,10 @@ class Nightly:
         self.failures[node.id] = reason
         # xxx ok this may be a be a bit fragile, but given that sidecar_client
         # is not properly installed...
-        unavailable_script = Path.home() / "/r2lab/sidecar/unavailable.py"
-        if not unavailable.exists():
-            print("Cannot locate unavailable script - skipping")
+        unavailable_script = Path.home() / "r2lab/sidecar/unavailable.py"
+        if not unavailable_script.exists():
+            print("Cannot locate unavailable script {} - skipping"
+                  .format(unavailable_script))
             return
         command = "{command} {number}"\
                   .format(command=unavailable_script, number=node.id)
@@ -262,6 +261,18 @@ class Nightly:
         does everything and returns True if all nodes are fine
         """
 
+        # we have the lease, let's get down to business
+        # skip this test in verbose mode
+        print(40*'=')
+        print("Nightly check - starting at {}"
+              .format(time.strftime("%Y-%m-%d@%H:%M:%S",
+                                    time.localtime(time.time()))))
+              
+        print(40*'=')
+
+        self.verbose_msg("focus is {}" .format(
+            " ".join(self.selector.node_names())))
+
         current_owner = self.current_owner()
 
         # somebody else
@@ -271,25 +282,24 @@ class Nightly:
         # nobody at all : make sure the testbed is switched off
         elif current_owner is None:
             self.all_off()
+            self.verbose_msg("No lease set - turning off")
             return True
 
-        # we have the lease
-        # we checked the lease, let's get down to business
-        # TODO: test mode currently skips this check
         if not self.verbose:
             self.global_send_action('on')
             self.global_send_action('reset')
             self.global_send_action('off')
-        # it's no use trying to send reset to a node that is off
+        else:
+            print("nightly in verbose mode won't check on and off and reset")
 
-        # TODO: test mode only focuses on one image
         images_expected = images_to_check if not self.verbose \
             else images_to_check[:1]
 
         for image, check_strings in images_expected:
-            # TODO : test mode does not even load stuff
             if not self.verbose:
                 self.global_load_image(image)
+            else:
+                print("nightly in verbose mode won't load any image on node")
             self.global_wait_ssh()
             self.global_check_image(image, check_strings)
 
