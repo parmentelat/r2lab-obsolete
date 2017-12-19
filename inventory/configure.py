@@ -243,7 +243,7 @@ ff02::2 ip6-allrouters
 # this is for when you bring your own laptop down there
 192.168.4.200   mac
 # the mac units that are permanently present in the chamber
-192.168.4.201   macphone macphone1
+192.168.4.201   macphone1 macphone
 192.168.4.202   macphone2
 192.168.4.203   macphone3
 192.168.4.204   macphone4
