@@ -559,10 +559,18 @@ function un-tgz() {
 
 ########## connect to the phone gateway
 # the private key for macphone is in inventory/macphone
-doc-alt macphone "Enter the (Mac) phone gateway as user 'tester'"
-function macphone() {
-    ssh -i /home/faraday/r2lab/inventory/macphone tester@macphone "$@"
+function -macphone() {
+    macphoneid=$1; shift
+    ssh -o StrictHostKeyChecking=no -i /home/faraday/r2lab/inventory/macphone tester@macphone${i} "$@"
 }
+
+doc-alt macphone1 "ssh-enter phone gateway 'macphone1' as user 'tester'"
+function macphone1() { -macphone 1 "$@"; }
+# for legacy
+alias macphone=macphone1
+doc-alt macphone2 "ssh-enter phone gateway 'macphone2' as user 'tester'"
+function macphone2() { -macphone 2 "$@"; }
+
 
 doc-selection-sep "See also help-alt for other commands"
 
