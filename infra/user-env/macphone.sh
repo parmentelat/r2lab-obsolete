@@ -85,6 +85,9 @@ function phone-reboot() {
 #$adb shell sqlite3 /data/data/com.android.providers.settings/databases/settings.db "update global SET value=11 WHERE name='preferred_network_mode'"
 #$adb shell sqlite3 /data/data/com.android.providers.settings/databases/settings.db "select value FROM secure WHERE name='preferred_network_mode'"
 
+function r2gw() {
+    ssh -i ~/.ssh/tester_key root@192.168.4.100 "$@"
+}
 ########################################
 define-main "$0" "$BASH_SOURCE" 
 main "$@"
