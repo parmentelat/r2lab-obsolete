@@ -566,8 +566,9 @@ function -macphone() {
 
 doc-alt macphone1 "ssh-enter phone gateway 'macphone1' as user 'tester'"
 function macphone1() { -macphone 1 "$@"; }
-# for legacy
-alias macphone=macphone1
+# for legacy; somehow it seems to be important that it is a function
+# otherwise the oai-scenario has been reported to fail
+funciton macphone() { -macphone 1 "$@"; }
 doc-alt macphone2 "ssh-enter phone gateway 'macphone2' as user 'tester'"
 function macphone2() { -macphone 2 "$@"; }
 
