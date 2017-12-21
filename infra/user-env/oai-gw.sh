@@ -468,13 +468,23 @@ function populate-hss-db() {
 ###    echo issuing SQL "$insert_command $update_command"
 ###    mysql --user=root --password=linux -e "$insert_command $update_command" oai_db
 
-## Following for Nexus phone with SIM # 02
+## Following for Nexus 5 phone with SIM # 02
     hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000002;"
     echo issuing HACK SQL "$hack_command"
     mysql --user=root --password=linux -e "$hack_command" oai_db
 
 ## Following for LTE stick with SIM # 07 on node fit02
     hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000007;"
+    echo issuing HACK SQL "$hack_command"
+    mysql --user=root --password=linux -e "$hack_command" oai_db
+
+## Following for Huawei 3372 LTE stick with SIM # 05 (now plugged on node fit26)
+    hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000005;"
+    echo issuing HACK SQL "$hack_command"
+    mysql --user=root --password=linux -e "$hack_command" oai_db
+
+## Following for Iphone 6s phone with SIM # 04
+    hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000004;"
     echo issuing HACK SQL "$hack_command"
     mysql --user=root --password=linux -e "$hack_command" oai_db
 
