@@ -473,12 +473,12 @@ function populate-hss-db() {
     echo issuing HACK SQL "$hack_command"
     mysql --user=root --password=linux -e "$hack_command" oai_db
 
-## Following for LTE stick with SIM # 07 on node fit02
+## Following for Huawei 3372 LTE stick with SIM # 07 on node fit02
     hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000007;"
     echo issuing HACK SQL "$hack_command"
     mysql --user=root --password=linux -e "$hack_command" oai_db
 
-## Following for Huawei 3372 LTE stick with SIM # 05 (now plugged on node fit26)
+## Following for Huawei 3372 LTE stick with SIM # 05 on node fit26
     hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000005;"
     echo issuing HACK SQL "$hack_command"
     mysql --user=root --password=linux -e "$hack_command" oai_db
@@ -488,7 +488,7 @@ function populate-hss-db() {
     echo issuing HACK SQL "$hack_command"
     mysql --user=root --password=linux -e "$hack_command" oai_db
 
-## Following for OAI UE with fake SIM # 03 on node fit06
+## Following for OAI UE with fake SIM # 03 on node fit06 (with UE duplexer)
     hack_command="update users set mmeidentity_idmmeidentity=100 where imsi=208950000000003;"
     echo issuing HACK SQL "$hack_command"
     mysql --user=root --password=linux -e "$hack_command" oai_db
