@@ -175,6 +175,7 @@ function configure-enb() {
 s|pdsch_referenceSignalPower[ 	]*=.*|pdsch_referenceSignalPower = -24;|
 s|mobile_network_code[ 	]*=.*|mobile_network_code = "95";|
 s|downlink_frequency[ 	]*=.*|downlink_frequency = 2660000000L;|
+s|N_RB_DL[ 	]*=.*|N_RB_DL = 50;|
 s|rx_gain[ 	]*=.*|rx_gain = 125;|
 s|pusch_p0_Nominal[ 	]*=.*|pusch_p0_Nominal = -90;|
 s|pucch_p0_Nominal[ 	]*=.*|pucch_p0_Nominal = -96;|
