@@ -60,7 +60,7 @@ email_to = [
 #  1: strings to expect in /etc/rhubarbe-image (any of these means it's OK)
 images_to_check = [
     ("ubuntu", ["ubuntu-16.04", "u16.04"]),
-    ("fedora", ["fedora-23"]),
+    ("fedora", ["fedora-27"]),
 ]
 
 
