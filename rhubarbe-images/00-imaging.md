@@ -2,17 +2,80 @@
 * OAI-related details in a separate file `01-oai.md`
 * List of known issues in `02-fixes.md`
 
+****
+# 2018
+****
+
+# iso & usb fr all distros
+
+* torrent-downloaded all iso images
+* transferred them to **goeland** with a USB Stick
+* used nautilus (finder) + right-click + **Restore Image Writer** to produce a bootable USB key
+   * just using `dd` **did not** do the job
+* as usual, started from the usual disk layout obtained from a previous image
+* performed graphical install; managed to screw up the network setup
+
+# fedora-27
+
+* Jan 2018 - fit01
+* Here again trying a fresh install without altering the geometry did no work
+* But upgrading from fedora-23 worked like a charm.
+
+I just had to import the fedora key manually from
+
+`http://mirror.onelab.eu/keys/RPM-GPG-KEY-fedora-27-primary`
+
+and then
+
+```
+dnf upgrade --refresh
+dnf install dnf-plugin-system-upgrade
+dnf system-upgrade download --refresh --releasever=27
+
+dnf system-upgrade reboot
+```
+
+***
+# ubuntu-17.10
+
+* Jan 2018
+* failed so we'll just wait for 18.04
+
+## first method
+
+* install from scratch
+* could easily keep the same disk geometry
+* and install looked just fine
+* **BUT** when rebooting, I see either
+  * network does not start up
+  * or keyboard is not corresponding
+  * I tried to run the install with or without a network
+  * and to enable the network using a rescue CD
+
+## second method
+
+* So I resorted to upgrading
+* however it looked that no matter how hard I tried, I could not get `apt dist-upgrade` nor `do-release-upgrade` to actually trigger anything
+* I suspect this is because it won't go from a LSB to a short-lived version
+
+I just needed one recent image for running docker, so fedora will do it for now.
+
+****
+# 2017
+****
+
+
 # fedora25 - ***STANDBY***
 
 * Jan 5 2017
 * fit42
 
 ### ========== ***STANDBY***
-Turns out frisbee cannot save the image produced like below - see mail exchange with MikeH ibler
+Turns out frisbee cannot save the image produced like below - see mail exchange with Mike Hibler
 ### ========== ***STANDBY***
 
 ## iso image & USB key
-* bittorrent'ed `os-images/Fedora-Server-dvd-x86_64-25-1.3.iso` 
+* bittorrent'ed `os-images/Fedora-Server-dvd-x86_64-25-1.3.iso`
 * put that on a key (inside a FAT)
 * used goeland to extract to hdd
 * and then just `dd if=the.iso of=/dev/sdb bs=8M`
@@ -21,7 +84,7 @@ Turns out frisbee cannot save the image produced like below - see mail exchange 
 * graphic mode KO, used basic graphic mode (see section on fedora24 below)
 * I confirm I had to re-create the partition layout over again
 * no user created
-* entered as root 
+* entered as root
 * `passwd -d root`
 * `vi /etc/ssh/sshd_config` -> enabled passwd auth and empty passwords
 * saved into `fedora-25-v0`
@@ -65,7 +128,7 @@ So evntually I just went for the yekkety / 16.10 vanilla kernel debs, which gave
 * there is a script `build-image.py`
 * that allows to build an image in an unattended manner
 * and `all-images.sh` take advantage of that to list all the recipes that we use - some of them on a nightly basis eventually
-* this also uses code actually in `infra/user/imaging.sh` 
+* this also uses code actually in `infra/user/imaging.sh`
 
 # generic ubuntu stuff
 
@@ -83,7 +146,7 @@ So evntually I just went for the yekkety / 16.10 vanilla kernel debs, which gave
 
 ## `imaging-utils.sh`
 
-`rhubarbe-images/imaging-utils.sh` is a script designed to **help** automate the various stages. 
+`rhubarbe-images/imaging-utils.sh` is a script designed to **help** automate the various stages.
 
 **IMPORTANT NOTES**
 * this script **only is a help** - make sure to read it before running it
@@ -98,8 +161,8 @@ chmod +x imaging-utils.sh
 
 # 2016/09/26 - fedora-24
 
-* done on fit42 
-* created a USB stick by just running 
+* done on fit42
+* created a USB stick by just running
 
 ```
 dd if=/Users/parmentelat/Downloads/os-images/Fedora-Server-netinst-x86_64-24-1.2.iso of=/dev/rdisk2 bs=1m
@@ -117,7 +180,7 @@ dd if=/Users/parmentelat/Downloads/os-images/Fedora-Server-netinst-x86_64-24-1.2
 * `fdisk -l` - for checking partitions
 * `dnf -y udpate` - not needed as I was using a net install, but it does help to update the internal db or cache of dnf
 * `mkdir ~/.ssh ; chmod 700 ~/.ssh`
-* open up root ssh access for `root@bemol`'s public key 
+* open up root ssh access for `root@bemol`'s public key
   * `# root@bemol scp ~/.ssh/id_rsa.pub root@fit42:.ssh/authorized_keys`
 * **snapshot here** with `# rsave 42 -o fedora-24-v0-bemol-only`
 
@@ -127,7 +190,7 @@ dd if=/Users/parmentelat/Downloads/os-images/Fedora-Server-netinst-x86_64-24-1.2
   * can't log into the node at all through ssh afterwards - it prompts for a passwd, that should be empty
   * have also tried to turn off selinux to no avail
 
-``` 
+```
 ./build.py $(plr faraday) fit01 fedora-24-v0-bemol-only fedora-24-v1-test clear-password.sh
 ```
 
@@ -145,7 +208,7 @@ dd if=/Users/parmentelat/Downloads/os-images/Fedora-Server-netinst-x86_64-24-1.2
 
 * done on fit41 (and actually I should not have because the damn thing has is super slow when downloading pxefrisbee and I have no idea why)
 * created a USB stick from the `server` iso using USB Stick Creator on ubuntu
-* started with uploading a previous ubuntu image to be sure about the partitioning and `ext4` business 
+* started with uploading a previous ubuntu image to be sure about the partitioning and `ext4` business
 * otherwise the procedure was in line with what `imaging-utils.sh` has, except done mostly manually
 
 # 2015/12/09: `ubuntu-12.04.5`
@@ -180,7 +243,7 @@ set a passwd for root
 	apt-get install -y emacs23-nox
     apt-get install -y rsync make git gcc
 	apt-get install -y iw ethtool tcpdump wireshark bridge-utils
-	
+
 * edited `/etc/ssh/sshd_config` so that
 
 #
@@ -213,7 +276,7 @@ set a passwd for root
 
 * based on fit41
 * re-loaded latest fedora22 image at that time
-* ran `dnf update --refresh` 
+* ran `dnf update --refresh`
 * created a snapshot of that image using `omf6 save`. This should now become the reference image for fedora22 (named `fedora-22-updated-2015-11-09.ndz`)
 * rebooted off that image again
 * `dnf system-upgrade download --releasever=23`
@@ -247,7 +310,7 @@ set a passwd for root
 
 * remade on fit39 on may 21 2015
 * first attempt essentially to check the new imagezip can handle ext4 partitions
-* actually re-used partition scheme from fedora21 (24Gb swap, only 2 partitions so that new imagezip can run smoothly) 
+* actually re-used partition scheme from fedora21 (24Gb swap, only 2 partitions so that new imagezip can run smoothly)
 * partition / with ext4
 * mandatory user : ubuntu/ubuntu (should be deleted later)
 * selected openssh server
@@ -257,7 +320,7 @@ set a passwd for root
 ## `rough`
 
 at this point, made a blank omf6 save and load on 40 -> everything is fine
-`ubuntu15.04-ext4-v00-rough.ndz` 
+`ubuntu15.04-ext4-v00-rough.ndz`
 
 * enable empty passwords in sshd_config
 
@@ -270,13 +333,13 @@ at this point, made a blank omf6 save and load on 40 -> everything is fine
 
 * users
 
-# 
+#
     passwd --delete root
     userdel --remove ubuntu
 
 * additional packages
 
-# 
+#
     apt-get install -y iw ethtool
     apt-get install -y rsync make git
     apt-get install emacs24-nox
@@ -285,7 +348,7 @@ at this point, made a blank omf6 save and load on 40 -> everything is fine
 * hostname
   * found an occurrence of fit39 in /etc/hosts for 127.0.0.1 - using fit-image instead
 
-## `root+base` 
+## `root+base`
 
 All looks fine; except for device names, as I found the MAC addresses from the initial node hardware where saved in `/etc/udev/rules.d/70-persistent-net.rules`; so unsurprisingly
 
@@ -294,7 +357,7 @@ All looks fine; except for device names, as I found the MAC addresses from the i
 
 See `r2lab/omf-images-6/netnames-scratchpad.sh` on how to deal with this, and have nice and clean names in `control` and `data`
 
-## `netnames` 
+## `netnames`
 
 had an attempt at an image that would have DHCP turned on for the data interface but that is a bad idea; root prompt gets all mashed up, too much overhead, trashed..
 
@@ -304,7 +367,7 @@ I am tweaking /etc/network/interfaces and /etc/network/interfaces.d/data so that
 ## Possible improvements
 
 * `apt-get python-pip python3-pip`
-    
+
 * see also Michelle’s proposal to fix hostname issue when enabling data interface; -- or -- fix this on the server side
 
 # 2015/05/21 `fedora-21`
@@ -325,10 +388,10 @@ Number  Start   End    Size    Type     File system     Flags
 * cleared hostname
 * commented HWADDR from /etc/sysconfig/network-scripts/ifcfg-en*
 * created udev rules (see `omf-images-6/netnames-scratchpad.sh`); here we need 2 sets of rules so the wireless device names match the ones in `wlan[01]`, which ubuntu has out of the box
-* cleaned up `/etc/sysconfig/n*s` so that the new names `control` and `data` are relevant to network manager as well (`nmcli`); this in a nutshell comes down to 
+* cleaned up `/etc/sysconfig/n*s` so that the new names `control` and `data` are relevant to network manager as well (`nmcli`); this in a nutshell comes down to
   * renaming the ifcfg-* files
   * changing the definition of NAME in there
-  * and adding a DEVICE= 
+  * and adding a DEVICE=
     so e.g.
 
 #
@@ -361,18 +424,18 @@ Number  Start   End    Size    Type     File system     Flags
 
 * redone on fit40
 * so that we can rebuild latest gnuradio essentially
-* used USB drive; expect error message; enter ‘Tab’ and then ‘expert’ 
+* used USB drive; expect error message; enter ‘Tab’ and then ‘expert’
 * thanks to expert install, no nonsense *normal* user, just `root`
 * based on ext4 + 2 simple partitions
 * software selection
   * *universe + multiverse + backported*
   * disabled security updates (will handle that manually)
 * install openSSH server
-* some nuisance with GRUB and MBR; had to reboot in rescue mode (still with ubuntu pendrive) so that I could 
+* some nuisance with GRUB and MBR; had to reboot in rescue mode (still with ubuntu pendrive) so that I could
   * run `passwd --delete root`
   * enable empty passwords in `sshd_config`
 
-# 
+#
     root@fit41:/etc/ssh# grep -v '^#' /etc/ssh/sshd_config | egrep -i 'Root|Password|PAM'
     PermitRootLogin yes
     PermitEmptyPasswords yes
