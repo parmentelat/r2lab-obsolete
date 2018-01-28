@@ -13,7 +13,7 @@ lte_log="$run_dir/softmodem.log"
 add-to-logs $lte_log
 lte_pcap="$run_dir/softmodem.pcap"
 add-to-datas $lte_pcap
-conf_dir=$OPENAIR_HOME/targets/PROJECTS/GENERIC-LTE-EPC/CONF/
+conf_dir=$OPENAIR_HOME/targets/PROJECTS/GENERIC-LTE-EPC/CONF
 template=enb.band7.tm1.usrpb210.conf
 #following template name corresponds to the latest buggy develop version
 #template=enb.band7.tm1.50PRB.usrpb210.conf
@@ -174,6 +174,11 @@ function configure-enb() {
     cat <<EOF > oai-enb.sed
 s|pdsch_referenceSignalPower[ 	]*=.*|pdsch_referenceSignalPower = -24;|
 s|mobile_network_code[ 	]*=.*|mobile_network_code = "95";|
+s|downlink_frequency[ 	]*=.*|downlink_frequency = 2660000000L;|
+s|N_RB_DL[ 	]*=.*|N_RB_DL = 25;|
+s|rx_gain[ 	]*=.*|rx_gain = 125;|
+s|pusch_p0_Nominal[ 	]*=.*|pusch_p0_Nominal = -90;|
+s|pucch_p0_Nominal[ 	]*=.*|pucch_p0_Nominal = -96;|
 s|mme_ip_address[ 	]*=.*|mme_ip_address = ( { ipv4 = "192.168.${oai_subnet}.$gw_id";|
 s|ENB_INTERFACE_NAME_FOR_S1_MME[ 	]*=.*|ENB_INTERFACE_NAME_FOR_S1_MME = "${oai_ifname}";|
 s|ENB_INTERFACE_NAME_FOR_S1U[ 	]*=.*|ENB_INTERFACE_NAME_FOR_S1U = "${oai_ifname}";|
