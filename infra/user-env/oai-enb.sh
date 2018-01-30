@@ -171,11 +171,17 @@ function configure-enb() {
     id=$(echo $id | sed  's/^0*//')
     cd $conf_dir
 
+
+# Following setup should be used for the latest develop version
+# choosing 50 for old devlop version double the uplink but with no downlink..
+#
+#s|N_RB_DL[ 	]*=.*|N_RB_DL = 50;|
+
     cat <<EOF > oai-enb.sed
 s|pdsch_referenceSignalPower[ 	]*=.*|pdsch_referenceSignalPower = -24;|
 s|mobile_network_code[ 	]*=.*|mobile_network_code = "95";|
 s|downlink_frequency[ 	]*=.*|downlink_frequency = 2660000000L;|
-s|N_RB_DL[ 	]*=.*|N_RB_DL = 50;|
+s|N_RB_DL[ 	]*=.*|N_RB_DL = 25;|
 s|rx_gain[ 	]*=.*|rx_gain = 125;|
 s|pusch_p0_Nominal[ 	]*=.*|pusch_p0_Nominal = -90;|
 s|pucch_p0_Nominal[ 	]*=.*|pucch_p0_Nominal = -96;|
