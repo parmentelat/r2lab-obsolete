@@ -1,7 +1,7 @@
 #!/bin/bash
 
 repo=/var/lib/rhubarbe-images
-preplab=bemol.pl.sophia.inria.fr
+preplab=etourdi.pl.sophia.inria.fr
 
 # waterfall model : MUST run on faraday
 hostname | grep -q faraday || { echo "Must run on faraday"; exit 1; }
